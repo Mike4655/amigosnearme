@@ -1,0 +1,1733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Garcia's Garden & Landscaping — AmigosNearMe</title>
+<meta name="description" content="Garcia's Garden & Landscaping — Verified Latin business in Duluth, GA. Landscaping, lawn care, tree trimming. Free estimates.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display:ital@0;1&display=swap');
+
+  :root {
+    --c-bg: #FAFAF7;
+    --c-surface: #FFFFFF;
+    --c-border: rgba(0,0,0,0.09);
+    --c-text: #1A1A18;
+    --c-muted: #6B6B66;
+    --c-hint: #A8A8A2;
+    --c-accent: #C94F2B;
+    --c-accent-light: #FAF0EC;
+    --c-accent-dark: #9C3A1E;
+    --c-green: #1D9E75;
+    --c-green-light: #EBF8F3;
+    --c-amber: #BA7517;
+    --c-amber-light: #FEF6E4;
+    --c-blue: #185FA5;
+    --c-blue-light: #EEF4FB;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.05);
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-body); background: var(--c-bg); color: var(--c-text); font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(250,250,247,0.92); backdrop-filter: blur(12px);
+    border-bottom: 0.5px solid var(--c-border);
+    padding: 0 24px; height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { font-family: var(--font-display); font-size: 22px; color: var(--c-text); text-decoration: none; }
+  .nav-logo span { color: var(--c-accent); }
+  .nav-back { font-size: 13px; color: var(--c-muted); text-decoration: none; display: flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: var(--radius-sm); border: 0.5px solid var(--c-border); transition: background 0.15s; }
+  .nav-back:hover { background: var(--c-surface); }
+  .lang-btn { padding: 3px 8px; border-radius: 99px; font-size: 12px; cursor: pointer; border: 0.5px solid var(--c-border); background: transparent; color: var(--c-muted); font-family: var(--font-body); }
+  .lang-btn.active { background: var(--c-accent-light); color: var(--c-accent); border-color: var(--c-accent); }
+
+  /* BREADCRUMB */
+  .breadcrumb { max-width: 1100px; margin: 0 auto; padding: 14px 24px; font-size: 12px; color: var(--c-hint); display: flex; align-items: center; gap: 6px; }
+  .breadcrumb a { color: var(--c-muted); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--c-accent); }
+
+  /* LAYOUT */
+  .page-body { max-width: 1100px; margin: 0 auto; padding: 0 24px 60px; display: grid; grid-template-columns: 1fr 320px; gap: 28px; }
+
+  /* MAIN CONTENT */
+  .profile-header {
+    background: var(--c-surface); border: 0.5px solid var(--c-border);
+    border-radius: var(--radius-lg); padding: 28px; margin-bottom: 20px;
+  }
+  .profile-top { display: flex; gap: 18px; align-items: flex-start; margin-bottom: 20px; }
+  .profile-avatar {
+    width: 72px; height: 72px; border-radius: var(--radius-md);
+    background: var(--c-accent-light); color: var(--c-accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 600; flex-shrink: 0;
+  }
+  .profile-meta { flex: 1; }
+  .profile-name { font-family: var(--font-display); font-size: 26px; line-height: 1.15; margin-bottom: 6px; }
+  .profile-cat { font-size: 14px; color: var(--c-muted); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .badge-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .badge { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; padding: 3px 10px; border-radius: 99px; font-weight: 500; }
+  .badge-verified { background: var(--c-green-light); color: var(--c-green); }
+  .badge-lang { background: var(--c-bg); color: var(--c-muted); border: 0.5px solid var(--c-border); }
+  .badge-llc { background: var(--c-blue-light); color: var(--c-blue); }
+  .profile-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; padding-top: 20px; border-top: 0.5px solid var(--c-border); }
+  .stat-item { text-align: center; }
+  .stat-val { font-family: var(--font-display); font-size: 22px; color: var(--c-text); }
+  .stat-label { font-size: 12px; color: var(--c-muted); margin-top: 2px; }
+
+  /* PHOTO GALLERY */
+  .section-card { background: var(--c-surface); border: 0.5px solid var(--c-border); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 20px; }
+  .section-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+  .section-title a { font-size: 13px; font-weight: 400; color: var(--c-accent); text-decoration: none; }
+  .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .photo-thumb {
+    aspect-ratio: 4/3; border-radius: var(--radius-sm); overflow: hidden;
+    background: var(--c-bg); border: 0.5px solid var(--c-border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; cursor: pointer; transition: opacity 0.15s;
+  }
+  .photo-thumb:hover { opacity: 0.85; }
+  .photo-thumb.main { grid-column: span 2; grid-row: span 2; font-size: 48px; }
+
+  /* SERVICES */
+  .services-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .service-item { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--c-bg); font-size: 13px; color: var(--c-text); }
+  .service-item span { font-size: 16px; }
+
+  /* ABOUT */
+  .about-text { font-size: 14px; color: var(--c-muted); line-height: 1.7; }
+
+  /* DETAILS TABLE */
+  .detail-row { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 0.5px solid var(--c-border); font-size: 13px; }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-icon { width: 18px; flex-shrink: 0; text-align: center; margin-top: 1px; }
+  .detail-label { color: var(--c-muted); width: 110px; flex-shrink: 0; }
+  .detail-val { color: var(--c-text); flex: 1; }
+
+  /* REVIEWS */
+  .rating-summary { display: flex; gap: 20px; align-items: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 0.5px solid var(--c-border); }
+  .big-rating { text-align: center; }
+  .big-rating-num { font-family: var(--font-display); font-size: 48px; line-height: 1; color: var(--c-text); }
+  .big-rating-stars { color: var(--c-amber); font-size: 18px; margin: 4px 0; }
+  .big-rating-count { font-size: 12px; color: var(--c-muted); }
+  .rating-bars { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+  .rbar-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--c-muted); }
+  .rbar-track { flex: 1; height: 6px; background: var(--c-bg); border-radius: 3px; overflow: hidden; }
+  .rbar-fill { height: 100%; background: var(--c-amber); border-radius: 3px; }
+  .review-item { padding: 16px 0; border-bottom: 0.5px solid var(--c-border); }
+  .review-item:last-child { border-bottom: none; }
+  .review-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .review-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--c-bg); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: var(--c-muted); flex-shrink: 0; }
+  .review-name { font-size: 13px; font-weight: 500; }
+  .review-date { font-size: 12px; color: var(--c-hint); margin-left: auto; }
+  .review-stars { color: var(--c-amber); font-size: 13px; margin-bottom: 6px; }
+  .review-text { font-size: 13px; color: var(--c-muted); line-height: 1.6; }
+
+  /* SIDEBAR */
+  .sidebar { position: sticky; top: 80px; align-self: start; }
+  .contact-card { background: var(--c-surface); border: 0.5px solid var(--c-border); border-radius: var(--radius-lg); padding: 22px; margin-bottom: 14px; box-shadow: var(--shadow); }
+  .contact-title { font-size: 14px; font-weight: 600; margin-bottom: 16px; }
+  .btn-wa-big {
+    width: 100%; padding: 13px; border-radius: var(--radius-md);
+    background: var(--c-green-light); color: var(--c-green);
+    border: 0.5px solid rgba(29,158,117,0.3);
+    font-size: 15px; font-weight: 500; cursor: pointer;
+    font-family: var(--font-body); display: flex; align-items: center;
+    justify-content: center; gap: 8px; text-decoration: none;
+    margin-bottom: 10px; transition: background 0.15s;
+  }
+  .btn-wa-big:hover { background: #d4f0e7; }
+  .btn-quote-big {
+    width: 100%; padding: 13px; border-radius: var(--radius-md);
+    background: var(--c-accent); color: #fff; border: none;
+    font-size: 15px; font-weight: 500; cursor: pointer;
+    font-family: var(--font-body); display: flex; align-items: center;
+    justify-content: center; gap: 8px; margin-bottom: 10px;
+    transition: background 0.15s;
+  }
+  .btn-quote-big:hover { background: var(--c-accent-dark); }
+  .btn-call-big {
+    width: 100%; padding: 11px; border-radius: var(--radius-md);
+    background: var(--c-surface); color: var(--c-text);
+    border: 0.5px solid var(--c-border);
+    font-size: 14px; cursor: pointer;
+    font-family: var(--font-body); display: flex; align-items: center;
+    justify-content: center; gap: 8px; transition: background 0.15s;
+  }
+  .btn-call-big:hover { background: var(--c-bg); }
+  .response-note { font-size: 12px; color: var(--c-muted); text-align: center; margin-top: 12px; padding-top: 12px; border-top: 0.5px solid var(--c-border); }
+  .hours-card { background: var(--c-surface); border: 0.5px solid var(--c-border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 14px; }
+  .hours-row { display: flex; justify-content: space-between; font-size: 13px; padding: 5px 0; border-bottom: 0.5px solid var(--c-border); }
+  .hours-row:last-child { border-bottom: none; }
+  .hours-row .day { color: var(--c-muted); }
+  .hours-row .time { color: var(--c-text); font-weight: 500; }
+  .hours-row.today .day { color: var(--c-accent); font-weight: 500; }
+  .hours-row.today .time { color: var(--c-accent); }
+  .map-placeholder { background: var(--c-bg); border: 0.5px solid var(--c-border); border-radius: var(--radius-lg); height: 160px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--c-hint); margin-bottom: 14px; flex-direction: column; gap: 8px; }
+
+  /* QUOTE FORM */
+  .quote-form { padding-top: 14px; border-top: 0.5px solid var(--c-border); margin-top: 14px; display: none; }
+  .quote-form.open { display: block; }
+  .form-field { margin-bottom: 11px; }
+  .form-label { font-size: 12px; font-weight: 500; color: var(--c-muted); margin-bottom: 4px; display: block; }
+  .form-input { width: 100%; padding: 9px 12px; border-radius: var(--radius-sm); border: 0.5px solid var(--c-border); background: var(--c-bg); font-size: 13px; color: var(--c-text); font-family: var(--font-body); outline: none; transition: border-color 0.15s; }
+  .form-input:focus { border-color: var(--c-accent); }
+  .form-select { width: 100%; padding: 9px 12px; border-radius: var(--radius-sm); border: 0.5px solid var(--c-border); background: var(--c-bg); font-size: 13px; color: var(--c-text); font-family: var(--font-body); outline: none; }
+  .form-textarea { width: 100%; padding: 9px 12px; border-radius: var(--radius-sm); border: 0.5px solid var(--c-border); background: var(--c-bg); font-size: 13px; color: var(--c-text); font-family: var(--font-body); outline: none; resize: vertical; min-height: 80px; }
+  .btn-submit { width: 100%; padding: 11px; border-radius: var(--radius-md); background: var(--c-accent); color: #fff; border: none; font-size: 14px; font-weight: 500; cursor: pointer; font-family: var(--font-body); transition: background 0.15s; }
+  .btn-submit:hover { background: var(--c-accent-dark); }
+  .success-msg { background: var(--c-green-light); color: var(--c-green); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; text-align: center; display: none; margin-top: 10px; }
+
+  .quote-form-hint { font-size: 12px; color: var(--c-muted); margin-bottom: 12px; line-height: 1.5; }
+  .quote-form-note { font-size: 11px; color: var(--c-hint); margin-top: 9px; text-align: center; line-height: 1.4; }
+  .btn-save-biz {
+    width: 100%; margin-top: 10px; padding: 9px 14px;
+    border-radius: var(--radius-sm); border: 0.5px solid var(--c-border);
+    background: var(--c-bg); color: var(--c-muted);
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    font-family: var(--font-body); display: flex; align-items: center;
+    justify-content: center; gap: 6px; transition: all 0.15s;
+  }
+  .btn-save-biz:hover { border-color: var(--c-amber); color: var(--c-amber); }
+  .btn-save-biz.saved { background: var(--c-amber-light); color: var(--c-amber); border-color: var(--c-amber); }
+
+  .manual-send-notice { display: flex; gap: 10px; align-items: flex-start; margin-top: 14px; padding: 12px 14px; background: var(--c-amber-light, #FEF6E4); border: 0.5px solid rgba(186,117,23,0.25); border-radius: var(--radius-md); }
+  .notice-icon { font-size: 16px; flex-shrink: 0; line-height: 1.3; }
+  .notice-title { font-size: 12px; font-weight: 600; color: var(--c-amber, #BA7517); margin-bottom: 3px; }
+  .notice-text { font-size: 11.5px; color: var(--c-muted); line-height: 1.5; }
+  .notice-text strong { color: var(--c-text); }
+  .field-error { display: none; align-items: center; gap: 5px; font-size: 11px; color: var(--c-accent); margin-top: 5px; padding: 6px 9px; background: var(--c-accent-light); border-radius: 6px; }
+  .field-error.show { display: flex; }
+
+  .btn-no-whatsapp { width: 100%; background: none; border: none; padding: 10px 0 2px; font-size: 12px; color: var(--c-muted); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; font-family: var(--font-body); text-align: center; }
+  .btn-no-whatsapp:hover { color: var(--c-text); }
+
+  .fallback-form { display: none; padding-top: 14px; border-top: 0.5px solid var(--c-border); margin-top: 6px; }
+  .fallback-form.open { display: block; }
+  .fallback-hint { font-size: 12px; color: var(--c-muted); margin-bottom: 12px; line-height: 1.5; }
+  .fallback-success { display: none; background: var(--c-green-light); color: var(--c-green); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 12.5px; text-align: center; margin-top: 10px; line-height: 1.5; }
+  .fallback-success.show { display: block; }
+  .field-error::before { content: "⚠"; font-size: 11px; }
+  .input-error { border-color: var(--c-accent) !important; background: var(--c-accent-light) !important; }
+
+  /* LANG */
+  [data-en] { display: none !important; }
+  body.en [data-es] { display: none !important; }
+  body.en [data-en] { display: revert !important; }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    .page-body { grid-template-columns: 1fr; padding: 0 14px 48px; }
+    .sidebar { position: static; }
+    .profile-stats { grid-template-columns: repeat(2,1fr); gap: 8px; }
+    .stat-val { font-size: 20px; }
+    .photo-grid { grid-template-columns: 1fr 1fr; }
+    .photo-thumb.main { grid-column: span 2; grid-row: span 1; }
+    .services-grid { grid-template-columns: 1fr; }
+    nav { padding: 0 16px; }
+    .breadcrumb { padding: 10px 16px; font-size: 12px; }
+    /* Profile header */
+    .profile-header { padding: 20px 16px; }
+    .profile-avatar { width: 56px; height: 56px; font-size: 18px; }
+    .profile-name { font-size: 22px; }
+    /* Action buttons — full width stacked on mobile */
+    .sidebar .btn-primary,
+    .sidebar .btn-outline,
+    #quote, #worker-contact-btn { width: 100% !important; }
+    /* Quote form */
+    .quote-form { padding: 16px; }
+    /* Reviews rating bars */
+    .rating-summary { flex-direction: column; gap: 12px; }
+    .big-rating { text-align: center; }
+  }
+  @media (max-width: 480px) {
+    .profile-stats { grid-template-columns: repeat(2,1fr); }
+    .nav-links { display: none; }
+    .btn-nav { font-size: 12px; padding: 6px 10px; }
+  }
+
+  /* STAFFING CONTACT MODALS (login-required + buy-contacts) */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(26,26,24,0.55);
+    z-index: 200; align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-card {
+    background: var(--c-surface); border-radius: var(--radius-lg); padding: 30px 28px;
+    max-width: 380px; width: 100%; text-align: center; box-shadow: var(--shadow);
+  }
+  .modal-icon { font-size: 32px; margin-bottom: 12px; }
+  .modal-title { font-family: var(--font-display); font-size: 21px; font-weight: 400; margin-bottom: 10px; }
+  .modal-desc { font-size: 13.5px; color: var(--c-muted); line-height: 1.6; margin-bottom: 22px; }
+  .modal-btn-primary {
+    display: block; width: 100%; padding: 12px; border-radius: var(--radius-sm); border: none;
+    background: var(--c-accent); color: #fff; font-size: 14.5px; font-weight: 500;
+    text-decoration: none; cursor: pointer; font-family: var(--font-body); margin-bottom: 10px;
+  }
+  .modal-btn-primary:hover { background: var(--c-accent-dark); }
+  .modal-btn-ghost {
+    display: block; width: 100%; padding: 10px; border-radius: var(--radius-sm); border: none;
+    background: transparent; color: var(--c-muted); font-size: 13px; cursor: pointer; font-family: var(--font-body);
+  }
+  .modal-btn-ghost:hover { color: var(--c-text); }
+  .package-card {
+    background: var(--c-accent-light); border-radius: var(--radius-md); padding: 18px;
+    margin-bottom: 18px;
+  }
+  .package-price { font-family: var(--font-display); font-size: 30px; color: var(--c-accent-dark); }
+  .package-detail { font-size: 12.5px; color: var(--c-muted); margin-top: 2px; }
+  .modal-note { font-size: 11px; color: var(--c-hint); margin-top: 10px; }
+  .pay-tab { padding: 7px 13px; border-radius: var(--radius-sm); border: 0.5px solid var(--c-border); background: var(--c-bg); font-size: 12.5px; font-weight: 500; color: var(--c-muted); cursor: pointer; font-family: var(--font-body); transition: all 0.15s; }
+  .pay-tab:hover { border-color: var(--c-accent); color: var(--c-accent); }
+  .pay-tab.selected { background: var(--c-accent); color: #fff; border-color: var(--c-accent); }
+</style>
+
+<!-- TOAST: confirms a simulated contact-deduction event (frontend only) -->
+<style>
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--c-text); color: #fff; padding: 12px 20px; border-radius: var(--radius-sm);
+    font-size: 13px; opacity: 0; pointer-events: none; transition: all 0.25s; z-index: 300; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">Amigos<span>NearMe</span></a>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="lang-btn active" id="btn-es" onclick="setLang('es')">ES</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    <a href="search.html" class="nav-back" data-es>← Resultados</a>
+    <a href="search.html" class="nav-back" data-en>← Back to results</a>
+    <a href="login.html" class="btn-nav" style="font-size:13px;color:var(--c-muted)" data-es>Iniciar sesión</a>
+    <a href="login.html" class="btn-nav" style="font-size:13px;color:var(--c-muted)" data-en>Log in</a>
+    <a href="register-type.html" class="btn-nav primary" data-es>Registro</a>
+    <a href="register-type.html" class="btn-nav primary" data-en>Sign up</a>
+  </div>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <a href="index.html" data-es>Inicio</a>
+  <a href="index.html" data-en>Home</a>
+  <span>›</span>
+  <a href="search.html" data-es>Buscar</a>
+  <a href="search.html" data-en>Search</a>
+  <span>›</span>
+  <a href="search.html?cat=landscaping" data-es id="bc-cat-es">Landscaping</a>
+  <a href="search.html?cat=landscaping" data-en id="bc-cat-en">Landscaping</a>
+  <span>›</span>
+  <span style="color:var(--c-text)" id="bc-name">Garcia's Garden</span>
+</div>
+
+<div class="page-body">
+  <main>
+
+    <!-- HEADER -->
+    <div class="profile-header">
+      <div class="profile-top">
+        <div class="profile-avatar" id="biz-avatar">GG</div>
+        <div class="profile-meta">
+          <h1 class="profile-name" id="biz-name">Garcia's Garden & Landscaping</h1>
+          <div class="profile-cat" data-es id="biz-cat-es">🌿 Landscaping · Duluth, GA 30096</div>
+          <div class="profile-cat" data-en id="biz-cat-en">🌿 Landscaping · Duluth, GA 30096</div>
+          <div class="badge-row" id="biz-badges">
+            <span class="badge badge-verified">✅ Verified</span>
+            <span class="badge badge-llc">LLC</span>
+            <span class="badge badge-lang">ES</span>
+            <span class="badge badge-lang">EN</span>
+          </div>
+        </div>
+      </div>
+      <div class="profile-stats">
+        <div class="stat-item">
+          <div class="stat-val" style="color:var(--c-amber)" id="biz-rating">4.9★</div>
+          <div class="stat-label" data-es id="stat-label-1-es">Calificación</div>
+          <div class="stat-label" data-en id="stat-label-1-en">Rating</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val" id="biz-review-count">38</div>
+          <div class="stat-label" data-es id="stat-label-2-es">Reseñas</div>
+          <div class="stat-label" data-en id="stat-label-2-en">Reviews</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val" id="biz-years">10+</div>
+          <div class="stat-label" data-es id="stat-label-3-es">Años exp.</div>
+          <div class="stat-label" data-en id="stat-label-3-en">Years exp.</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val" id="biz-distance">2.3mi</div>
+          <div class="stat-label" data-es>Distancia</div>
+          <div class="stat-label" data-en>Distance</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHOTOS -->
+    <div class="section-card" id="photos-section">
+      <div class="section-title">
+        <span data-es>Fotos</span><span data-en>Photos</span>
+        <a href="#" data-es>Ver todas (12)</a>
+        <a href="#" data-en>See all (12)</a>
+      </div>
+      <div class="photo-grid">
+        <div class="photo-thumb main">🌿</div>
+        <div class="photo-thumb">🌳</div>
+        <div class="photo-thumb">🌾</div>
+        <div class="photo-thumb">🌺</div>
+        <div class="photo-thumb">🏡</div>
+      </div>
+    </div>
+
+    <!-- SERVICES -->
+    <div class="section-card">
+      <div class="section-title">
+        <span data-es id="services-title-es">Servicios ofrecidos</span>
+        <span data-en id="services-title-en">Services offered</span>
+      </div>
+      <div class="services-grid" id="services-grid">
+        <div class="service-item"><span>✂️</span> <span data-es>Corte de césped</span><span data-en>Lawn mowing</span></div>
+        <div class="service-item"><span>🌳</span> <span data-es>Poda de árboles</span><span data-en>Tree trimming</span></div>
+        <div class="service-item"><span>🌿</span> <span data-es>Diseño de jardines</span><span data-en>Garden design</span></div>
+        <div class="service-item"><span>🌱</span> <span data-es>Control de maleza</span><span data-en>Weed control</span></div>
+        <div class="service-item"><span>💧</span> <span data-es>Sistemas de riego</span><span data-en>Irrigation systems</span></div>
+        <div class="service-item"><span>🍂</span> <span data-es>Limpieza de hojas</span><span data-en>Leaf cleanup</span></div>
+        <div class="service-item"><span>🪨</span> <span data-es>Bordillos y rocas</span><span data-en>Edging & rocks</span></div>
+        <div class="service-item"><span>🏘️</span> <span data-es>Mantenimiento comercial</span><span data-en>Commercial maintenance</span></div>
+      </div>
+    </div>
+
+    <!-- ABOUT -->
+    <div class="section-card">
+      <div class="section-title">
+        <span data-es id="about-title-es">Acerca del negocio</span>
+        <span data-en id="about-title-en">About this business</span>
+      </div>
+      <p class="about-text" data-es id="about-es">Somos una empresa familiar con más de 10 años de experiencia en el área metropolitana de Atlanta. Ofrecemos servicios de paisajismo residencial y comercial con los más altos estándares de calidad. Nuestro equipo es profesional, puntual y siempre dispuesto a satisfacer las necesidades de nuestros clientes. Contamos con licencia de Georgia y seguro de responsabilidad civil. Presupuesto gratis sin compromiso.</p>
+      <p class="about-text" data-en id="about-en">We are a family-owned business with 10+ years of experience in the Atlanta metro area. We offer residential and commercial landscaping services with the highest quality standards. Our team is professional, punctual, and always ready to meet our customers' needs. Georgia licensed and fully insured. Free estimates with no obligation.</p>
+
+      <div style="margin-top:20px">
+        <div class="detail-row">
+          <div class="detail-icon">📍</div>
+          <div class="detail-label" data-es>Área de servicio</div>
+          <div class="detail-label" data-en>Service area</div>
+          <div class="detail-val" id="detail-area">Duluth, Norcross, Lawrenceville, Buford Hwy, Atlanta</div>
+        </div>
+        <div class="detail-row" id="detail-row-type">
+          <div class="detail-icon">📋</div>
+          <div class="detail-label" data-es id="detail-type-label-es">Tipo de negocio</div>
+          <div class="detail-label" data-en id="detail-type-label-en">Business type</div>
+          <div class="detail-val" id="detail-type">LLC · Georgia registered</div>
+        </div>
+        <div class="detail-row" id="detail-row-license">
+          <div class="detail-icon">🛡️</div>
+          <div class="detail-label" data-es>Licencia</div>
+          <div class="detail-label" data-en>License</div>
+          <div class="detail-val" data-es>Licencia comercial de Georgia · Asegurado</div>
+          <div class="detail-val" data-en>Georgia business license · Fully insured</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-icon">💬</div>
+          <div class="detail-label" data-es>Idiomas</div>
+          <div class="detail-label" data-en>Languages</div>
+          <div class="detail-val" id="detail-languages">Español · English</div>
+        </div>
+        <div class="detail-row" id="detail-row-payment">
+          <div class="detail-icon">💵</div>
+          <div class="detail-label" data-es id="detail-payment-label-es">Pago</div>
+          <div class="detail-label" data-en id="detail-payment-label-en">Payment</div>
+          <div class="detail-val" id="detail-payment">Cash · Zelle · Venmo · Check</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-icon">📅</div>
+          <div class="detail-label" data-es>En la plataforma</div>
+          <div class="detail-label" data-en>On platform since</div>
+          <div class="detail-val" data-es id="detail-since-es">Enero 2026 · Verificado ✓</div>
+          <div class="detail-val" data-en id="detail-since-en">January 2026 · Verified ✓</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVIEWS -->
+    <div class="section-card" id="reviews">
+      <div class="section-title">
+        <span data-es id="reviews-title-es">Reseñas (38)</span>
+        <span data-en id="reviews-title-en">Reviews (38)</span>
+        <a href="#" onclick="toggleReviewForm(); return false" data-es>+ Dejar reseña</a>
+        <a href="#" onclick="toggleReviewForm(); return false" data-en>+ Leave a review</a>
+      </div>
+
+      <div class="rating-summary">
+        <div class="big-rating">
+          <div class="big-rating-num" id="big-rating-num">4.9</div>
+          <div class="big-rating-stars" id="big-rating-stars">★★★★★</div>
+          <div class="big-rating-count" data-es id="big-rating-count-es">38 reseñas</div>
+          <div class="big-rating-count" data-en id="big-rating-count-en">38 reviews</div>
+        </div>
+        <div class="rating-bars">
+          <div class="rbar-row"><span>5★</span><div class="rbar-track"><div class="rbar-fill" style="width:85%"></div></div><span>32</span></div>
+          <div class="rbar-row"><span>4★</span><div class="rbar-track"><div class="rbar-fill" style="width:10%"></div></div><span>4</span></div>
+          <div class="rbar-row"><span>3★</span><div class="rbar-track"><div class="rbar-fill" style="width:3%"></div></div><span>1</span></div>
+          <div class="rbar-row"><span>2★</span><div class="rbar-track"><div class="rbar-fill" style="width:2%"></div></div><span>1</span></div>
+          <div class="rbar-row"><span>1★</span><div class="rbar-track"><div class="rbar-fill" style="width:0%"></div></div><span>0</span></div>
+        </div>
+      </div>
+
+      <!-- Review form (hidden by default) -->
+      <div id="review-form" style="display:none; background:var(--c-bg); border-radius:var(--radius-md); padding:16px; margin-bottom:16px;">
+        <div class="form-field">
+          <label class="form-label"><span data-es>Tu calificación</span><span data-en>Your rating</span></label>
+          <div style="font-size:24px; cursor:pointer; letter-spacing:4px" id="star-pick" onclick="pickStar(event)">☆☆☆☆☆</div>
+        </div>
+        <div class="form-field">
+          <label class="form-label"><span data-es>Tu nombre</span><span data-en>Your name</span></label>
+          <input class="form-input" type="text" id="review-name" placeholder="Maria G.">
+        </div>
+        <div class="form-field">
+          <label class="form-label"><span data-es>Tu reseña</span><span data-en>Your review</span></label>
+          <textarea class="form-textarea" id="review-text" placeholder="..."></textarea>
+        </div>
+        <button class="btn-submit" onclick="submitReview()"><span data-es>Publicar reseña</span><span data-en>Submit review</span></button>
+        <div class="success-msg" id="review-success"><span data-es>✓ ¡Gracias! Tu reseña fue enviada.</span><span data-en>✓ Thank you! Your review was submitted.</span></div>
+      </div>
+
+      <!-- Shown when customer tries to review without having contacted this business -->
+      <div id="review-gate" style="display:none; background:var(--c-amber-light); border-radius:var(--radius-md); padding:14px 16px; margin-bottom:16px; font-size:13.5px; color:var(--c-amber);">
+        <span data-es>💬 Solo los clientes que han contactado a este negocio pueden dejar una reseña. Usa el botón de WhatsApp o el formulario de contacto para conectarte primero.</span>
+        <span data-en>💬 Only customers who have contacted this business can leave a review. Use the WhatsApp button or contact form to connect first.</span>
+      </div>
+
+      <div id="reviews-list">
+        <div class="review-item">
+          <div class="review-top">
+            <div class="review-avatar">MR</div>
+            <div>
+              <div class="review-name">Maria R.</div>
+              <div class="review-stars">★★★★★</div>
+            </div>
+            <div class="review-date" data-es>Hace 2 semanas</div>
+            <div class="review-date" data-en>2 weeks ago</div>
+          </div>
+          <div class="review-text" data-es>¡Excelente servicio! Llegaron a tiempo, trabajaron rápido y dejaron el jardín impecable. Ya los contraté para mantenimiento mensual. 100% recomendados.</div>
+          <div class="review-text" data-en>Excellent service! They arrived on time, worked quickly and left the garden immaculate. I already hired them for monthly maintenance. 100% recommended.</div>
+        </div>
+      </div>
+
+      <div style="text-align:center; margin-top:16px">
+        <a href="#" style="font-size:13px; color:var(--c-accent); text-decoration:none" data-es id="see-all-reviews-es">Ver todas las reseñas (38) →</a>
+        <a href="#" style="font-size:13px; color:var(--c-accent); text-decoration:none" data-en id="see-all-reviews-en">See all reviews (38) →</a>
+      </div>
+    </div>
+
+    <!-- JOBS COMPLETED (worker profiles only — replaces the star-rating Reviews section) -->
+    <div class="section-card" id="jobs-completed-section" style="display:none">
+      <div class="section-title">
+        <span data-es>Trabajos completados</span><span data-en>Jobs completed</span>
+      </div>
+      <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:6px">
+        <div style="font-family:var(--font-display); font-size:40px; color:var(--c-text)" id="jobs-completed-num">12</div>
+        <div style="font-size:14px; color:var(--c-muted)" data-es>trabajos completados</div>
+        <div style="font-size:14px; color:var(--c-muted)" data-en>jobs completed</div>
+      </div>
+      <div style="font-size:12px; color:var(--c-hint); font-style:italic" data-es>Este número lo ingresa el trabajador y no está verificado por AmigosNearMe.</div>
+      <div style="font-size:12px; color:var(--c-hint); font-style:italic" data-en>This number is entered by the worker and is not verified by AmigosNearMe.</div>
+    </div>
+
+  </main>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="contact-card" id="whatsapp">
+      <div class="contact-title" data-es id="contact-title-es">Contactar a Garcia's Garden</div>
+      <div class="contact-title" data-en id="contact-title-en">Contact Garcia's Garden</div>
+
+      <button class="btn-quote-big" onclick="toggleQuote()" id="quote">
+        📋 <span data-es id="quote-btn-text-es">Solicitar presupuesto por WhatsApp</span><span data-en id="quote-btn-text-en">Request a quote via WhatsApp</span>
+      </button>
+
+      <div class="quote-form" id="quote-form">
+        <div class="form-field">
+          <label class="form-label" data-es>Servicio necesitado</label>
+          <label class="form-label" data-en>Service needed</label>
+          <select class="form-select" id="quote-service">
+            <option value="" id="opt-placeholder">Selecciona un servicio...</option>
+            <option value="Corte de césped|Lawn mowing" id="opt-1">Corte de césped</option>
+            <option value="Poda de árboles|Tree trimming" id="opt-2">Poda de árboles</option>
+            <option value="Diseño de jardines|Garden design" id="opt-3">Diseño de jardines</option>
+            <option value="Control de maleza|Weed control" id="opt-4">Control de maleza</option>
+            <option value="Sistemas de riego|Irrigation systems" id="opt-5">Sistemas de riego</option>
+            <option value="Limpieza de hojas|Leaf cleanup" id="opt-6">Limpieza de hojas</option>
+            <option value="Bordillos y rocas|Edging & rocks" id="opt-7">Bordillos y rocas</option>
+            <option value="Mantenimiento comercial|Commercial maintenance" id="opt-8">Mantenimiento comercial</option>
+            <option value="Otro|Other" id="opt-9">Otro</option>
+          </select>
+          <div class="field-error" id="err-quote-service" data-es-text="Selecciona un servicio para continuar." data-en-text="Select a service to continue.">Selecciona un servicio para continuar.</div>
+        </div>
+
+        <button class="btn-submit" onclick="submitQuote()" data-es>Abrir WhatsApp con mi solicitud →</button>
+        <button class="btn-submit" onclick="submitQuote()" data-en>Open WhatsApp with my request →</button>
+
+        <div class="manual-send-notice">
+          <span class="notice-icon">✋</span>
+          <div>
+            <div class="notice-title" data-es>Tú envías el mensaje</div>
+            <div class="notice-title" data-en>You send the message</div>
+            <div class="notice-text" data-es id="notice-text-es">Vamos a abrir WhatsApp con tu solicitud ya escrita. Garcia's Garden solo la recibirá si tú presionas <strong>Enviar</strong> dentro de WhatsApp.</div>
+            <div class="notice-text" data-en id="notice-text-en">We'll open WhatsApp with your request already written. Garcia's Garden only receives it once <strong>you</strong> press <strong>Send</strong> inside WhatsApp.</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-no-whatsapp" onclick="toggleFallback()" id="no-whatsapp-toggle">
+        <span data-es>¿No usas WhatsApp? Envía tu solicitud aquí</span>
+        <span data-en>Don't use WhatsApp? Send your request here</span>
+      </button>
+
+      <div class="fallback-form" id="fallback-form">
+        <div class="fallback-hint" data-es id="fallback-hint-es">Le enviaremos tu solicitud directamente a Garcia's Garden por correo y SMS.</div>
+        <div class="fallback-hint" data-en id="fallback-hint-en">We'll send your request directly to Garcia's Garden by email and text.</div>
+
+        <div class="form-field">
+          <label class="form-label" data-es>Servicio necesitado</label>
+          <label class="form-label" data-en>Service needed</label>
+          <select class="form-select" id="fallback-service">
+            <option value="" id="fb-opt-placeholder">Selecciona un servicio...</option>
+            <option value="Corte de césped|Lawn mowing" id="fb-opt-1">Corte de césped</option>
+            <option value="Poda de árboles|Tree trimming" id="fb-opt-2">Poda de árboles</option>
+            <option value="Diseño de jardines|Garden design" id="fb-opt-3">Diseño de jardines</option>
+            <option value="Control de maleza|Weed control" id="fb-opt-4">Control de maleza</option>
+            <option value="Sistemas de riego|Irrigation systems" id="fb-opt-5">Sistemas de riego</option>
+            <option value="Limpieza de hojas|Leaf cleanup" id="fb-opt-6">Limpieza de hojas</option>
+            <option value="Bordillos y rocas|Edging & rocks" id="fb-opt-7">Bordillos y rocas</option>
+            <option value="Mantenimiento comercial|Commercial maintenance" id="fb-opt-8">Mantenimiento comercial</option>
+            <option value="Otro|Other" id="fb-opt-9">Otro</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label class="form-label" data-es>Tu nombre</label>
+          <label class="form-label" data-en>Your name</label>
+          <input class="form-input" type="text" id="fallback-name" placeholder="Maria G.">
+        </div>
+        <div class="form-field">
+          <label class="form-label" data-es>Tu teléfono</label>
+          <label class="form-label" data-en>Your phone</label>
+          <input class="form-input" type="tel" id="fallback-phone" placeholder="+1 (404) 000-0000">
+        </div>
+        <div class="field-error" id="err-fallback" data-es-text="Completa el servicio, tu nombre y un teléfono válido." data-en-text="Fill in the service, your name, and a valid phone number.">Completa el servicio, tu nombre y un teléfono válido.</div>
+
+        <button class="btn-submit" onclick="submitFallback()" data-es>Enviar solicitud</button>
+        <button class="btn-submit" onclick="submitFallback()" data-en>Send request</button>
+
+        <div class="fallback-success" id="fallback-success">
+          <span data-es id="fallback-success-es">✓ Solicitud enviada. Garcia's Garden recibirá tu nombre, teléfono y servicio por correo y SMS, y te contactará directamente.</span>
+          <span data-en id="fallback-success-en">✓ Request sent. Garcia's Garden will receive your name, phone, and service by email and text, and will contact you directly.</span>
+        </div>
+      </div>
+
+      <div class="response-note" data-es>⚡ Responde en menos de 2 horas · Lun–Sáb</div>
+      <div class="response-note" data-en>⚡ Responds within 2 hours · Mon–Sat</div>
+
+      <!-- Save business button -->
+      <button class="btn-save-biz" id="save-biz-btn" onclick="toggleSaveBusiness()">
+        <span id="save-biz-icon">⭐</span>
+        <span id="save-biz-label-es" data-es>Guardar negocio</span>
+        <span id="save-biz-label-en" data-en>Save business</span>
+      </button>
+    </div>
+
+    <div class="hours-card" id="hours-sidebar-card">
+      <div class="section-title" style="margin-bottom:12px">
+        <span data-es>Horario</span><span data-en>Hours</span>
+        <span style="font-size:12px; font-weight:400; color:var(--c-green)" data-es>● Abierto ahora</span>
+        <span style="font-size:12px; font-weight:400; color:var(--c-green)" data-en>● Open now</span>
+      </div>
+      <div class="hours-row today"><span class="day" data-es>Hoy (Vie)</span><span class="day" data-en>Today (Fri)</span><span class="time" data-es id="hours-today-es">7am – 6pm</span><span class="time" data-en id="hours-today-en">7am – 6pm</span></div>
+      <div class="hours-row"><span class="day" data-es>Sábado</span><span class="day" data-en>Saturday</span><span class="time" data-es id="hours-sat-es">8am – 4pm</span><span class="time" data-en id="hours-sat-en">8am – 4pm</span></div>
+      <div class="hours-row"><span class="day" data-es>Domingo</span><span class="day" data-en>Sunday</span><span class="time" data-es>Cerrado</span><span class="time" data-en>Closed</span></div>
+      <div class="hours-row"><span class="day" data-es>Lun – Vie</span><span class="day" data-en>Mon – Fri</span><span class="time" data-es id="hours-weekday-es">7am – 6pm</span><span class="time" data-en id="hours-weekday-en">7am – 6pm</span></div>
+    </div>
+
+    <div class="map-placeholder">
+      <span style="font-size:28px">📍</span>
+      <span data-es id="map-location-es">Duluth, GA 30096</span>
+      <span data-en id="map-location-en">Duluth, GA 30096</span>
+      <a href="https://maps.google.com/?q=Duluth+GA" target="_blank" style="font-size:12px; color:var(--c-accent); text-decoration:none; margin-top:4px" data-es id="map-link-es">Abrir en Google Maps →</a>
+      <a href="https://maps.google.com/?q=Duluth+GA" target="_blank" style="font-size:12px; color:var(--c-accent); text-decoration:none; margin-top:4px" data-en id="map-link-en">Open in Google Maps →</a>
+    </div>
+
+  </aside>
+</div>
+
+<!-- STAFFING CONTACT — LOGIN REQUIRED MODAL -->
+<!-- Frontend simulation only. In production: real auth state determines whether this
+     shows, and after login the user is routed straight back to this profile to retry
+     the contact action (see contactWorker() below for the simulated flow). -->
+<div class="modal-overlay" id="login-required-modal" onclick="if(event.target===this) closeContactModals()">
+  <div class="modal-card">
+    <div class="modal-icon">🔒</div>
+    <div class="modal-title"><span data-es>Inicia sesión para contactar</span><span data-en>Log in to contact</span></div>
+    <p class="modal-desc"><span data-es>Contactar a personal individual requiere una cuenta de negocio, para que puedas dar seguimiento a tus solicitudes.</span><span data-en>Contacting individual workers requires a business account, so you can keep track of your requests.</span></p>
+    <a href="login.html" class="modal-btn-primary"><span data-es>Iniciar sesión / Crear cuenta →</span><span data-en>Log in / Create account →</span></a>
+    <button class="modal-btn-ghost" onclick="closeContactModals()"><span data-es>Cancelar</span><span data-en>Cancel</span></button>
+  </div>
+</div>
+
+<!-- STAFFING CONTACT — BUY CONTACT PACKAGE MODAL -->
+<!-- Frontend simulation only. In production: powered by Braintree.
+     Supported: Card, Venmo, ACH, PayPal. Zelle is handled manually.
+     On successful payment, backend credits 5 contacts to this business account. -->
+<div class="modal-overlay" id="buy-contacts-modal" onclick="if(event.target===this) closeContactModals()">
+  <div class="modal-card">
+    <div class="modal-icon">👷</div>
+    <div class="modal-title"><span data-es>Ya usaste tus contactos</span><span data-en>You're out of contacts</span></div>
+    <p class="modal-desc"><span data-es>Compra un paquete para seguir contactando personal disponible en AmigosNearMe.</span><span data-en>Buy a package to keep contacting workers available on AmigosNearMe.</span></p>
+
+    <div class="package-card">
+      <div class="package-price">$10</div>
+      <div class="package-detail"><span data-es>5 contactos · sin vencimiento · pago único</span><span data-en>5 contacts · no expiration · one-time purchase</span></div>
+    </div>
+
+    <!-- Payment method tabs -->
+    <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap">
+      <button class="pay-tab pkg-tab selected" onclick="switchPkgTab('card',this)" data-es>💳 Tarjeta</button>
+      <button class="pay-tab pkg-tab selected" onclick="switchPkgTab('card',this)" data-en>💳 Card</button>
+      <button class="pay-tab pkg-tab" onclick="switchPkgTab('venmo',this)">Venmo</button>
+      <button class="pay-tab pkg-tab" onclick="switchPkgTab('ach',this)">ACH</button>
+      <button class="pay-tab pkg-tab" onclick="switchPkgTab('zelle',this)">Zelle</button>
+    </div>
+
+    <!-- Card -->
+    <div id="pkg-panel-card">
+      <div class="modal-field" style="margin-bottom:10px">
+        <label class="modal-label"><span data-es>Número de tarjeta</span><span data-en>Card number</span></label>
+        <input class="modal-input" type="text" placeholder="4242 4242 4242 4242">
+      </div>
+      <div class="modal-row" style="margin-bottom:10px">
+        <div class="modal-field">
+          <label class="modal-label"><span data-es>Vencimiento</span><span data-en>Expiry</span></label>
+          <input class="modal-input" type="text" placeholder="MM/YY">
+        </div>
+        <div class="modal-field">
+          <label class="modal-label">CVC</label>
+          <input class="modal-input" type="text" placeholder="123">
+        </div>
+      </div>
+    </div>
+
+    <!-- Venmo -->
+    <div id="pkg-panel-venmo" style="display:none;text-align:center;padding:8px 0 12px">
+      <div style="font-size:28px;margin-bottom:6px">💜</div>
+      <p class="modal-desc" data-es>Serás redirigido a Venmo para completar el pago de $10 a través de Braintree.</p>
+      <p class="modal-desc" data-en>You'll be redirected to Venmo to complete the $10 payment through Braintree.</p>
+    </div>
+
+    <!-- ACH -->
+    <div id="pkg-panel-ach" style="display:none">
+      <div class="modal-field" style="margin-bottom:10px">
+        <label class="modal-label"><span data-es>Número de cuenta</span><span data-en>Account number</span></label>
+        <input class="modal-input" type="text" placeholder="000123456789">
+      </div>
+      <div class="modal-field" style="margin-bottom:10px">
+        <label class="modal-label"><span data-es>Número de ruta</span><span data-en>Routing number</span></label>
+        <input class="modal-input" type="text" placeholder="021000021">
+      </div>
+    </div>
+
+    <!-- Zelle manual -->
+    <div id="pkg-panel-zelle" style="display:none">
+      <div style="background:var(--c-amber-light);border-radius:var(--radius-md);padding:14px;margin-bottom:10px;border:0.5px solid rgba(186,117,23,0.2)">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px" data-es>📲 Pagar $10 con Zelle</div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px" data-en>📲 Pay $10 with Zelle</div>
+        <ol style="font-size:12.5px;color:var(--c-text);line-height:1.8;padding-left:16px" data-es>
+          <li>Envía <strong>$10</strong> a <strong>pagos@amigosnearme.com</strong></li>
+          <li>Memo: <strong>Staffing 5 contactos</strong></li>
+          <li>Captura y envía a <strong>hola@amigosnearme.com</strong></li>
+        </ol>
+        <ol style="font-size:12.5px;color:var(--c-text);line-height:1.8;padding-left:16px" data-en>
+          <li>Send <strong>$10</strong> to <strong>pagos@amigosnearme.com</strong></li>
+          <li>Memo: <strong>Staffing 5 contacts</strong></li>
+          <li>Screenshot and email to <strong>hola@amigosnearme.com</strong></li>
+        </ol>
+      </div>
+      <p style="font-size:12px;color:var(--c-muted)" data-es>⏱ Tus 5 contactos serán activados en 24 horas hábiles.</p>
+      <p style="font-size:12px;color:var(--c-muted)" data-en>⏱ Your 5 contacts will be activated within 24 business hours.</p>
+    </div>
+
+    <button class="modal-btn-primary" id="pkg-pay-btn" onclick="simulatePurchaseAndContact()"><span data-es>Comprar y contactar →</span><span data-en>Buy & contact →</span></button>
+    <button class="modal-btn-ghost" onclick="closeContactModals()"><span data-es>Cancelar</span><span data-en>Cancel</span></button>
+    <div class="modal-note"><span data-es>Tarjeta, Venmo y ACH: Braintree. Zelle: activación manual en 24h.</span><span data-en>Card, Venmo & ACH: Braintree. Zelle: manual activation within 24h.</span></div>
+  </div>
+</div>
+
+<div class="toast" id="contact-toast"></div>
+
+<script>
+/* ===== BUSINESS DATA (simulates a backend lookup by ?id=) ===== */
+var BUSINESSES = {
+  garcia: {
+    avatar: 'GG', name: "Garcia's Garden & Landscaping",
+    catEs: '🌿 Landscaping · Duluth, GA 30096', catEn: '🌿 Landscaping · Duluth, GA 30096',
+    breadcrumbCatEs: 'Landscaping', breadcrumbCatEn: 'Landscaping', breadcrumbCatSlug: 'landscaping',
+    badges: ['verified', 'llc', 'es', 'en'],
+    rating: '4.9★', ratingNum: '4.9', stars: '★★★★★', reviewCount: 38, years: '10+', distance: '2.3mi',
+    services: [
+      ['✂️', 'Corte de césped', 'Lawn mowing'],
+      ['🌳', 'Poda de árboles', 'Tree trimming'],
+      ['🌿', 'Diseño de jardines', 'Garden design'],
+      ['🌱', 'Control de maleza', 'Weed control'],
+      ['💧', 'Sistemas de riego', 'Irrigation systems'],
+      ['🍂', 'Limpieza de hojas', 'Leaf cleanup'],
+      ['🪨', 'Bordillos y rocas', 'Edging & rocks'],
+      ['🏘️', 'Mantenimiento comercial', 'Commercial maintenance']
+    ],
+    aboutEs: "Somos una empresa familiar con más de 10 años de experiencia en el área metropolitana de Atlanta. Ofrecemos servicios de paisajismo residencial y comercial con los más altos estándares de calidad. Nuestro equipo es profesional, puntual y siempre dispuesto a satisfacer las necesidades de nuestros clientes. Contamos con licencia de Georgia y seguro de responsabilidad civil. Presupuesto gratis sin compromiso.",
+    aboutEn: "We are a family-owned business with 10+ years of experience in the Atlanta metro area. We offer residential and commercial landscaping services with the highest quality standards. Our team is professional, punctual, and always ready to meet our customers' needs. Georgia licensed and fully insured. Free estimates with no obligation.",
+    area: 'Duluth, Norcross, Lawrenceville, Buford, Atlanta',
+    type: 'LLC · Georgia registered',
+    languages: 'Español · English',
+    payment: 'Cash · Zelle · Venmo · Check',
+    sinceEs: 'Enero 2026 · Verificado ✓', sinceEn: 'January 2026 · Verified ✓',
+    reviews: [
+      { initials: 'MR', name: 'Maria R.', stars: '★★★★★', dateEs: 'Hace 2 semanas', dateEn: '2 weeks ago',
+        textEs: '¡Excelente servicio! Llegaron a tiempo, trabajaron rápido y dejaron el jardín impecable. Ya los contraté para mantenimiento mensual. 100% recomendados.',
+        textEn: 'Excellent service! They arrived on time, worked quickly and left the garden immaculate. I already hired them for monthly maintenance. 100% recommended.' },
+      { initials: 'CL', name: 'Carlos L.', stars: '★★★★★', dateEs: 'Hace 1 mes', dateEn: '1 month ago',
+        textEs: "Contraté a Garcia's para el mantenimiento de un estacionamiento comercial. Muy profesionales, precios justos y siempre responden por WhatsApp. Gran empresa.",
+        textEn: "I hired Garcia's for commercial parking lot maintenance. Very professional, fair prices and always respond on WhatsApp. Great company." },
+      { initials: 'SJ', name: 'Sarah J.', stars: '★★★★☆', dateEs: 'Hace 6 semanas', dateEn: '6 weeks ago',
+        textEs: 'Muy buen trabajo en general. Tardaron un poco más de lo esperado pero el resultado fue excelente. El jardín quedó muy bonito.',
+        textEn: 'Very good work overall. They took a little longer than expected but the result was excellent. The garden looked beautiful.' }
+    ],
+    hoursTodayEs: '7am – 6pm', hoursTodayEn: '7am – 6pm', hoursSatEs: '8am – 4pm', hoursSatEn: '8am – 4pm', hoursWeekdayEs: '7am – 6pm', hoursWeekdayEn: '7am – 6pm',
+    location: 'Duluth, GA 30096', mapQuery: 'Duluth+GA',
+    phone: '+17865550192', phoneDisplay: '+1 (786) 555-0192'
+  },
+  rodriguez: {
+    avatar: 'RC', name: 'Rodriguez Cleaning Services',
+    catEs: '🧹 Limpieza · Norcross, GA', catEn: '🧹 Cleaning · Norcross, GA',
+    breadcrumbCatEs: 'Limpieza', breadcrumbCatEn: 'Cleaning', breadcrumbCatSlug: 'cleaning',
+    badges: ['verified', 'es', 'pt'],
+    rating: '4.8★', ratingNum: '4.8', stars: '★★★★★', reviewCount: 21, years: '6+', distance: '4.1mi',
+    services: [
+      ['🧹', 'Limpieza residencial', 'Residential cleaning'],
+      ['🏢', 'Limpieza de oficinas', 'Office cleaning'],
+      ['🪟', 'Limpieza de ventanas', 'Window cleaning'],
+      ['🛋️', 'Limpieza profunda', 'Deep cleaning'],
+      ['📦', 'Limpieza de mudanza', 'Move-in/move-out cleaning'],
+      ['🧺', 'Limpieza post-construcción', 'Post-construction cleaning']
+    ],
+    aboutEs: "Ofrecemos limpieza residencial y de oficinas en el área de Norcross y alrededores. Contratos semanales o mensuales disponibles. Nuestro equipo está capacitado, es de confianza y usa productos de calidad. LLC registrada en Georgia.",
+    aboutEn: "We offer residential and office cleaning in the Norcross area and surroundings. Weekly or monthly contracts available. Our team is trained, trustworthy, and uses quality products. LLC registered in Georgia.",
+    area: 'Norcross, Duluth, Lawrenceville, Buford',
+    type: 'LLC · Georgia registered',
+    languages: 'Español · Português',
+    payment: 'Cash · Zelle · Check',
+    sinceEs: 'Marzo 2026 · Verificado ✓', sinceEn: 'March 2026 · Verified ✓',
+    reviews: [
+      { initials: 'KP', name: 'Karen P.', stars: '★★★★★', dateEs: 'Hace 1 semana', dateEn: '1 week ago',
+        textEs: 'Limpian mi oficina cada semana y siempre dejan todo impecable. Muy puntuales y de confianza, les he dado llave de repuesto.',
+        textEn: 'They clean my office every week and always leave everything spotless. Very punctual and trustworthy, I even gave them a spare key.' },
+      { initials: 'DT', name: 'David T.', stars: '★★★★★', dateEs: 'Hace 3 semanas', dateEn: '3 weeks ago',
+        textEs: 'Excelente limpieza profunda antes de mudarnos. El equipo fue muy minucioso, hasta limpiaron lugares que ni había pensado.',
+        textEn: 'Excellent deep cleaning before our move. The team was very thorough, they even cleaned spots I hadn\'t thought of.' },
+      { initials: 'LM', name: 'Lucia M.', stars: '★★★★☆', dateEs: 'Hace 2 meses', dateEn: '2 months ago',
+        textEs: 'Buen servicio en general, precios justos. Una vez llegaron 20 minutos tarde pero avisaron con anticipación.',
+        textEn: 'Good service overall, fair prices. They were 20 minutes late once but gave advance notice.' }
+    ],
+    hoursTodayEs: '8am – 5pm', hoursTodayEn: '8am – 5pm', hoursSatEs: '9am – 2pm', hoursSatEn: '9am – 2pm', hoursWeekdayEs: '8am – 5pm', hoursWeekdayEn: '8am – 5pm',
+    location: 'Norcross, GA 30071', mapQuery: 'Norcross+GA',
+    phone: '+17705550134', phoneDisplay: '+1 (770) 555-0134'
+  },
+  hernandez: {
+    avatar: 'HL', name: 'Hernandez Construction LLC',
+    catEs: '🏗️ Construcción · Atlanta, GA', catEn: '🏗️ Construction · Atlanta, GA',
+    breadcrumbCatEs: 'Construcción', breadcrumbCatEn: 'Construction', breadcrumbCatSlug: 'construction',
+    badges: ['verified', 'es', 'en'],
+    rating: '4.7★', ratingNum: '4.7', stars: '★★★★★', reviewCount: 14, years: '15+', distance: '5.8mi',
+    services: [
+      ['🏠', 'Remodelaciones', 'Remodeling'],
+      ['🏚️', 'Techos', 'Roofing'],
+      ['🪵', 'Pisos', 'Flooring'],
+      ['🧱', 'Adiciones a la casa', 'Home additions'],
+      ['🚪', 'Instalación de puertas', 'Door installation'],
+      ['🛁', 'Remodelación de baños', 'Bathroom remodeling']
+    ],
+    aboutEs: "Más de 15 años de experiencia en el área de Atlanta. Remodelaciones, techos, pisos y más. Empresa asegurada y con licencia de Georgia. Trabajos residenciales y comerciales con garantía.",
+    aboutEn: "15+ years of experience in the Atlanta area. Remodeling, roofing, flooring and more. Fully insured and Georgia licensed. Residential and commercial work with warranty.",
+    area: 'Atlanta, Marietta, Smyrna',
+    type: 'LLC · Georgia registered',
+    languages: 'Español · English',
+    payment: 'Cash · Zelle · Credit Card · Check',
+    sinceEs: 'Mayo 2026 · Verificado ✓', sinceEn: 'May 2026 · Verified ✓',
+    reviews: [
+      { initials: 'RW', name: 'Robert W.', stars: '★★★★★', dateEs: 'Hace 4 días', dateEn: '4 days ago',
+        textEs: 'Remodelaron nuestra cocina completa. Trabajo de primera calidad, cumplieron el presupuesto y el tiempo acordado. Muy recomendados.',
+        textEn: 'They remodeled our entire kitchen. Top quality work, stayed on budget and on schedule. Highly recommended.' },
+      { initials: 'AG', name: 'Ana G.', stars: '★★★★★', dateEs: 'Hace 2 semanas', dateEn: '2 weeks ago',
+        textEs: 'Instalaron un techo nuevo después de una tormenta. Vinieron rápido, el trabajo está asegurado y se nota la experiencia.',
+        textEn: 'They installed a new roof after a storm. Came quickly, the work is insured and you can tell they have experience.' },
+      { initials: 'JP', name: 'James P.', stars: '★★★★☆', dateEs: 'Hace 1 mes', dateEn: '1 month ago',
+        textEs: 'Buen trabajo en la remodelación del baño. Tardaron un par de días más de lo planeado pero el resultado valió la pena.',
+        textEn: 'Good work on the bathroom remodel. Took a couple extra days but the result was worth it.' }
+    ],
+    hoursTodayEs: '7am – 7pm', hoursTodayEn: '7am – 7pm', hoursSatEs: '8am – 3pm', hoursSatEn: '8am – 3pm', hoursWeekdayEs: '7am – 7pm', hoursWeekdayEn: '7am – 7pm',
+    location: 'Atlanta, GA 30303', mapQuery: 'Atlanta+GA',
+    phone: '+14045550178', phoneDisplay: '+1 (404) 555-0178'
+  },
+  martinez: {
+    avatar: 'MP', name: 'Martinez Plumbing & Repair',
+    catEs: '🔧 Plomería · Buford, GA', catEn: '🔧 Plumbing · Buford, GA',
+    breadcrumbCatEs: 'Plomería', breadcrumbCatEn: 'Plumbing', breadcrumbCatSlug: 'plumbing',
+    badges: ['verified', 'es'],
+    rating: '4.6★', ratingNum: '4.6', stars: '★★★★☆', reviewCount: 17, years: '8+', distance: '3.5mi',
+    services: [
+      ['🚰', 'Reparación de fugas', 'Leak repair'],
+      ['🚽', 'Instalación de inodoros', 'Toilet installation'],
+      ['🔥', 'Calentadores de agua', 'Water heaters'],
+      ['🚿', 'Reparación de tuberías', 'Pipe repair'],
+      ['🆘', 'Emergencias 24/7', '24/7 emergencies'],
+      ['🏢', 'Plomería comercial', 'Commercial plumbing']
+    ],
+    aboutEs: "Plomería residencial y comercial con emergencias 24/7. Más de 8 años de experiencia. Licencia de Georgia. Atendemos Buford y áreas cercanas de Gwinnett y Hall County.",
+    aboutEn: "Residential & commercial plumbing with 24/7 emergencies. 8+ years experience. Georgia licensed. Serving Buford and nearby Gwinnett and Hall County areas.",
+    area: 'Buford, Gainesville, Sugar Hill',
+    type: 'Sole Proprietorship · Georgia licensed',
+    languages: 'Español',
+    payment: 'Cash · Zelle',
+    sinceEs: 'Febrero 2026 · Verificado ✓', sinceEn: 'February 2026 · Verified ✓',
+    reviews: [
+      { initials: 'TC', name: 'Teresa C.', stars: '★★★★★', dateEs: 'Hace 3 días', dateEn: '3 days ago',
+        textEs: 'Tuve una fuga de agua a medianoche y vinieron en menos de una hora. Servicio de emergencia excelente, precio justo.',
+        textEn: 'I had a water leak at midnight and they came in under an hour. Excellent emergency service, fair price.' },
+      { initials: 'BH', name: 'Brian H.', stars: '★★★★★', dateEs: 'Hace 2 semanas', dateEn: '2 weeks ago',
+        textEs: 'Instalaron un calentador de agua nuevo. Trabajo limpio y profesional, explicaron todo claramente antes de empezar.',
+        textEn: 'They installed a new water heater. Clean and professional work, explained everything clearly before starting.' },
+      { initials: 'NV', name: 'Nancy V.', stars: '★★★★☆', dateEs: 'Hace 5 semanas', dateEn: '5 weeks ago',
+        textEs: 'Repararon una tubería rota. Buen trabajo aunque el costo fue un poco más alto de lo que esperaba.',
+        textEn: 'They repaired a broken pipe. Good work although the cost was a bit higher than I expected.' }
+    ],
+    hoursTodayEs: '24 horas', hoursTodayEn: '24 hours', hoursSatEs: '24 horas', hoursSatEn: '24 hours', hoursWeekdayEs: '24 horas', hoursWeekdayEn: '24 hours',
+    location: 'Buford, GA 30518', mapQuery: 'Buford+GA',
+    phone: '+16785550145', phoneDisplay: '+1 (678) 555-0145'
+  },
+  suarez: {
+    avatar: 'SE', name: 'Suarez Electrical Services',
+    catEs: '⚡ Electricidad · Duluth, GA', catEn: '⚡ Electrical · Duluth, GA',
+    breadcrumbCatEs: 'Electricidad', breadcrumbCatEn: 'Electrical', breadcrumbCatSlug: 'electrical',
+    badges: ['verified', 'es', 'en'],
+    rating: '4.8★', ratingNum: '4.8', stars: '★★★★★', reviewCount: 9, years: '7+', distance: '6.2mi',
+    services: [
+      ['💡', 'Instalaciones eléctricas', 'Electrical installations'],
+      ['🔌', 'Paneles eléctricos', 'Electrical panels'],
+      ['🛠️', 'Reparaciones', 'Repairs'],
+      ['🏠', 'Cableado residencial', 'Residential wiring'],
+      ['🏢', 'Cableado comercial', 'Commercial wiring'],
+      ['🔦', 'Iluminación exterior', 'Outdoor lighting']
+    ],
+    aboutEs: "Electricista certificado con experiencia en instalaciones, paneles y reparaciones residenciales y comerciales. Atendemos el área de Duluth y Gwinnett County.",
+    aboutEn: "Certified electrician with experience in residential and commercial installations, panels, and repairs. Serving the Duluth and Gwinnett County area.",
+    area: 'Duluth, Suwanee, Johns Creek',
+    type: 'LLC · Georgia registered',
+    languages: 'Español · English',
+    payment: 'Cash · Zelle · Credit Card',
+    sinceEs: 'Abril 2026 · Verificado ✓', sinceEn: 'April 2026 · Verified ✓',
+    reviews: [
+      { initials: 'EF', name: 'Elena F.', stars: '★★★★★', dateEs: 'Hace 1 semana', dateEn: '1 week ago',
+        textEs: 'Instalaron un panel eléctrico nuevo en mi casa. Certificados, conocen bien el código eléctrico de Georgia. Muy satisfecha.',
+        textEn: 'They installed a new electrical panel at my house. Certified, know the Georgia electrical code well. Very satisfied.' },
+      { initials: 'MK', name: 'Michael K.', stars: '★★★★★', dateEs: 'Hace 3 semanas', dateEn: '3 weeks ago',
+        textEs: 'Arreglaron un problema de cableado que llevaba meses. Llegaron a tiempo y el precio fue exactamente el presupuestado.',
+        textEn: 'They fixed a wiring issue that had been there for months. Arrived on time and the price matched the quote exactly.' },
+      { initials: 'PS', name: 'Patricia S.', stars: '★★★★☆', dateEs: 'Hace 2 meses', dateEn: '2 months ago',
+        textEs: 'Instalación de iluminación exterior, quedó muy bien. Tardaron en responder al principio pero el trabajo fue de calidad.',
+        textEn: 'Outdoor lighting installation came out great. Took a while to respond at first but the work was quality.' }
+    ],
+    hoursTodayEs: '8am – 6pm', hoursTodayEn: '8am – 6pm', hoursSatEs: '9am – 1pm', hoursSatEn: '9am – 1pm', hoursWeekdayEs: '8am – 6pm', hoursWeekdayEn: '8am – 6pm',
+    location: 'Duluth, GA 30096', mapQuery: 'Duluth+GA',
+    phone: '+14705550167', phoneDisplay: '+1 (470) 555-0167'
+  },
+  flores: {
+    avatar: 'FP', name: 'Flores Painting Co.',
+    catEs: '🪟 Pintura · Lawrenceville, GA', catEn: '🪟 Painting · Lawrenceville, GA',
+    breadcrumbCatEs: 'Pintura', breadcrumbCatEn: 'Painting', breadcrumbCatSlug: 'painting',
+    badges: ['es', 'basic'],
+    rating: '4.5★', ratingNum: '4.5', stars: '★★★★☆', reviewCount: 6, years: '4+', distance: '8.4mi',
+    services: [
+      ['🎨', 'Pintura interior', 'Interior painting'],
+      ['🏠', 'Pintura exterior', 'Exterior painting'],
+      ['🚪', 'Pintura de gabinetes', 'Cabinet painting'],
+      ['🪵', 'Reparación de paneles', 'Drywall repair'],
+      ['🏢', 'Pintura comercial', 'Commercial painting']
+    ],
+    aboutEs: "Pintura interior y exterior para trabajos residenciales y comerciales. Precios competitivos y atención personalizada. Atendemos Lawrenceville y áreas cercanas de Gwinnett County.",
+    aboutEn: "Interior and exterior painting for residential and commercial jobs. Competitive pricing and personalized attention. Serving Lawrenceville and nearby Gwinnett County areas.",
+    area: 'Lawrenceville, Dacula, Auburn',
+    type: 'DBA · Georgia registered',
+    languages: 'Español',
+    payment: 'Cash · Zelle',
+    sinceEs: 'Junio 2026 · Pendiente de verificación', sinceEn: 'June 2026 · Pending verification',
+    reviews: [
+      { initials: 'OW', name: 'Olivia W.', stars: '★★★★★', dateEs: 'Hace 1 semana', dateEn: '1 week ago',
+        textEs: 'Pintaron toda la fachada de mi casa. Trabajo limpio y cuidadoso, protegieron las plantas y ventanas todo el tiempo.',
+        textEn: 'They painted my entire house exterior. Clean and careful work, protected the plants and windows the whole time.' },
+      { initials: 'DR', name: 'Daniel R.', stars: '★★★★☆', dateEs: 'Hace 1 mes', dateEn: '1 month ago',
+        textEs: 'Pintaron el interior de la sala y cocina. Buen acabado, precio competitivo comparado con otros presupuestos que recibí.',
+        textEn: 'They painted the living room and kitchen interior. Good finish, competitive price compared to other quotes I got.' },
+      { initials: 'CM', name: 'Carmen M.', stars: '★★★★☆', dateEs: 'Hace 2 meses', dateEn: '2 months ago',
+        textEs: 'Buen trabajo de pintura comercial en mi local. Negocio pequeño pero responsable y con buena atención al cliente.',
+        textEn: 'Good commercial painting work at my shop. Small business but responsible with good customer attention.' }
+    ],
+    hoursTodayEs: '8am – 5pm', hoursTodayEn: '8am – 5pm', hoursSatEs: 'Cerrado', hoursSatEn: 'Closed', hoursWeekdayEs: '8am – 5pm', hoursWeekdayEn: '8am – 5pm',
+    location: 'Lawrenceville, GA 30043', mapQuery: 'Lawrenceville+GA',
+    phone: '+16785550199', phoneDisplay: '+1 (678) 555-0199'
+  },
+  luis: {
+    isWorker: true,
+    avatar: 'LM', name: 'Luis M.',
+    catEs: '👷 Cocina / Restaurante · Duluth, GA', catEn: '👷 Kitchen / Restaurant · Duluth, GA',
+    breadcrumbCatEs: 'Personal y Mano de Obra', breadcrumbCatEn: 'Staffing & Labor', breadcrumbCatSlug: 'staffing',
+    badges: ['verified', 'es', 'en'],
+    jobsCompleted: 12, years: '5+', distance: '1.8mi',
+    services: [
+      ['🍳', 'Cocina de línea', 'Line cook'],
+      ['🔪', 'Prep de cocina', 'Kitchen prep'],
+      ['🍽️', 'Lavado de platos', 'Dishwashing'],
+      ['📦', 'Recepción de inventario', 'Inventory receiving']
+    ],
+    aboutEs: "5 años de experiencia trabajando en cocinas de restaurantes en el área de Atlanta. Disponible por día o por semana según lo que necesites. Soy puntual, trabajo limpio y me adapto rápido a cualquier cocina. Hablo español e inglés.",
+    aboutEn: "5 years of experience working in restaurant kitchens in the Atlanta area. Available by the day or by the week depending on what you need. I'm punctual, work clean, and adapt quickly to any kitchen. I speak Spanish and English.",
+    area: 'Duluth, Norcross, Lawrenceville',
+    availabilityEs: 'Por día · Por semana', availabilityEn: 'By the day · By the week',
+    languages: 'Español · English',
+    sinceEs: 'Marzo 2026 · Verificado ✓', sinceEn: 'March 2026 · Verified ✓',
+    location: 'Duluth, GA 30096', mapQuery: 'Duluth+GA',
+    phone: '+17865550301', phoneDisplay: '+1 (786) 555-0301'
+  },
+  jorge: {
+    isWorker: true,
+    avatar: 'JR', name: 'Jorge R.',
+    catEs: '👷 Construcción (jornalero) · Atlanta, GA', catEn: '👷 Construction (day labor) · Atlanta, GA',
+    breadcrumbCatEs: 'Personal y Mano de Obra', breadcrumbCatEn: 'Staffing & Labor', breadcrumbCatSlug: 'staffing',
+    badges: ['verified', 'es'],
+    jobsCompleted: 27, years: '8+', distance: '4.6mi',
+    services: [
+      ['🏗️', 'Demolición', 'Demolition'],
+      ['📦', 'Carga y descarga', 'Loading & unloading'],
+      ['🧱', 'Trabajo general de construcción', 'General construction work'],
+      ['🧹', 'Limpieza de obra', 'Job site cleanup']
+    ],
+    aboutEs: "8 años de experiencia en trabajos de construcción y demolición. Disponible de inmediato para trabajos de uno o varios días. Soy fuerte, trabajador y sigo instrucciones bien. Disponible para trabajo en equipo o solo.",
+    aboutEn: "8 years of experience in construction and demolition work. Available immediately for one-day or multi-day jobs. I'm strong, hardworking, and follow instructions well. Available for team work or solo jobs.",
+    area: 'Atlanta, Marietta, Smyrna',
+    availabilityEs: 'Por día · Contrato permanente', availabilityEn: 'By the day · Permanent placement',
+    languages: 'Español',
+    sinceEs: 'Febrero 2026 · Verificado ✓', sinceEn: 'February 2026 · Verified ✓',
+    location: 'Atlanta, GA 30303', mapQuery: 'Atlanta+GA',
+    phone: '+14045550302', phoneDisplay: '+1 (404) 555-0302'
+  },
+  ana: {
+    isWorker: true,
+    avatar: 'AG', name: 'Ana G.',
+    catEs: '👷 Mudanzas / Carga · Norcross, GA', catEn: '👷 Moving / Loading · Norcross, GA',
+    breadcrumbCatEs: 'Personal y Mano de Obra', breadcrumbCatEn: 'Staffing & Labor', breadcrumbCatSlug: 'staffing',
+    badges: ['es'],
+    pendingVerification: true,
+    jobsCompleted: 4, years: '1+', distance: '3.2mi',
+    services: [
+      ['📦', 'Mudanzas residenciales', 'Residential moves'],
+      ['🚚', 'Carga y descarga de camiones', 'Truck loading & unloading'],
+      ['🛋️', 'Manejo de muebles', 'Furniture handling']
+    ],
+    aboutEs: "Disponible para ayudar con mudanzas residenciales los fines de semana. Trabajo en equipo, soy puntual y cuidadosa con los muebles y objetos frágiles. Apenas estoy empezando en la plataforma pero tengo buena disposición para aprender.",
+    aboutEn: "Available to help with residential moves on weekends. I'm a team player, punctual, and careful with furniture and fragile items. I'm just getting started on the platform but have a great attitude and am eager to learn.",
+    area: 'Norcross, Duluth, Lilburn',
+    availabilityEs: 'Por día (fines de semana)', availabilityEn: 'By the day (weekends)',
+    languages: 'Español',
+    sinceEs: 'Junio 2026 · Pendiente de verificación', sinceEn: 'June 2026 · Pending verification',
+    location: 'Norcross, GA 30071', mapQuery: 'Norcross+GA',
+    phone: '+14045550303', phoneDisplay: '+1 (404) 555-0303'
+  }
+};
+
+function getBusinessId() {
+  var params = new URLSearchParams(window.location.search);
+  var id = params.get('id');
+  return (id && BUSINESSES[id]) ? id : 'garcia'; // fallback to Garcia if no/unknown id
+}
+
+function badgeHtml(badges) {
+  var map = {
+    verified: '<span class="badge badge-verified">✅ Verified</span>',
+    llc: '<span class="badge badge-llc">LLC</span>',
+    es: '<span class="badge badge-lang">ES</span>',
+    en: '<span class="badge badge-lang">EN</span>',
+    pt: '<span class="badge badge-lang">PT</span>',
+    basic: '<span class="badge badge-basic">📋 Basic</span>'
+  };
+  return badges.map(function(b) { return map[b] || ''; }).join('\n            ');
+}
+
+function loadBusiness() {
+  var id = getBusinessId();
+  var b = BUSINESSES[id];
+  var isWorker = !!b.isWorker;
+  var isEn = document.body.classList.contains('en');
+
+  // Header
+  document.getElementById('biz-avatar').textContent = b.avatar;
+  document.getElementById('biz-name').textContent = b.name;
+  document.getElementById('biz-cat-es').textContent = b.catEs;
+  document.getElementById('biz-cat-en').textContent = b.catEn;
+  // Check if admin has approved verification for this business since page was built.
+  // In production this comes from the DB; here we read from the same localStorage key
+  // that admin.html's reviewVerification() writes to when approving a business.
+  var adminApproved = false;
+  try { adminApproved = localStorage.getItem('anm-verified-' + id) === '1'; } catch(e) {}
+  var effectiveBadges = b.badges ? b.badges.slice() : [];
+  if (adminApproved && effectiveBadges.indexOf('verified') === -1) {
+    effectiveBadges.unshift('verified'); // prepend so it shows first
+  }
+  document.getElementById('biz-badges').innerHTML = badgeHtml(effectiveBadges) + (b.pendingVerification && !adminApproved ? '<span class="badge badge-pending">⏳ ' + (isEn ? 'Pending' : 'Pendiente') + '</span>' : '');
+
+  if (isWorker) {
+    // Workers don't have a star rating — the first two stat slots become
+    // "Jobs completed" and "Experience" instead of "Rating" and "Reviews".
+    document.getElementById('biz-rating').textContent = b.jobsCompleted;
+    document.getElementById('stat-label-1-es').textContent = 'Trabajos';
+    document.getElementById('stat-label-1-en').textContent = 'Jobs done';
+    document.getElementById('biz-review-count').textContent = b.years;
+    document.getElementById('stat-label-2-es').textContent = 'Experiencia';
+    document.getElementById('stat-label-2-en').textContent = 'Experience';
+    document.getElementById('biz-years').textContent = (isEn ? b.availabilityEn : b.availabilityEs).split(' · ')[0];
+    document.getElementById('stat-label-3-es').textContent = 'Disponible';
+    document.getElementById('stat-label-3-en').textContent = 'Available';
+  } else {
+    document.getElementById('biz-rating').textContent = b.rating;
+    document.getElementById('stat-label-1-es').textContent = 'Calificación';
+    document.getElementById('stat-label-1-en').textContent = 'Rating';
+    document.getElementById('biz-review-count').textContent = b.reviewCount;
+    document.getElementById('stat-label-2-es').textContent = 'Reseñas';
+    document.getElementById('stat-label-2-en').textContent = 'Reviews';
+    document.getElementById('biz-years').textContent = b.years;
+    document.getElementById('stat-label-3-es').textContent = 'Años exp.';
+    document.getElementById('stat-label-3-en').textContent = 'Years exp.';
+  }
+  document.getElementById('biz-distance').textContent = b.distance;
+
+  // Breadcrumb
+  document.getElementById('bc-cat-es').textContent = b.breadcrumbCatEs;
+  document.getElementById('bc-cat-en').textContent = b.breadcrumbCatEn;
+  document.getElementById('bc-cat-es').href = 'search.html?cat=' + b.breadcrumbCatSlug;
+  document.getElementById('bc-cat-en').href = 'search.html?cat=' + b.breadcrumbCatSlug;
+  document.getElementById('bc-name').textContent = b.name.split(' ').slice(0,2).join(' ');
+
+  // Services grid (for workers, this list shows the kinds of work they do)
+  var grid = document.getElementById('services-grid');
+  grid.innerHTML = b.services.map(function(s) {
+    return '<div class="service-item"><span>' + s[0] + '</span> <span data-es>' + s[1] + '</span><span data-en>' + s[2] + '</span></div>';
+  }).join('');
+  document.getElementById('services-title-es').textContent = isWorker ? 'Tipos de trabajo' : 'Servicios ofrecidos';
+  document.getElementById('services-title-en').textContent = isWorker ? 'Types of work' : 'Services offered';
+
+  // Quote + fallback dropdowns (built from the SAME services list — always in sync)
+  // Workers skip this entirely (see contact card wiring below), but we still populate it
+  // in case the fallback (no-WhatsApp) form is used.
+  ['quote-service', 'fallback-service'].forEach(function(selectId) {
+    var select = document.getElementById(selectId);
+    var placeholderEs = 'Selecciona un servicio...', placeholderEn = 'Select a service...';
+    var html = '<option value="" data-opt-es="' + placeholderEs + '" data-opt-en="' + placeholderEn + '">' + placeholderEs + '</option>';
+    b.services.forEach(function(s) {
+      html += '<option value="' + s[1] + '|' + s[2] + '" data-opt-es="' + s[1] + '" data-opt-en="' + s[2] + '">' + s[1] + '</option>';
+    });
+    var otherEs = 'Otro', otherEn = 'Other';
+    html += '<option value="' + otherEs + '|' + otherEn + '" data-opt-es="' + otherEs + '" data-opt-en="' + otherEn + '">' + otherEs + '</option>';
+    select.innerHTML = html;
+  });
+
+  // About + details
+  document.getElementById('about-title-es').textContent = isWorker ? 'Acerca de mí' : 'Acerca del negocio';
+  document.getElementById('about-title-en').textContent = isWorker ? 'About me' : 'About this business';
+  document.getElementById('about-es').textContent = b.aboutEs;
+  document.getElementById('about-en').textContent = b.aboutEn;
+  document.getElementById('detail-area').textContent = b.area;
+  document.getElementById('detail-languages').textContent = b.languages;
+  document.getElementById('detail-since-es').textContent = b.sinceEs;
+  document.getElementById('detail-since-en').textContent = b.sinceEn;
+
+  // Worker profiles don't have a business type or license — hide those rows.
+  // The "Payment" row is repurposed to show hiring availability instead (day/week/permanent).
+  document.getElementById('detail-row-type').style.display = isWorker ? 'none' : 'flex';
+  document.getElementById('detail-row-license').style.display = isWorker ? 'none' : 'flex';
+  if (isWorker) {
+    document.getElementById('detail-payment-label-es').textContent = 'Disponibilidad';
+    document.getElementById('detail-payment-label-en').textContent = 'Availability';
+    document.getElementById('detail-payment').textContent = isEn ? b.availabilityEn : b.availabilityEs;
+  } else {
+    document.getElementById('detail-payment-label-es').textContent = 'Pago';
+    document.getElementById('detail-payment-label-en').textContent = 'Payment';
+    document.getElementById('detail-payment').textContent = b.payment;
+  }
+
+  if (isWorker) {
+    // No star-rating reviews for individuals — show the self-reported jobs-completed
+    // summary instead, and hide the Photos section (workers don't upload work photos).
+    document.getElementById('reviews').style.display = 'none';
+    document.getElementById('jobs-completed-section').style.display = 'block';
+    document.getElementById('jobs-completed-num').textContent = b.jobsCompleted;
+    document.getElementById('photos-section').style.display = 'none';
+    document.getElementById('hours-sidebar-card').style.display = 'none';
+
+    // Simplified one-click contact: no service selection, just open WhatsApp directly.
+    document.getElementById('quote-btn-text-es').textContent = 'Contactar por WhatsApp';
+    document.getElementById('quote-btn-text-en').textContent = 'Contact via WhatsApp';
+    document.getElementById('quote').setAttribute('onclick', 'submitWorkerContact()');
+  } else {
+    document.getElementById('reviews').style.display = 'block';
+    document.getElementById('jobs-completed-section').style.display = 'none';
+    document.getElementById('photos-section').style.display = 'block';
+    document.getElementById('hours-sidebar-card').style.display = 'block';
+
+    document.getElementById('quote-btn-text-es').textContent = 'Solicitar presupuesto por WhatsApp';
+    document.getElementById('quote-btn-text-en').textContent = 'Request a quote via WhatsApp';
+    document.getElementById('quote').setAttribute('onclick', 'toggleQuote()');
+
+    // Reviews summary (business profiles only)
+    document.getElementById('reviews-title-es').textContent = 'Reseñas (' + b.reviewCount + ')';
+    document.getElementById('reviews-title-en').textContent = 'Reviews (' + b.reviewCount + ')';
+    document.getElementById('big-rating-num').textContent = b.ratingNum;
+    document.getElementById('big-rating-stars').textContent = b.stars;
+    document.getElementById('big-rating-count-es').textContent = b.reviewCount + ' reseñas';
+    document.getElementById('big-rating-count-en').textContent = b.reviewCount + ' reviews';
+
+    // Reviews list (per-business — built from the same data each profile shows in the sidebar)
+    var reviewsList = document.getElementById('reviews-list');
+    reviewsList.innerHTML = b.reviews.map(function(r, i) {
+      return '<div class="review-item">' +
+        '<div class="review-top">' +
+          '<div class="review-avatar">' + r.initials + '</div>' +
+          '<div><div class="review-name">' + r.name + '</div><div class="review-stars">' + r.stars + '</div></div>' +
+          '<div class="review-date" data-es>' + r.dateEs + '</div>' +
+          '<div class="review-date" data-en>' + r.dateEn + '</div>' +
+        '</div>' +
+        '<div class="review-text" data-es>' + r.textEs + '</div>' +
+        '<div class="review-text" data-en>' + r.textEn + '</div>' +
+      '</div>';
+    }).join('');
+
+    // "See all reviews" link reflects the full review count for this business
+    document.getElementById('see-all-reviews-es').textContent = 'Ver todas las reseñas (' + b.reviewCount + ') →';
+    document.getElementById('see-all-reviews-en').textContent = 'See all reviews (' + b.reviewCount + ') →';
+
+    // Hours (business profiles only)
+    document.getElementById('hours-today-es').textContent = b.hoursTodayEs;
+    document.getElementById('hours-today-en').textContent = b.hoursTodayEn;
+    document.getElementById('hours-sat-es').textContent = b.hoursSatEs;
+    document.getElementById('hours-sat-en').textContent = b.hoursSatEn;
+    document.getElementById('hours-weekday-es').textContent = b.hoursWeekdayEs;
+    document.getElementById('hours-weekday-en').textContent = b.hoursWeekdayEn;
+  }
+
+  // Sidebar contact card
+  document.getElementById('contact-title-es').textContent = 'Contactar a ' + b.name;
+  document.getElementById('contact-title-en').textContent = 'Contact ' + b.name;
+  document.getElementById('fallback-hint-es').textContent = 'Le enviaremos tu solicitud directamente a ' + b.name + ' por correo y SMS.';
+  document.getElementById('fallback-hint-en').textContent = "We'll send your request directly to " + b.name + ' by email and text.';
+  document.getElementById('fallback-success-es').textContent = '✓ Solicitud enviada. ' + b.name + ' recibirá tu nombre, teléfono y servicio por correo y SMS, y te contactará directamente.';
+  document.getElementById('fallback-success-en').textContent = '✓ Request sent. ' + b.name + ' will receive your name, phone, and service by email and text, and will contact you directly.';
+  document.getElementById('notice-text-es').innerHTML = 'Vamos a abrir WhatsApp con tu solicitud ya escrita. ' + b.name + ' solo la recibirá si tú presionas <strong>Enviar</strong> dentro de WhatsApp.';
+  document.getElementById('notice-text-en').innerHTML = "We'll open WhatsApp with your request already written. " + b.name + ' only receives it once <strong>you</strong> press <strong>Send</strong> inside WhatsApp.';
+
+  // Map
+  document.getElementById('map-location-es').textContent = b.location;
+  document.getElementById('map-location-en').textContent = b.location;
+  document.getElementById('map-link-es').href = 'https://maps.google.com/?q=' + b.mapQuery;
+  document.getElementById('map-link-en').href = 'https://maps.google.com/?q=' + b.mapQuery;
+
+  // Page title
+  document.title = b.name + ' — AmigosNearMe';
+
+  // Store the full business object (with id) for WhatsApp links and request limit tracking
+  b.id = id;
+  window.currentBusiness = b;
+  initSaveButton(); // update save button state based on localStorage
+}
+
+function setLang(lang) {
+  document.body.classList.toggle('en', lang === 'en');
+  document.getElementById('btn-es').classList.toggle('active', lang !== 'en');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  document.querySelectorAll('[data-es-text][data-en-text]').forEach(function(el) {
+    el.textContent = lang === 'en' ? el.getAttribute('data-en-text') : el.getAttribute('data-es-text');
+  });
+  var en = lang === 'en';
+  // Translate dynamically-built <option> tags (quote-service + fallback-service),
+  // which carry data-opt-es / data-opt-en since their content changes per business.
+  document.querySelectorAll('#quote-service option, #fallback-service option').forEach(function(opt) {
+    var es = opt.getAttribute('data-opt-es');
+    var enText = opt.getAttribute('data-opt-en');
+    if (es && enText) opt.textContent = en ? enText : es;
+  });
+  try { localStorage.setItem('anm-lang', lang); } catch(e) {}
+  // Re-render dynamic profile fields in the new language. Without this, values that are
+  // derived from per-language source strings at render time (e.g. a worker's "Available"
+  // stat, built from availabilityEs/availabilityEn) stay frozen in whichever language was
+  // active when the page first loaded, even after the user switches languages.
+  if (typeof loadBusiness === 'function') loadBusiness();
+}
+function toggleQuote() {
+  var f = document.getElementById('quote-form');
+  f.classList.toggle('open');
+}
+/* ===== REVIEW ELIGIBILITY — CONTACT-GATED =====
+   FRONTEND-ONLY SIMULATION. In production this check is server-side:
+   the backend verifies that a contact_log row exists for this
+   (session/user, business_id) pair before allowing a review submission.
+   localStorage here stands in for that DB lookup. */
+function recordContactForReview(bizId) {
+  // Called whenever a customer successfully sends a WhatsApp message or
+  // submits the fallback form. Records eligibility to review this business.
+  try {
+    var key = 'anm-contacted-' + bizId;
+    localStorage.setItem(key, '1');
+  } catch(e) {}
+}
+function hasContactedBusiness(bizId) {
+  try { return localStorage.getItem('anm-contacted-' + bizId) === '1'; }
+  catch(e) { return false; }
+}
+
+function toggleReviewForm() {
+  var bizId = (window.currentBusiness && window.currentBusiness.id) ? window.currentBusiness.id : 'unknown';
+  var form  = document.getElementById('review-form');
+  var gate  = document.getElementById('review-gate');
+
+  // If the form is already open, close both and reset
+  if (form.style.display !== 'none') {
+    form.style.display = 'none';
+    gate.style.display = 'none';
+    return;
+  }
+
+  if (hasContactedBusiness(bizId)) {
+    // Eligible — customer has previously contacted this business
+    gate.style.display = 'none';
+    form.style.display = 'block';
+    form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } else {
+    // Not eligible — show the gate message instead
+    form.style.display = 'none';
+    gate.style.display = 'block';
+    gate.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+function submitQuote() {
+  var select = document.getElementById('quote-service');
+  var value = select.value;
+  if (!value) {
+    document.getElementById('err-quote-service').classList.add('show');
+    select.classList.add('input-error');
+    return;
+  }
+  document.getElementById('err-quote-service').classList.remove('show');
+  select.classList.remove('input-error');
+
+  var isEn = document.body.classList.contains('en');
+  var parts = value.split('|');
+  var serviceLabel = isEn ? parts[1] : parts[0];
+
+  // Track the click with explicit intent + service category BEFORE leaving the platform.
+  // This is what dashboard.html's "quote requests" counter and analytics are based on —
+  // not every WhatsApp click, only ones where the customer explicitly chose "Request a quote"
+  // and selected a service.
+
+  // Check monthly request limit for this business.
+  var bizId = (window.currentBusiness && window.currentBusiness.id) ? window.currentBusiness.id : 'unknown';
+  if (!checkRequestLimit(bizId)) {
+    showLimitReachedMessage();
+    return;
+  }
+  incrementRequestCount(bizId);
+  trackContact('quote_request', serviceLabel);
+
+  // Mark this customer as having contacted this business — unlocks review eligibility.
+  recordContactForReview(bizId);
+
+  var msgEs = 'Hola, vi su perfil en AmigosNearMe y quisiera un presupuesto para: ' + parts[0] + '.';
+  var msgEn = 'Hi, I saw your profile on AmigosNearMe and would like a quote for: ' + parts[1] + '.';
+  var msg = isEn ? msgEn : msgEs;
+  var phone = (window.currentBusiness && window.currentBusiness.phone) ? window.currentBusiness.phone.replace('+', '') : '17865550192';
+  var waUrl = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg);
+  window.open(waUrl, '_blank');
+}
+// Worker profiles skip service selection entirely — a worker usually offers one type of
+// labor already described on their profile, so asking "which service?" is redundant friction.
+// One click opens WhatsApp with a simple "I saw your profile and want to hire you" message.
+/* ===== STAFFING CONTACT PAYMENT SIMULATION =====
+   FRONTEND-ONLY SIMULATION. No real authentication or payment happens here.
+   Backend spec (see project notes): charge fires when a business clicks "Contact"
+   on an individual worker's profile. Package = $10 for 5 contacts, one-time
+   purchase (not a subscription), no expiration. Browsing and viewing profiles
+   stays free and login-free; login is only required at the contact step.
+   localStorage below stands in for: (1) a real auth/session check, and
+   (2) a real per-account contact-balance column in the database. */
+function isSimulatedLoggedIn() {
+  try { return localStorage.getItem('anm-sim-logged-in') === '1'; } catch(e) { return false; }
+}
+function getSimulatedContactBalance() {
+  try {
+    var v = localStorage.getItem('anm-sim-contact-balance');
+    return v === null ? 0 : parseInt(v, 10);
+  } catch(e) { return 0; }
+}
+function setSimulatedContactBalance(n) {
+  try { localStorage.setItem('anm-sim-contact-balance', String(n)); } catch(e) {}
+}
+function showToast(msg) {
+  var t = document.getElementById('contact-toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2600);
+}
+function switchPkgTab(method, btn) {
+  document.querySelectorAll('.pkg-tab').forEach(function(t){ t.classList.remove('selected'); });
+  document.querySelectorAll('.pkg-tab').forEach(function(t){
+    if (t.getAttribute('onclick') && t.getAttribute('onclick').includes("'" + method + "'")) {
+      t.classList.add('selected');
+    }
+  });
+  ['card','venmo','ach','zelle'].forEach(function(m){
+    var p = document.getElementById('pkg-panel-' + m);
+    if (p) p.style.display = m === method ? 'block' : 'none';
+  });
+  var payBtn = document.getElementById('pkg-pay-btn');
+  if (payBtn) payBtn.style.display = method === 'zelle' ? 'none' : 'block';
+}
+
+// ── SAVE BUSINESS ───────────────────────────────────────────
+function getSavedBusinesses() {
+  try { return JSON.parse(localStorage.getItem('anm-saved-businesses') || '[]'); } catch(e) { return []; }
+}
+function setSavedBusinesses(list) {
+  try { localStorage.setItem('anm-saved-businesses', JSON.stringify(list)); } catch(e) {}
+}
+
+function initSaveButton() {
+  var b = window.currentBusiness;
+  if (!b || document.getElementById('save-biz-btn') === null) return;
+  var saved = getSavedBusinesses();
+  var isSaved = saved.some(function(s){ return s.id === b.id; });
+  updateSaveBtn(isSaved);
+}
+
+function updateSaveBtn(isSaved) {
+  var btn = document.getElementById('save-biz-btn');
+  var icon = document.getElementById('save-biz-icon');
+  var labelEs = document.getElementById('save-biz-label-es');
+  var labelEn = document.getElementById('save-biz-label-en');
+  if (!btn) return;
+  btn.classList.toggle('saved', isSaved);
+  if (icon) icon.textContent = isSaved ? '★' : '⭐';
+  if (labelEs) labelEs.textContent = isSaved ? 'Guardado ✓' : 'Guardar negocio';
+  if (labelEn) labelEn.textContent = isSaved ? 'Saved ✓' : 'Save business';
+}
+
+function toggleSaveBusiness() {
+  // Login check — saving requires an account
+  var loggedIn = false;
+  try { loggedIn = localStorage.getItem('anm-sim-logged-in') === '1'; } catch(e) {}
+  if (!loggedIn) {
+    // Prompt login, then return here
+    try {
+      sessionStorage.setItem('anm-save-redirect', window.location.href);
+    } catch(e) {}
+    window.location.href = 'login.html?type=customer';
+    return;
+  }
+
+  var b = window.currentBusiness;
+  if (!b) return;
+  var saved = getSavedBusinesses();
+  var idx = saved.findIndex(function(s){ return s.id === b.id; });
+  var isEn = document.body.classList.contains('en');
+
+  if (idx === -1) {
+    // Save it
+    saved.push({
+      id: b.id,
+      name: b.tradeName || b.legalName || b.id,
+      category: b.category || '',
+      area: (b.area && b.area[0]) || '',
+      phone: b.phone || '',
+      savedAt: Date.now()
+    });
+    setSavedBusinesses(saved);
+    updateSaveBtn(true);
+    showProfileToast(isEn ? '⭐ Business saved to your account' : '⭐ Negocio guardado en tu cuenta');
+  } else {
+    // Unsave it
+    saved.splice(idx, 1);
+    setSavedBusinesses(saved);
+    updateSaveBtn(false);
+    showProfileToast(isEn ? 'Removed from saved' : 'Eliminado de guardados');
+  }
+}
+
+function showProfileToast(msg) {
+  var t = document.getElementById('profile-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'profile-toast';
+    t.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--c-text);color:#fff;padding:11px 18px;border-radius:8px;font-size:13px;opacity:0;pointer-events:none;transition:all 0.25s;z-index:999;white-space:nowrap';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(function() {
+    t.style.opacity = '0';
+    t.style.transform = 'translateX(-50%) translateY(20px)';
+  }, 2500);
+}
+
+function openContactModal(id) {
+  var m = document.getElementById(id);
+  if (m) m.classList.add('open');
+}
+function closeContactModals() {
+  document.getElementById('login-required-modal').classList.remove('open');
+  document.getElementById('buy-contacts-modal').classList.remove('open');
+}
+
+function submitWorkerContact() {
+  // Step 1: must be logged in (as a business account) to contact individual workers.
+  if (!isSimulatedLoggedIn()) {
+    // Remember which profile they were trying to contact, so login.html can send
+    // them straight back here instead of dropping them on a generic dashboard.
+    // Also set a flag so profile.html knows to auto-trigger the contact flow on return.
+    try {
+      sessionStorage.setItem('anm-contact-redirect', window.location.href);
+      sessionStorage.setItem('anm-contact-intent', '1');
+    } catch(e) {}
+    openContactModal('login-required-modal');
+    return;
+  }
+  // Step 2: must have at least 1 contact remaining in the current package.
+  if (getSimulatedContactBalance() <= 0) {
+    openContactModal('buy-contacts-modal');
+    return;
+  }
+  // Step 3: spend 1 contact and proceed.
+  setSimulatedContactBalance(getSimulatedContactBalance() - 1);
+  var isEn = document.body.classList.contains('en');
+  showToast(isEn
+    ? '1 contact used · ' + getSimulatedContactBalance() + ' remaining'
+    : '1 contacto usado · ' + getSimulatedContactBalance() + ' restantes');
+  openWorkerWhatsApp();
+}
+
+function simulatePurchaseAndContact() {
+  // FRONTEND SIMULATION: in production this calls the payment gateway with a real
+  // $10 charge, and only credits the 5 contacts after the charge succeeds.
+  setSimulatedContactBalance(getSimulatedContactBalance() + 5);
+  closeContactModals();
+  setSimulatedContactBalance(getSimulatedContactBalance() - 1); // spend 1 immediately to complete this contact
+  var isEn = document.body.classList.contains('en');
+  showToast(isEn
+    ? '✓ Package purchased · ' + getSimulatedContactBalance() + ' contacts remaining'
+    : '✓ Paquete comprado · ' + getSimulatedContactBalance() + ' contactos restantes');
+  openWorkerWhatsApp();
+}
+
+function openWorkerWhatsApp() {
+  trackContact('worker_contact', '');
+  // Record contact so this customer could leave feedback in the future.
+  var bizId = (window.currentBusiness && window.currentBusiness.id) ? window.currentBusiness.id : 'unknown';
+  recordContactForReview(bizId);
+  var isEn = document.body.classList.contains('en');
+  var name = (window.currentBusiness && window.currentBusiness.name) ? window.currentBusiness.name : '';
+  var msgEs = 'Hola ' + name + ', vi tu perfil en AmigosNearMe y me gustaría contratarte. ¿Estás disponible?';
+  var msgEn = 'Hi ' + name + ', I saw your profile on AmigosNearMe and would like to hire you. Are you available?';
+  var msg = isEn ? msgEn : msgEs;
+  var phone = (window.currentBusiness && window.currentBusiness.phone) ? window.currentBusiness.phone.replace('+', '') : '17865550192';
+  var waUrl = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg);
+  window.open(waUrl, '_blank');
+}
+/* ===== BUSINESS REQUEST LIMIT SIMULATION =====
+   FRONTEND-ONLY SIMULATION. In production:
+   - Limits enforced server-side: Free=3 requests/month, Basic=10/month, Premium=unlimited.
+   - Counter resets on the 1st of each month (cron job or DB-level date comparison).
+   - When a business hits their limit, the "Request a quote" button is disabled on their
+     profile, and the business owner receives an email/WhatsApp notification.
+   - localStorage below stands in for a real per-business monthly request counter in the DB.
+   - The business's plan is read from the same 'anm-sim-plan' key used by dashboard.html,
+     so switching plans in the dashboard is immediately reflected here too. */
+var REQUEST_LIMITS = { free: 3, basic: 10, premium: null }; // null = unlimited
+
+function getRequestKey(bizId) {
+  var month = new Date().toISOString().slice(0, 7); // e.g. "2026-06"
+  return 'anm-sim-req-' + bizId + '-' + month;
+}
+function getRequestCount(bizId) {
+  try { var v = localStorage.getItem(getRequestKey(bizId)); return v ? parseInt(v, 10) : 0; }
+  catch(e) { return 0; }
+}
+function incrementRequestCount(bizId) {
+  try { localStorage.setItem(getRequestKey(bizId), String(getRequestCount(bizId) + 1)); }
+  catch(e) {}
+}
+function getBizPlan() {
+  // Reads from the same localStorage key that dashboard.html's plan switcher writes to,
+  // so plan changes in dashboard are instantly reflected here.
+  try { return localStorage.getItem('anm-sim-plan') || 'free'; }
+  catch(e) { return 'free'; }
+}
+function checkRequestLimit(bizId) {
+  // Returns true if the business can still accept requests; false if limit is reached.
+  var plan = getBizPlan();
+  var limit = REQUEST_LIMITS[plan];
+  if (limit === null) return true; // Premium: unlimited
+  return getRequestCount(bizId) < limit;
+}
+function showLimitReachedMessage() {
+  var isEn = document.body.classList.contains('en');
+  var plan = getBizPlan();
+  var planName = plan.charAt(0).toUpperCase() + plan.slice(1);
+  var limits = { free: 3, basic: 10 };
+  var limit = limits[plan] || 0;
+  var msg = isEn
+    ? 'This business has reached its ' + limit + ' request limit for this month (' + planName + ' plan). They may upgrade to receive more.'
+    : 'Este negocio alcanzó su límite de ' + limit + ' solicitudes del mes (plan ' + planName + '). Puede actualizar su plan para recibir más.';
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(26,26,24,0.55);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px';
+  overlay.innerHTML = '<div style="background:#fff;border-radius:18px;padding:28px;max-width:360px;width:100%;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,0.12)">'
+    + '<div style="font-size:28px;margin-bottom:12px">📭</div>'
+    + '<div style="font-family:\'DM Serif Display\',serif;font-size:20px;margin-bottom:10px">' + (isEn ? 'No longer accepting requests' : 'No acepta más solicitudes') + '</div>'
+    + '<p style="font-size:13.5px;color:#6B6B66;line-height:1.6;margin-bottom:20px">' + msg + '</p>'
+    + '<button onclick="this.closest(\'[data-limit-overlay]\').remove()" style="padding:11px 20px;border-radius:8px;border:none;background:#C94F2B;color:#fff;font-size:14px;cursor:pointer;width:100%">' + (isEn ? 'OK' : 'Entendido') + '</button>'
+    + '</div>';
+  overlay.setAttribute('data-limit-overlay', '1');
+  overlay.addEventListener('click', function(e){ if(e.target === overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
+}
+function trackContact(type, serviceLabel) {
+  // In production: this fires a request to the backend to log a contact event
+  // (type: 'general_inquiry' or 'quote_request', plus service category and timestamp).
+  // Server-side dedup: same customer/session + same business within 24h = counted once.
+  // This is the event that powers dashboard.html's plan usage counter ("8/10 requests")
+  // and Premium's full analytics breakdown by service category.
+  console.log('[AmigosNearMe tracking] contact event:', type, serviceLabel || '');
+}
+function toggleFallback() {
+  var f = document.getElementById('fallback-form');
+  f.classList.toggle('open');
+}
+function submitFallback() {
+  var service = document.getElementById('fallback-service');
+  var name = document.getElementById('fallback-name');
+  var phone = document.getElementById('fallback-phone');
+  var phonePattern = /^[\d\s\+\-\(\)]{7,}$/;
+
+  var valid = service.value !== '' && name.value.trim() !== '' && phonePattern.test(phone.value.trim());
+
+  [service, name, phone].forEach(function(el){ el.classList.remove('input-error'); });
+
+  if (!valid) {
+    document.getElementById('err-fallback').classList.add('show');
+    if (service.value === '') service.classList.add('input-error');
+    if (name.value.trim() === '') name.classList.add('input-error');
+    if (!phonePattern.test(phone.value.trim())) phone.classList.add('input-error');
+    return;
+  }
+  document.getElementById('err-fallback').classList.remove('show');
+
+  // Check monthly request limit for this business before accepting the fallback form submission.
+  var bizId = (window.currentBusiness && window.currentBusiness.id) ? window.currentBusiness.id : 'unknown';
+  if (!checkRequestLimit(bizId)) {
+    showLimitReachedMessage();
+    return;
+  }
+  incrementRequestCount(bizId);
+
+  // Mark this customer as having contacted this business — unlocks review eligibility.
+  recordContactForReview(bizId);
+
+  var isEn = document.body.classList.contains('en');
+  var parts = service.value.split('|');
+  var serviceLabel = isEn ? parts[1] : parts[0];
+
+  // This path is 100% trackable: the request goes through AmigosNearMe's own form.
+  // BACKEND SPEC (production):
+  //   1. Save to admin_inquiries table: { biz_id, customer_name, customer_phone, service, timestamp }
+  //      — retained for 90 days then auto-purged. Never written to the business's own DB record.
+  //   2. Relay to business owner via email AND WhatsApp notification, containing:
+  //        • Customer name (e.g. "Rosa Fernández")
+  //        • Customer phone number (e.g. "+1 404-555-0181")
+  //        • Service requested (e.g. "Lawn mowing")
+  //        • Business name and a link to their dashboard
+  //      The business owner receives this info in their inbox/WhatsApp and can call or
+  //      message the customer directly — but this data is NOT written to dashboard.html's
+  //      inquiries pane. The dashboard only shows: service category + area + timestamp.
+  //   3. Decrement the business's monthly request counter (plan limit check already done above).
+  trackContact('quote_request_fallback', serviceLabel);
+
+  document.getElementById('fallback-success').classList.add('show');
+  setTimeout(function() {
+    document.getElementById('fallback-success').classList.remove('show');
+    document.getElementById('fallback-form').classList.remove('open');
+    name.value = '';
+    phone.value = '';
+    service.value = '';
+  }, 3500);
+}
+function submitReview() {
+  var msgs = document.querySelectorAll('#review-success');
+  msgs.forEach(function(m){ m.style.display = 'block'; });
+  setTimeout(function(){ msgs.forEach(function(m){ m.style.display = 'none'; }); }, 3000);
+}
+function pickStar(e) {
+  var stars = document.getElementById('star-pick');
+  var rect = stars.getBoundingClientRect();
+  var x = e.clientX - rect.left;
+  var w = rect.width;
+  var n = Math.ceil((x / w) * 5);
+  stars.textContent = '★'.repeat(n) + '☆'.repeat(5-n);
+}
+document.addEventListener('DOMContentLoaded', function() {
+  loadBusiness();
+  var saved = ''; try { saved = localStorage.getItem('anm-lang'); } catch(e) {}
+  var browser = (navigator.language || 'es').toLowerCase();
+  setLang(saved || (browser.startsWith('en') ? 'en' : 'es'));
+  if (window.location.hash === '#quote') { toggleQuote(); document.getElementById('quote').scrollIntoView({behavior:'smooth'}); }
+
+  // If the user was redirected back here after logging in to save a business, auto-trigger save
+  var saveRedirect = '';
+  try { saveRedirect = sessionStorage.getItem('anm-save-redirect') || ''; } catch(e) {}
+  if (saveRedirect && saveRedirect.includes(window.location.pathname)) {
+    try { sessionStorage.removeItem('anm-save-redirect'); } catch(e) {}
+    setTimeout(function() { toggleSaveBusiness(); }, 400);
+  }
+
+  // If the user was redirected back here after logging in (from submitWorkerContact),
+  // auto-trigger the contact flow so they don't have to click the button again.
+  var intent = '';
+  try { intent = sessionStorage.getItem('anm-contact-intent') || ''; } catch(e) {}
+  if (intent === '1') {
+    try { sessionStorage.removeItem('anm-contact-intent'); } catch(e) {}
+    // Small delay to let loadBusiness() finish rendering before triggering the modal
+    setTimeout(function() { submitWorkerContact(); }, 400);
+  }
+});
+</script>
+</body>
+</html>

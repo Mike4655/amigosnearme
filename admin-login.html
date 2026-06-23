@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login — AmigosNearMe</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --c-bg:#15140F; --c-surface:#1D1C16; --c-border:rgba(255,255,255,0.09);
+    --c-text:#F4F2EC; --c-muted:#9A988F; --c-hint:#6B6A62;
+    --c-accent:#C94F2B; --c-accent-light:rgba(201,79,43,0.12);
+    --c-green:#3DBF8F;
+    --radius-sm:8px; --radius-md:12px; --radius-xl:22px;
+    --font-display:'DM Serif Display',Georgia,serif;
+    --font-body:'DM Sans',system-ui,sans-serif;
+    --font-mono:'JetBrains Mono',monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);
+    min-height:100vh;display:flex;align-items:center;justify-content:center;
+    font-size:14px;line-height:1.6;padding:20px;
+    background-image:radial-gradient(circle at 20% 10%, rgba(201,79,43,0.07), transparent 45%);
+  }
+
+  .login-card{width:100%;max-width:380px;background:var(--c-surface);border:0.5px solid var(--c-border);border-radius:var(--radius-xl);padding:36px 32px;box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+
+  .login-logo{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+  .login-logo-mark{width:30px;height:30px;border-radius:8px;background:var(--c-accent);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:15px;color:#fff}
+  .login-logo-text{font-family:var(--font-display);font-size:17px}
+  .login-logo-text span{color:var(--c-accent)}
+  .login-tag{font-size:10px;color:var(--c-hint);letter-spacing:.1em;text-transform:uppercase;margin-bottom:26px}
+
+  .login-title{font-size:20px;font-weight:600;margin-bottom:5px}
+  .login-sub{font-size:12px;color:var(--c-muted);margin-bottom:24px}
+
+  .field-row{margin-bottom:14px}
+  .field-label{font-size:12px;font-weight:500;color:var(--c-muted);margin-bottom:6px;display:block}
+  input[type=email],input[type=password],input[type=text]{
+    width:100%;padding:11px 13px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);
+    font-size:14px;font-family:var(--font-body);background:rgba(255,255,255,0.04);color:var(--c-text);outline:none;transition:border-color 0.12s
+  }
+  input::placeholder{color:var(--c-hint)}
+  input:focus{border-color:var(--c-accent)}
+  .input-error{border-color:var(--c-accent)!important;background:var(--c-accent-light)!important}
+
+  .field-error{display:none;align-items:center;gap:6px;font-size:12px;color:#E8836A;margin-top:7px;padding:7px 10px;background:var(--c-accent-light);border-radius:6px}
+  .field-error.show{display:flex}
+  .field-error::before{content:"⚠";font-size:12px}
+
+  .btn-primary{width:100%;padding:12px;border-radius:var(--radius-sm);background:var(--c-accent);color:#fff;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:var(--font-body);margin-top:8px;transition:opacity 0.12s}
+  .btn-primary:hover{opacity:0.9}
+
+  .mfa-row{display:none;margin-top:6px}
+  .mfa-row.show{display:block}
+  .mfa-boxes{display:flex;gap:8px;margin-top:6px}
+  .mfa-box{width:42px;height:48px;text-align:center;font-size:18px;font-family:var(--font-mono);border-radius:var(--radius-sm);border:0.5px solid var(--c-border);background:rgba(255,255,255,0.04);color:var(--c-text)}
+  .mfa-box:focus{border-color:var(--c-accent);outline:none}
+  .mfa-hint{font-size:11px;color:var(--c-hint);margin-top:8px}
+
+  .security-note{display:flex;align-items:flex-start;gap:8px;margin-top:20px;padding:11px 13px;background:rgba(255,255,255,0.03);border-radius:var(--radius-sm);font-size:11px;color:var(--c-hint);line-height:1.5}
+
+  .login-foot{text-align:center;margin-top:22px;font-size:11px;color:var(--c-hint)}
+  .login-foot a{color:var(--c-muted);text-decoration:none}
+
+  .step-back{font-size:12px;color:var(--c-muted);cursor:pointer;display:inline-flex;align-items:center;gap:4px;margin-bottom:14px}
+  .step-back:hover{color:var(--c-text)}
+</style>
+</head>
+<body>
+
+<div class="login-card">
+
+  <div class="login-logo">
+    <div class="login-logo-mark">A</div>
+    <div class="login-logo-text">Amigos<span>NearMe</span></div>
+  </div>
+  <div class="login-tag">Admin Console</div>
+
+  <!-- STEP 1: EMAIL + PASSWORD -->
+  <div id="step-credentials">
+    <div class="login-title">Sign in</div>
+    <div class="login-sub">Restricted to authorized AmigosNearMe staff.</div>
+
+    <div class="field-row">
+      <label class="field-label">Admin email</label>
+      <input type="email" id="admin-email" placeholder="you@amigosnearme.com" oninput="clearAdminError()">
+    </div>
+    <div class="field-row">
+      <label class="field-label">Password</label>
+      <input type="password" id="admin-password" placeholder="••••••••" oninput="clearAdminError()">
+    </div>
+    <div class="field-error" id="err-admin-login">Enter a valid @amigosnearme.com email and your password.</div>
+
+    <button class="btn-primary" onclick="submitCredentials()">Continue</button>
+  </div>
+
+  <!-- STEP 2: MFA CODE -->
+  <div id="step-mfa" style="display:none">
+    <div class="step-back" onclick="backToCredentials()">← Back</div>
+    <div class="login-title">Verification code</div>
+    <div class="login-sub" id="mfa-sub">Enter the 6-digit code sent to your authenticator app.</div>
+
+    <div class="mfa-boxes">
+      <input type="text" maxlength="1" class="mfa-box" oninput="mfaAdvance(this)">
+      <input type="text" maxlength="1" class="mfa-box" oninput="mfaAdvance(this)">
+      <input type="text" maxlength="1" class="mfa-box" oninput="mfaAdvance(this)">
+      <input type="text" maxlength="1" class="mfa-box" oninput="mfaAdvance(this)">
+      <input type="text" maxlength="1" class="mfa-box" oninput="mfaAdvance(this)">
+      <input type="text" maxlength="1" class="mfa-box" oninput="mfaAdvance(this)">
+    </div>
+    <div class="field-error" id="err-mfa">Enter the complete 6-digit code.</div>
+    <div class="mfa-hint">Didn't get a code? <a href="#" style="color:var(--c-accent)" onclick="return false">Resend</a></div>
+
+    <button class="btn-primary" onclick="submitMfa()">Verify & sign in</button>
+  </div>
+
+  <div class="security-note">
+    🔒 This console manages live business listings, verification status, and customer accounts. All actions are logged. Sign-in attempts are monitored.
+  </div>
+
+  <div class="login-foot">
+    Not an admin? <a href="login.html">Go to customer login</a> · <a href="register-type.html">List your business</a>
+  </div>
+
+</div>
+
+<script>
+var emailPattern = /^[^\s@]+@amigosnearme\.com$/i;
+
+function showError(id) { var el = document.getElementById(id); if (el) el.classList.add('show'); }
+function hideError(id) { var el = document.getElementById(id); if (el) el.classList.remove('show'); }
+function markInvalid(el) { if (el) el.classList.add('input-error'); }
+function clearInvalid(el) { if (el) el.classList.remove('input-error'); }
+
+function clearAdminError() {
+  hideError('err-admin-login');
+  clearInvalid(document.getElementById('admin-email'));
+  clearInvalid(document.getElementById('admin-password'));
+}
+
+function submitCredentials() {
+  var email = document.getElementById('admin-email');
+  var password = document.getElementById('admin-password');
+  var valid = emailPattern.test(email.value.trim()) && password.value.length >= 8;
+
+  if (!valid) {
+    showError('err-admin-login');
+    if (!emailPattern.test(email.value.trim())) markInvalid(email);
+    if (password.value.length < 8) markInvalid(password);
+    return;
+  }
+
+  // In production: credentials are verified server-side before issuing an MFA challenge.
+  // Admin accounts require MFA on every login — no exceptions, even for the owner account.
+  document.getElementById('step-credentials').style.display = 'none';
+  document.getElementById('step-mfa').style.display = 'block';
+  document.querySelector('.mfa-box').focus();
+}
+
+function backToCredentials() {
+  document.getElementById('step-mfa').style.display = 'none';
+  document.getElementById('step-credentials').style.display = 'block';
+}
+
+function mfaAdvance(box) {
+  hideError('err-mfa');
+  if (box.value.length === 1) {
+    var next = box.nextElementSibling;
+    if (next && next.classList.contains('mfa-box')) next.focus();
+  }
+}
+
+function submitMfa() {
+  var boxes = document.querySelectorAll('.mfa-box');
+  var code = Array.from(boxes).map(function(b){ return b.value; }).join('');
+  if (code.length !== 6) {
+    showError('err-mfa');
+    return;
+  }
+  // In production: code is verified server-side, then a session is created and the user
+  // is redirected to admin.html. This page never stores credentials or codes client-side.
+  window.location.href = 'admin.html';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('admin-email').focus();
+});
+</script>
+</body>
+</html>

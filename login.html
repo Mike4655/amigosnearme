@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AmigosNearMe — Mi cuenta</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
+
+  :root {
+    --c-bg:#FAFAF7; --c-surface:#FFFFFF; --c-border:rgba(0,0,0,0.09);
+    --c-text:#1A1A18; --c-muted:#6B6B66; --c-hint:#A8A8A2;
+    --c-accent:#C94F2B; --c-accent-light:#FAF0EC;
+    --c-green:#1D9E75; --c-green-light:#EBF8F3;
+    --c-amber:#BA7517; --c-amber-light:#FEF6E4;
+    --c-blue:#185FA5; --c-blue-light:#EEF4FB;
+    --radius-sm:8px; --radius-md:12px; --radius-lg:18px; --radius-xl:24px;
+    --shadow:0 1px 3px rgba(0,0,0,0.07),0 8px 24px rgba(0,0,0,0.06);
+    --font-display:'DM Serif Display',Georgia,serif;
+    --font-body:'DM Sans',system-ui,sans-serif;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);font-size:14px;line-height:1.6}
+  [data-en]{display:none}
+  body.en [data-es]{display:none}
+  body.en [data-en]{display:revert}
+  a{color:inherit}
+
+  /* NAV */
+  nav{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;max-width:1200px;margin:0 auto}
+  .nav-logo{font-family:var(--font-display);font-size:19px;text-decoration:none;color:var(--c-text)}
+  .nav-logo span{color:var(--c-accent)}
+  .lang-btn{padding:5px 9px;border-radius:6px;border:0.5px solid var(--c-border);background:var(--c-surface);font-size:11px;font-weight:600;color:var(--c-muted);cursor:pointer;font-family:var(--font-body)}
+  .lang-btn.active{background:var(--c-text);color:#fff;border-color:var(--c-text)}
+
+  /* AUTH SCREEN */
+  .auth-wrap{max-width:420px;margin:24px auto 60px;padding:0 20px}
+  .auth-card{background:var(--c-surface);border:0.5px solid var(--c-border);border-radius:var(--radius-xl);padding:32px 28px;box-shadow:var(--shadow)}
+  .auth-title{font-family:var(--font-display);font-size:26px;margin-bottom:6px}
+  .auth-sub{font-size:13px;color:var(--c-muted);margin-bottom:22px}
+
+  .auth-tabs{display:flex;gap:4px;background:var(--c-bg);border-radius:var(--radius-md);padding:4px;margin-bottom:22px}
+  .auth-tab{flex:1;text-align:center;padding:8px;border-radius:8px;font-size:13px;font-weight:500;color:var(--c-muted);cursor:pointer;transition:all 0.15s}
+  .auth-tab.active{background:var(--c-surface);color:var(--c-text);box-shadow:0 1px 2px rgba(0,0,0,0.06)}
+
+  .field-row{margin-bottom:14px}
+  .field-label{font-size:12px;font-weight:500;color:var(--c-muted);margin-bottom:5px;display:block}
+  input[type=text],input[type=email],input[type=password]{
+    width:100%;padding:10px 13px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);
+    font-size:14px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);outline:none;transition:border-color 0.12s
+  }
+  input:focus{border-color:var(--c-text)}
+  .input-error{border-color:var(--c-accent)!important;background:var(--c-accent-light)!important}
+  .field-error{display:none;font-size:12px;color:var(--c-accent);margin-top:5px;padding:6px 10px;background:var(--c-accent-light);border-radius:6px;align-items:center;gap:5px}
+  .field-error.show{display:flex}
+  .field-error::before{content:"⚠";font-size:12px}
+
+  .btn-primary{width:100%;padding:12px;border-radius:var(--radius-md);background:var(--c-text);color:#fff;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:var(--font-body);margin-top:6px;transition:opacity 0.12s}
+  .btn-primary:hover{opacity:0.88}
+
+  .divider{display:flex;align-items:center;gap:10px;margin:18px 0;color:var(--c-hint);font-size:11px}
+  .divider::before,.divider::after{content:'';flex:1;height:0.5px;background:var(--c-border)}
+
+  .btn-guest{width:100%;padding:11px;border-radius:var(--radius-md);background:var(--c-bg);color:var(--c-text);font-size:13px;font-weight:500;border:0.5px solid var(--c-border);cursor:pointer;font-family:var(--font-body);display:flex;align-items:center;justify-content:center;gap:7px}
+
+  .auth-foot{text-align:center;font-size:12px;color:var(--c-muted);margin-top:18px}
+  .auth-foot a{color:var(--c-accent);text-decoration:none;font-weight:500}
+
+  .biz-link-box{margin-top:14px;text-align:center;padding:12px;background:var(--c-bg);border-radius:var(--radius-md);font-size:12px;color:var(--c-muted)}
+  .biz-link-box a{color:var(--c-blue);font-weight:500;text-decoration:none}
+  /* User type selector buttons */
+  .type-btn{width:100%;padding:14px 16px;border-radius:var(--radius-md);border:1px solid var(--c-border);background:var(--c-surface);cursor:pointer;font-family:var(--font-body);display:flex;align-items:center;gap:14px;transition:border-color 0.15s,background 0.15s}
+  .type-btn:hover{border-color:var(--c-accent);background:var(--c-accent-light)}
+
+  /* ===== MY ACCOUNT PAGE (after login) ===== */
+  .account-wrap{max-width:880px;margin:0 auto;padding:24px 20px 60px;display:none}
+  .account-wrap.show{display:block}
+  .account-header{display:flex;align-items:center;gap:14px;margin-bottom:28px}
+  .account-avatar{width:52px;height:52px;border-radius:14px;background:var(--c-accent-light);color:var(--c-accent);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;font-family:var(--font-display)}
+  .account-name{font-size:19px;font-weight:600}
+  .account-email{font-size:12px;color:var(--c-muted)}
+
+  .account-tabs{display:flex;gap:6px;border-bottom:0.5px solid var(--c-border);margin-bottom:22px;overflow-x:auto}
+  .acc-tab{padding:10px 14px;font-size:13px;font-weight:500;color:var(--c-muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:6px}
+  .acc-tab.active{color:var(--c-text);border-bottom-color:var(--c-accent)}
+
+  .acc-pane{display:none}
+  .acc-pane.show{display:block}
+
+  .empty-state{text-align:center;padding:50px 20px;color:var(--c-muted)}
+  .empty-state .icon{font-size:34px;margin-bottom:10px}
+  .empty-state .title{font-size:15px;font-weight:600;color:var(--c-text);margin-bottom:4px}
+  .empty-state .sub{font-size:13px;margin-bottom:18px}
+  .empty-state .btn-cta{display:inline-block;padding:9px 18px;background:var(--c-text);color:#fff;border-radius:var(--radius-sm);text-decoration:none;font-size:13px;font-weight:500}
+
+  /* Saved businesses grid */
+  .saved-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+  .saved-card{background:var(--c-surface);border:0.5px solid var(--c-border);border-radius:var(--radius-lg);padding:16px;position:relative}
+  .saved-card .unsave{position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;font-size:16px;color:var(--c-hint)}
+  .saved-card .biz-av{width:40px;height:40px;border-radius:10px;background:var(--c-accent-light);color:var(--c-accent);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;margin-bottom:10px}
+  .saved-card .biz-name{font-size:14px;font-weight:600;margin-bottom:2px}
+  .saved-card .biz-cat{font-size:12px;color:var(--c-muted);margin-bottom:10px}
+  .saved-card .biz-actions{display:flex;gap:8px}
+  .saved-card a{font-size:12px;padding:6px 10px;border-radius:7px;text-decoration:none;font-weight:500}
+  .saved-card .view-link{background:var(--c-bg);color:var(--c-text);border:0.5px solid var(--c-border)}
+  .saved-card .wa-link{background:var(--c-green-light);color:var(--c-green)}
+
+  /* Quote requests list */
+  .quote-item{background:var(--c-surface);border:0.5px solid var(--c-border);border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+  .quote-biz{font-size:14px;font-weight:600;margin-bottom:2px}
+  .quote-cat{font-size:12px;color:var(--c-muted);margin-bottom:6px}
+  .quote-date{font-size:11px;color:var(--c-hint)}
+  .status-pill{font-size:11px;font-weight:500;padding:4px 10px;border-radius:99px;white-space:nowrap}
+  .status-pending{background:var(--c-amber-light);color:var(--c-amber)}
+  .status-replied{background:var(--c-green-light);color:var(--c-green)}
+  .status-closed{background:#F1EFE8;color:var(--c-hint)}
+
+  /* Reviews list */
+  .review-item{background:var(--c-surface);border:0.5px solid var(--c-border);border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:10px}
+  .review-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:10px}
+  .review-stars{color:var(--c-amber);font-size:13px}
+  .review-text{font-size:13px;color:var(--c-muted);line-height:1.6}
+  .review-edit{font-size:11px;color:var(--c-blue);text-decoration:none;font-weight:500;white-space:nowrap}
+
+  /* Settings */
+  .settings-card{background:var(--c-surface);border:0.5px solid var(--c-border);border-radius:var(--radius-lg);padding:20px 22px;margin-bottom:14px}
+  .settings-card .card-title{font-size:14px;font-weight:600;margin-bottom:14px}
+  .toggle-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:0.5px solid var(--c-border)}
+  .toggle-row:last-child{border-bottom:none}
+  .toggle-label{font-size:13px}
+  .toggle-sub{font-size:11px;color:var(--c-muted);margin-top:1px}
+  .switch{position:relative;width:38px;height:22px;flex-shrink:0}
+  .switch input{opacity:0;width:0;height:0}
+  .slider-bg{position:absolute;inset:0;background:var(--c-border);border-radius:99px;cursor:pointer;transition:0.2s}
+  .slider-bg::before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:0.2s}
+  .switch input:checked + .slider-bg{background:var(--c-green)}
+  .switch input:checked + .slider-bg::before{transform:translateX(16px)}
+
+  .btn-logout{padding:9px 16px;border-radius:var(--radius-sm);background:var(--c-accent-light);color:var(--c-accent);border:none;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-body)}
+
+  @media (max-width:600px){
+    .auth-wrap{margin-top:10px}
+    .account-tabs{gap:2px}
+    .acc-tab{padding:9px 10px;font-size:12px}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Amigos<span>NearMe</span></a>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="lang-btn active" id="btn-es" onclick="setLang('es')">ES</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+  </div>
+</nav>
+
+<!-- ============ AUTH (LOGIN / SIGNUP) ============ -->
+<div class="auth-wrap" id="auth-wrap">
+
+  <!-- User type selector — shown on first visit, hidden once type is chosen -->
+  <div id="type-selector">
+    <div class="auth-card" style="max-width:520px">
+      <div class="auth-title" data-es>¿Cómo quieres entrar?</div>
+      <div class="auth-title" data-en>How would you like to sign in?</div>
+      <div class="auth-sub" data-es style="margin-bottom:20px">Elige tu tipo de cuenta para continuar.</div>
+      <div class="auth-sub" data-en style="margin-bottom:20px">Choose your account type to continue.</div>
+
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <button class="type-btn" onclick="selectUserType('customer')">
+          <span style="font-size:22px">🔍</span>
+          <div style="text-align:left">
+            <div style="font-weight:600;font-size:14px" data-es>Soy cliente — busco servicios</div>
+            <div style="font-weight:600;font-size:14px" data-en>I'm a customer — looking for services</div>
+            <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-es>Guarda favoritos, deja reseñas, contacta personal</div>
+            <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-en>Save favorites, leave reviews, contact workers</div>
+          </div>
+        </button>
+        <button class="type-btn" onclick="selectUserType('business')">
+          <span style="font-size:22px">🏢</span>
+          <div style="text-align:left">
+            <div style="font-weight:600;font-size:14px" data-es>Soy dueño de negocio</div>
+            <div style="font-weight:600;font-size:14px" data-en>I'm a business owner</div>
+            <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-es>Accede a tu panel, gestiona solicitudes y tu perfil</div>
+            <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-en>Access your dashboard, manage requests and profile</div>
+          </div>
+        </button>
+        <button class="type-btn" onclick="selectUserType('staffing')">
+          <span style="font-size:22px">👷</span>
+          <div style="text-align:left">
+            <div style="font-weight:600;font-size:14px" data-es>Busco personal / mano de obra</div>
+            <div style="font-weight:600;font-size:14px" data-en>I'm hiring workers / labor</div>
+            <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-es>Necesito cuenta para contactar trabajadores individuales</div>
+            <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-en>I need an account to contact individual workers</div>
+          </div>
+        </button>
+      </div>
+
+      <div style="margin-top:16px;text-align:center;font-size:12.5px;color:var(--c-hint)">
+        <span data-es>¿Quieres registrar tu negocio o trabajo? </span>
+        <span data-en>Want to list your business or work? </span>
+        <a href="register-type.html" style="color:var(--c-accent)" data-es>Regístrate aquí →</a>
+        <a href="register-type.html" style="color:var(--c-accent)" data-en>Register here →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auth form — shown after type is selected -->
+  <div id="auth-form-wrap" style="display:none">
+  <div class="auth-card">
+
+    <!-- Context banner showing what type was selected -->
+    <div id="auth-context-banner" style="background:var(--c-accent-light);border-radius:var(--radius-md);padding:10px 14px;margin-bottom:16px;font-size:13px;display:flex;align-items:center;gap:8px">
+      <span id="auth-context-icon">🔍</span>
+      <span id="auth-context-text-es" data-es></span>
+      <span id="auth-context-text-en" data-en></span>
+      <button onclick="resetUserType()" style="margin-left:auto;font-size:11px;color:var(--c-muted);background:none;border:none;cursor:pointer;text-decoration:underline" data-es>Cambiar</button>
+      <button onclick="resetUserType()" style="margin-left:auto;font-size:11px;color:var(--c-muted);background:none;border:none;cursor:pointer;text-decoration:underline" data-en>Change</button>
+    </div>
+
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')" data-es>Iniciar sesión</div>
+      <div class="auth-tab active" id="tab-login-en" onclick="switchAuthTab('login')" data-en>Log in</div>
+      <div class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')" data-es>Crear cuenta</div>
+      <div class="auth-tab" id="tab-signup-en" onclick="switchAuthTab('signup')" data-en>Sign up</div>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="form-login">
+      <div class="auth-title" data-es>Bienvenido de nuevo</div>
+      <div class="auth-title" data-en>Welcome back</div>
+      <div class="auth-sub" data-es>Accede a tus negocios guardados y solicitudes.</div>
+      <div class="auth-sub" data-en>Access your saved businesses and requests.</div>
+
+      <div class="field-row">
+        <label class="field-label" data-es>Correo electrónico</label>
+        <label class="field-label" data-en>Email</label>
+        <input type="email" id="login-email" placeholder="tu@email.com" oninput="clearLoginError()">
+      </div>
+      <div class="field-row">
+        <label class="field-label" data-es>Contraseña</label>
+        <label class="field-label" data-en>Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" oninput="clearLoginError()">
+      </div>
+      <div class="field-error" id="err-login" data-es-text="Ingresa un correo válido y tu contraseña." data-en-text="Enter a valid email and your password.">Ingresa un correo válido y tu contraseña.</div>
+
+      <button class="btn-primary" onclick="doLogin()" data-es>Iniciar sesión</button>
+      <button class="btn-primary" onclick="doLogin()" data-en>Log in</button>
+    </div>
+
+    <!-- SIGNUP FORM -->
+    <div id="form-signup" style="display:none">
+      <div class="auth-title" data-es>Crea tu cuenta</div>
+      <div class="auth-title" data-en>Create your account</div>
+      <div class="auth-sub" data-es>Guarda negocios favoritos y deja reseñas.</div>
+      <div class="auth-sub" data-en>Save favorite businesses and leave reviews.</div>
+
+      <div class="field-row">
+        <label class="field-label" data-es>Nombre</label>
+        <label class="field-label" data-en>Name</label>
+        <input type="text" id="signup-name" placeholder="Maria López" oninput="clearSignupError()">
+      </div>
+      <div class="field-row">
+        <label class="field-label" data-es>Correo electrónico</label>
+        <label class="field-label" data-en>Email</label>
+        <input type="email" id="signup-email" placeholder="tu@email.com" oninput="clearSignupError()">
+      </div>
+      <div class="field-row">
+        <label class="field-label" data-es>Contraseña</label>
+        <label class="field-label" data-en>Password</label>
+        <input type="password" id="signup-password" placeholder="Mínimo 8 caracteres" oninput="clearSignupError()">
+      </div>
+      <div class="field-error" id="err-signup" data-es-text="Completa tu nombre, correo válido y contraseña (mínimo 8 caracteres)." data-en-text="Fill in your name, a valid email, and password (minimum 8 characters).">Completa tu nombre, correo válido y contraseña (mínimo 8 caracteres).</div>
+
+      <button class="btn-primary" onclick="doSignup()" data-es>Crear cuenta</button>
+      <button class="btn-primary" onclick="doSignup()" data-en>Create account</button>
+    </div>
+
+    <div class="divider" data-es>O</div>
+    <div class="divider" data-en>OR</div>
+
+    <a href="search.html" class="btn-guest">
+      <span>🔍</span>
+      <span data-es>Continuar sin cuenta</span>
+      <span data-en>Continue without an account</span>
+    </a>
+
+    <div class="biz-link-box">
+      <span data-es>¿Quieres registrar tu negocio o trabajo? </span>
+      <span data-en>Want to list your business or work? </span>
+      <a href="register-type.html" data-es>Regístrate aquí →</a>
+      <a href="register-type.html" data-en>Register here →</a>
+    </div>
+  </div>
+  </div><!-- /auth-form-wrap -->
+</div>
+
+<!-- ============ MY ACCOUNT (after login) ============ -->
+<div class="account-wrap" id="account-wrap">
+
+  <div class="account-header">
+    <div class="account-avatar" id="acc-avatar">M</div>
+    <div>
+      <div class="account-name" id="acc-name">Maria López</div>
+      <div class="account-email" id="acc-email">maria@email.com</div>
+    </div>
+    <div style="margin-left:auto">
+      <button class="btn-logout" onclick="doLogout()" data-es>Cerrar sesión</button>
+      <button class="btn-logout" onclick="doLogout()" data-en>Log out</button>
+    </div>
+  </div>
+
+  <div class="account-tabs">
+    <div class="acc-tab active" onclick="switchAccTab('saved')"><span>⭐</span><span data-es>Guardados</span><span data-en>Saved</span></div>
+    <div class="acc-tab" onclick="switchAccTab('quotes')"><span>📋</span><span data-es>Mis solicitudes</span><span data-en>My requests</span></div>
+    <div class="acc-tab" onclick="switchAccTab('settings')"><span>⚙️</span><span data-es>Configuración</span><span data-en>Settings</span></div>
+  </div>
+
+  <!-- SAVED BUSINESSES — rendered dynamically from localStorage -->
+  <div class="acc-pane show" id="pane-saved">
+    <div class="saved-grid" id="saved-grid-container">
+      <!-- populated by renderSavedGrid() on load -->
+    </div>
+    <div id="saved-empty" style="display:none;text-align:center;padding:40px 0;color:var(--c-hint)">
+      <div style="font-size:32px;margin-bottom:10px">⭐</div>
+      <div style="font-size:14px;font-weight:500;margin-bottom:6px" data-es>Todavía no tienes negocios guardados</div>
+      <div style="font-size:14px;font-weight:500;margin-bottom:6px" data-en>No saved businesses yet</div>
+      <div style="font-size:13px;color:var(--c-hint)" data-es>Haz clic en "⭐ Guardar negocio" en cualquier perfil para guardarlo aquí.</div>
+      <div style="font-size:13px;color:var(--c-hint)" data-en>Click "⭐ Save business" on any profile to save it here.</div>
+      <a href="search.html" style="display:inline-block;margin-top:16px;padding:9px 18px;background:var(--c-accent);color:#fff;border-radius:var(--radius-sm);font-size:13px;font-weight:500;text-decoration:none" data-es>Explorar negocios →</a>
+      <a href="search.html" style="display:inline-block;margin-top:16px;padding:9px 18px;background:var(--c-accent);color:#fff;border-radius:var(--radius-sm);font-size:13px;font-weight:500;text-decoration:none" data-en>Browse businesses →</a>
+    </div>
+  </div>
+
+  <!-- MY QUOTE REQUESTS -->
+  <!-- MY REQUESTS — honest contact history timeline -->
+  <div class="acc-pane" id="pane-quotes">
+
+    <div style="background:var(--c-bg);border:0.5px solid var(--c-border);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:var(--c-muted);display:flex;gap:8px;align-items:flex-start">
+      <span>💬</span>
+      <span data-es>Este historial muestra cuándo contactaste a cada negocio. La conversación real ocurre en WhatsApp o por teléfono — AmigosNearMe no tiene acceso a esas respuestas.</span>
+      <span data-en>This history shows when you contacted each business. The actual conversation happens in WhatsApp or by phone — AmigosNearMe does not have access to those replies.</span>
+    </div>
+
+    <div class="quote-item">
+      <div>
+        <div class="quote-biz">Hernandez Construction LLC</div>
+        <div class="quote-cat" data-es>Construcción · Contactado por WhatsApp</div>
+        <div class="quote-cat" data-en>Construction · Contacted via WhatsApp</div>
+        <div class="quote-date" data-es>Hace 2 días</div>
+        <div class="quote-date" data-en>2 days ago</div>
+      </div>
+      <span class="status-pill" style="background:var(--c-green-light);color:var(--c-green)">📲 WhatsApp</span>
+    </div>
+
+    <div class="quote-item">
+      <div>
+        <div class="quote-biz">Martinez Plumbing & Repair</div>
+        <div class="quote-cat" data-es>Plomería · Contactado por formulario</div>
+        <div class="quote-cat" data-en>Plumbing · Contacted via form</div>
+        <div class="quote-date" data-es>Hace 5 días</div>
+        <div class="quote-date" data-en>5 days ago</div>
+      </div>
+      <span class="status-pill" style="background:var(--c-blue-light);color:var(--c-blue)">📋 Form</span>
+    </div>
+
+    <div class="quote-item">
+      <div>
+        <div class="quote-biz">Flores Painting Co.</div>
+        <div class="quote-cat" data-es>Pintura · Contactado por WhatsApp</div>
+        <div class="quote-cat" data-en>Painting · Contacted via WhatsApp</div>
+        <div class="quote-date" data-es>Hace 3 semanas</div>
+        <div class="quote-date" data-en>3 weeks ago</div>
+      </div>
+      <span class="status-pill" style="background:var(--c-green-light);color:var(--c-green)">📲 WhatsApp</span>
+    </div>
+
+    <div style="margin-top:16px;text-align:center;font-size:12px;color:var(--c-hint)">
+      <span data-es>💡 Para ver las respuestas de los negocios, abre WhatsApp en tu teléfono.</span>
+      <span data-en>💡 To see replies from businesses, open WhatsApp on your phone.</span>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="acc-pane" id="pane-settings">
+
+    <!-- Notifications -->
+    <div class="settings-card">
+      <div class="card-title" data-es>Notificaciones</div>
+      <div class="card-title" data-en>Notifications</div>
+
+      <div style="background:var(--c-bg);border:0.5px solid var(--c-border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--c-muted)">
+        <span data-es>📧 Recibirás un correo en <strong id="notif-email-display-es">tu dirección registrada</strong> cuando haya nuevos negocios verificados cerca de ti.</span>
+        <span data-en>📧 You'll receive an email at <strong id="notif-email-display-en">your registered address</strong> when new verified businesses are available near you.</span>
+      </div>
+
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label" data-es>Nuevos negocios cerca de ti</div>
+          <div class="toggle-label" data-en>New businesses near you</div>
+          <div class="toggle-sub" data-es>Notificación cuando un negocio recién verificado esté disponible en tu zona.</div>
+          <div class="toggle-sub" data-en>Notification when a newly verified business is available in your area.</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="notif-new-biz" onchange="saveNotifSettings()">
+          <span class="slider-bg"></span>
+        </label>
+      </div>
+
+      <div id="notif-saved-msg" style="display:none;font-size:12px;color:var(--c-green);margin-top:8px" data-es>✅ Preferencia guardada.</div>
+      <div id="notif-saved-msg-en" style="display:none;font-size:12px;color:var(--c-green);margin-top:8px" data-en>✅ Preference saved.</div>
+
+      <p style="font-size:11px;color:var(--c-hint);margin-top:12px;line-height:1.5" data-es>
+        ℹ️ Esta es la única notificación disponible. AmigosNearMe no puede notificarte sobre respuestas de negocios porque las conversaciones ocurren directamente en WhatsApp, fuera de la plataforma.
+      </p>
+      <p style="font-size:11px;color:var(--c-hint);margin-top:12px;line-height:1.5" data-en>
+        ℹ️ This is the only available notification. AmigosNearMe cannot notify you about business replies because conversations happen directly in WhatsApp, outside the platform.
+      </p>
+    </div>
+
+    <!-- Account — name, email, phone, password -->
+    <div class="settings-card">
+      <div class="card-title" data-es>Cuenta</div>
+      <div class="card-title" data-en>Account</div>
+
+      <div class="field-row">
+        <label class="field-label" data-es>Nombre</label>
+        <label class="field-label" data-en>Name</label>
+        <input type="text" id="settings-name" value="Maria López">
+      </div>
+      <div class="field-row">
+        <label class="field-label" data-es>Correo electrónico</label>
+        <label class="field-label" data-en>Email</label>
+        <input type="email" id="settings-email" value="maria@email.com">
+      </div>
+      <div class="field-row">
+        <label class="field-label" data-es>Teléfono (para contactar negocios)</label>
+        <label class="field-label" data-en>Phone (used when contacting businesses)</label>
+        <input type="tel" id="settings-phone" placeholder="+1 (404) 000-0000">
+      </div>
+
+      <div id="settings-save-confirm" style="display:none;font-size:12px;color:var(--c-green);margin-bottom:8px" data-es>✅ Cambios guardados.</div>
+      <div id="settings-save-confirm-en" style="display:none;font-size:12px;color:var(--c-green);margin-bottom:8px" data-en>✅ Changes saved.</div>
+
+      <button class="btn-primary" style="background:var(--c-accent)" onclick="saveAccountSettings()" data-es>Guardar cambios</button>
+      <button class="btn-primary" style="background:var(--c-accent)" onclick="saveAccountSettings()" data-en>Save changes</button>
+    </div>
+
+    <!-- Change password -->
+    <div class="settings-card">
+      <div class="card-title" data-es>Cambiar contraseña</div>
+      <div class="card-title" data-en>Change password</div>
+      <div class="field-row">
+        <label class="field-label" data-es>Contraseña actual</label>
+        <label class="field-label" data-en>Current password</label>
+        <input type="password" id="settings-pw-current" placeholder="••••••••">
+      </div>
+      <div class="field-row">
+        <label class="field-label" data-es>Nueva contraseña</label>
+        <label class="field-label" data-en>New password</label>
+        <input type="password" id="settings-pw-new" placeholder="••••••••">
+      </div>
+      <div class="field-row">
+        <label class="field-label" data-es>Confirmar nueva contraseña</label>
+        <label class="field-label" data-en>Confirm new password</label>
+        <input type="password" id="settings-pw-confirm" placeholder="••••••••">
+      </div>
+      <div id="settings-pw-error" style="display:none;font-size:12px;color:var(--c-accent);margin-bottom:8px"></div>
+      <div id="settings-pw-confirm-msg" style="display:none;font-size:12px;color:var(--c-green);margin-bottom:8px" data-es>✅ Contraseña actualizada.</div>
+      <div id="settings-pw-confirm-msg-en" style="display:none;font-size:12px;color:var(--c-green);margin-bottom:8px" data-en>✅ Password updated.</div>
+      <button class="btn-primary" style="background:var(--c-text)" onclick="changePassword()" data-es>Actualizar contraseña</button>
+      <button class="btn-primary" style="background:var(--c-text)" onclick="changePassword()" data-en>Update password</button>
+    </div>
+
+    <!-- Delete account -->
+    <div class="settings-card" style="border-color:rgba(186,62,39,0.2)">
+      <div class="card-title" style="color:var(--c-accent)" data-es>Eliminar cuenta</div>
+      <div class="card-title" style="color:var(--c-accent)" data-en>Delete account</div>
+      <p style="font-size:13px;color:var(--c-muted);margin-bottom:12px" data-es>Esta acción es permanente. Todos tus negocios guardados y reseñas serán eliminados.</p>
+      <p style="font-size:13px;color:var(--c-muted);margin-bottom:12px" data-en>This action is permanent. All your saved businesses and reviews will be deleted.</p>
+      <button class="btn-primary" style="background:none;border:0.5px solid var(--c-accent);color:var(--c-accent)" onclick="confirmDeleteAccount()" data-es>Eliminar mi cuenta</button>
+      <button class="btn-primary" style="background:none;border:0.5px solid var(--c-accent);color:var(--c-accent)" onclick="confirmDeleteAccount()" data-en>Delete my account</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function setLang(lang) {
+  document.body.classList.toggle('en', lang === 'en');
+  document.querySelectorAll('[data-es-text][data-en-text]').forEach(function(el) {
+    el.textContent = lang === 'en' ? el.getAttribute('data-en-text') : el.getAttribute('data-es-text');
+  });
+  var btnEs = document.getElementById('btn-es');
+  var btnEn = document.getElementById('btn-en');
+  if (btnEs) btnEs.classList.toggle('active', lang !== 'en');
+  if (btnEn) btnEn.classList.toggle('active', lang === 'en');
+  try { localStorage.setItem('anm-lang', lang); } catch(e) {}
+}
+
+var selectedUserType = '';
+
+var USER_TYPE_INFO = {
+  customer: {
+    icon: '🔍',
+    es: 'Cliente — buscando servicios',
+    en: 'Customer — looking for services'
+  },
+  business: {
+    icon: '🏢',
+    es: 'Dueño de negocio',
+    en: 'Business owner'
+  },
+  staffing: {
+    icon: '👷',
+    es: 'Buscando personal / mano de obra',
+    en: 'Hiring workers / labor'
+  }
+};
+
+function selectUserType(type) {
+  selectedUserType = type;
+  var info = USER_TYPE_INFO[type];
+  var isEn = document.body.classList.contains('en');
+
+  // Update context banner
+  document.getElementById('auth-context-icon').textContent = info.icon;
+  document.getElementById('auth-context-text-es').textContent = info.es;
+  document.getElementById('auth-context-text-en').textContent = info.en;
+
+  // If business owner, show login form and redirect to dashboard.html after login
+  if (type === 'business') {
+    document.getElementById('type-selector').style.display = 'none';
+    document.getElementById('auth-form-wrap').style.display = 'block';
+    document.querySelector('#form-login .auth-sub[data-es]').textContent = 'Accede a tu panel de control y gestiona solicitudes.';
+    document.querySelector('#form-login .auth-sub[data-en]').textContent = 'Access your business dashboard and manage requests.';
+    // Hide Sign up tab — business owners register via register.html, not here
+    var tabSignupEs = document.getElementById('tab-signup');
+    var tabSignupEn = document.getElementById('tab-signup-en');
+    if (tabSignupEs) tabSignupEs.style.display = 'none';
+    if (tabSignupEn) tabSignupEn.style.display = 'none';
+    return;
+  }
+
+  // Customer or Staffing: show the auth form
+  document.getElementById('type-selector').style.display = 'none';
+  document.getElementById('auth-form-wrap').style.display = 'block';
+
+  if (type === 'staffing') {
+    document.querySelector('#form-login .auth-sub[data-es]').textContent = 'Inicia sesión para contactar trabajadores individuales.';
+    document.querySelector('#form-login .auth-sub[data-en]').textContent = 'Log in to contact individual workers.';
+    document.querySelector('#form-signup .auth-sub[data-es]').textContent = 'Crea tu cuenta para buscar y contactar personal disponible.';
+    document.querySelector('#form-signup .auth-sub[data-en]').textContent = 'Create your account to find and contact available workers.';
+  }
+}
+
+function resetUserType() {
+  selectedUserType = '';
+  document.getElementById('type-selector').style.display = 'block';
+  document.getElementById('auth-form-wrap').style.display = 'none';
+}
+
+function switchAuthTab(tab) {
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-login-en').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+  document.getElementById('tab-signup-en').classList.toggle('active', tab === 'signup');
+  document.getElementById('form-login').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('form-signup').style.display = tab === 'signup' ? 'block' : 'none';
+}
+
+function showError(id) { var el = document.getElementById(id); if (el) el.classList.add('show'); }
+function hideError(id) { var el = document.getElementById(id); if (el) el.classList.remove('show'); }
+function markInvalid(el) { if (el) el.classList.add('input-error'); }
+function clearInvalid(el) { if (el) el.classList.remove('input-error'); }
+
+function clearLoginError() {
+  clearInvalid(document.getElementById('login-email'));
+  clearInvalid(document.getElementById('login-password'));
+  hideError('err-login');
+}
+function clearSignupError() {
+  clearInvalid(document.getElementById('signup-name'));
+  clearInvalid(document.getElementById('signup-email'));
+  clearInvalid(document.getElementById('signup-password'));
+  hideError('err-signup');
+}
+
+var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function doLogin() {
+  var email = document.getElementById('login-email');
+  var password = document.getElementById('login-password');
+  var isEn = document.body.classList.contains('en');
+
+  // Basic format check
+  var valid = emailPattern.test(email.value.trim()) && password.value.length >= 8;
+  if (!valid) {
+    showError('err-login');
+    if (!emailPattern.test(email.value.trim())) markInvalid(email);
+    if (password.value.length < 8) markInvalid(password);
+    return;
+  }
+
+  // Check against localStorage registered accounts (simulation)
+  // In production: POST /api/auth/login → DB checks email + password hash
+  var accounts = [];
+  try { accounts = JSON.parse(localStorage.getItem('anm-accounts') || '[]'); } catch(e) {}
+  var match = accounts.find(function(a) {
+    return a.email === email.value.trim() && a.password === password.value;
+  });
+
+  if (!match) {
+    showError('err-login');
+    markInvalid(email);
+    markInvalid(password);
+    // Update error message to be more specific
+    var errEl = document.getElementById('err-login');
+    if (errEl) errEl.textContent = isEn
+      ? 'No account found with this email and password. Please sign up first.'
+      : 'No se encontró una cuenta con este correo y contraseña. Por favor regístrate primero.';
+    return;
+  }
+
+  // Business owners go to dashboard.html, customers stay on this page
+  // Check both the stored account type AND the selected user type on this page
+  if (match.type === 'business' || selectedUserType === 'business') {
+    try { localStorage.setItem('anm-sim-logged-in', '1'); } catch(e) {}
+    window.location.href = 'dashboard.html';
+    return;
+  }
+
+  // Staffing hiring customers also go to dashboard after login (to complete contact flow)
+  // but enterAccount handles the sessionStorage redirect if set
+  enterAccount(match.name, match.email);
+}
+
+function doSignup() {
+  var name = document.getElementById('signup-name');
+  var email = document.getElementById('signup-email');
+  var password = document.getElementById('signup-password');
+  var isEn = document.body.classList.contains('en');
+  var valid = name.value.trim() !== '' && emailPattern.test(email.value.trim()) && password.value.length >= 8;
+  if (!valid) {
+    showError('err-signup');
+    if (name.value.trim() === '') markInvalid(name); else clearInvalid(name);
+    if (!emailPattern.test(email.value.trim())) markInvalid(email); else clearInvalid(email);
+    if (password.value.length < 8) markInvalid(password); else clearInvalid(password);
+    return;
+  }
+
+  // Check if email already registered
+  var accounts = [];
+  try { accounts = JSON.parse(localStorage.getItem('anm-accounts') || '[]'); } catch(e) {}
+  var exists = accounts.find(function(a) { return a.email === email.value.trim(); });
+  if (exists) {
+    showError('err-signup');
+    markInvalid(email);
+    var errEl = document.getElementById('err-signup');
+    if (errEl) errEl.textContent = isEn
+      ? 'An account with this email already exists. Please log in.'
+      : 'Ya existe una cuenta con este correo. Por favor inicia sesión.';
+    return;
+  }
+
+  // Save new account to localStorage (simulation)
+  // In production: POST /api/auth/signup → DB creates user record
+  accounts.push({
+    name: name.value.trim(),
+    email: email.value.trim(),
+    password: password.value,  // In production: hashed server-side, never stored in plain text
+    createdAt: Date.now(),
+    type: selectedUserType || 'customer'
+  });
+  try { localStorage.setItem('anm-accounts', JSON.stringify(accounts)); } catch(e) {}
+
+  enterAccount(name.value.trim(), email.value.trim());
+}
+
+// ── SETTINGS FUNCTIONS ─────────────────────────────────────
+function saveNotifSettings() {
+  var cb = document.getElementById('notif-new-biz');
+  var isEn = document.body.classList.contains('en');
+  try {
+    var prefs = JSON.parse(localStorage.getItem('anm-notif-prefs') || '{}');
+    prefs.newBusinesses = cb ? cb.checked : false;
+    localStorage.setItem('anm-notif-prefs', JSON.stringify(prefs));
+  } catch(e) {}
+  // Show saved confirmation
+  var msg = document.getElementById(isEn ? 'notif-saved-msg-en' : 'notif-saved-msg');
+  if (msg) {
+    msg.style.display = 'block';
+    setTimeout(function() { msg.style.display = 'none'; }, 2500);
+  }
+  // In production: PATCH /api/customer/:id/notifications
+  // Backend sends email to customer's registered address when a new verified
+  // business is added in their service area (based on their zip/city preference).
+}
+
+function loadNotifSettings() {
+  try {
+    var prefs = JSON.parse(localStorage.getItem('anm-notif-prefs') || '{}');
+    var cb = document.getElementById('notif-new-biz');
+    if (cb) cb.checked = !!prefs.newBusinesses;
+  } catch(e) {}
+  // Show registered email in the notification description
+  try {
+    var profile = JSON.parse(localStorage.getItem('anm-customer-profile') || '{}');
+    var email = profile.email || '';
+    var es = document.getElementById('notif-email-display-es');
+    var en = document.getElementById('notif-email-display-en');
+    if (email) {
+      if (es) es.textContent = email;
+      if (en) en.textContent = email;
+    }
+  } catch(e) {}
+}
+
+function saveAccountSettings() {
+  var name = document.getElementById('settings-name');
+  var email = document.getElementById('settings-email');
+  var phone = document.getElementById('settings-phone');
+  var isEn = document.body.classList.contains('en');
+
+  // Basic validation
+  if (name && name.value.trim() === '') {
+    name.style.borderColor = 'var(--c-accent)';
+    return;
+  }
+  if (name) name.style.borderColor = '';
+
+  // Save to localStorage (simulation — in production: PATCH /api/customer/:id)
+  try {
+    var profile = JSON.parse(localStorage.getItem('anm-customer-profile') || '{}');
+    if (name) profile.name = name.value.trim();
+    if (email) profile.email = email.value.trim();
+    if (phone) profile.phone = phone.value.trim();
+    localStorage.setItem('anm-customer-profile', JSON.stringify(profile));
+  } catch(e) {}
+
+  // Update avatar and name in header
+  if (name && name.value) {
+    var av = document.getElementById('acc-avatar');
+    var nm = document.getElementById('acc-name');
+    if (av) av.textContent = name.value.trim().charAt(0).toUpperCase();
+    if (nm) nm.textContent = name.value.trim();
+  }
+
+  // Show confirmation
+  var conf = document.getElementById(isEn ? 'settings-save-confirm-en' : 'settings-save-confirm');
+  if (conf) {
+    conf.style.display = 'block';
+    setTimeout(function() { conf.style.display = 'none'; }, 3000);
+  }
+}
+
+function changePassword() {
+  var curr = document.getElementById('settings-pw-current');
+  var newPw = document.getElementById('settings-pw-new');
+  var conf = document.getElementById('settings-pw-confirm');
+  var errEl = document.getElementById('settings-pw-error');
+  var okEl = document.getElementById(document.body.classList.contains('en') ? 'settings-pw-confirm-msg-en' : 'settings-pw-confirm-msg');
+  var isEn = document.body.classList.contains('en');
+
+  if (errEl) errEl.style.display = 'none';
+  if (okEl) okEl.style.display = 'none';
+
+  if (!curr || !curr.value) {
+    if (errEl) { errEl.textContent = isEn ? 'Enter your current password.' : 'Ingresa tu contraseña actual.'; errEl.style.display = 'block'; }
+    return;
+  }
+  if (!newPw || newPw.value.length < 8) {
+    if (errEl) { errEl.textContent = isEn ? 'New password must be at least 8 characters.' : 'La nueva contraseña debe tener al menos 8 caracteres.'; errEl.style.display = 'block'; }
+    return;
+  }
+  if (!conf || conf.value !== newPw.value) {
+    if (errEl) { errEl.textContent = isEn ? 'Passwords do not match.' : 'Las contraseñas no coinciden.'; errEl.style.display = 'block'; }
+    return;
+  }
+
+  // In production: PATCH /api/customer/:id/password
+  // Clear fields
+  curr.value = ''; newPw.value = ''; conf.value = '';
+  if (okEl) { okEl.style.display = 'block'; setTimeout(function(){ okEl.style.display='none'; }, 3000); }
+}
+
+function confirmDeleteAccount() {
+  var isEn = document.body.classList.contains('en');
+  var msg = isEn
+    ? 'Are you sure you want to delete your account? This will remove all your saved businesses and reviews. This action cannot be undone.'
+    : '¿Estás seguro de que quieres eliminar tu cuenta? Esto eliminará todos tus negocios guardados y reseñas. Esta acción no se puede deshacer.';
+  if (window.confirm(msg)) {
+    // In production: DELETE /api/customer/:id
+    try {
+      localStorage.removeItem('anm-sim-logged-in');
+      localStorage.removeItem('anm-saved-businesses');
+      localStorage.removeItem('anm-customer-profile');
+    } catch(e) {}
+    window.location.href = 'index.html';
+  }
+}
+
+// ── SAVED BUSINESSES ───────────────────────────────────────
+function getSavedBusinesses() {
+  try { return JSON.parse(localStorage.getItem('anm-saved-businesses') || '[]'); } catch(e) { return []; }
+}
+function setSavedBusinesses(list) {
+  try { localStorage.setItem('anm-saved-businesses', JSON.stringify(list)); } catch(e) {}
+}
+
+function renderSavedGrid() {
+  var grid = document.getElementById('saved-grid-container');
+  var empty = document.getElementById('saved-empty');
+  if (!grid) return;
+  var saved = getSavedBusinesses();
+  var isEn = document.body.classList.contains('en');
+
+  grid.innerHTML = '';
+  if (saved.length === 0) {
+    if (empty) empty.style.display = 'block';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+
+  saved.forEach(function(biz) {
+    var initials = biz.name.split(' ').slice(0,2).map(function(w){ return w[0]; }).join('').toUpperCase();
+    var card = document.createElement('div');
+    card.className = 'saved-card';
+    card.innerHTML =
+      '<button class="unsave" onclick="unsaveBusiness(\'' + biz.id + '\')" title="' + (isEn ? 'Remove' : 'Quitar') + '">✕</button>' +
+      '<div class="biz-av">' + initials + '</div>' +
+      '<div class="biz-name">' + biz.name + '</div>' +
+      '<div class="biz-cat">' + (biz.category || '') + (biz.area ? ' · ' + biz.area : '') + '</div>' +
+      '<div class="biz-actions">' +
+        '<a href="profile.html?id=' + biz.id + '" class="view-link" onclick="event.stopPropagation()">' + (isEn ? 'View profile' : 'Ver perfil') + '</a>' +
+        '<a href="profile.html?id=' + biz.id + '#whatsapp" class="wa-link" onclick="event.stopPropagation()">💬 WhatsApp</a>' +
+      '</div>';
+    grid.appendChild(card);
+  });
+}
+
+function unsaveBusiness(bizId) {
+  var saved = getSavedBusinesses();
+  saved = saved.filter(function(s){ return s.id !== bizId; });
+  setSavedBusinesses(saved);
+  renderSavedGrid();
+}
+
+function enterAccount(name, email) {
+  // Set simulated login flag so profile.html recognizes this session as logged in
+  try { localStorage.setItem('anm-sim-logged-in', '1'); } catch(e) {}
+
+  // If the user was trying to contact a worker before being asked to log in,
+  // send them straight back to that profile instead of showing this page.
+  var redirect = '';
+  try { redirect = sessionStorage.getItem('anm-contact-redirect') || ''; } catch(e) {}
+  if (redirect) {
+    try { sessionStorage.removeItem('anm-contact-redirect'); } catch(e) {}
+    window.location.href = redirect;
+    return;
+  }
+
+  // No redirect — show the normal logged-in account view on this page
+  document.getElementById('auth-wrap').style.display = 'none';
+  document.getElementById('account-wrap').classList.add('show');
+  if (name) {
+    document.getElementById('acc-name').textContent = name;
+    document.getElementById('acc-avatar').textContent = name.charAt(0).toUpperCase();
+  }
+  if (email) document.getElementById('acc-email').textContent = email;
+  renderSavedGrid(); // populate saved businesses from localStorage
+  loadNotifSettings(); // restore notification preference
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function doLogout() {
+  document.getElementById('account-wrap').classList.remove('show');
+  document.getElementById('auth-wrap').style.display = 'block';
+  switchAuthTab('login');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function switchAccTab(tab) {
+  document.querySelectorAll('.acc-tab').forEach(function(t, i) {
+    var tabs = ['saved','quotes','settings'];
+    t.classList.toggle('active', tabs[i] === tab);
+  });
+  document.querySelectorAll('.acc-pane').forEach(function(p) { p.classList.remove('show'); });
+  document.getElementById('pane-' + tab).classList.add('show');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var saved = ''; try { saved = localStorage.getItem('anm-lang'); } catch(e) {}
+  var browser = (navigator.language || 'es').toLowerCase();
+  setLang(saved || (browser.startsWith('en') ? 'en' : 'es'));
+
+  // Auto-select user type from URL param (e.g. login.html?type=business)
+  var params = new URLSearchParams(window.location.search);
+  var typeParam = params.get('type');
+  if (typeParam && USER_TYPE_INFO[typeParam]) {
+    selectUserType(typeParam);
+  }
+
+  // If already logged in (simulated), show the account page
+  try {
+    if (localStorage.getItem('anm-sim-logged-in') === '1') {
+      document.getElementById('auth-wrap').style.display = 'none';
+      document.getElementById('account-wrap').classList.add('show');
+      renderSavedGrid();
+      loadNotifSettings();
+    }
+  } catch(e) {}
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Console — AmigosNearMe</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --c-bg:#FAFAF7; --c-surface:#FFFFFF; --c-border:rgba(0,0,0,0.09);
+    --c-text:#1A1A18; --c-muted:#6B6B66; --c-hint:#A8A8A2;
+    --c-accent:#C94F2B; --c-accent-light:#FAF0EC;
+    --c-green:#1D9E75; --c-green-light:#EBF8F3;
+    --c-amber:#BA7517; --c-amber-light:#FEF6E4;
+    --c-blue:#185FA5; --c-blue-light:#EEF4FB;
+    --radius-sm:8px; --radius-md:12px; --radius-lg:18px;
+    --shadow:0 1px 3px rgba(0,0,0,0.07),0 4px 12px rgba(0,0,0,0.05);
+    --font-display:'DM Serif Display',Georgia,serif;
+    --font-body:'DM Sans',system-ui,sans-serif;
+    --font-mono:'JetBrains Mono',monospace;
+    --sidebar-w:210px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);font-size:14px;line-height:1.6;display:flex;min-height:100vh}
+
+  /* SIDEBAR */
+  .sidebar{width:var(--sidebar-w);background:#15140F;color:#fff;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh}
+  .sb-logo{padding:20px;border-bottom:0.5px solid rgba(255,255,255,0.1)}
+  .sb-logo a{font-family:var(--font-display);font-size:18px;color:#fff;text-decoration:none}
+  .sb-logo a span{color:var(--c-accent)}
+  .sb-tag{font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:.08em;text-transform:uppercase;margin-top:2px}
+  .sb-nav{padding:14px 10px;flex:1}
+  .sb-link{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:var(--radius-sm);font-size:13px;color:rgba(255,255,255,0.6);text-decoration:none;cursor:pointer;margin-bottom:2px;transition:background 0.12s}
+  .sb-link:hover{background:rgba(255,255,255,0.06);color:#fff}
+  .sb-link.active{background:rgba(201,79,43,0.18);color:#fff;font-weight:500}
+  .sb-foot{padding:16px 20px;border-top:0.5px solid rgba(255,255,255,0.1);font-size:11px;color:rgba(255,255,255,0.35)}
+
+  /* MAIN */
+  .main{margin-left:var(--sidebar-w);flex:1;min-width:0}
+  .top-bar{background:var(--c-surface);border-bottom:0.5px solid var(--c-border);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+  .top-bar-title{font-size:15px;font-weight:600}
+  .top-bar-sub{font-size:12px;color:var(--c-muted)}
+  .content{padding:24px 28px}
+
+  /* STATS ROW */
+  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+  .stat-card{background:var(--c-surface);border:0.5px solid var(--c-border);border-radius:var(--radius-lg);padding:16px 18px}
+  .stat-label{font-size:11px;color:var(--c-muted);margin-bottom:4px}
+  .stat-val{font-size:24px;font-family:var(--font-display)}
+
+  /* TOOLBAR */
+  .toolbar{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+  .search-input{flex:1;min-width:200px;padding:8px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:13px;font-family:var(--font-body);background:var(--c-surface)}
+  .filter-select{padding:8px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:13px;font-family:var(--font-body);background:var(--c-surface);color:var(--c-text)}
+
+  /* TABLE */
+  .table-card{background:var(--c-surface);border:0.5px solid var(--c-border);border-radius:var(--radius-lg);overflow:hidden}
+  table{width:100%;border-collapse:collapse}
+  thead{background:var(--c-bg);border-bottom:0.5px solid var(--c-border)}
+  th{text-align:left;font-size:11px;font-weight:600;color:var(--c-muted);text-transform:uppercase;letter-spacing:.04em;padding:11px 14px}
+  td{padding:12px 14px;border-bottom:0.5px solid var(--c-border);font-size:13px;vertical-align:middle}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:var(--c-bg)}
+
+  .biz-cell{display:flex;align-items:center;gap:10px}
+  .biz-avatar{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+  .av-coral{background:#FAF0EC;color:var(--c-accent)}
+  .av-teal{background:var(--c-green-light);color:var(--c-green)}
+  .av-blue{background:var(--c-blue-light);color:var(--c-blue)}
+  .av-amber{background:var(--c-amber-light);color:var(--c-amber)}
+  .av-gray{background:#F1EFE8;color:#5F5E5A}
+  .biz-name{font-weight:500;font-size:13px}
+  .biz-cat{font-size:11px;color:var(--c-muted)}
+
+  .plan-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:3px 9px;border-radius:99px;font-weight:500}
+  .plan-free{background:#F1EFE8;color:var(--c-hint)}
+  .plan-basic{background:var(--c-blue-light);color:var(--c-blue)}
+  .plan-premium{background:var(--c-amber-light);color:var(--c-amber)}
+
+  .verified-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:3px 9px;border-radius:99px;font-weight:500;background:var(--c-green-light);color:var(--c-green)}
+  .basic-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:3px 9px;border-radius:99px;font-weight:500;background:#F1EFE8;color:var(--c-hint)}
+
+  /* PRIORITY CONTROL */
+  .priority-cell{display:flex;align-items:center;gap:10px;min-width:220px}
+  .priority-slider{flex:1;accent-color:var(--c-accent);cursor:pointer}
+  .priority-val{font-family:var(--font-mono);font-size:13px;font-weight:600;width:28px;text-align:center;padding:2px 0;border-radius:6px;background:var(--c-bg)}
+  .priority-val.zero{color:var(--c-hint)}
+  .priority-val.low{color:var(--c-blue)}
+  .priority-val.mid{color:var(--c-amber)}
+  .priority-val.high{color:var(--c-accent);background:var(--c-accent-light)}
+  .auto-tag{font-size:10px;color:var(--c-hint);white-space:nowrap}
+
+  .btn-save{padding:5px 12px;border-radius:var(--radius-sm);font-size:11px;font-weight:500;background:var(--c-text);color:#fff;border:none;cursor:pointer;font-family:var(--font-body);white-space:nowrap;opacity:0;transition:opacity 0.15s}
+  .btn-save.show{opacity:1}
+  .btn-save.saved{background:var(--c-green)}
+  .btn-suspend{padding:5px 12px;border-radius:var(--radius-sm);font-size:11px;font-weight:500;border:none;cursor:pointer;font-family:var(--font-body);white-space:nowrap}
+  .action-cell{display:flex;gap:6px;align-items:center}
+
+  .info-banner{background:var(--c-blue-light);border:0.5px solid rgba(24,95,165,0.2);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:18px;font-size:13px;color:var(--c-blue);display:flex;gap:10px;align-items:flex-start}
+  .stat-delta{font-size:11px;margin-top:4px;font-weight:500}
+  .stat-delta.up{color:var(--c-green)}
+
+  /* ===== QUEUE CARDS (Verification + Reviews) ===== */
+  .queue-list{display:flex;flex-direction:column;gap:10px}
+  .queue-card{background:var(--c-surface);border:0.5px solid var(--c-border);border-radius:var(--radius-lg);padding:16px 18px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+  .queue-main{flex:1;min-width:240px}
+  .doc-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px;margin-left:42px}
+  .doc-chip{font-size:11px;padding:4px 9px;border-radius:99px;background:var(--c-bg);border:0.5px solid var(--c-border);color:var(--c-muted)}
+  .queue-actions{display:flex;gap:8px;flex-shrink:0}
+  .btn-approve{padding:8px 16px;border-radius:var(--radius-sm);background:var(--c-green);color:#fff;border:none;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-body)}
+  .btn-approve-secondary{padding:8px 16px;border-radius:var(--radius-sm);background:var(--c-bg);color:var(--c-text);border:0.5px solid var(--c-border);font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font-body)}
+  .btn-reject{padding:8px 16px;border-radius:var(--radius-sm);background:var(--c-accent-light);color:var(--c-accent);border:none;font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font-body)}
+
+  .review-card{flex-direction:column;align-items:stretch}
+  .review-quote{margin-left:42px;margin-top:9px;font-size:13px;color:var(--c-muted);font-style:italic;background:var(--c-bg);padding:9px 12px;border-radius:8px;border-left:2px solid var(--c-accent)}
+  .flag-source-row{display:flex;align-items:center;gap:8px;margin-top:9px;margin-left:42px;flex-wrap:wrap}
+  .flag-source-tag{font-size:11px;font-weight:600;padding:4px 10px;border-radius:99px;white-space:nowrap}
+  .source-system{background:var(--c-blue-light);color:var(--c-blue)}
+  .source-business{background:var(--c-amber-light);color:var(--c-amber)}
+  .source-customer{background:#F1EFE8;color:var(--c-muted)}
+  .flag-reason-text{font-size:12px;color:var(--c-accent)}
+  .review-card .queue-actions{margin-top:12px;margin-left:42px;justify-content:flex-start}
+
+  .empty-queue{display:none;text-align:center;padding:60px 20px;color:var(--c-muted)}
+  .empty-queue .icon{font-size:36px;margin-bottom:10px}
+  .empty-queue .title{font-size:15px;font-weight:600;color:var(--c-text);margin-bottom:4px}
+  .empty-queue .sub{font-size:13px}
+
+  /* ===== ANALYTICS ===== */
+  .analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .chart-card{background:var(--c-surface);border:0.5px solid var(--c-border);border-radius:var(--radius-lg);padding:18px 20px}
+  .chart-title{font-size:13px;font-weight:600;margin-bottom:16px}
+  .bar-chart{display:flex;align-items:flex-end;gap:10px;height:140px}
+  .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:8px}
+  .bar{width:100%;background:#E2E0D9;border-radius:5px 5px 0 0;min-height:4px}
+  .bar.accent{background:var(--c-accent)}
+  .bar-col span{font-size:10px;color:var(--c-hint)}
+  .dist-row{display:flex;align-items:center;gap:10px;margin-bottom:11px}
+  .dist-row:last-child{margin-bottom:0}
+  .dist-label{font-size:12px;color:var(--c-muted);width:110px;flex-shrink:0}
+  .dist-bar{flex:1;height:7px;background:var(--c-bg);border-radius:99px;overflow:hidden}
+  .dist-fill{height:100%;background:var(--c-accent);border-radius:99px}
+  .dist-val{font-size:12px;font-weight:600;width:24px;text-align:right;flex-shrink:0}
+
+  /* ===== SETTINGS ===== */
+  .settings-card-admin{background:var(--c-surface);border:0.5px solid var(--c-border);border-radius:var(--radius-lg);padding:20px 22px;margin-bottom:14px}
+  .settings-title{font-size:14px;font-weight:600;margin-bottom:4px}
+  .settings-sub{font-size:12px;color:var(--c-muted);margin-bottom:14px}
+  .setting-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:0.5px solid var(--c-border);gap:14px}
+  .setting-row:last-child{border-bottom:none}
+  .setting-label{font-size:13px}
+  .setting-sub-label{font-size:11px;color:var(--c-muted);margin-top:2px}
+  .setting-input{width:64px;padding:7px 9px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:13px;font-family:var(--font-body);text-align:center;background:var(--c-bg)}
+  .admin-switch{position:relative;width:38px;height:22px;flex-shrink:0}
+  .admin-switch input{opacity:0;width:0;height:0}
+  .admin-slider{position:absolute;inset:0;background:var(--c-border);border-radius:99px;cursor:pointer;transition:0.2s}
+  .admin-slider::before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:0.2s}
+  .admin-switch input:checked + .admin-slider{background:var(--c-green)}
+  .admin-switch input:checked + .admin-slider::before{transform:translateX(16px)}
+  .admin-member{display:flex;align-items:center;gap:10px;padding:8px 0}
+  .btn-add-admin{margin-top:10px;padding:8px 14px;border-radius:var(--radius-sm);background:var(--c-bg);border:0.5px solid var(--c-border);font-size:12px;font-weight:500;color:var(--c-text);cursor:pointer;font-family:var(--font-body)}
+
+  @media (max-width:900px){
+    .sidebar{display:none}
+    .main{margin-left:0}
+    .stats-row{grid-template-columns:1fr 1fr}
+    table{font-size:12px}
+    .priority-cell{min-width:160px}
+    .analytics-grid{grid-template-columns:1fr}
+    .doc-chips,.review-quote,.review-card .queue-actions{margin-left:0}
+  }
+
+  /* ===== REJECT MODAL ===== */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(20,19,15,0.45);z-index:100;align-items:center;justify-content:center;padding:20px}
+  .modal-overlay.show{display:flex}
+  .modal-card{background:var(--c-surface);border-radius:var(--radius-xl,20px);padding:26px;max-width:440px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,0.18)}
+  .modal-title{font-size:17px;font-weight:600;margin-bottom:5px}
+  .modal-sub{font-size:12px;color:var(--c-muted);margin-bottom:16px;line-height:1.5}
+  .reason-presets{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+  .reason-preset{font-size:11px;padding:6px 11px;border-radius:99px;border:0.5px solid var(--c-border);background:var(--c-bg);color:var(--c-muted);cursor:pointer;font-family:var(--font-body)}
+  .reason-preset:hover{border-color:var(--c-text);color:var(--c-text)}
+  .reason-textarea{width:100%;min-height:80px;padding:11px 13px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:13px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);resize:vertical;outline:none}
+  .reason-textarea.input-error{border-color:var(--c-accent);background:var(--c-accent-light)}
+  .field-error{display:none;align-items:center;gap:6px;font-size:12px;color:var(--c-accent);font-weight:500;margin-top:8px;padding:7px 11px;background:var(--c-accent-light);border:0.5px solid rgba(201,79,43,0.3);border-radius:var(--radius-sm)}
+  .field-error.show{display:flex}
+  .field-error::before{content:"⚠";font-size:13px}
+  .reason-textarea:focus{border-color:var(--c-text)}
+  .modal-notify-row{display:flex;align-items:center;gap:8px;margin-top:12px;padding:10px 12px;background:var(--c-amber-light);border-radius:var(--radius-sm);font-size:11px;color:var(--c-amber)}
+  .modal-actions{display:flex;gap:8px;margin-top:18px}
+  .btn-modal-cancel{flex:1;padding:10px;border-radius:var(--radius-sm);background:var(--c-bg);border:0.5px solid var(--c-border);font-size:13px;font-weight:500;color:var(--c-text);cursor:pointer;font-family:var(--font-body)}
+  .btn-modal-confirm{flex:1;padding:10px;border-radius:var(--radius-sm);background:var(--c-accent);border:none;font-size:13px;font-weight:600;color:#fff;cursor:pointer;font-family:var(--font-body)}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <a href="#">Amigos<span>NearMe</span></a>
+    <div class="sb-tag">Admin Console</div>
+  </div>
+  <nav class="sb-nav">
+    <a class="sb-link active" id="nav-businesses" onclick="showAdminPane('businesses')"><span>🏢</span> Businesses</a>
+    <a class="sb-link" id="nav-customers" onclick="showAdminPane('customers')"><span>👥</span> Customers</a>
+    <a class="sb-link" id="nav-verification" onclick="showAdminPane('verification')"><span>✅</span> Verification Queue</a>
+    <a class="sb-link" id="nav-reviews" onclick="showAdminPane('reviews')"><span>💬</span> Reviews Moderation</a>
+    <a class="sb-link" id="nav-cancellations" onclick="showAdminPane('cancellations')"><span>🚪</span> Cancellation Requests <span style="background:var(--c-accent);color:#fff;font-size:10px;padding:1px 6px;border-radius:99px;margin-left:4px">2</span></a>
+    <a class="sb-link" id="nav-analytics" onclick="showAdminPane('analytics')"><span>📊</span> Platform Analytics</a>
+    <a class="sb-link" id="nav-settings" onclick="showAdminPane('settings')"><span>⚙️</span> Settings</a>
+  </nav>
+  <div class="sb-foot">Logged in as admin@amigosnearme.com<br><a href="admin-login.html" style="color:rgba(255,255,255,0.45);text-decoration:none">Sign out →</a></div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="top-bar">
+    <div>
+      <div class="top-bar-title" id="top-bar-title">Businesses</div>
+      <div class="top-bar-sub" id="top-bar-sub">Manage listings, verification, and search priority</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+  <!-- ===== BUSINESSES PANE ===== -->
+  <div id="pane-businesses">
+
+    <div class="info-banner">
+      <span>ℹ️</span>
+      <div>
+        <strong>Priority Score (0–20)</strong> controls search ranking under "Recommended" sort — higher score appears first.
+        <strong>Premium plan businesses automatically receive 10 points.</strong> Admins can adjust any business up or down based on performance, reliability, or complaints. Changes apply immediately to search.html.
+        <strong>Suspended</strong> businesses are hidden from search.html and profile.html until reactivated.
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total Businesses</div>
+        <div class="stat-val">137</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Premium (auto +10)</div>
+        <div class="stat-val" style="color:var(--c-amber)">18</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pending Verification</div>
+        <div class="stat-val" style="color:var(--c-accent)">9</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Admin-Adjusted Priority</div>
+        <div class="stat-val" style="color:var(--c-blue)">4</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <input class="search-input" type="text" placeholder="Search by business name..." onkeyup="filterTable()" id="search-box">
+      <select class="filter-select" id="plan-filter" onchange="filterTable()">
+        <option value="">All Plans</option>
+        <option value="free">Free</option>
+        <option value="basic">Basic</option>
+        <option value="premium">Premium</option>
+      </select>
+      <select class="filter-select" id="verify-filter" onchange="filterTable()">
+        <option value="">All Verification</option>
+        <option value="verified">Verified</option>
+        <option value="basic-tier">Basic (unverified)</option>
+      </select>
+    </div>
+
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Business</th>
+            <th>Plan</th>
+            <th>Verification</th>
+            <th>Rating</th>
+            <th>Priority Score</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="biz-table-body">
+
+          <tr data-plan="premium" data-verify="verified" data-name="garcia's garden & landscaping" data-status="active">
+            <td>
+              <div class="biz-cell">
+                <div class="biz-avatar av-coral">GG</div>
+                <div>
+                  <div class="biz-name">Garcia's Garden & Landscaping</div>
+                  <div class="biz-cat">Landscaping · Duluth, GA</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="plan-badge plan-premium">⭐ Premium</span></td>
+            <td><span class="verified-badge">✅ Verified</span></td>
+            <td>4.9 ★</td>
+            <td>
+              <div class="priority-cell">
+                <input type="range" class="priority-slider" min="0" max="20" value="10" oninput="updatePriority(this)">
+                <span class="priority-val mid">10</span>
+                <span class="auto-tag">auto +10</span>
+              </div>
+            </td>
+            <td><span class="verified-badge">Active</span></td>
+            <td><div class="action-cell"><button class="btn-suspend" style="background:var(--c-accent-light);color:var(--c-accent)" onclick="toggleBusinessStatus(this)">Suspend</button><button class="btn-save" onclick="savePriority(this)">Save</button></div></td>
+          </tr>
+
+          <tr data-plan="basic" data-verify="verified" data-name="rodriguez cleaning services" data-status="active">
+            <td>
+              <div class="biz-cell">
+                <div class="biz-avatar av-teal">RC</div>
+                <div>
+                  <div class="biz-name">Rodriguez Cleaning Services</div>
+                  <div class="biz-cat">Cleaning · Norcross, GA</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="plan-badge plan-basic">Basic</span></td>
+            <td><span class="verified-badge">✅ Verified</span></td>
+            <td>4.8 ★</td>
+            <td>
+              <div class="priority-cell">
+                <input type="range" class="priority-slider" min="0" max="20" value="0" oninput="updatePriority(this)">
+                <span class="priority-val zero">0</span>
+              </div>
+            </td>
+            <td><span class="verified-badge">Active</span></td>
+            <td><div class="action-cell"><button class="btn-suspend" style="background:var(--c-accent-light);color:var(--c-accent)" onclick="toggleBusinessStatus(this)">Suspend</button><button class="btn-save" onclick="savePriority(this)">Save</button></div></td>
+          </tr>
+
+          <tr data-plan="premium" data-verify="verified" data-name="hernandez construction llc" data-status="active">
+            <td>
+              <div class="biz-cell">
+                <div class="biz-avatar av-blue">HL</div>
+                <div>
+                  <div class="biz-name">Hernandez Construction LLC</div>
+                  <div class="biz-cat">Construction · Atlanta, GA</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="plan-badge plan-premium">⭐ Premium</span></td>
+            <td><span class="verified-badge">✅ Verified</span></td>
+            <td>4.7 ★</td>
+            <td>
+              <div class="priority-cell">
+                <input type="range" class="priority-slider" min="0" max="20" value="15" oninput="updatePriority(this)">
+                <span class="priority-val high">15</span>
+                <span class="auto-tag">+5 by admin</span>
+              </div>
+            </td>
+            <td><span class="verified-badge">Active</span></td>
+            <td><div class="action-cell"><button class="btn-suspend" style="background:var(--c-accent-light);color:var(--c-accent)" onclick="toggleBusinessStatus(this)">Suspend</button><button class="btn-save" onclick="savePriority(this)">Save</button></div></td>
+          </tr>
+
+          <tr data-plan="basic" data-verify="verified" data-name="martinez plumbing & repair" data-status="suspended">
+            <td>
+              <div class="biz-cell">
+                <div class="biz-avatar av-amber">MP</div>
+                <div>
+                  <div class="biz-name">Martinez Plumbing & Repair</div>
+                  <div class="biz-cat">Plumbing · Buford, GA</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="plan-badge plan-basic">Basic</span></td>
+            <td><span class="verified-badge">✅ Verified</span></td>
+            <td>4.6 ★</td>
+            <td>
+              <div class="priority-cell">
+                <input type="range" class="priority-slider" min="0" max="20" value="0" oninput="updatePriority(this)">
+                <span class="priority-val zero">0</span>
+              </div>
+            </td>
+            <td><span class="basic-badge" style="background:var(--c-accent-light);color:var(--c-accent)">Suspended</span></td>
+            <td><div class="action-cell"><button class="btn-suspend" style="background:var(--c-green-light);color:var(--c-green)" onclick="toggleBusinessStatus(this)">Reactivate</button><button class="btn-save" onclick="savePriority(this)">Save</button></div></td>
+          </tr>
+
+          <tr data-plan="premium" data-verify="verified" data-name="suarez electrical services" data-status="active">
+            <td>
+              <div class="biz-cell">
+                <div class="biz-avatar av-coral">SE</div>
+                <div>
+                  <div class="biz-name">Suarez Electrical Services</div>
+                  <div class="biz-cat">Electrical · Duluth, GA</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="plan-badge plan-premium">⭐ Premium</span></td>
+            <td><span class="verified-badge">✅ Verified</span></td>
+            <td>4.8 ★</td>
+            <td>
+              <div class="priority-cell">
+                <input type="range" class="priority-slider" min="0" max="20" value="10" oninput="updatePriority(this)">
+                <span class="priority-val mid">10</span>
+                <span class="auto-tag">auto +10</span>
+              </div>
+            </td>
+            <td><span class="verified-badge">Active</span></td>
+            <td><div class="action-cell"><button class="btn-suspend" style="background:var(--c-accent-light);color:var(--c-accent)" onclick="toggleBusinessStatus(this)">Suspend</button><button class="btn-save" onclick="savePriority(this)">Save</button></div></td>
+          </tr>
+
+          <tr data-plan="free" data-verify="basic-tier" data-name="flores painting co." data-status="active">
+            <td>
+              <div class="biz-cell">
+                <div class="biz-avatar av-gray">FP</div>
+                <div>
+                  <div class="biz-name">Flores Painting Co.</div>
+                  <div class="biz-cat">Painting · Lawrenceville, GA</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="plan-badge plan-free">Free</span></td>
+            <td><span class="basic-badge">📋 Basic</span></td>
+            <td>4.5 ★</td>
+            <td>
+              <div class="priority-cell">
+                <input type="range" class="priority-slider" min="0" max="20" value="0" oninput="updatePriority(this)">
+                <span class="priority-val zero">0</span>
+              </div>
+            </td>
+            <td><span class="verified-badge">Active</span></td>
+            <td><div class="action-cell"><button class="btn-suspend" style="background:var(--c-accent-light);color:var(--c-accent)" onclick="toggleBusinessStatus(this)">Suspend</button><button class="btn-save" onclick="savePriority(this)">Save</button></div></td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+  <!-- ===== END BUSINESSES PANE ===== -->
+
+  <!-- ===== CUSTOMERS PANE ===== -->
+  <div id="pane-customers" style="display:none">
+
+    <!-- Admin-only notice -->
+    <div class="info-banner" style="background:var(--c-amber-light);border-color:rgba(186,117,23,0.2)">
+      <span>🔒</span>
+      <div>
+        <strong>Admin only — not stored in the business owner's dashboard.</strong>
+        When a customer submits the fallback contact form, their name and phone number are
+        <strong>relayed to the business owner via email and WhatsApp notification</strong>
+        so the owner can contact them directly. This record is stored here for abuse-prevention
+        purposes only, is never shown in the business's dashboard inquiry history, and is
+        automatically purged after 90 days.
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Fallback submissions this month</div>
+        <div class="stat-val">34</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">WhatsApp contact events</div>
+        <div class="stat-val" style="color:var(--c-green)">213</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Staffing contact events</div>
+        <div class="stat-val" style="color:var(--c-blue)">47</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pending purge (&gt;90 days)</div>
+        <div class="stat-val" style="color:var(--c-accent)">8</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <input class="search-input" type="text" placeholder="Search by business or service..." onkeyup="filterCustomerTable()" id="customer-search-box">
+      <select class="filter-select" id="customer-status-filter" onchange="filterCustomerTable()">
+        <option value="">All businesses</option>
+        <option value="landscaping">Landscaping</option>
+        <option value="cleaning">Cleaning</option>
+        <option value="plumbing">Plumbing</option>
+      </select>
+    </div>
+
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Customer name <span style="font-weight:400;color:var(--c-accent);font-size:11px">(admin only)</span></th>
+            <th>Phone <span style="font-weight:400;color:var(--c-accent);font-size:11px">(admin only)</span></th>
+            <th>Business contacted</th>
+            <th>Service requested</th>
+            <th>Submitted</th>
+            <th>Purge date</th>
+          </tr>
+        </thead>
+        <tbody id="customer-table-body">
+
+          <tr data-status="active" data-cname="rosa fernández">
+            <td><div class="biz-cell"><div class="biz-avatar av-coral">RF</div><div><div class="biz-name">Rosa Fernández</div></div></div></td>
+            <td style="font-size:13px;color:var(--c-muted)">+1 (404) 555-0181</td>
+            <td><div style="font-size:13px">Garcia's Garden</div></td>
+            <td><div style="font-size:13px">Lawn mowing</div></td>
+            <td style="font-size:12px;color:var(--c-muted)">Jun 21, 2026</td>
+            <td style="font-size:12px;color:var(--c-amber)">Sep 19, 2026</td>
+          </tr>
+
+          <tr data-status="active" data-cname="pedro alvarado">
+            <td><div class="biz-cell"><div class="biz-avatar av-blue">PA</div><div><div class="biz-name">Pedro Alvarado</div></div></div></td>
+            <td style="font-size:13px;color:var(--c-muted)">+1 (770) 555-0247</td>
+            <td><div style="font-size:13px">Diaz Landscaping</div></td>
+            <td><div style="font-size:13px">Sprinkler repair</div></td>
+            <td style="font-size:12px;color:var(--c-muted)">Jun 20, 2026</td>
+            <td style="font-size:12px;color:var(--c-amber)">Sep 18, 2026</td>
+          </tr>
+
+          <tr data-status="active" data-cname="linda park">
+            <td><div class="biz-cell"><div class="biz-avatar av-teal">LP</div><div><div class="biz-name">Linda Park</div></div></div></td>
+            <td style="font-size:13px;color:var(--c-muted)">+1 (678) 555-0133</td>
+            <td><div style="font-size:13px">Castillo Auto</div></td>
+            <td><div style="font-size:13px">Oil change</div></td>
+            <td style="font-size:12px;color:var(--c-muted)">Jun 18, 2026</td>
+            <td style="font-size:12px;color:var(--c-amber)">Sep 16, 2026</td>
+          </tr>
+
+          <tr data-status="purge" data-cname="james wright">
+            <td><div class="biz-cell"><div class="biz-avatar av-gray">JW</div><div><div class="biz-name" style="color:var(--c-muted)">James Wright</div></div></div></td>
+            <td style="font-size:13px;color:var(--c-hint)">+1 (404) 555-0092</td>
+            <td><div style="font-size:13px;color:var(--c-muted)">Vega Tree Service</div></td>
+            <td><div style="font-size:13px;color:var(--c-muted)">Tree removal</div></td>
+            <td style="font-size:12px;color:var(--c-muted)">Mar 15, 2026</td>
+            <td style="font-size:12px;color:var(--c-accent);font-weight:500">⚠️ Jun 30, 2026</td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:12px;font-size:12px;color:var(--c-hint);text-align:center">
+      ⚠️ Rows marked in red are past the 90-day retention window and will be purged at next scheduled cleanup.
+      Data shown here is never transmitted to business owners. See Privacy Policy §3.
+    </div>
+
+  </div>
+  <!-- ===== END CUSTOMERS PANE ===== -->
+
+  <!-- ===== VERIFICATION QUEUE PANE ===== -->
+  <div id="pane-verification" style="display:none">
+
+    <div class="info-banner">
+      <span>ℹ️</span>
+      <div>
+        Businesses that uploaded an <strong>EIN or document</strong> during registration appear here.
+        Approve to grant the <strong>✅ Verified</strong> badge (visible immediately on search.html and profile.html), or reject with a reason sent to the business owner.
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Pending Review</div>
+        <div class="stat-val" style="color:var(--c-accent)">9</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Approved This Month</div>
+        <div class="stat-val" style="color:var(--c-green)">31</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Rejected This Month</div>
+        <div class="stat-val" style="color:var(--c-hint)">4</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Avg. Review Time</div>
+        <div class="stat-val">6h</div>
+      </div>
+    </div>
+
+    <div class="queue-list" id="verification-queue">
+
+      <div class="queue-card" data-vstatus="pending" data-bizid="diaz">
+        <div class="queue-main">
+          <div class="biz-cell">
+            <div class="biz-avatar av-gray">DL</div>
+            <div>
+              <div class="biz-name">Diaz Landscaping & Lawn Care</div>
+              <div class="biz-cat">Landscaping · Marietta, GA · Submitted 2 days ago</div>
+            </div>
+          </div>
+          <div class="doc-chips">
+            <span class="doc-chip">📋 Business License</span>
+            <span class="doc-chip">🔢 EIN: 88-4471203</span>
+          </div>
+        </div>
+        <div class="queue-actions">
+          <button class="btn-reject" onclick="openRejectModal(this,'verification')">Reject</button>
+          <button class="btn-approve" onclick="reviewVerification(this,'approved')">✓ Approve</button>
+        </div>
+      </div>
+
+      <div class="queue-card" data-vstatus="pending" data-bizid="vega">
+        <div class="queue-main">
+          <div class="biz-cell">
+            <div class="biz-avatar av-gray">VT</div>
+            <div>
+              <div class="biz-name">Vega Tree Service</div>
+              <div class="biz-cat">Tree Removal · Woodstock, GA · Submitted 1 day ago</div>
+            </div>
+          </div>
+          <div class="doc-chips">
+            <span class="doc-chip">🏛️ State Registration</span>
+          </div>
+        </div>
+        <div class="queue-actions">
+          <button class="btn-reject" onclick="openRejectModal(this,'verification')">Reject</button>
+          <button class="btn-approve" onclick="reviewVerification(this,'approved')">✓ Approve</button>
+        </div>
+      </div>
+
+      <div class="queue-card" data-vstatus="pending" data-bizid="castillo">
+        <div class="queue-main">
+          <div class="biz-cell">
+            <div class="biz-avatar av-gray">CA</div>
+            <div>
+              <div class="biz-name">Castillo Auto Repair</div>
+              <div class="biz-cat">Auto Repair · Gainesville, GA · Submitted 4 hours ago</div>
+            </div>
+          </div>
+          <div class="doc-chips">
+            <span class="doc-chip">📨 IRS EIN Letter</span>
+            <span class="doc-chip">🔢 EIN: 81-2290114</span>
+          </div>
+        </div>
+        <div class="queue-actions">
+          <button class="btn-reject" onclick="openRejectModal(this,'verification')">Reject</button>
+          <button class="btn-approve" onclick="reviewVerification(this,'approved')">✓ Approve</button>
+        </div>
+      </div>
+
+      <div class="queue-card" data-vstatus="pending" data-bizid="morales">
+        <div class="queue-main">
+          <div class="biz-cell">
+            <div class="biz-avatar av-gray">MT</div>
+            <div>
+              <div class="biz-name">Morales Translation Services</div>
+              <div class="biz-cat">Translation · Cumming, GA · Submitted 6 hours ago</div>
+            </div>
+          </div>
+          <div class="doc-chips">
+            <span class="doc-chip">🔢 EIN: 47-6601882</span>
+          </div>
+        </div>
+        <div class="queue-actions">
+          <button class="btn-reject" onclick="openRejectModal(this,'verification')">Reject</button>
+          <button class="btn-approve" onclick="reviewVerification(this,'approved')">✓ Approve</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="empty-queue" id="verification-empty" style="display:none">
+      <div class="icon">✅</div>
+      <div class="title">All caught up</div>
+      <div class="sub">No pending verification requests right now.</div>
+    </div>
+
+  </div>
+  <!-- ===== END VERIFICATION QUEUE PANE ===== -->
+
+  <!-- ===== REVIEWS MODERATION PANE ===== -->
+  <div id="pane-reviews" style="display:none">
+
+    <div class="info-banner">
+      <span>ℹ️</span>
+      <div>
+        Reviews land here from three sources: <strong>⚙️ system</strong> (auto-detected patterns like duplicate IPs or contact info), <strong>🏢 business owner</strong> (reported from their Dashboard), or a customer report on profile.html.
+        <strong>Keep</strong> leaves the review visible. <strong>Remove</strong> requires a reason, which is sent to the reviewer.
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Flagged Reviews</div>
+        <div class="stat-val" style="color:var(--c-accent)">5</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Reviews (platform)</div>
+        <div class="stat-val">1,284</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Removed This Month</div>
+        <div class="stat-val" style="color:var(--c-hint)">7</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Avg. Rating (platform)</div>
+        <div class="stat-val" style="color:var(--c-amber)">4.7</div>
+      </div>
+    </div>
+
+    <div class="queue-list" id="reviews-queue">
+
+      <div class="queue-card review-card" data-rstatus="pending">
+        <div class="queue-main">
+          <div class="biz-cell">
+            <div class="biz-avatar av-coral">GG</div>
+            <div>
+              <div class="biz-name">Garcia's Garden & Landscaping</div>
+              <div class="biz-cat">⭐ 1.0 · by "anon_user44"</div>
+            </div>
+          </div>
+          <div class="flag-source-row">
+            <span class="flag-source-tag source-business">🏢 Reported by business owner</span>
+            <span class="flag-reason-text">possible competitor / no service evidence</span>
+          </div>
+          <div class="review-quote" data-es>"Nunca usé este negocio pero quiero bajar su calificación."</div>
+          <div class="review-quote" data-en>"Never used this business but I want to lower their rating."</div>
+        </div>
+        <div class="queue-actions">
+          <button class="btn-approve-secondary" onclick="reviewModerate(this,'approved')">Keep</button>
+          <button class="btn-reject" onclick="openRejectModal(this,'review')">Remove</button>
+        </div>
+      </div>
+
+      <div class="queue-card review-card" data-rstatus="pending">
+        <div class="queue-main">
+          <div class="biz-cell">
+            <div class="biz-avatar av-amber">MP</div>
+            <div>
+              <div class="biz-name">Martinez Plumbing & Repair</div>
+              <div class="biz-cat">⭐ 5.0 · by "j.ramirez99"</div>
+            </div>
+          </div>
+          <div class="flag-source-row">
+            <span class="flag-source-tag source-system">⚙️ Auto-flagged by system</span>
+            <span class="flag-reason-text">suspected fake / same IP as 3 other reviews</span>
+          </div>
+          <div class="review-quote" data-es>"¡El mejor plomero de Georgia! Cinco estrellas, súper rápido."</div>
+          <div class="review-quote" data-en>"Best plumber in Georgia! Five stars, super fast."</div>
+        </div>
+        <div class="queue-actions">
+          <button class="btn-approve-secondary" onclick="reviewModerate(this,'approved')">Keep</button>
+          <button class="btn-reject" onclick="openRejectModal(this,'review')">Remove</button>
+        </div>
+      </div>
+
+      <div class="queue-card review-card" data-rstatus="pending">
+        <div class="queue-main">
+          <div class="biz-cell">
+            <div class="biz-avatar av-teal">RC</div>
+            <div>
+              <div class="biz-name">Rodriguez Cleaning Services</div>
+              <div class="biz-cat">⭐ 2.0 · by "homeowner_atl"</div>
+            </div>
+          </div>
+          <div class="flag-source-row">
+            <span class="flag-source-tag source-system">⚙️ Auto-flagged by system</span>
+            <span class="flag-reason-text">contains contact info / possible spam</span>
+          </div>
+          <div class="review-quote" data-es>"No muy puntuales. Llámenme al 404-555-0199 si quieren más detalles."</div>
+          <div class="review-quote" data-en>"Not very punctual. Call me at 404-555-0199 if you want more details."</div>
+        </div>
+        <div class="queue-actions">
+          <button class="btn-approve-secondary" onclick="reviewModerate(this,'approved')">Keep</button>
+          <button class="btn-reject" onclick="openRejectModal(this,'review')">Remove</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="empty-queue" id="reviews-empty" style="display:none">
+      <div class="icon">💬</div>
+      <div class="title">No flagged reviews</div>
+      <div class="sub">All reviews on the platform are in good standing.</div>
+    </div>
+
+  </div>
+  <!-- ===== END REVIEWS MODERATION PANE ===== -->
+
+  <!-- ===== PLATFORM ANALYTICS PANE ===== -->
+  <!-- ══ CANCELLATION REQUESTS PANE ══ -->
+  <div id="pane-cancellations" style="display:none">
+
+    <div class="info-banner" style="background:var(--c-accent-light);border-color:rgba(186,62,39,0.2);margin-bottom:16px">
+      <span>🚪</span>
+      <div>
+        <strong>Cancellation requests require manual review.</strong>
+        Do NOT delete accounts immediately. Confirm with the business, handle Braintree subscription cancellation,
+        and schedule deactivation at end of the current billing period. Reviews are retained as anonymous after closure.
+      </div>
+    </div>
+
+    <div class="stats-row" style="margin-bottom:16px">
+      <div class="stat-card">
+        <div class="stat-label">Pending review</div>
+        <div class="stat-val" style="color:var(--c-accent)" id="cancel-pending-count">2</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Processed this month</div>
+        <div class="stat-val">3</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Most common reason</div>
+        <div class="stat-val" style="font-size:13px;margin-top:4px">Not enough leads</div>
+      </div>
+    </div>
+
+    <div id="cancellation-queue">
+
+      <div class="queue-card" data-cstatus="pending" data-bizid="diaz">
+        <div class="queue-main">
+          <div class="biz-cell">
+            <div class="biz-avatar av-gray">DL</div>
+            <div>
+              <div class="biz-name">Diaz Landscaping & Lawn Care</div>
+              <div class="biz-cat">Basic Plan · $29/mo · Next billing: Jul 1, 2026</div>
+            </div>
+          </div>
+          <div class="doc-chips">
+            <span class="doc-chip">📅 Requested: Jun 20, 2026</span>
+            <span class="doc-chip">💬 Not getting enough leads</span>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--c-muted);padding:8px 0" id="cancel-notes-diaz">Notes: "I've been on Basic for 3 months and only got 2 inquiries."</div>
+        <div class="queue-actions">
+          <button class="btn-reject" onclick="openCancelRejectModal(this)">Decline request</button>
+          <button class="btn-approve" onclick="approveCancellation(this)">✓ Approve & schedule</button>
+        </div>
+      </div>
+
+      <div class="queue-card" data-cstatus="pending" data-bizid="morales">
+        <div class="queue-main">
+          <div class="biz-cell">
+            <div class="biz-avatar av-teal">MT</div>
+            <div>
+              <div class="biz-name">Morales Translation Services</div>
+              <div class="biz-cat">Free Plan · $0/mo · No active subscription</div>
+            </div>
+          </div>
+          <div class="doc-chips">
+            <span class="doc-chip">📅 Requested: Jun 22, 2026</span>
+            <span class="doc-chip">💬 Closing business</span>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--c-muted);padding:8px 0">Notes: "We are closing operations at end of June."</div>
+        <div class="queue-actions">
+          <button class="btn-reject" onclick="openCancelRejectModal(this)">Decline request</button>
+          <button class="btn-approve" onclick="approveCancellation(this)">✓ Approve & schedule</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="cancellation-empty" style="display:none;text-align:center;padding:48px;color:var(--c-hint)">
+      ✅ No pending cancellation requests.
+    </div>
+
+  </div>
+  <!-- ===== END CANCELLATIONS PANE ===== -->
+
+  <div id="pane-analytics" style="display:none">
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total Businesses</div>
+        <div class="stat-val">137</div>
+        <div class="stat-delta up">+12 this month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Customers</div>
+        <div class="stat-val">412</div>
+        <div class="stat-delta up">+38 this month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Quote Requests (30d)</div>
+        <div class="stat-val">596</div>
+        <div class="stat-delta up">+9% vs last month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">MRR (Basic + Premium)</div>
+        <div class="stat-val">$2,184</div>
+        <div class="stat-delta up">+15% vs last month</div>
+      </div>
+    </div>
+
+    <div class="analytics-grid">
+
+      <div class="chart-card">
+        <div class="chart-title">New businesses by month</div>
+        <div class="bar-chart">
+          <div class="bar-col"><div class="bar" style="height:38%"></div><span>Jan</span></div>
+          <div class="bar-col"><div class="bar" style="height:52%"></div><span>Feb</span></div>
+          <div class="bar-col"><div class="bar" style="height:46%"></div><span>Mar</span></div>
+          <div class="bar-col"><div class="bar" style="height:64%"></div><span>Apr</span></div>
+          <div class="bar-col"><div class="bar" style="height:71%"></div><span>May</span></div>
+          <div class="bar-col"><div class="bar accent" style="height:100%"></div><span>Jun</span></div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Plan distribution</div>
+        <div class="dist-row"><span class="dist-label">Free</span><div class="dist-bar"><div class="dist-fill" style="width:58%;background:#E2E0D9"></div></div><span class="dist-val">79</span></div>
+        <div class="dist-row"><span class="dist-label">Basic</span><div class="dist-bar"><div class="dist-fill" style="width:29%;background:var(--c-blue)"></div></div><span class="dist-val">40</span></div>
+        <div class="dist-row"><span class="dist-label">Premium</span><div class="dist-bar"><div class="dist-fill" style="width:13%;background:var(--c-amber)"></div></div><span class="dist-val">18</span></div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Top categories</div>
+        <div class="dist-row"><span class="dist-label">Staffing & Labor</span><div class="dist-bar"><div class="dist-fill" style="width:100%"></div></div><span class="dist-val">3</span></div>
+        <div class="dist-row"><span class="dist-label">Landscaping</span><div class="dist-bar"><div class="dist-fill" style="width:33%"></div></div><span class="dist-val">1</span></div>
+        <div class="dist-row"><span class="dist-label">Cleaning</span><div class="dist-bar"><div class="dist-fill" style="width:33%"></div></div><span class="dist-val">1</span></div>
+        <div class="dist-row"><span class="dist-label">Construction</span><div class="dist-bar"><div class="dist-fill" style="width:33%"></div></div><span class="dist-val">1</span></div>
+        <div class="dist-row"><span class="dist-label">Plumbing</span><div class="dist-bar"><div class="dist-fill" style="width:33%"></div></div><span class="dist-val">1</span></div>
+        <div class="dist-row"><span class="dist-label">Painting</span><div class="dist-bar"><div class="dist-fill" style="width:33%"></div></div><span class="dist-val">1</span></div>
+        <div class="dist-row"><span class="dist-label">Electrical</span><div class="dist-bar"><div class="dist-fill" style="width:33%"></div></div><span class="dist-val">1</span></div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Businesses by service area</div>
+        <div class="dist-row"><span class="dist-label">Gwinnett</span><div class="dist-bar"><div class="dist-fill" style="width:100%"></div></div><span class="dist-val">54</span></div>
+        <div class="dist-row"><span class="dist-label">Atlanta (Fulton)</span><div class="dist-bar"><div class="dist-fill" style="width:70%"></div></div><span class="dist-val">38</span></div>
+        <div class="dist-row"><span class="dist-label">Cobb</span><div class="dist-bar"><div class="dist-fill" style="width:41%"></div></div><span class="dist-val">22</span></div>
+        <div class="dist-row"><span class="dist-label">Forsyth/Cherokee</span><div class="dist-bar"><div class="dist-fill" style="width:35%"></div></div><span class="dist-val">19</span></div>
+        <div class="dist-row"><span class="dist-label">Hall/Barrow</span><div class="dist-bar"><div class="dist-fill" style="width:26%"></div></div><span class="dist-val">14</span></div>
+      </div>
+
+    </div>
+
+  </div>
+  <!-- ===== END PLATFORM ANALYTICS PANE ===== -->
+
+  <!-- ===== SETTINGS PANE ===== -->
+  <div id="pane-settings" style="display:none">
+
+    <div class="settings-card-admin">
+      <div class="settings-title">Search Priority Defaults</div>
+      <div class="settings-sub">Controls the automatic priority points businesses receive based on plan. Admins can still override per-business in the Businesses tab.</div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Free plan — auto priority points</div>
+        </div>
+        <input type="number" class="setting-input" value="0" min="0" max="20">
+      </div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Basic plan — auto priority points</div>
+        </div>
+        <input type="number" class="setting-input" value="0" min="0" max="20">
+      </div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Premium plan — auto priority points</div>
+        </div>
+        <input type="number" class="setting-input" value="10" min="0" max="20">
+      </div>
+    </div>
+
+    <div class="settings-card-admin">
+      <div class="settings-title">Verification</div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Auto-approve EIN-only submissions</div>
+          <div class="setting-sub-label">Skip manual review if only an EIN is provided (no document)</div>
+        </div>
+        <label class="admin-switch"><input type="checkbox"><span class="admin-slider"></span></label>
+      </div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Email admins on new submission</div>
+        </div>
+        <label class="admin-switch"><input type="checkbox" checked><span class="admin-slider"></span></label>
+      </div>
+    </div>
+
+    <div class="settings-card-admin">
+      <div class="settings-title">Reviews</div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Auto-flag reviews with phone numbers or links</div>
+        </div>
+        <label class="admin-switch"><input type="checkbox" checked><span class="admin-slider"></span></label>
+      </div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Auto-flag 1-star reviews from accounts with no quote request history</div>
+        </div>
+        <label class="admin-switch"><input type="checkbox" checked><span class="admin-slider"></span></label>
+      </div>
+    </div>
+
+    <div class="settings-card-admin">
+      <div class="settings-title">Admin Team</div>
+      <div class="admin-member"><div class="biz-avatar av-coral" style="width:30px;height:30px;font-size:11px">A</div><div><div class="setting-label">admin@amigosnearme.com</div><div class="setting-sub-label">Owner · full access</div></div></div>
+      <button class="btn-add-admin">+ Invite team member</button>
+    </div>
+
+  </div>
+  <!-- ===== END SETTINGS PANE ===== -->
+
+  </div>
+</div>
+
+<!-- ===== REJECT REASON MODAL ===== -->
+<div class="modal-overlay" id="reject-modal-overlay" onclick="if(event.target===this) closeRejectModal()">
+  <div class="modal-card">
+    <div class="modal-title" id="reject-modal-title">Reject verification</div>
+    <div class="modal-sub" id="reject-modal-sub">This reason will be sent to the business owner so they can fix the issue and resubmit.</div>
+
+    <div class="reason-presets" id="reason-presets"></div>
+
+    <textarea class="reason-textarea" id="reject-reason-text" placeholder="Write the reason..." oninput="clearRejectError()"></textarea>
+    <div class="field-error" id="err-reject-reason" data-es-text="Escribe un motivo antes de continuar." data-en-text="Write a reason before continuing.">Escribe un motivo antes de continuar.</div>
+
+    <div class="modal-notify-row">
+      <span class="notify-icon">🔔</span>
+      <span id="reject-notify-text">The business owner will see this as an in-app notification on their dashboard.</span>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeRejectModal()">Cancel</button>
+      <button class="btn-modal-confirm" onclick="confirmReject()">Send & Reject</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function showError(id) { var el = document.getElementById(id); if (el) el.classList.add('show'); }
+function hideError(id) { var el = document.getElementById(id); if (el) el.classList.remove('show'); }
+function markInvalid(el) { if (el) el.classList.add('input-error'); }
+function clearInvalid(el) { if (el) el.classList.remove('input-error'); }
+
+function showAdminPane(pane) {
+  var panes = ['businesses','customers','verification','reviews','cancellations','analytics','settings'];
+  panes.forEach(function(p) {
+    var el = document.getElementById('pane-' + p);
+    if (el) el.style.display = (p === pane) ? 'block' : 'none';
+    var nav = document.getElementById('nav-' + p);
+    if (nav) nav.classList.toggle('active', p === pane);
+  });
+
+  var titles = {
+    businesses: ['Businesses', 'Manage listings, verification, and search priority'],
+    customers: ['Customers', 'Manage customer accounts, activity, and access'],
+    verification: ['Verification Queue', 'Review submitted documents and grant the Verified badge'],
+    reviews: ['Reviews Moderation', 'Review flagged content before it stays public'],
+    analytics: ['Platform Analytics', 'Growth, plan mix, and category trends across AmigosNearMe'],
+    cancellations: ['Cancellation Requests', 'Review and process account cancellation requests'],
+    settings: ['Settings', 'Platform-wide defaults and admin team access']
+  };
+  document.getElementById('top-bar-title').textContent = titles[pane][0];
+  document.getElementById('top-bar-sub').textContent = titles[pane][1];
+}
+
+function approveCancellation(btn) {
+  var card = btn.closest('.queue-card');
+  var bizName = card.querySelector('.biz-name') ? card.querySelector('.biz-name').textContent : 'Business';
+  var plan = card.querySelector('.biz-cat') ? card.querySelector('.biz-cat').textContent : '';
+
+  // BACKEND SPEC (production):
+  // 1. If paid plan: cancel Braintree subscription at period end (NOT immediately)
+  // 2. Schedule account deactivation at billing period end date
+  // 3. Retain reviews as anonymous ("Former business") after closure
+  // 4. Send confirmation email to business owner
+  // 5. Log in audit trail
+
+  dismissCard(card, 'cancellation-queue', 'cancellation-empty');
+
+  // Update pending count
+  var countEl = document.getElementById('cancel-pending-count');
+  if (countEl) {
+    var n = parseInt(countEl.textContent, 10);
+    if (!isNaN(n) && n > 0) countEl.textContent = n - 1;
+  }
+
+  showAdminToast('✓ Cancellation approved for ' + bizName + ' — scheduled for end of billing period');
+}
+
+function openCancelRejectModal(btn) {
+  // Reuse the existing reject modal for now
+  openRejectModal(btn, 'cancellation');
+}
+
+function reviewVerification(btn, decision) {
+  var card = btn.closest('.queue-card');
+  var bizId = card.getAttribute('data-bizid');
+  var bizName = card.querySelector('.biz-name') ? card.querySelector('.biz-name').textContent : bizId;
+
+  if (decision === 'approved' && bizId) {
+    // FRONTEND SIMULATION: store the verified status in localStorage.
+    // In production: sets businesses.verified = true in the DB, which immediately
+    // makes the ✅ Verified badge appear on that business's profile.html and search.html card.
+    // Also triggers an email + WhatsApp notification to the business owner.
+    try { localStorage.setItem('anm-verified-' + bizId, '1'); } catch(e) {}
+    showAdminToast('✅ ' + bizName + ' approved — Verified badge is now live');
+  } else if (decision === 'rejected') {
+    try { localStorage.removeItem('anm-verified-' + bizId); } catch(e) {}
+    showAdminToast('✗ ' + bizName + ' rejected — owner will be notified');
+  }
+
+  dismissCard(card, 'verification-queue', 'verification-empty');
+  // Update the pending count in the stat card
+  var pendingEl = document.querySelector('#pane-verification .stat-card .stat-val[style*="accent"]');
+  if (pendingEl) {
+    var n = parseInt(pendingEl.textContent, 10);
+    if (!isNaN(n) && n > 0) pendingEl.textContent = n - 1;
+  }
+}
+
+function showAdminToast(msg) {
+  var t = document.getElementById('admin-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'admin-toast';
+    t.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--c-text);color:#fff;padding:12px 20px;border-radius:8px;font-size:13px;opacity:0;pointer-events:none;transition:all 0.25s;z-index:999;white-space:nowrap';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(function() {
+    t.style.opacity = '0';
+    t.style.transform = 'translateX(-50%) translateY(20px)';
+  }, 3000);
+}
+
+function reviewModerate(btn, decision) {
+  var card = btn.closest('.queue-card');
+  dismissCard(card, 'reviews-queue', 'reviews-empty');
+  // In production: decision === 'approved' (Keep) leaves the review visible, no notification needed.
+}
+
+function dismissCard(card, listId, emptyId) {
+  card.style.transition = 'opacity 0.25s, transform 0.25s';
+  card.style.opacity = '0';
+  card.style.transform = 'translateX(20px)';
+  setTimeout(function() {
+    card.remove();
+    var remaining = document.querySelectorAll('#' + listId + ' .queue-card').length;
+    if (remaining === 0) document.getElementById(emptyId).style.display = 'block';
+  }, 250);
+}
+
+/* ===== REJECT MODAL FLOW ===== */
+var rejectContext = null; // { card, listId, emptyId, type }
+
+var rejectPresets = {
+  verification: [
+    'Document is blurry or unreadable',
+    'EIN does not match business name on file',
+    'Document appears expired',
+    'Missing required document type'
+  ],
+  review: [
+    'Confirmed spam / fake review',
+    'Contains personal contact information',
+    'Violates community guidelines (harassment, profanity)',
+    'Posted by a competitor, not a verified customer'
+  ]
+};
+
+function openRejectModal(btn, type) {
+  var card = btn.closest('.queue-card');
+  var listId = type === 'verification' ? 'verification-queue' : 'reviews-queue';
+  var emptyId = type === 'verification' ? 'verification-empty' : 'reviews-empty';
+  rejectContext = { card: card, listId: listId, emptyId: emptyId, type: type };
+
+  var titleEl = document.getElementById('reject-modal-title');
+  var subEl = document.getElementById('reject-modal-sub');
+  var notifyEl = document.getElementById('reject-notify-text');
+
+  if (type === 'verification') {
+    titleEl.textContent = 'Reject verification';
+    subEl.textContent = "This reason is sent to the business owner so they can fix the issue and resubmit.";
+    notifyEl.textContent = 'The business owner sees this as a notification on their Dashboard, plus an email to their account address.';
+  } else {
+    titleEl.textContent = 'Remove review';
+    subEl.textContent = 'This reason is sent to the reviewer explaining why their review was removed.';
+    notifyEl.textContent = 'The reviewer is notified by email. The business is not notified.';
+  }
+
+  var presetsWrap = document.getElementById('reason-presets');
+  presetsWrap.innerHTML = '';
+  rejectPresets[type].forEach(function(reason) {
+    var btnEl = document.createElement('button');
+    btnEl.className = 'reason-preset';
+    btnEl.textContent = reason;
+    btnEl.onclick = function() {
+      document.getElementById('reject-reason-text').value = reason;
+      clearRejectError();
+    };
+    presetsWrap.appendChild(btnEl);
+  });
+
+  document.getElementById('reject-reason-text').value = '';
+  hideError('err-reject-reason');
+  clearInvalid(document.getElementById('reject-reason-text'));
+  document.getElementById('reject-modal-overlay').classList.add('show');
+}
+
+function closeRejectModal() {
+  document.getElementById('reject-modal-overlay').classList.remove('show');
+  rejectContext = null;
+}
+
+function clearRejectError() {
+  var ta = document.getElementById('reject-reason-text');
+  if (ta.value.trim() !== '') { hideError('err-reject-reason'); clearInvalid(ta); }
+}
+
+function confirmReject() {
+  var ta = document.getElementById('reject-reason-text');
+  if (ta.value.trim() === '') {
+    showError('err-reject-reason');
+    markInvalid(ta);
+    return;
+  }
+  if (!rejectContext) return;
+
+  // If this is a verification rejection, remove any stored verified flag
+  // and trigger the rejection flow (toast + count update)
+  if (rejectContext.type === 'verification') {
+    var bizId = rejectContext.card.getAttribute('data-bizid');
+    if (bizId) {
+      try { localStorage.removeItem('anm-verified-' + bizId); } catch(e) {}
+      var bizName = rejectContext.card.querySelector('.biz-name') ? rejectContext.card.querySelector('.biz-name').textContent : bizId;
+      showAdminToast('✗ ' + bizName + ' rejected — owner will be notified');
+      var pendingEl = document.querySelector('#pane-verification .stat-card .stat-val[style*="accent"]');
+      if (pendingEl) {
+        var n = parseInt(pendingEl.textContent, 10);
+        if (!isNaN(n) && n > 0) pendingEl.textContent = n - 1;
+      }
+    }
+  }
+
+  // In production: this reason is written to the business/review record and triggers
+  // an in-app notification (and email, if configured) to the recipient.
+  document.getElementById('reject-modal-overlay').classList.remove('show');
+  dismissCard(rejectContext.card, rejectContext.listId, rejectContext.emptyId);
+  rejectContext = null;
+}
+
+function toggleBusinessStatus(btn) {
+  var row = btn.closest('tr');
+  var actionTd = btn.closest('td');
+  var statusCell = actionTd.previousElementSibling.querySelector('span');
+  var isSuspended = row.dataset.status === 'suspended';
+
+  if (isSuspended) {
+    row.dataset.status = 'active';
+    statusCell.textContent = 'Active';
+    statusCell.className = 'verified-badge';
+    btn.textContent = 'Suspend';
+    btn.style.background = 'var(--c-accent-light)';
+    btn.style.color = 'var(--c-accent)';
+  } else {
+    row.dataset.status = 'suspended';
+    statusCell.textContent = 'Suspended';
+    statusCell.className = 'basic-badge';
+    statusCell.style.background = 'var(--c-accent-light)';
+    statusCell.style.color = 'var(--c-accent)';
+    btn.textContent = 'Reactivate';
+    btn.style.background = 'var(--c-green-light)';
+    btn.style.color = 'var(--c-green)';
+  }
+}
+
+function toggleCustomerStatus(btn) {
+  var row = btn.closest('tr');
+  var statusCell = row.querySelector('td:nth-child(5) span');
+  var isSuspended = row.dataset.status === 'suspended';
+
+  if (isSuspended) {
+    row.dataset.status = 'active';
+    statusCell.textContent = 'Active';
+    statusCell.className = 'verified-badge';
+    btn.textContent = 'Suspend';
+    btn.style.background = 'var(--c-accent-light)';
+    btn.style.color = 'var(--c-accent)';
+  } else {
+    row.dataset.status = 'suspended';
+    statusCell.textContent = 'Suspended';
+    statusCell.className = 'basic-badge';
+    statusCell.style.background = 'var(--c-accent-light)';
+    statusCell.style.color = 'var(--c-accent)';
+    btn.textContent = 'Reactivate';
+    btn.style.background = 'var(--c-green-light)';
+    btn.style.color = 'var(--c-green)';
+  }
+}
+
+function filterCustomerTable() {
+  var q = document.getElementById('customer-search-box').value.toLowerCase();
+  var status = document.getElementById('customer-status-filter').value;
+  var activity = document.getElementById('customer-activity-filter').value;
+  var rows = document.querySelectorAll('#customer-table-body tr');
+  rows.forEach(function(row) {
+    var name = row.dataset.cname;
+    var rowStatus = row.dataset.status;
+    var rowActivity = row.dataset.activity;
+    var show = true;
+    if (q && name.indexOf(q) === -1) show = false;
+    if (status && rowStatus !== status) show = false;
+    if (activity && rowActivity.indexOf(activity) === -1) show = false;
+    row.style.display = show ? '' : 'none';
+  });
+}
+
+function priorityClass(v) {
+  v = parseInt(v, 10);
+  if (v === 0) return 'zero';
+  if (v <= 7) return 'low';
+  if (v <= 13) return 'mid';
+  return 'high';
+}
+
+function updatePriority(slider) {
+  var cell = slider.closest('.priority-cell');
+  var valSpan = cell.querySelector('.priority-val');
+  valSpan.textContent = slider.value;
+  valSpan.className = 'priority-val ' + priorityClass(slider.value);
+
+  var row = slider.closest('tr');
+  var saveBtn = row.querySelector('.btn-save');
+  saveBtn.classList.add('show');
+  saveBtn.classList.remove('saved');
+  saveBtn.textContent = 'Save';
+}
+
+function savePriority(btn) {
+  btn.textContent = '✓ Saved';
+  btn.classList.add('saved');
+  setTimeout(function() {
+    btn.classList.remove('show');
+  }, 1200);
+  // In production: this is where a write to the businesses table (priority_score column) happens,
+  // which search.html then reads via data-priority for "Recommended" sorting.
+}
+
+function filterTable() {
+  var q = document.getElementById('search-box').value.toLowerCase();
+  var plan = document.getElementById('plan-filter').value;
+  var verify = document.getElementById('verify-filter').value;
+  var rows = document.querySelectorAll('#biz-table-body tr');
+  rows.forEach(function(row) {
+    var name = row.dataset.name;
+    var rowPlan = row.dataset.plan;
+    var rowVerify = row.dataset.verify;
+    var show = true;
+    if (q && name.indexOf(q) === -1) show = false;
+    if (plan && rowPlan !== plan) show = false;
+    if (verify && rowVerify !== verify) show = false;
+    row.style.display = show ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About Us — AmigosNearMe</title>
+<meta name="description" content="AmigosNearMe connects Hispanic-owned businesses and skilled workers with customers across metro Atlanta. Learn about our mission.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display:ital@0;1&display=swap');
+
+  :root {
+    --c-bg: #FAFAF7; --c-surface: #FFFFFF; --c-border: rgba(0,0,0,0.09);
+    --c-text: #1A1A18; --c-muted: #6B6B66; --c-hint: #A8A8A2;
+    --c-accent: #C94F2B; --c-accent-light: #FAF0EC; --c-accent-dark: #9C3A1E;
+    --c-green: #1D9E75; --c-green-light: #EBF8F3;
+    --c-amber: #BA7517; --c-amber-light: #FEF6E4;
+    --c-blue: #185FA5; --c-blue-light: #EEF4FB;
+    --radius-sm: 8px; --radius-md: 12px; --radius-lg: 18px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.05);
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-body); background: var(--c-bg); color: var(--c-text); font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+  nav { position: sticky; top: 0; z-index: 100; background: rgba(250,250,247,0.92); backdrop-filter: blur(12px); border-bottom: 0.5px solid var(--c-border); padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+  .nav-logo { font-family: var(--font-display); font-size: 20px; color: var(--c-text); text-decoration: none; }
+  .nav-logo span { color: var(--c-accent); }
+  .nav-lang { display: flex; gap: 4px; }
+  .lang-btn { padding: 5px 10px; border-radius: var(--radius-sm); border: 0.5px solid var(--c-border); background: var(--c-surface); font-size: 12px; font-weight: 500; color: var(--c-muted); cursor: pointer; font-family: var(--font-body); }
+  .lang-btn.active { background: var(--c-text); color: #fff; border-color: var(--c-text); }
+  .nav-links { display: flex; gap: 18px; margin: 0 18px; }
+  .nav-links a { font-size: 13.5px; color: var(--c-muted); text-decoration: none; font-weight: 500; }
+  .nav-links a:hover { color: var(--c-text); }
+  .btn-nav { padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13.5px; font-weight: 500; text-decoration: none; }
+  .btn-nav.primary { background: var(--c-accent); color: #fff; }
+
+  .page-wrap { max-width: 760px; margin: 0 auto; padding: 56px 24px 80px; }
+  .eyebrow { font-size: 13px; font-weight: 500; color: var(--c-accent); margin-bottom: 10px; }
+  h1 { font-family: var(--font-display); font-size: 36px; font-weight: 400; line-height: 1.2; margin-bottom: 18px; }
+  .lede { font-size: 17px; color: var(--c-muted); line-height: 1.6; margin-bottom: 40px; }
+  h2 { font-family: var(--font-display); font-size: 23px; font-weight: 400; margin: 40px 0 14px; }
+  p { color: var(--c-text); margin-bottom: 14px; line-height: 1.75; }
+  p.muted { color: var(--c-muted); }
+
+  .pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 28px 0 8px; }
+  .pillar-card { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius-md); padding: 22px; }
+  .pillar-icon { font-size: 24px; margin-bottom: 10px; }
+  .pillar-title { font-weight: 600; font-size: 14.5px; margin-bottom: 6px; }
+  .pillar-desc { font-size: 13.5px; color: var(--c-muted); line-height: 1.55; }
+
+  .stat-strip { display: flex; gap: 32px; margin: 32px 0; padding: 24px 0; border-top: 1px solid var(--c-border); border-bottom: 1px solid var(--c-border); }
+  .stat-num { font-family: var(--font-display); font-size: 28px; color: var(--c-accent); }
+  .stat-lbl { font-size: 12.5px; color: var(--c-muted); margin-top: 2px; }
+
+  .cta-box { background: var(--c-text); color: #fff; border-radius: var(--radius-lg); padding: 32px; margin-top: 44px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+  .cta-box h3 { font-family: var(--font-display); font-weight: 400; font-size: 20px; margin-bottom: 4px; }
+  .cta-box p { color: rgba(255,255,255,0.65); margin: 0; font-size: 13.5px; }
+  .cta-actions { display: flex; gap: 10px; flex-shrink: 0; }
+  .btn-primary { background: var(--c-accent); color: #fff; padding: 11px 20px; border-radius: var(--radius-sm); text-decoration: none; font-weight: 500; font-size: 14px; }
+  .btn-ghost { background: rgba(255,255,255,0.1); color: #fff; padding: 11px 20px; border-radius: var(--radius-sm); text-decoration: none; font-weight: 500; font-size: 14px; border: 1px solid rgba(255,255,255,0.2); }
+
+  footer { background: var(--c-text); color: rgba(255,255,255,0.6); padding: 40px 24px 28px; margin-top: 60px; }
+  .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+  .footer-copy { font-size: 12px; }
+  .footer-links a { font-size: 12px; color: rgba(255,255,255,0.5); text-decoration: none; margin-left: 16px; }
+  .footer-links a:hover { color: #fff; }
+
+  [data-en] { display: none; }
+  body.en [data-es] { display: none; }
+  body.en [data-en] { display: revert; }
+
+  @media (max-width: 680px) {
+    .pillar-grid { grid-template-columns: 1fr; }
+    .stat-strip { flex-wrap: wrap; gap: 20px; }
+    h1 { font-size: 28px; }
+    .nav-links { display: none; }
+    .cta-box { flex-direction: column; align-items: flex-start; }
+    .footer-inner { flex-direction: column; align-items: flex-start; }
+    .footer-links a { margin-left: 0; margin-right: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Amigos<span>NearMe</span></a>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div class="nav-lang">
+      <button class="lang-btn active" id="btn-es" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+    <div class="nav-links">
+      <a href="search.html" data-es>Buscar Negocios</a><a href="search.html" data-en>Find Businesses</a>
+    </div>
+    <a href="login.html" class="btn-nav" style="font-size:13px;color:var(--c-muted)" data-es>Iniciar sesión</a>
+    <a href="login.html" class="btn-nav" style="font-size:13px;color:var(--c-muted)" data-en>Log in</a>
+    <a href="register-type.html" class="btn-nav primary" data-es>Registrar Negocio</a>
+    <a href="register-type.html" class="btn-nav primary" data-en>List Your Business</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="eyebrow" data-es>Nuestra misión</div>
+  <div class="eyebrow" data-en>Our mission</div>
+
+  <h1 data-es>Conectamos a la comunidad latina de Atlanta con trabajo de confianza.</h1>
+  <h1 data-en>Connecting Atlanta's Hispanic community with trusted work.</h1>
+
+  <p class="lede" data-es>AmigosNearMe nació de una idea simple: en metro Atlanta hay miles de negocios y trabajadores latinos excelentes que merecen ser encontrados, y miles de vecinos que prefieren contratar a alguien que habla su idioma y entiende su comunidad.</p>
+  <p class="lede" data-en>AmigosNearMe started with a simple idea: metro Atlanta is full of excellent Hispanic-owned businesses and skilled workers who deserve to be found, and full of neighbors who'd rather hire someone who speaks their language and understands their community.</p>
+
+  <div class="stat-strip">
+    <div><div class="stat-num">9+</div><div class="stat-lbl" data-es>Negocios y trabajadores</div><div class="stat-lbl" data-en>Businesses & workers</div></div>
+    <div><div class="stat-num">2</div><div class="stat-lbl" data-es>Idiomas, sin barreras</div><div class="stat-lbl" data-en>Languages, no barriers</div></div>
+    <div><div class="stat-num">GA</div><div class="stat-lbl" data-es>Atlanta metro y alrededores</div><div class="stat-lbl" data-en>Atlanta metro & beyond</div></div>
+  </div>
+
+  <h2 data-es>Cómo funciona</h2>
+  <h2 data-en>How it works</h2>
+  <p data-es>Los negocios y trabajadores crean un perfil gratis con sus servicios, área de trabajo y forma de contacto. Los vecinos buscan por categoría o ubicación, leen reseñas reales y se conectan directamente por WhatsApp — sin intermediarios, sin comisiones ocultas.</p>
+  <p data-en>Businesses and workers create a free profile with their services, service area, and contact info. Neighbors search by category or location, read real reviews, and connect directly over WhatsApp — no middlemen, no hidden fees.</p>
+
+  <div class="pillar-grid">
+    <div class="pillar-card">
+      <div class="pillar-icon">🤝</div>
+      <div class="pillar-title" data-es>Confianza primero</div>
+      <div class="pillar-title" data-en>Trust first</div>
+      <div class="pillar-desc" data-es>Verificamos negocios con documentación y mostramos reseñas reales de clientes.</div>
+      <div class="pillar-desc" data-en>We verify businesses with documentation and surface real customer reviews.</div>
+    </div>
+    <div class="pillar-card">
+      <div class="pillar-icon">💬</div>
+      <div class="pillar-title" data-es>Tu idioma, tu manera</div>
+      <div class="pillar-title" data-en>Your language, your way</div>
+      <div class="pillar-desc" data-es>Toda la plataforma funciona en español e inglés, sin traducciones torpes.</div>
+      <div class="pillar-desc" data-en>The whole platform works in Spanish and English, with no awkward translations.</div>
+    </div>
+    <div class="pillar-card">
+      <div class="pillar-icon">👷</div>
+      <div class="pillar-title" data-es>Personal y mano de obra, gratis</div>
+      <div class="pillar-title" data-en>Workers list for free</div>
+      <div class="pillar-desc" data-es>Si buscas trabajo, crear tu perfil siempre es gratis. Las empresas que necesitan personal te encuentran a ti.</div>
+      <div class="pillar-desc" data-en>If you're looking for work, listing yourself is always free. Businesses that need workers find you.</div>
+    </div>
+    <div class="pillar-card">
+      <div class="pillar-icon">📍</div>
+      <div class="pillar-title" data-es>Local, de verdad</div>
+      <div class="pillar-title" data-en>Genuinely local</div>
+      <div class="pillar-desc" data-es>Nos enfocamos solo en metro Atlanta — conocemos las áreas, los condados y las comunidades.</div>
+      <div class="pillar-desc" data-en>We focus only on metro Atlanta — we know the areas, counties, and communities.</div>
+    </div>
+  </div>
+
+  <h2 data-es>Quiénes somos</h2>
+  <h2 data-en>Who we are</h2>
+  <p class="muted" data-es>Somos un equipo pequeño basado en Georgia, construyendo AmigosNearMe porque vimos de cerca lo difícil que es para muchos negocios latinos competir en plataformas que no fueron pensadas para ellos — y lo difícil que es para muchas familias encontrar ayuda confiable en su propio idioma.</p>
+  <p class="muted" data-en>We're a small team based in Georgia, building AmigosNearMe because we've seen up close how hard it is for many Hispanic-owned businesses to compete on platforms that weren't built with them in mind — and how hard it can be for families to find reliable help in their own language.</p>
+
+  <div class="cta-box">
+    <div>
+      <h3 data-es>¿Tienes un negocio o buscas trabajo?</h3>
+      <h3 data-en>Have a business, or looking for work?</h3>
+      <p data-es>Crear tu perfil toma menos de 5 minutos.</p>
+      <p data-en>Creating your profile takes less than 5 minutes.</p>
+    </div>
+    <div class="cta-actions">
+      <a href="register-type.html" class="btn-primary" data-es>Empezar →</a>
+      <a href="register-type.html" class="btn-primary" data-en>Get started →</a>
+      <a href="search.html" class="btn-ghost" data-es>Buscar negocios</a>
+      <a href="search.html" class="btn-ghost" data-en>Find businesses</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <span class="footer-copy">© 2026 AmigosNearMe · Atlanta, Georgia</span>
+    <div class="footer-links">
+      <a href="about.html" data-es>Acerca de</a><a href="about.html" data-en>About</a>
+      <a href="contact.html" data-es>Contacto</a><a href="contact.html" data-en>Contact</a>
+      <a href="privacy.html" data-es>Privacidad</a><a href="privacy.html" data-en>Privacy</a>
+      <a href="terms.html" data-es>Términos</a><a href="terms.html" data-en>Terms</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+function setLang(lang) {
+  document.body.classList.toggle('en', lang === 'en');
+  document.getElementById('btn-es').classList.toggle('active', lang !== 'en');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  try { localStorage.setItem('anm-lang', lang); } catch(e) {}
+}
+document.addEventListener('DOMContentLoaded', function() {
+  var saved = ''; try { saved = localStorage.getItem('anm-lang'); } catch(e) {}
+  var browser = (navigator.language || 'es').toLowerCase();
+  setLang(saved || (browser.startsWith('en') ? 'en' : 'es'));
+});
+</script>
+
+</body>
+</html>

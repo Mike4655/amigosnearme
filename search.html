@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Find Businesses — AmigosNearMe</title>
+<meta name="description" content="Search verified Latin-owned businesses in Atlanta, Georgia. Filter by category, area, language, and rating.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display:ital@0;1&display=swap');
+
+  :root {
+    --c-bg: #FAFAF7;
+    --c-surface: #FFFFFF;
+    --c-border: rgba(0,0,0,0.09);
+    --c-text: #1A1A18;
+    --c-muted: #6B6B66;
+    --c-hint: #A8A8A2;
+    --c-accent: #C94F2B;
+    --c-accent-light: #FAF0EC;
+    --c-accent-dark: #9C3A1E;
+    --c-green: #1D9E75;
+    --c-green-light: #EBF8F3;
+    --c-amber: #BA7517;
+    --c-amber-light: #FEF6E4;
+    --c-blue: #185FA5;
+    --c-blue-light: #EEF4FB;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.05);
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-body); background: var(--c-bg); color: var(--c-text); font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(250,250,247,0.92); backdrop-filter: blur(12px);
+    border-bottom: 0.5px solid var(--c-border);
+    padding: 0 24px; height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { font-family: var(--font-display); font-size: 22px; color: var(--c-text); text-decoration: none; }
+  .nav-logo span { color: var(--c-accent); }
+  .lang-btn { padding: 3px 8px; border-radius: 99px; font-size: 12px; cursor: pointer; border: 0.5px solid var(--c-border); background: transparent; color: var(--c-muted); font-family: var(--font-body); }
+  .lang-btn.active { background: var(--c-accent-light); color: var(--c-accent); border-color: var(--c-accent); }
+  .btn-nav { font-size: 13px; font-weight: 500; padding: 7px 16px; border-radius: var(--radius-sm); text-decoration: none; cursor: pointer; border: 0.5px solid var(--c-border); background: var(--c-surface); color: var(--c-text); font-family: var(--font-body); }
+  .btn-nav.primary { background: var(--c-accent); color: #fff; border-color: var(--c-accent); }
+
+  /* SEARCH BAR TOP */
+  .search-bar-section {
+    background: var(--c-surface);
+    border-bottom: 0.5px solid var(--c-border);
+    padding: 16px 24px;
+  }
+  .search-bar-inner { max-width: 1100px; margin: 0 auto; display: flex; gap: 10px; align-items: center; }
+  .search-input-wrap { flex: 1; position: relative; }
+  .search-input-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--c-hint); pointer-events: none; }
+  .search-input { width: 100%; padding: 10px 14px 10px 36px; border-radius: var(--radius-sm); border: 0.5px solid var(--c-border); background: var(--c-bg); font-size: 14px; color: var(--c-text); font-family: var(--font-body); outline: none; transition: border-color 0.15s; }
+  .search-input:focus { border-color: var(--c-accent); }
+  .search-go { padding: 10px 20px; border-radius: var(--radius-sm); background: var(--c-accent); color: #fff; border: none; font-size: 14px; font-weight: 500; cursor: pointer; font-family: var(--font-body); white-space: nowrap; transition: background 0.15s; }
+  .search-go:hover { background: var(--c-accent-dark); }
+
+  /* LAYOUT */
+  .page-body { max-width: 1100px; margin: 0 auto; padding: 24px; display: grid; grid-template-columns: 260px 1fr; gap: 24px; }
+
+  /* FILTERS SIDEBAR */
+  .filters { position: sticky; top: 84px; align-self: start; }
+  .filter-card { background: var(--c-surface); border: 0.5px solid var(--c-border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 12px; }
+  .filter-title { font-size: 13px; font-weight: 600; color: var(--c-text); margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+  .filter-clear { font-size: 12px; font-weight: 400; color: var(--c-accent); cursor: pointer; }
+  .filter-group { display: flex; flex-direction: column; gap: 8px; }
+  .filter-option { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--c-muted); cursor: pointer; padding: 5px 8px; border-radius: var(--radius-sm); transition: background 0.12s; }
+  .filter-option:hover { background: var(--c-bg); }
+  .filter-option input[type=checkbox] { width: 15px; height: 15px; accent-color: var(--c-accent); cursor: pointer; flex-shrink: 0; }
+  .filter-option input[type=radio] { width: 15px; height: 15px; accent-color: var(--c-accent); cursor: pointer; flex-shrink: 0; }
+  .filter-option span { flex: 1; }
+  .filter-count { font-size: 11px; color: var(--c-hint); }
+  .filter-group-label { font-size: 11px; font-weight: 600; color: var(--c-hint); letter-spacing: .04em; text-transform: uppercase; padding: 8px 8px 2px; }
+  .filter-divider { border: none; border-top: 0.5px solid var(--c-border); margin: 4px 0; }
+  .acc-header { display: flex; align-items: center; justify-content: space-between; padding: 7px 8px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; color: var(--c-text); cursor: pointer; margin: 3px 0; background: var(--c-bg); transition: background 0.12s; user-select: none; }
+  .acc-header:hover { background: var(--c-border); }
+  .acc-arrow { font-size: 10px; color: var(--c-hint); transition: transform 0.2s; }
+  .acc-arrow.open { transform: rotate(90deg); }
+  .acc-body { display: none; padding-left: 4px; }
+  .acc-body.open { display: block; }
+  .show-more-btn { background: none; border: none; cursor: pointer; font-size: 12px; color: var(--c-accent); padding: 4px 8px; margin-top: 2px; font-family: var(--font-body); text-align: left; width: 100%; }
+  .show-more-btn:hover { text-decoration: underline; }
+
+  /* RESULTS */
+  .results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+  .results-count { font-size: 14px; color: var(--c-muted); }
+  .results-count strong { color: var(--c-text); }
+  .sort-select { font-size: 13px; padding: 7px 12px; border-radius: var(--radius-sm); border: 0.5px solid var(--c-border); background: var(--c-surface); color: var(--c-text); font-family: var(--font-body); cursor: pointer; outline: none; }
+
+  /* ACTIVE FILTERS */
+  .active-filters { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 16px; }
+  .active-chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 99px; font-size: 12px; background: var(--c-accent-light); color: var(--c-accent); border: 0.5px solid rgba(201,79,43,0.2); }
+  .active-chip button { background: none; border: none; cursor: pointer; color: var(--c-accent); font-size: 14px; line-height: 1; padding: 0; display: flex; align-items: center; }
+
+  /* BIZ CARDS */
+  .biz-list { display: flex; flex-direction: column; gap: 12px; }
+  .biz-card {
+    background: var(--c-surface); border: 0.5px solid var(--c-border);
+    border-radius: var(--radius-lg); padding: 20px;
+    cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s;
+    text-decoration: none; color: inherit; display: block; outline: none; cursor: pointer;
+  }
+  .biz-card:hover { border-color: rgba(201,79,43,0.3); box-shadow: var(--shadow); }
+  /* Save button on cards */
+  .btn-save-card {
+    padding: 6px 10px; border-radius: 7px; border: 0.5px solid var(--c-border);
+    background: var(--c-bg); color: var(--c-muted); font-size: 12px;
+    font-weight: 500; cursor: pointer; font-family: var(--font-body);
+    transition: all 0.15s; flex-shrink: 0;
+  }
+  .btn-save-card:hover { border-color: var(--c-amber); color: var(--c-amber); }
+  .btn-save-card.saved { background: var(--c-amber-light); color: var(--c-amber); border-color: var(--c-amber); }
+  .biz-card-top { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 12px; }
+  .biz-avatar { width: 52px; height: 52px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; flex-shrink: 0; }
+  .av-coral { background: #FAF0EC; color: var(--c-accent); }
+  .av-teal  { background: var(--c-green-light); color: var(--c-green); }
+  .av-blue  { background: var(--c-blue-light); color: var(--c-blue); }
+  .av-amber { background: var(--c-amber-light); color: var(--c-amber); }
+  .av-gray  { background: #F1EFE8; color: #5F5E5A; }
+  .biz-info { flex: 1; min-width: 0; }
+  .biz-name { font-size: 15px; font-weight: 600; color: var(--c-text); margin-bottom: 3px; }
+  .biz-category { font-size: 13px; color: var(--c-muted); margin-bottom: 8px; }
+  .badge-row { display: flex; flex-wrap: wrap; gap: 5px; }
+  .badge { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; padding: 2px 8px; border-radius: 99px; font-weight: 500; }
+  .badge-verified { background: var(--c-green-light); color: var(--c-green); }
+  .badge-basic { background: #F1EFE8; color: var(--c-hint); }
+  .badge-lang { background: var(--c-bg); color: var(--c-muted); border: 0.5px solid var(--c-border); }
+  .badge-new { background: var(--c-amber-light); color: var(--c-amber); }
+  .badge-pending { background: #F1EFE8; color: var(--c-hint); }
+  .biz-distance { font-size: 12px; color: var(--c-hint); white-space: nowrap; flex-shrink: 0; display: flex; align-items: center; gap: 3px; }
+  .biz-desc { font-size: 13px; color: var(--c-muted); line-height: 1.55; margin-bottom: 14px; }
+  .biz-card-bottom { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .stars { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--c-amber); flex: 1; }
+  .stars span { color: var(--c-muted); font-size: 12px; }
+  .jobs-completed { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--c-muted); flex: 1; flex-wrap: wrap; }
+  .jobs-completed strong { color: var(--c-text); font-weight: 600; }
+  .self-reported-tag { font-size: 10px; color: var(--c-hint); font-style: italic; }
+  .biz-actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .btn-wa { display: inline-flex; align-items: center; gap: 5px; padding: 7px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; background: var(--c-green-light); color: var(--c-green); border: 0.5px solid rgba(29,158,117,0.3); cursor: pointer; font-family: var(--font-body); white-space: nowrap; text-decoration: none; transition: background 0.15s; }
+  .btn-wa:hover { background: #d4f0e7; }
+  .btn-quote { display: inline-flex; align-items: center; gap: 5px; padding: 7px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; background: var(--c-surface); color: var(--c-text); border: 0.5px solid var(--c-border); cursor: pointer; font-family: var(--font-body); white-space: nowrap; text-decoration: none; transition: background 0.15s; }
+  .btn-quote:hover { background: var(--c-bg); }
+
+  /* PAGINATION */
+  .pagination { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 28px; }
+  .page-btn { width: 36px; height: 36px; border-radius: var(--radius-sm); border: 0.5px solid var(--c-border); background: var(--c-surface); color: var(--c-text); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: var(--font-body); transition: all 0.12s; }
+  .page-btn:hover { background: var(--c-bg); }
+  .page-btn.active { background: var(--c-accent); color: #fff; border-color: var(--c-accent); }
+  .page-btn:disabled { opacity: 0.4; cursor: default; }
+
+  /* NO RESULTS */
+  .no-results { text-align: center; padding: 60px 20px; color: var(--c-muted); }
+  .no-results-icon { font-size: 40px; margin-bottom: 14px; }
+  .no-results-title { font-size: 16px; font-weight: 500; color: var(--c-text); margin-bottom: 8px; }
+
+  /* LANG */
+  [data-en] { display: none; }
+  body.en [data-es] { display: none; }
+  body.en [data-en] { display: revert; }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    .page-body { grid-template-columns: 1fr; padding: 12px 14px; gap: 0; }
+    .filters { position: static; margin-bottom: 14px; }
+    .filters-inner { display: none; } /* collapsed by default on mobile */
+    .filters-inner.open { display: block; }
+    .filter-toggle-btn {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; padding: 11px 14px; border-radius: var(--radius-sm);
+      border: 0.5px solid var(--c-border); background: var(--c-surface);
+      font-size: 13px; font-weight: 500; color: var(--c-text);
+      cursor: pointer; font-family: var(--font-body); margin-bottom: 8px;
+    }
+    nav { padding: 0 16px; }
+    .search-bar-section { padding: 10px 14px; }
+    .search-bar-inner { flex-wrap: wrap; gap: 8px; }
+    .search-go { width: 100%; }
+    .result-meta { flex-wrap: wrap; gap: 6px; }
+    .sort-select { font-size: 12px; }
+    .biz-card { padding: 14px; }
+    .biz-name { font-size: 15px; }
+    .nav-links { display: none; }
+    .btn-nav { font-size: 12px; padding: 7px 10px; }
+  }
+  /* Filter toggle button hidden on desktop */
+  .filter-toggle-btn { display: none; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">Amigos<span>NearMe</span></a>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="lang-btn active" id="btn-es" onclick="setLang('es')">ES</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    <a href="login.html" class="btn-nav" id="nav-login" style="font-size:13px;color:var(--c-muted);text-decoration:none;padding:8px 12px" data-es-text="Iniciar sesión" data-en-text="Log in">Iniciar sesión</a>
+    <a href="register-type.html" class="btn-nav primary" id="nav-cta">Registrar Negocio</a>
+  </div>
+</nav>
+
+<!-- SEARCH BAR -->
+<div class="search-bar-section">
+  <div class="search-bar-inner">
+    <div class="search-input-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input class="search-input" id="main-search" type="text" placeholder="Landscaping, cleaning, construction..."
+        onkeydown="if(event.key==='Enter') applySearch()">
+    </div>
+    <button class="search-go" onclick="applySearch()" id="btn-search">Buscar</button>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="page-body">
+
+  <!-- SIDEBAR FILTERS -->
+  <aside class="filters">
+    <button class="filter-toggle-btn" onclick="toggleFilters()" id="filter-toggle-btn">
+      <span data-es>🔍 Filtros</span><span data-en>🔍 Filters</span>
+      <span id="filter-toggle-arrow">▼</span>
+    </button>
+    <div class="filters-inner" id="filters-inner">
+
+    <div class="filter-card">
+      <div class="filter-title">
+        <span id="filter-title-cat" data-i18n-es="Categoría" data-i18n-en="Category">Categoría</span>
+        <span class="filter-clear i18n-clear" onclick="clearFilter('cat')" data-i18n-es="Limpiar" data-i18n-en="Clear">Limpiar</span>
+      </div>
+      <div class="filter-group" id="filter-cat">
+        <label class="filter-option"><input type="checkbox" value="staffing" onchange="filterChange()"> <span data-es-text="👷 Personal y Mano de Obra" data-en-text="👷 Staffing & Labor">👷 Personal y Mano de Obra</span> <span class="filter-count">3</span></label>
+        <label class="filter-option"><input type="checkbox" value="landscaping" onchange="filterChange()"> <span data-es-text="🌿 Landscaping" data-en-text="🌿 Landscaping">🌿 Landscaping</span> <span class="filter-count">1</span></label>
+        <label class="filter-option"><input type="checkbox" value="cleaning" onchange="filterChange()"> <span data-es-text="🧹 Limpieza" data-en-text="🧹 Cleaning">🧹 Limpieza</span> <span class="filter-count">1</span></label>
+        <label class="filter-option"><input type="checkbox" value="construction" onchange="filterChange()"> <span data-es-text="🏗️ Construcción" data-en-text="🏗️ Construction">🏗️ Construcción</span> <span class="filter-count">1</span></label>
+        <label class="filter-option"><input type="checkbox" value="painting" onchange="filterChange()"> <span data-es-text="🪟 Pintura" data-en-text="🪟 Painting">🪟 Pintura</span> <span class="filter-count">1</span></label>
+        <label class="filter-option"><input type="checkbox" value="realestate" onchange="filterChange()"> <span data-es-text="🏠 Agente Inmobiliario" data-en-text="🏠 Real Estate">🏠 Agente Inmobiliario</span> <span class="filter-count">0</span></label>
+        <div id="cat-more" style="display:none">
+          <label class="filter-option"><input type="checkbox" value="plumbing" onchange="filterChange()"> <span data-es-text="🔧 Plomería" data-en-text="🔧 Plumbing">🔧 Plomería</span> <span class="filter-count">1</span></label>
+          <label class="filter-option"><input type="checkbox" value="electrical" onchange="filterChange()"> <span data-es-text="⚡ Electricidad" data-en-text="⚡ Electrical">⚡ Electricidad</span> <span class="filter-count">1</span></label>
+          <label class="filter-option"><input type="checkbox" value="moving" onchange="filterChange()"> <span data-es-text="📦 Mudanzas" data-en-text="📦 Moving">📦 Mudanzas</span> <span class="filter-count">0</span></label>
+          <label class="filter-option"><input type="checkbox" value="food" onchange="filterChange()"> <span data-es-text="🍽️ Comida" data-en-text="🍽️ Food & Catering">🍽️ Comida</span> <span class="filter-count">0</span></label>
+          <label class="filter-option"><input type="checkbox" value="auto" onchange="filterChange()"> <span data-es-text="🚗 Autos" data-en-text="🚗 Auto Repair">🚗 Autos</span> <span class="filter-count">0</span></label>
+          <label class="filter-option"><input type="checkbox" value="translation" onchange="filterChange()"> <span data-es-text="🗣️ Traducción" data-en-text="🗣️ Translation">🗣️ Traducción</span> <span class="filter-count">0</span></label>
+          <label class="filter-option"><input type="checkbox" value="tree" onchange="filterChange()"> <span data-es-text="🌳 Árboles" data-en-text="🌳 Tree Removal">🌳 Árboles</span> <span class="filter-count">0</span></label>
+        </div>
+        <button class="show-more-btn" id="cat-more-btn" onclick="toggleMore('cat')">
+          <span data-es-text="+ Ver 7 más" data-en-text="+ Show 7 more">+ Ver 7 más</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="filter-card">
+      <div class="filter-title">
+        <span id="filter-title-area" data-i18n-es="Área" data-i18n-en="Area">Área</span>
+        <span class="filter-clear i18n-clear" onclick="clearFilter('area')" data-i18n-es="Limpiar" data-i18n-en="Clear">Limpiar</span>
+      </div>
+      <div class="filter-group" id="filter-area">
+
+        <div class="acc-header" onclick="toggleAcc('acc-fulton')">
+          <span>Atlanta (Fulton)</span><span class="acc-arrow" id="arr-fulton">▸</span>
+        </div>
+        <div class="acc-body" id="acc-fulton">
+          <label class="filter-option"><input type="checkbox" value="atlanta" onchange="filterChange()"> <span>Atlanta</span></label>
+          <label class="filter-option"><input type="checkbox" value="roswell" onchange="filterChange()"> <span>Roswell</span></label>
+          <label class="filter-option"><input type="checkbox" value="tucker" onchange="filterChange()"> <span>Tucker</span></label>
+        </div>
+
+        <div class="acc-header" onclick="toggleAcc('acc-cobb')">
+          <span>Cobb</span><span class="acc-arrow" id="arr-cobb">▸</span>
+        </div>
+        <div class="acc-body" id="acc-cobb">
+          <label class="filter-option"><input type="checkbox" value="marietta" onchange="filterChange()"> <span>Marietta</span></label>
+          <label class="filter-option"><input type="checkbox" value="smyrna" onchange="filterChange()"> <span>Smyrna</span></label>
+        </div>
+
+        <div class="acc-header" onclick="toggleAcc('acc-gwinnett')">
+          <span>Gwinnett</span><span class="acc-arrow" id="arr-gwinnett">▸</span>
+        </div>
+        <div class="acc-body" id="acc-gwinnett">
+          <label class="filter-option"><input type="checkbox" value="duluth" onchange="filterChange()"> <span>Duluth</span></label>
+          <label class="filter-option"><input type="checkbox" value="norcross" onchange="filterChange()"> <span>Norcross</span></label>
+          <label class="filter-option"><input type="checkbox" value="lawrenceville" onchange="filterChange()"> <span>Lawrenceville</span></label>
+          <label class="filter-option"><input type="checkbox" value="buford" onchange="filterChange()"> <span>Buford</span></label>
+          <label class="filter-option"><input type="checkbox" value="lilburn" onchange="filterChange()"> <span>Lilburn</span></label>
+          <label class="filter-option"><input type="checkbox" value="dacula" onchange="filterChange()"> <span>Dacula</span></label>
+          <label class="filter-option"><input type="checkbox" value="auburn" onchange="filterChange()"> <span>Auburn</span></label>
+        </div>
+
+        <div class="acc-header" onclick="toggleAcc('acc-forsyth')">
+          <span>Forsyth / Cherokee</span><span class="acc-arrow" id="arr-forsyth">▸</span>
+        </div>
+        <div class="acc-body" id="acc-forsyth">
+          <label class="filter-option"><input type="checkbox" value="cumming" onchange="filterChange()"> <span>Cumming</span></label>
+          <label class="filter-option"><input type="checkbox" value="canton" onchange="filterChange()"> <span>Canton</span></label>
+          <label class="filter-option"><input type="checkbox" value="woodstock" onchange="filterChange()"> <span>Woodstock</span></label>
+        </div>
+
+        <div class="acc-header" onclick="toggleAcc('acc-hall')">
+          <span>Hall / Barrow</span><span class="acc-arrow" id="arr-hall">▸</span>
+        </div>
+        <div class="acc-body" id="acc-hall">
+          <label class="filter-option"><input type="checkbox" value="gainesville" onchange="filterChange()"> <span>Gainesville</span></label>
+          <label class="filter-option"><input type="checkbox" value="winder" onchange="filterChange()"> <span>Winder</span></label>
+          <label class="filter-option"><input type="checkbox" value="braselton" onchange="filterChange()"> <span>Braselton</span></label>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="filter-card">
+      <div class="filter-title">
+        <span id="filter-title-lang" data-i18n-es="Idioma" data-i18n-en="Language">Idioma</span>
+      </div>
+      <div class="filter-group">
+        <label class="filter-option"><input type="checkbox" id="f-es" onchange="filterChange()"> <span>Español</span></label>
+        <label class="filter-option"><input type="checkbox" id="f-pt" onchange="filterChange()"> <span>Português</span></label>
+        <label class="filter-option"><input type="checkbox" id="f-en2" onchange="filterChange()"> <span>English only</span></label>
+      </div>
+    </div>
+
+    <div class="filter-card">
+      <div class="filter-title">
+        <span id="filter-title-rating" data-i18n-es="Calificación" data-i18n-en="Rating">Calificación</span>
+      </div>
+      <div class="filter-group">
+        <label class="filter-option"><input type="radio" name="rating" value="4.5" onchange="filterChange()"> <span>★★★★★ 4.5+</span></label>
+        <label class="filter-option"><input type="radio" name="rating" value="4" onchange="filterChange()"> <span>★★★★ 4.0+</span></label>
+        <label class="filter-option"><input type="radio" name="rating" value="3" onchange="filterChange()"> <span>★★★ 3.0+</span></label>
+        <label class="filter-option"><input type="radio" name="rating" value="" onchange="filterChange()"> <span class="i18n-all" data-i18n-es="Todos" data-i18n-en="All">Todos</span></label>
+      </div>
+    </div>
+
+    <div class="filter-card">
+      <div class="filter-title">
+        <span id="filter-title-verify" data-i18n-es="Verificación" data-i18n-en="Verification">Verificación</span>
+      </div>
+      <div class="filter-group">
+        <label class="filter-option"><input type="checkbox" id="f-verified" onchange="filterChange()"> <span class="i18n-verified-only" data-i18n-es="✅ Solo verificados" data-i18n-en="✅ Verified only">✅ Solo verificados</span></label>
+      </div>
+    </div>
+    </div><!-- /filters-inner -->
+
+  </aside>
+
+  <!-- RESULTS -->
+  <main>
+    <div class="results-header">
+      <div class="results-count" id="results-count">Mostrando <strong id="count-num">24</strong> negocios en Georgia</div>
+      <select class="sort-select" onchange="sortChange(this.value)">
+        <option value="recommended" id="sort-recommended" data-i18n-es="Recomendados" data-i18n-en="Recommended">Recomendados</option>
+        <option value="rating">★ Rating</option>
+        <option value="distance" id="sort-distance" data-i18n-es="Más cercanos" data-i18n-en="Nearest first">Más cercanos</option>
+        <option value="newest" id="sort-newest" data-i18n-es="Más nuevos" data-i18n-en="Newest">Más nuevos</option>
+      </select>
+    </div>
+
+    <div class="active-filters" id="active-filters"></div>
+
+    <div class="biz-list" id="biz-list">
+
+      <div class="biz-card" onclick="window.location='profile.html?id=garcia'" data-cat="landscaping" data-area="duluth" data-rating="4.9" data-verified="true" data-priority="10" data-id="garcia">
+        <div class="biz-card-top">
+          <div class="biz-avatar av-coral">GG</div>
+          <div class="biz-info">
+            <div class="biz-name">Garcia's Garden & Landscaping</div>
+            <div class="biz-category" data-es-text="🌿 Landscaping · Duluth, GA" data-en-text="🌿 Landscaping · Duluth, GA">🌿 Landscaping · Duluth, GA</div>
+            <div class="badge-row">
+              <span class="badge badge-verified">✅ Verified</span>
+              <span class="badge badge-lang">ES</span>
+              <span class="badge badge-lang">EN</span>
+            </div>
+          </div>
+          <div class="biz-distance">📍 2.3 mi</div>
+        </div>
+        <div class="biz-desc i18n-card" data-es-text="Licencia de Georgia · 10 años de experiencia · Residencial y comercial. Presupuesto gratis." data-en-text="Georgia licensed · 10 years experience · Residential & commercial. Free estimates.">Licencia de Georgia · 10 años de experiencia · Residencial y comercial. Presupuesto gratis.</div>
+        <div class="biz-card-bottom">
+          <div class="stars">★★★★★ <span>4.9 (38 <span class="i18n-reviews" data-i18n-es="reseñas" data-i18n-en="reviews">reseñas</span>)</span></div>
+          <div class="biz-actions">
+            <a href="profile.html?id=garcia#whatsapp" class="btn-wa" onclick="event.stopPropagation()">💬 WhatsApp</a>
+            <a href="profile.html?id=garcia#quote" class="btn-quote btn-quote-i18n" data-i18n-es="Pedir presupuesto" data-i18n-en="Get a quote" onclick="event.stopPropagation()">Pedir presupuesto</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="biz-card" onclick="window.location='profile.html?id=rodriguez'" data-cat="cleaning" data-area="norcross" data-rating="4.8" data-verified="true" data-priority="0" data-id="rodriguez">
+        <div class="biz-card-top">
+          <div class="biz-avatar av-teal">RC</div>
+          <div class="biz-info">
+            <div class="biz-name">Rodriguez Cleaning Services</div>
+            <div class="biz-category" data-es-text="🧹 Limpieza · Norcross, GA" data-en-text="🧹 Cleaning · Norcross, GA">🧹 Limpieza · Norcross, GA</div>
+            <div class="badge-row">
+              <span class="badge badge-verified">✅ Verified</span>
+              <span class="badge badge-lang">ES</span>
+              <span class="badge badge-lang">PT</span>
+            </div>
+          </div>
+          <div class="biz-distance">📍 4.1 mi</div>
+        </div>
+        <div class="biz-desc i18n-card" data-es-text="Limpieza residencial y de oficinas. Contrato semanal o mensual disponible. LLC registrada." data-en-text="Residential and office cleaning. Weekly or monthly contracts available. LLC registered.">Limpieza residencial y de oficinas. Contrato semanal o mensual disponible. LLC registrada.</div>
+        <div class="biz-card-bottom">
+          <div class="stars">★★★★★ <span>4.8 (21 <span class="i18n-reviews" data-i18n-es="reseñas" data-i18n-en="reviews">reseñas</span>)</span></div>
+          <div class="biz-actions">
+            <a href="profile.html?id=rodriguez#whatsapp" class="btn-wa" onclick="event.stopPropagation()">💬 WhatsApp</a>
+            <a href="profile.html?id=rodriguez#quote" class="btn-quote btn-quote-i18n" data-i18n-es="Pedir presupuesto" data-i18n-en="Get a quote" onclick="event.stopPropagation()">Pedir presupuesto</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="biz-card" onclick="window.location='profile.html?id=hernandez'" data-cat="construction" data-area="atlanta" data-rating="4.7" data-verified="true" data-priority="15" data-id="hernandez">
+        <div class="biz-card-top">
+          <div class="biz-avatar av-blue">HL</div>
+          <div class="biz-info">
+            <div class="biz-name">Hernandez Construction LLC</div>
+            <div class="biz-category" data-es-text="🏗️ Construcción · Atlanta, GA" data-en-text="🏗️ Construction · Atlanta, GA">🏗️ Construcción · Atlanta, GA</div>
+            <div class="badge-row">
+              <span class="badge badge-verified">✅ Verified</span>
+              <span class="badge badge-lang">ES</span>
+              <span class="badge badge-lang">EN</span>
+              <span class="badge badge-new">Nuevo</span>
+            </div>
+          </div>
+          <div class="biz-distance">📍 5.8 mi</div>
+        </div>
+        <div class="biz-desc i18n-card" data-es-text="Remodelaciones, techos, pisos y más. Más de 15 años en el área de Atlanta. Asegurado." data-en-text="Remodeling, roofing, flooring and more. 15+ years in the Atlanta area. Fully insured.">Remodelaciones, techos, pisos y más. Más de 15 años en el área de Atlanta. Asegurado.</div>
+        <div class="biz-card-bottom">
+          <div class="stars">★★★★★ <span>4.7 (14 <span class="i18n-reviews" data-i18n-es="reseñas" data-i18n-en="reviews">reseñas</span>)</span></div>
+          <div class="biz-actions">
+            <a href="profile.html?id=hernandez#whatsapp" class="btn-wa" onclick="event.stopPropagation()">💬 WhatsApp</a>
+            <a href="profile.html?id=hernandez#quote" class="btn-quote btn-quote-i18n" data-i18n-es="Pedir presupuesto" data-i18n-en="Get a quote" onclick="event.stopPropagation()">Pedir presupuesto</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="biz-card" onclick="window.location='profile.html?id=martinez'" data-cat="plumbing" data-area="buford" data-rating="4.6" data-verified="true" data-priority="0" data-id="martinez">
+        <div class="biz-card-top">
+          <div class="biz-avatar av-amber">MP</div>
+          <div class="biz-info">
+            <div class="biz-name">Martinez Plumbing & Repair</div>
+            <div class="biz-category" data-es-text="🔧 Plomería · Buford, GA" data-en-text="🔧 Plumbing · Buford, GA">🔧 Plomería · Buford, GA</div>
+            <div class="badge-row">
+              <span class="badge badge-verified">✅ Verified</span>
+              <span class="badge badge-lang">ES</span>
+            </div>
+          </div>
+          <div class="biz-distance">📍 3.5 mi</div>
+        </div>
+        <div class="biz-desc i18n-card" data-es-text="Plomería residencial y comercial. Emergencias 24/7. Licencia de Georgia. Más de 8 años de experiencia." data-en-text="Residential & commercial plumbing. 24/7 emergencies. Georgia licensed. 8+ years experience.">Plomería residencial y comercial. Emergencias 24/7. Licencia de Georgia. Más de 8 años de experiencia.</div>
+        <div class="biz-card-bottom">
+          <div class="stars">★★★★☆ <span>4.6 (17 <span class="i18n-reviews" data-i18n-es="reseñas" data-i18n-en="reviews">reseñas</span>)</span></div>
+          <div class="biz-actions">
+            <a href="profile.html?id=martinez#whatsapp" class="btn-wa" onclick="event.stopPropagation()">💬 WhatsApp</a>
+            <a href="profile.html?id=martinez#quote" class="btn-quote btn-quote-i18n" data-i18n-es="Pedir presupuesto" data-i18n-en="Get a quote" onclick="event.stopPropagation()">Pedir presupuesto</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="biz-card" onclick="window.location='profile.html?id=suarez'" data-cat="electrical" data-area="duluth" data-rating="4.8" data-verified="true" data-priority="10" data-id="suarez">
+        <div class="biz-card-top">
+          <div class="biz-avatar av-coral">SE</div>
+          <div class="biz-info">
+            <div class="biz-name">Suarez Electrical Services</div>
+            <div class="biz-category" data-es-text="⚡ Electricidad · Duluth, GA" data-en-text="⚡ Electrical · Duluth, GA">⚡ Electricidad · Duluth, GA</div>
+            <div class="badge-row">
+              <span class="badge badge-verified">✅ Verified</span>
+              <span class="badge badge-lang">ES</span>
+              <span class="badge badge-lang">EN</span>
+            </div>
+          </div>
+          <div class="biz-distance">📍 6.2 mi</div>
+        </div>
+        <div class="biz-desc i18n-card" data-es-text="Electricista certificado. Instalaciones, paneles, reparaciones. Residencial y comercial." data-en-text="Certified electrician. Installations, panels, repairs. Residential and commercial.">Electricista certificado. Instalaciones, paneles, reparaciones. Residencial y comercial.</div>
+        <div class="biz-card-bottom">
+          <div class="stars">★★★★★ <span>4.8 (9 <span class="i18n-reviews" data-i18n-es="reseñas" data-i18n-en="reviews">reseñas</span>)</span></div>
+          <div class="biz-actions">
+            <a href="profile.html?id=suarez#whatsapp" class="btn-wa" onclick="event.stopPropagation()">💬 WhatsApp</a>
+            <a href="profile.html?id=suarez#quote" class="btn-quote btn-quote-i18n" data-i18n-es="Pedir presupuesto" data-i18n-en="Get a quote" onclick="event.stopPropagation()">Pedir presupuesto</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="biz-card" onclick="window.location='profile.html?id=flores'" data-cat="painting" data-area="lawrenceville" data-rating="4.5" data-verified="false" data-priority="0" data-id="flores">
+        <div class="biz-card-top">
+          <div class="biz-avatar av-gray">FP</div>
+          <div class="biz-info">
+            <div class="biz-name">Flores Painting Co.</div>
+            <div class="biz-category" data-es-text="🪟 Pintura · Lawrenceville, GA" data-en-text="🪟 Painting · Lawrenceville, GA">🪟 Pintura · Lawrenceville, GA</div>
+            <div class="badge-row">
+              <span class="badge badge-lang">ES</span>
+              <span class="badge badge-basic">📋 Basic</span>
+            </div>
+          </div>
+          <div class="biz-distance">📍 8.4 mi</div>
+        </div>
+        <div class="biz-desc i18n-card" data-es-text="Pintura interior y exterior. Trabajos residenciales y comerciales. Precios competitivos." data-en-text="Interior and exterior painting. Residential and commercial. Competitive pricing.">Pintura interior y exterior. Trabajos residenciales y comerciales. Precios competitivos.</div>
+        <div class="biz-card-bottom">
+          <div class="stars">★★★★☆ <span>4.5 (6 <span class="i18n-reviews" data-i18n-es="reseñas" data-i18n-en="reviews">reseñas</span>)</span></div>
+          <div class="biz-actions">
+            <a href="profile.html?id=flores#whatsapp" class="btn-wa" onclick="event.stopPropagation()">💬 WhatsApp</a>
+            <a href="profile.html?id=flores#quote" class="btn-quote btn-quote-i18n" data-i18n-es="Pedir presupuesto" data-i18n-en="Get a quote" onclick="event.stopPropagation()">Pedir presupuesto</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="biz-card" onclick="window.location='profile.html?id=luis'" data-cat="staffing" data-area="duluth" data-rating="0" data-verified="true" data-priority="0" data-id="luis">
+        <div class="biz-card-top">
+          <div class="biz-avatar av-amber">LM</div>
+          <div class="biz-info">
+            <div class="biz-name">Luis M.</div>
+            <div class="biz-category" data-es-text="👷 Cocina / Restaurante · Duluth, GA" data-en-text="👷 Kitchen / Restaurant · Duluth, GA">👷 Cocina / Restaurante · Duluth, GA</div>
+            <div class="badge-row">
+              <span class="badge badge-verified">✅ Verified</span>
+              <span class="badge badge-lang">ES</span>
+              <span class="badge badge-lang">EN</span>
+            </div>
+          </div>
+          <div class="biz-distance">📍 1.8 mi</div>
+        </div>
+        <div class="biz-desc i18n-card" data-es-text="5 años de experiencia en cocinas de restaurantes. Disponible por día o por semana. Confiable y puntual." data-en-text="5 years of experience in restaurant kitchens. Available by the day or by the week. Reliable and punctual.">5 años de experiencia en cocinas de restaurantes. Disponible por día o por semana. Confiable y puntual.</div>
+        <div class="biz-card-bottom">
+          <div class="jobs-completed">✅ <strong>12</strong> <span class="i18n-reviews" data-i18n-es="trabajos completados" data-i18n-en="jobs completed">trabajos completados</span> <span class="self-reported-tag" data-es-text="(auto-reportado)" data-en-text="(self-reported)">(auto-reportado)</span></div>
+          <div class="biz-actions">
+            <a href="profile.html?id=luis#whatsapp" class="btn-wa" onclick="event.stopPropagation()">💬 WhatsApp</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="biz-card" onclick="window.location='profile.html?id=jorge'" data-cat="staffing" data-area="atlanta" data-rating="0" data-verified="true" data-priority="0" data-id="jorge">
+        <div class="biz-card-top">
+          <div class="biz-avatar av-blue">JR</div>
+          <div class="biz-info">
+            <div class="biz-name">Jorge R.</div>
+            <div class="biz-category" data-es-text="👷 Construcción (jornalero) · Atlanta, GA" data-en-text="👷 Construction (day labor) · Atlanta, GA">👷 Construcción (jornalero) · Atlanta, GA</div>
+            <div class="badge-row">
+              <span class="badge badge-verified">✅ Verified</span>
+              <span class="badge badge-lang">ES</span>
+            </div>
+          </div>
+          <div class="biz-distance">📍 4.6 mi</div>
+        </div>
+        <div class="biz-desc i18n-card" data-es-text="Experiencia en demolición, carga y trabajo general de construcción. Disponible de inmediato." data-en-text="Experience in demolition, loading, and general construction work. Available immediately.">Experiencia en demolición, carga y trabajo general de construcción. Disponible de inmediato.</div>
+        <div class="biz-card-bottom">
+          <div class="jobs-completed">✅ <strong>27</strong> <span class="i18n-reviews" data-i18n-es="trabajos completados" data-i18n-en="jobs completed">trabajos completados</span> <span class="self-reported-tag" data-es-text="(auto-reportado)" data-en-text="(self-reported)">(auto-reportado)</span></div>
+          <div class="biz-actions">
+            <a href="profile.html?id=jorge#whatsapp" class="btn-wa" onclick="event.stopPropagation()">💬 WhatsApp</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="biz-card" onclick="window.location='profile.html?id=ana'" data-cat="staffing" data-area="norcross" data-rating="0" data-verified="false" data-priority="0" data-id="ana">
+        <div class="biz-card-top">
+          <div class="biz-avatar av-teal">AG</div>
+          <div class="biz-info">
+            <div class="biz-name">Ana G.</div>
+            <div class="biz-category" data-es-text="👷 Mudanzas / Carga · Norcross, GA" data-en-text="👷 Moving / Loading · Norcross, GA">👷 Mudanzas / Carga · Norcross, GA</div>
+            <div class="badge-row">
+              <span class="badge badge-lang">ES</span>
+              <span class="badge badge-pending">⏳ Pendiente</span>
+            </div>
+          </div>
+          <div class="biz-distance">📍 3.2 mi</div>
+        </div>
+        <div class="biz-desc i18n-card" data-es-text="Disponible para mudanzas residenciales los fines de semana. Trabajo en equipo, puntual." data-en-text="Available for residential moves on weekends. Team player, punctual.">Disponible para mudanzas residenciales los fines de semana. Trabajo en equipo, puntual.</div>
+        <div class="biz-card-bottom">
+          <div class="jobs-completed">✅ <strong>4</strong> <span class="i18n-reviews" data-i18n-es="trabajos completados" data-i18n-en="jobs completed">trabajos completados</span> <span class="self-reported-tag" data-es-text="(auto-reportado)" data-en-text="(self-reported)">(auto-reportado)</span></div>
+          <div class="biz-actions">
+            <a href="profile.html?id=ana#whatsapp" class="btn-wa" onclick="event.stopPropagation()">💬 WhatsApp</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="pagination">
+      <button class="page-btn" disabled>‹</button>
+      <button class="page-btn active">1</button>
+      <button class="page-btn" onclick="changePage(2)">2</button>
+      <button class="page-btn" onclick="changePage(3)">3</button>
+      <span style="font-size:13px;color:var(--c-hint);padding:0 4px">...</span>
+      <button class="page-btn" onclick="changePage(4)">4</button>
+      <button class="page-btn" onclick="changePage(2)">›</button>
+    </div>
+  </main>
+
+</div>
+
+<script>
+// ── SAVE BUSINESS (search page) ────────────────────────────
+function getSavedBusinesses() {
+  try { return JSON.parse(localStorage.getItem('anm-saved-businesses') || '[]'); } catch(e) { return []; }
+}
+function setSavedBusinesses(list) {
+  try { localStorage.setItem('anm-saved-businesses', JSON.stringify(list)); } catch(e) {}
+}
+
+function toggleSaveFromCard(btn, bizId, bizName, bizCat, bizArea) {
+  event.stopPropagation();
+  var loggedIn = false;
+  try { loggedIn = localStorage.getItem('anm-sim-logged-in') === '1'; } catch(e) {}
+  if (!loggedIn) {
+    try { sessionStorage.setItem('anm-save-redirect', window.location.href); } catch(e) {}
+    window.location.href = 'login.html?type=customer';
+    return;
+  }
+  var saved = getSavedBusinesses();
+  var idx = saved.findIndex(function(s){ return s.id === bizId; });
+  var isEn = document.body.classList.contains('en');
+  if (idx === -1) {
+    saved.push({ id: bizId, name: bizName, category: bizCat, area: bizArea, savedAt: Date.now() });
+    setSavedBusinesses(saved);
+    btn.textContent = '★';
+    btn.classList.add('saved');
+    btn.title = isEn ? 'Saved' : 'Guardado';
+  } else {
+    saved.splice(idx, 1);
+    setSavedBusinesses(saved);
+    btn.textContent = '☆';
+    btn.classList.remove('saved');
+    btn.title = isEn ? 'Save' : 'Guardar';
+  }
+}
+
+function injectSaveButtons() {
+  var saved = getSavedBusinesses();
+  var savedIds = saved.map(function(s){ return s.id; });
+  var isEn = document.body.classList.contains('en');
+
+  document.querySelectorAll('.biz-card[data-id]').forEach(function(card) {
+    var bizId = card.getAttribute('data-id');
+    var actions = card.querySelector('.biz-actions');
+    if (!actions || actions.querySelector('.btn-save-card')) return; // already injected
+
+    var isSaved = savedIds.indexOf(bizId) !== -1;
+    var bizName = card.querySelector('.biz-name') ? card.querySelector('.biz-name').textContent : bizId;
+    var bizCat = card.querySelector('.biz-category') ? card.querySelector('.biz-category').textContent : '';
+    var bizArea = '';
+
+    var btn = document.createElement('button');
+    btn.className = 'btn-save-card' + (isSaved ? ' saved' : '');
+    btn.textContent = isSaved ? '★' : '☆';
+    btn.title = isSaved ? (isEn ? 'Saved' : 'Guardado') : (isEn ? 'Save' : 'Guardar');
+    btn.setAttribute('aria-label', isEn ? 'Save business' : 'Guardar negocio');
+    btn.onclick = function(e) { toggleSaveFromCard(btn, bizId, bizName, bizCat, bizArea); };
+    actions.appendChild(btn);
+  });
+}
+
+function toggleFilters() {
+  var inner = document.getElementById('filters-inner');
+  var arrow = document.getElementById('filter-toggle-arrow');
+  var open = inner.classList.toggle('open');
+  if (arrow) arrow.textContent = open ? '▲' : '▼';
+}
+
+function setLang(lang) {
+  var en = lang === 'en';
+  document.body.classList.toggle('en', en);
+  var btnEs = document.getElementById('btn-es');
+  var btnEn = document.getElementById('btn-en');
+  if (btnEs) btnEs.classList.toggle('active', !en);
+  if (btnEn) btnEn.classList.toggle('active', en);
+
+  function setText(id, es, e) { var el = document.getElementById(id); if (el) el.textContent = en ? e : es; }
+  function setAll(cls, es, e) { document.querySelectorAll('.'+cls).forEach(function(el){ el.textContent = en ? e : es; }); }
+
+  // data-es-text / data-en-text 속성 일괄 처리
+  document.querySelectorAll('[data-es-text]').forEach(function(el) {
+    el.textContent = en ? el.getAttribute('data-en-text') : el.getAttribute('data-es-text');
+  });
+
+  setText('nav-cta', 'Registrar Negocio', 'List Your Business');
+  setText('btn-search', 'Buscar', 'Search');
+  setAll('btn-quote-i18n', 'Pedir presupuesto', 'Get a quote');
+  // Use data attributes for special char strings
+  document.querySelectorAll('[data-i18n-es]').forEach(function(el) {
+    el.textContent = en ? el.getAttribute('data-i18n-en') : el.getAttribute('data-i18n-es');
+  });
+
+  var num = document.getElementById('count-num');
+  var cnt = document.getElementById('results-count');
+  if (cnt && num) {
+    var pre = en ? 'Showing ' : 'Mostrando '; var suf = en ? ' businesses in Georgia' : ' negocios en Georgia'; cnt.textContent = pre + num.textContent + suf;
+  }
+
+  try { localStorage.setItem('anm-lang', lang); } catch(e) {}
+}
+
+function getActiveCats() {
+  return Array.from(document.querySelectorAll('#filter-cat input:checked')).map(function(i){ return i.value; });
+}
+function getActiveAreas() {
+  return Array.from(document.querySelectorAll('#filter-area input:checked')).map(function(i){ return i.value; });
+}
+function getMinRating() {
+  var r = document.querySelector('input[name="rating"]:checked');
+  return r ? parseFloat(r.value) || 0 : 0;
+}
+function getVerifiedOnly() {
+  var el = document.getElementById('f-verified');
+  return el ? el.checked : false;
+}
+
+function filterChange() {
+  var cats = getActiveCats();
+  var areas = getActiveAreas();
+  var minRating = getMinRating();
+  var verifiedOnly = getVerifiedOnly();
+  var cards = document.querySelectorAll('.biz-card');
+  var visible = 0;
+
+  cards.forEach(function(card) {
+    var cat = card.dataset.cat;
+    var area = card.dataset.area;
+    var rating = parseFloat(card.dataset.rating);
+    var verified = card.dataset.verified === 'true';
+    var show = true;
+    if (cats.length && cats.indexOf(cat) === -1) show = false;
+    if (areas.length && areas.indexOf(area) === -1) show = false;
+    if (minRating && rating < minRating) show = false;
+    if (verifiedOnly && !verified) show = false;
+    card.style.display = show ? 'block' : 'none';
+    if (show) visible++;
+  });
+
+  var numEl = document.getElementById('count-num');
+  if (numEl) numEl.textContent = visible;
+  updateActiveChips(cats, areas, minRating, verifiedOnly);
+}
+
+function updateActiveChips(cats, areas, minRating, verifiedOnly) {
+  var wrap = document.getElementById('active-filters');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  var isEn = document.body.classList.contains('en');
+
+  function makeChip(label, removeFn) {
+    var chip = document.createElement('span');
+    chip.className = 'active-chip';
+    chip.textContent = label + ' ';
+    var btn = document.createElement('button');
+    btn.textContent = 'x';
+    btn.onclick = removeFn;
+    chip.appendChild(btn);
+    wrap.appendChild(chip);
+  }
+
+  cats.forEach(function(c) { makeChip(c, function(){ removeCatFilter(c); }); });
+  areas.forEach(function(a) { makeChip(a, function(){ removeAreaFilter(a); }); });
+  if (minRating) { makeChip('★ ' + minRating + '+', clearRating); }
+  if (verifiedOnly) { makeChip(isEn ? 'Verified only' : 'Solo verificados', clearVerified); }
+}
+
+function removeCatFilter(val) {
+  var cb = document.querySelector('#filter-cat input[value="'+val+'"]');
+  if (cb) { cb.checked = false; filterChange(); }
+}
+function removeAreaFilter(val) {
+  var cb = document.querySelector('#filter-area input[value="'+val+'"]');
+  if (cb) { cb.checked = false; filterChange(); }
+}
+function clearRating() {
+  var last = document.querySelector('input[name="rating"][value=""]');
+  if (last) { last.checked = true; filterChange(); }
+}
+function clearVerified() {
+  var el = document.getElementById('f-verified');
+  if (el) { el.checked = false; filterChange(); }
+}
+function clearFilter(type) {
+  document.querySelectorAll('#filter-'+type+' input').forEach(function(i){ i.checked = false; });
+  filterChange();
+}
+function stripAccents(s) {
+  return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+// Maps each category slug to ALL the display names a user might type to find it —
+// the slug-to-label text shown only in the filter checkboxes, not on the cards themselves.
+var CATEGORY_SEARCH_TERMS = {
+  landscaping: 'paisajismo landscaping',
+  cleaning: 'limpieza cleaning',
+  construction: 'construccion construction',
+  painting: 'pintura painting',
+  realestate: 'agente inmobiliario real estate',
+  plumbing: 'plomeria plumbing',
+  electrical: 'electricidad electrical',
+  moving: 'mudanzas moving',
+  food: 'comida food catering',
+  auto: 'autos auto repair',
+  translation: 'traduccion translation',
+  tree: 'arboles tree removal',
+  staffing: 'personal y mano de obra staffing labor'
+};
+
+function applySearch() {
+  var qRaw = document.getElementById('main-search').value.trim().toLowerCase();
+  var q = stripAccents(qRaw);
+  var cards = document.querySelectorAll('.biz-card');
+  var visible = 0;
+  cards.forEach(function(card) {
+    // Match against: visible text, the category slug, both language variants of every
+    // translated field, and the category's full display name(s) (which only appear in the
+    // filter sidebar, not on the card itself — e.g. searching "Staffing" or "Personal y
+    // Mano de Obra" should find cards whose visible copy never spells out the category name).
+    // Accents are stripped on both sides so "Plomeria" matches "Plomería".
+    var text = card.textContent.toLowerCase();
+    var catSlug = (card.dataset.cat || '').toLowerCase();
+    var catTerms = CATEGORY_SEARCH_TERMS[catSlug] || '';
+    var i18nText = Array.from(card.querySelectorAll('[data-es-text],[data-en-text]'))
+      .map(function(el) { return (el.getAttribute('data-es-text') || '') + ' ' + (el.getAttribute('data-en-text') || ''); })
+      .join(' ').toLowerCase();
+    var haystack = stripAccents(text + ' ' + catSlug + ' ' + catTerms + ' ' + i18nText);
+    var show = !q || haystack.indexOf(q) !== -1;
+    card.style.display = show ? 'block' : 'none';
+    if (show) visible++;
+  });
+  var numEl = document.getElementById('count-num');
+  if (numEl) numEl.textContent = visible;
+}
+function sortChange(val) {
+  var list = document.getElementById('biz-list');
+  if (!list) return;
+  var cards = Array.from(list.querySelectorAll('.biz-card'));
+  if (val === 'recommended') {
+    // Priority points (from Premium plan / admin adjustment) come first, then rating as tiebreaker
+    cards.sort(function(a,b){
+      var pa = parseFloat(a.dataset.priority||0), pb = parseFloat(b.dataset.priority||0);
+      if (pb !== pa) return pb - pa;
+      return parseFloat(b.dataset.rating||0) - parseFloat(a.dataset.rating||0);
+    });
+  } else if (val === 'rating') {
+    cards.sort(function(a,b){ return parseFloat(b.dataset.rating||0) - parseFloat(a.dataset.rating||0); });
+  } else if (val === 'distance') {
+    cards.sort(function(a,b){
+      var da = a.querySelector('.biz-distance');
+      var db = b.querySelector('.biz-distance');
+      return parseFloat(da ? da.textContent : 99) - parseFloat(db ? db.textContent : 99);
+    });
+  } else if (val === 'newest') {
+    // Newest first: cards with the "Nuevo" badge bubble up, priority as tiebreaker
+    cards.sort(function(a,b){
+      var na = a.querySelector('.badge-new') ? 1 : 0;
+      var nb = b.querySelector('.badge-new') ? 1 : 0;
+      if (nb !== na) return nb - na;
+      return parseFloat(b.dataset.priority||0) - parseFloat(a.dataset.priority||0);
+    });
+  }
+  cards.forEach(function(c){ list.appendChild(c); });
+}
+function toggleAcc(id) {
+  var body = document.getElementById(id);
+  var county = id.replace('acc-','');
+  var arrow = document.getElementById('arr-' + county);
+  if (!body) return;
+  body.classList.toggle('open');
+  if (arrow) arrow.classList.toggle('open');
+}
+function toggleMore(type) {
+  var more = document.getElementById(type + '-more');
+  var btn = document.getElementById(type + '-more-btn');
+  var span = btn ? btn.querySelector('[data-es-text]') : null;
+  if (!more) return;
+  var isOpen = more.style.display === 'block';
+  more.style.display = isOpen ? 'none' : 'block';
+  if (span) {
+    var isEn = document.body.classList.contains('en');
+    if (isOpen) {
+      span.setAttribute('data-es-text', '+ Ver 7 más');
+      span.setAttribute('data-en-text', '+ Show 7 more');
+      span.textContent = isEn ? '+ Show 7 more' : '+ Ver 7 más';
+    } else {
+      span.setAttribute('data-es-text', '− Ver menos');
+      span.setAttribute('data-en-text', '− Show less');
+      span.textContent = isEn ? '− Show less' : '− Ver menos';
+    }
+  }
+}
+function changePage(p) {
+  document.querySelectorAll('.page-btn').forEach(function(b){ b.classList.remove('active'); });
+  if (event && event.target) event.target.classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var saved = ''; try { saved = localStorage.getItem('anm-lang'); } catch(e) {}
+  var browser = (navigator.language || 'es').toLowerCase();
+  var lang = saved || (browser.startsWith('en') ? 'en' : 'es');
+  setLang(lang);
+
+  // Default view sorts by recommended (priority points first, rating as tiebreaker)
+  sortChange('recommended');
+
+  var params = new URLSearchParams(window.location.search);
+  var q = params.get('q');
+  var cat = params.get('cat');
+  if (q) {
+    var ms = document.getElementById('main-search');
+    if (ms) { ms.value = q; applySearch(); }
+  }
+  if (cat) {
+    var cb = document.querySelector('#filter-cat input[value="'+cat+'"]');
+    if (cb) { cb.checked = true; filterChange(); }
+  }
+
+  // Sync admin-approved verified badges to search result cards.
+  // In production this comes from the DB; here we read from localStorage written
+  // by admin.html's reviewVerification() when an admin approves a business.
+  document.querySelectorAll('.biz-card[data-id]').forEach(function(card) {
+    var bizId = card.getAttribute('data-id');
+    var adminApproved = false;
+    try { adminApproved = localStorage.getItem('anm-verified-' + bizId) === '1'; } catch(e) {}
+    if (adminApproved) {
+      card.setAttribute('data-verified', 'true');
+      var badgeRow = card.querySelector('.badge-row');
+      if (badgeRow && !badgeRow.querySelector('.badge-verified')) {
+        var badge = document.createElement('span');
+        badge.className = 'badge badge-verified';
+        badge.textContent = '✅ Verified';
+        badgeRow.prepend(badge);
+      }
+    }
+  });
+
+  // Inject save buttons on all business cards
+  injectSaveButtons();
+});
+</script>
+</body>
+</html>

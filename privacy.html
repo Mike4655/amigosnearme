@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — AmigosNearMe</title>
+<meta name="description" content="How AmigosNearMe collects, uses, and protects your information.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display:ital@0;1&display=swap');
+
+  :root {
+    --c-bg: #FAFAF7; --c-surface: #FFFFFF; --c-border: rgba(0,0,0,0.09);
+    --c-text: #1A1A18; --c-muted: #6B6B66; --c-hint: #A8A8A2;
+    --c-accent: #C94F2B; --c-accent-light: #FAF0EC;
+    --radius-sm: 8px; --radius-md: 12px;
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-body); background: var(--c-bg); color: var(--c-text); font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+  nav { position: sticky; top: 0; z-index: 100; background: rgba(250,250,247,0.92); backdrop-filter: blur(12px); border-bottom: 0.5px solid var(--c-border); padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+  .nav-logo { font-family: var(--font-display); font-size: 20px; color: var(--c-text); text-decoration: none; }
+  .nav-logo span { color: var(--c-accent); }
+  .nav-lang { display: flex; gap: 4px; }
+  .lang-btn { padding: 5px 10px; border-radius: var(--radius-sm); border: 0.5px solid var(--c-border); background: var(--c-surface); font-size: 12px; font-weight: 500; color: var(--c-muted); cursor: pointer; font-family: var(--font-body); }
+  .lang-btn.active { background: var(--c-text); color: #fff; border-color: var(--c-text); }
+  .btn-nav { padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13.5px; font-weight: 500; text-decoration: none; }
+  .btn-nav.primary { background: var(--c-accent); color: #fff; }
+
+  .legal-wrap { max-width: 760px; margin: 0 auto; padding: 48px 24px 80px; display: grid; grid-template-columns: 200px 1fr; gap: 40px; align-items: start; }
+  .toc { position: sticky; top: 80px; }
+  .toc-title { font-size: 11px; font-weight: 600; color: var(--c-hint); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 10px; }
+  .toc a { display: block; font-size: 13px; color: var(--c-muted); text-decoration: none; padding: 5px 0; }
+  .toc a:hover { color: var(--c-accent); }
+
+  .eyebrow { font-size: 13px; font-weight: 500; color: var(--c-accent); margin-bottom: 8px; }
+  h1 { font-family: var(--font-display); font-size: 30px; font-weight: 400; margin-bottom: 8px; }
+  .updated { font-size: 12.5px; color: var(--c-hint); margin-bottom: 32px; }
+  h2 { font-family: var(--font-display); font-size: 19px; font-weight: 400; margin: 32px 0 10px; scroll-margin-top: 80px; }
+  p { color: var(--c-text); margin-bottom: 12px; line-height: 1.75; font-size: 14.5px; }
+  ul { margin: 0 0 14px 20px; }
+  li { font-size: 14.5px; line-height: 1.7; margin-bottom: 4px; }
+  strong { font-weight: 600; }
+
+  .note-box { background: var(--c-accent-light); border-radius: var(--radius-md); padding: 14px 18px; font-size: 13.5px; margin: 16px 0; }
+
+  footer { background: var(--c-text); color: rgba(255,255,255,0.6); padding: 40px 24px 28px; margin-top: 40px; }
+  .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+  .footer-copy { font-size: 12px; }
+  .footer-links a { font-size: 12px; color: rgba(255,255,255,0.5); text-decoration: none; margin-left: 16px; }
+  .footer-links a:hover { color: #fff; }
+
+  [data-en] { display: none; }
+  body.en [data-es] { display: none; }
+  body.en [data-en] { display: revert; }
+
+  @media (max-width: 720px) {
+    .legal-wrap { grid-template-columns: 1fr; }
+    .toc { display: none; }
+    .footer-inner { flex-direction: column; align-items: flex-start; }
+    .footer-links a { margin-left: 0; margin-right: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Amigos<span>NearMe</span></a>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div class="nav-lang">
+      <button class="lang-btn active" id="btn-es" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+    <a href="register-type.html" class="btn-nav primary" data-es>Registrar Negocio</a>
+    <a href="register-type.html" class="btn-nav primary" data-en>List Your Business</a>
+  </div>
+</nav>
+
+<div class="legal-wrap">
+  <div class="toc">
+    <div class="toc-title" data-es>En esta página</div>
+    <div class="toc-title" data-en>On this page</div>
+    <a href="#info-collect" data-es>Información que recopilamos</a><a href="#info-collect" data-en>Information we collect</a>
+    <a href="#info-use" data-es>Cómo la usamos</a><a href="#info-use" data-en>How we use it</a>
+    <a href="#sharing" data-es>Con quién la compartimos</a><a href="#sharing" data-en>Who we share it with</a>
+    <a href="#workers" data-es>Trabajadores y personal</a><a href="#workers" data-en>Workers & staffing</a>
+    <a href="#rights" data-es>Tus derechos</a><a href="#rights" data-en>Your rights</a>
+    <a href="#security" data-es>Seguridad</a><a href="#security" data-en>Security</a>
+    <a href="#contact-us" data-es>Contacto</a><a href="#contact-us" data-en>Contact</a>
+  </div>
+
+  <div>
+    <div class="eyebrow" data-es>Legal</div>
+    <div class="eyebrow" data-en>Legal</div>
+    <h1 data-es>Política de Privacidad</h1>
+    <h1 data-en>Privacy Policy</h1>
+    <div class="updated" data-es>Última actualización: junio de 2026</div>
+    <div class="updated" data-en>Last updated: June 2026</div>
+
+    <p data-es>En AmigosNearMe respetamos tu privacidad. Esta política explica qué información recopilamos, cómo la usamos y qué control tienes sobre ella, ya seas cliente, dueño de negocio, o te hayas registrado como trabajador independiente.</p>
+    <p data-en>At AmigosNearMe, we respect your privacy. This policy explains what information we collect, how we use it, and what control you have over it — whether you're a customer, a business owner, or registered as an independent worker.</p>
+
+    <h2 id="info-collect" data-es>1. Información que recopilamos</h2>
+    <h2 data-en>1. Information we collect</h2>
+    <p data-es>Recopilamos la información que tú nos das directamente:</p>
+    <p data-en>We collect information you give us directly:</p>
+    <ul>
+      <li data-es><strong>Cuentas:</strong> nombre, correo electrónico, contraseña, número de teléfono.</li>
+      <li data-en><strong>Account info:</strong> name, email, password, phone number.</li>
+      <li data-es><strong>Perfiles de negocio:</strong> nombre del negocio, categoría, área de servicio, EIN o documentos de verificación (opcional), fotos.</li>
+      <li data-en><strong>Business profiles:</strong> business name, category, service area, EIN or verification documents (optional), photos.</li>
+      <li data-es><strong>Perfiles de trabajador:</strong> nombre, tipos de trabajo, disponibilidad, experiencia, descripción personal — sin necesidad de un negocio formal.</li>
+      <li data-en><strong>Worker profiles:</strong> name, types of work, availability, experience, personal description — no formal business required.</li>
+      <li data-es><strong>Mensajes:</strong> el contenido de las solicitudes que envías a través de la plataforma (vía WhatsApp o nuestro formulario alternativo).</li>
+      <li data-en><strong>Messages:</strong> the content of requests you send through the platform (via WhatsApp or our fallback form).</li>
+    </ul>
+    <p data-es>También recopilamos automáticamente información técnica básica, como tu dirección IP aproximada y el tipo de navegador, para mantener la plataforma funcionando correctamente y prevenir abuso.</p>
+    <p data-en>We also automatically collect basic technical information, like your approximate IP address and browser type, to keep the platform running properly and prevent abuse.</p>
+
+    <h2 id="info-use" data-es>2. Cómo usamos tu información</h2>
+    <h2 data-en>2. How we use your information</h2>
+    <ul>
+      <li data-es>Mostrar tu perfil público a otros usuarios que buscan tus servicios.</li>
+      <li data-en>Showing your public profile to other users searching for your services.</li>
+      <li data-es>Conectar a clientes y negocios o trabajadores a través de WhatsApp o nuestro formulario de contacto.</li>
+      <li data-en>Connecting customers with businesses or workers via WhatsApp or our contact form.</li>
+      <li data-es>Enviar confirmaciones de cuenta, notificaciones de solicitudes y actualizaciones importantes de la plataforma.</li>
+      <li data-en>Sending account confirmations, request notifications, and important platform updates.</li>
+      <li data-es>Verificar negocios que suben documentación, para mostrar la insignia "Verified".</li>
+      <li data-en>Verifying businesses that upload documentation, in order to display the "Verified" badge.</li>
+      <li data-es>Mejorar la plataforma y prevenir fraude o uso indebido.</li>
+      <li data-en>Improving the platform and preventing fraud or misuse.</li>
+    </ul>
+
+    <h2 id="sharing" data-es>3. Con quién compartimos tu información</h2>
+    <h2 data-en>3. Who we share it with</h2>
+    <p data-es>No vendemos tu información personal. La información pública de tu perfil de negocio (nombre, categoría, área de servicio, teléfono) es visible para cualquier persona, ya que ese es el propósito de un directorio público.</p>
+    <p data-en>We don't sell your personal information. Your business profile's public information (name, category, service area, contact phone) is visible to anyone, since that's the purpose of a public directory.</p>
+    <p data-es><strong>Tu información de contacto como cliente nunca se comparte con los dueños de negocio a través de esta plataforma.</strong></p>
+    <p data-en><strong>Your contact information as a customer is never shared with business owners through this platform.</strong></p>
+
+    <div class="note-box">
+      <span data-es><strong>Contacto por WhatsApp:</strong> Cuando contactas a un negocio por WhatsApp, tú controlas ese mensaje directamente. Nosotros solo preparamos el texto inicial, pero el envío ocurre dentro de tu propia aplicación de WhatsApp. AmigosNearMe no tiene acceso a esa conversación y no almacena tu número de teléfono.</span>
+      <span data-en><strong>WhatsApp contact:</strong> When you contact a business via WhatsApp, you control that message directly. We only prepare the initial text, but sending happens inside your own WhatsApp app. AmigosNearMe has no access to that conversation and does not store your phone number.</span>
+    </div>
+
+    <div class="note-box">
+      <span data-es><strong>Formulario de contacto alternativo (sin WhatsApp):</strong> Si usas nuestro formulario de contacto, tu nombre, número de teléfono y servicio solicitado se utilizan para notificar al negocio directamente por correo electrónico o WhatsApp, para que puedan contactarte. Esta información también se almacena en nuestros sistemas internos de administración durante un máximo de 90 días con fines de prevención de abuso, y luego se elimina automáticamente. <strong>Tu información de contacto no queda guardada en el panel de control del negocio</strong> — el negocio solo ve el tipo de servicio, la zona y la hora en su historial de solicitudes.</span>
+      <span data-en><strong>Fallback contact form (no WhatsApp):</strong> If you use our contact form, your name, phone number, and requested service are used to notify the business directly by email or WhatsApp so they can reach you. This information is also stored in our internal admin systems for a maximum of 90 days for abuse-prevention purposes, then automatically deleted. <strong>Your contact details are not stored in the business owner's dashboard</strong> — the business only sees the service type, area, and time in their inquiry history.</span>
+    </div>
+
+    <h2 id="workers" data-es>4. Trabajadores y personal independiente</h2>
+    <h2 data-en>4. Workers & independent staffing</h2>
+    <div class="note-box">
+      <span data-es>Si te registras como trabajador individual (categoría "Personal y Mano de Obra"), tu perfil es gratuito y no requiere documentación de negocio. Tu número de "trabajos completados" es <strong>auto-reportado por ti</strong> y se muestra claramente como tal — AmigosNearMe no lo verifica de forma independiente todavía.</span>
+      <span data-en>If you register as an individual worker ("Staffing & Labor" category), your profile is free and requires no business documentation. Your "jobs completed" number is <strong>self-reported by you</strong> and is clearly labeled as such — AmigosNearMe does not independently verify it yet.</span>
+    </div>
+    <p data-es>No publicamos tu dirección exacta — solo el área de servicio que indiques (por ejemplo, "Duluth, Norcross"). Tu número de teléfono se muestra para que negocios interesados puedan contactarte directamente.</p>
+    <p data-en>We do not publish your exact address — only the service area you specify (e.g. "Duluth, Norcross"). Your phone number is shown so interested businesses can contact you directly.</p>
+
+    <h2 id="rights" data-es>5. Tus derechos</h2>
+    <h2 data-en>5. Your rights</h2>
+    <p data-es>Puedes acceder, corregir o eliminar la información de tu perfil en cualquier momento desde tu panel de control. Si quieres eliminar tu cuenta por completo, contáctanos y procesaremos tu solicitud.</p>
+    <p data-en>You can access, correct, or delete your profile information at any time from your dashboard. If you'd like your account fully deleted, contact us and we'll process your request.</p>
+
+    <h2 id="security" data-es>6. Seguridad</h2>
+    <h2 data-en>6. Security</h2>
+    <p data-es>Tomamos medidas razonables para proteger tu información, pero ningún sistema es 100% seguro. Te recomendamos usar una contraseña única para tu cuenta de AmigosNearMe.</p>
+    <p data-en>We take reasonable steps to protect your information, but no system is 100% secure. We recommend using a unique password for your AmigosNearMe account.</p>
+
+    <h2 id="contact-us" data-es>7. Contacto</h2>
+    <h2 data-en>7. Contact</h2>
+    <p data-es>Si tienes preguntas sobre esta política, escríbenos a <a href="mailto:hola@amigosnearme.com" style="color:var(--c-accent)">hola@amigosnearme.com</a> o visita nuestra <a href="contact.html" style="color:var(--c-accent)">página de contacto</a>.</p>
+    <p data-en>If you have questions about this policy, email us at <a href="mailto:hola@amigosnearme.com" style="color:var(--c-accent)">hola@amigosnearme.com</a> or visit our <a href="contact.html" style="color:var(--c-accent)">contact page</a>.</p>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <span class="footer-copy">© 2026 AmigosNearMe · Atlanta, Georgia</span>
+    <div class="footer-links">
+      <a href="about.html" data-es>Acerca de</a><a href="about.html" data-en>About</a>
+      <a href="contact.html" data-es>Contacto</a><a href="contact.html" data-en>Contact</a>
+      <a href="privacy.html" data-es>Privacidad</a><a href="privacy.html" data-en>Privacy</a>
+      <a href="terms.html" data-es>Términos</a><a href="terms.html" data-en>Terms</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+function setLang(lang) {
+  document.body.classList.toggle('en', lang === 'en');
+  document.getElementById('btn-es').classList.toggle('active', lang !== 'en');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  try { localStorage.setItem('anm-lang', lang); } catch(e) {}
+}
+document.addEventListener('DOMContentLoaded', function() {
+  var saved = ''; try { saved = localStorage.getItem('anm-lang'); } catch(e) {}
+  var browser = (navigator.language || 'es').toLowerCase();
+  setLang(saved || (browser.startsWith('en') ? 'en' : 'es'));
+});
+</script>
+
+</body>
+</html>

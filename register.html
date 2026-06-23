@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register Your Business — AmigosNearMe</title>
+<meta name="description" content="List your Latin-owned business on AmigosNearMe. Reach thousands of customers in Georgia. Free to start.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display:ital@0;1&display=swap');
+
+  :root {
+    --c-bg: #FAFAF7;
+    --c-surface: #FFFFFF;
+    --c-border: rgba(0,0,0,0.09);
+    --c-text: #1A1A18;
+    --c-muted: #6B6B66;
+    --c-hint: #A8A8A2;
+    --c-accent: #C94F2B;
+    --c-accent-light: #FAF0EC;
+    --c-accent-dark: #9C3A1E;
+    --c-green: #1D9E75;
+    --c-green-light: #EBF8F3;
+    --c-amber: #BA7517;
+    --c-amber-light: #FEF6E4;
+    --c-blue: #185FA5;
+    --c-blue-light: #EEF4FB;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.05);
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-body); background: var(--c-bg); color: var(--c-text); font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(250,250,247,0.92); backdrop-filter: blur(12px);
+    border-bottom: 0.5px solid var(--c-border);
+    padding: 0 24px; height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { font-family: var(--font-display); font-size: 22px; color: var(--c-text); text-decoration: none; }
+  .nav-logo span { color: var(--c-accent); }
+  .lang-btn { padding: 3px 8px; border-radius: 99px; font-size: 12px; cursor: pointer; border: 0.5px solid var(--c-border); background: transparent; color: var(--c-muted); font-family: var(--font-body); }
+  .lang-btn.active { background: var(--c-accent-light); color: var(--c-accent); border-color: var(--c-accent); }
+  .nav-login { font-size: 13px; color: var(--c-muted); text-decoration: none; padding: 6px 12px; border-radius: var(--radius-sm); border: 0.5px solid var(--c-border); }
+  .nav-login:hover { background: var(--c-surface); }
+
+  /* PROGRESS BAR */
+  .progress-bar {
+    background: var(--c-surface); border-bottom: 0.5px solid var(--c-border);
+    padding: 16px 24px;
+  }
+  .progress-inner { max-width: 680px; margin: 0 auto; }
+  .step-labels { display: flex; justify-content: space-between; margin-bottom: 10px; }
+  .step-label { font-size: 12px; color: var(--c-hint); text-align: center; flex: 1; }
+  .step-label.active { color: var(--c-accent); font-weight: 500; }
+  .step-label.done { color: var(--c-green); font-weight: 500; }
+  .prog-track { display: flex; gap: 4px; }
+  .prog-seg { flex: 1; height: 4px; border-radius: 2px; background: var(--c-border); }
+  .prog-seg.done { background: var(--c-green); }
+  .prog-seg.active { background: var(--c-accent); }
+
+  /* PAGE LAYOUT */
+  .page-wrap { max-width: 680px; margin: 0 auto; padding: 36px 24px 80px; }
+
+  /* PRICING SECTION */
+  .pricing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 32px; }
+  .plan-card {
+    border: 0.5px solid var(--c-border); border-radius: var(--radius-lg);
+    padding: 20px 16px; cursor: pointer; transition: all 0.15s;
+    background: var(--c-surface); position: relative;
+  }
+  .plan-card:hover { border-color: var(--c-accent); }
+  .plan-card.selected { border-color: var(--c-green); border-width: 2px; background: var(--c-green-light); }
+  .plan-card.featured::before {
+    content: attr(data-badge);
+    position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+    background: var(--c-accent); color: #fff;
+    font-size: 11px; font-weight: 500; padding: 2px 10px; border-radius: 99px;
+    white-space: nowrap;
+  }
+  .plan-name { font-size: 13px; font-weight: 600; color: var(--c-muted); margin-bottom: 4px; }
+  .plan-price { font-size: 26px; font-weight: 500; color: var(--c-text); margin-bottom: 2px; }
+  .plan-price span { font-size: 13px; font-weight: 400; color: var(--c-muted); }
+  .plan-feature { font-size: 12px; color: var(--c-muted); padding: 4px 0; border-bottom: 0.5px solid var(--c-border); display: flex; align-items: center; gap: 5px; }
+  .plan-feature:last-child { border-bottom: none; }
+  .feat-yes { color: var(--c-green); }
+  .feat-no { color: var(--c-hint); }
+
+  /* FORM CARDS */
+  .form-card {
+    background: var(--c-surface); border: 0.5px solid var(--c-border);
+    border-radius: var(--radius-lg); padding: 24px; margin-bottom: 16px;
+  }
+  .form-card-title {
+    font-size: 15px; font-weight: 600; color: var(--c-text);
+    margin-bottom: 18px; display: flex; align-items: center; gap: 8px;
+  }
+  .form-card-title span { font-size: 18px; }
+  .field-row { margin-bottom: 14px; }
+  .field-label {
+    font-size: 13px; font-weight: 500; color: var(--c-muted);
+    margin-bottom: 5px; display: flex; align-items: center; gap: 5px;
+  }
+  .req { color: var(--c-accent); font-size: 11px; }
+  .opt { font-size: 11px; color: var(--c-hint); font-weight: 400; }
+
+  /* ── ERROR / VALIDATION STYLES ── */
+  .field-error {
+    display: none; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--c-accent); font-weight: 500;
+    margin-top: 6px; padding: 7px 11px;
+    background: var(--c-accent-light); border: 0.5px solid rgba(201,79,43,0.3);
+    border-radius: var(--radius-sm);
+  }
+  .field-error.show { display: flex; }
+  .field-error::before { content: "⚠"; font-size: 13px; flex-shrink: 0; }
+
+  .input-error {
+    border-color: var(--c-accent) !important;
+    background: var(--c-accent-light) !important;
+    box-shadow: 0 0 0 3px rgba(201,79,43,0.12);
+  }
+
+  .section-error {
+    border-color: var(--c-accent) !important;
+    box-shadow: 0 0 0 3px rgba(201,79,43,0.12);
+  }
+
+  .field-label.label-error {
+    color: var(--c-accent) !important;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-4px); }
+    40%, 80% { transform: translateX(4px); }
+  }
+  .shake { animation: shake 0.35s ease; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  input[type=text], input[type=email], input[type=tel], input[type=url],
+  input[type=date], select, textarea {
+    width: 100%; padding: 10px 13px; border-radius: var(--radius-sm);
+    border: 0.5px solid var(--c-border); background: var(--c-bg);
+    font-size: 14px; color: var(--c-text); font-family: var(--font-body);
+    outline: none; transition: border-color 0.15s;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--c-accent); }
+  textarea { resize: vertical; min-height: 90px; }
+
+  /* CATEGORY GRID */
+  .cat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+  .cat-chip {
+    padding: 9px 8px; border-radius: var(--radius-sm); border: 0.5px solid var(--c-border);
+    background: var(--c-bg); font-size: 13px; color: var(--c-muted);
+    cursor: pointer; text-align: center; transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+    user-select: none;
+  }
+  .cat-chip:hover { border-color: var(--c-accent); color: var(--c-accent); }
+  .cat-chip.sel { background: var(--c-green-light); color: var(--c-green); border-color: var(--c-green); font-weight: 500; }
+
+  /* LANGUAGE TOGGLES */
+  .lang-toggles { display: flex; gap: 10px; flex-wrap: wrap; }
+  .lang-toggle {
+    display: flex; align-items: center; gap: 7px; padding: 8px 14px;
+    border-radius: var(--radius-sm); border: 0.5px solid var(--c-border);
+    background: var(--c-bg); cursor: pointer; font-size: 13px;
+    color: var(--c-muted); transition: all 0.15s; user-select: none;
+  }
+  .lang-toggle input { accent-color: var(--c-green); width: 15px; height: 15px; cursor: pointer; }
+  .lang-toggle.sel { background: var(--c-green-light); border-color: var(--c-green); color: var(--c-green); }
+
+  /* UPLOAD BOX */
+  .upload-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 14px; }
+  .upload-box {
+    border: 0.5px dashed var(--c-border); border-radius: var(--radius-md);
+    padding: 16px 10px; text-align: center; background: var(--c-bg);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .upload-box:hover { border-color: var(--c-accent); background: var(--c-accent-light); }
+  .upload-box.uploaded { border-color: var(--c-green); background: var(--c-green-light); }
+  .upload-icon { font-size: 24px; margin-bottom: 6px; }
+  .upload-label { font-size: 12px; font-weight: 500; color: var(--c-text); margin-bottom: 3px; }
+  .upload-hint { font-size: 11px; color: var(--c-hint); }
+
+  /* INFO / WARN BOXES */
+  .info-box {
+    background: var(--c-blue-light); border-radius: var(--radius-sm);
+    padding: 10px 14px; font-size: 13px; color: var(--c-blue);
+    margin-bottom: 14px; display: flex; gap: 8px; align-items: flex-start; line-height: 1.5;
+  }
+  .warn-box {
+    background: var(--c-amber-light); border-radius: var(--radius-sm);
+    padding: 10px 14px; font-size: 13px; color: var(--c-amber);
+    margin-bottom: 14px; display: flex; gap: 8px; align-items: flex-start; line-height: 1.5;
+  }
+  .success-box {
+    background: var(--c-green-light); border-radius: var(--radius-sm);
+    padding: 10px 14px; font-size: 13px; color: var(--c-green);
+    margin-bottom: 14px; display: flex; gap: 8px; align-items: flex-start; line-height: 1.5;
+  }
+
+  /* PAYMENT CHECKBOXES */
+  .payment-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pay-chip {
+    display: flex; align-items: center; gap: 6px; padding: 7px 13px;
+    border-radius: var(--radius-sm); border: 0.5px solid var(--c-border);
+    background: var(--c-bg); font-size: 13px; color: var(--c-muted);
+    cursor: pointer; transition: all 0.15s; user-select: none;
+  }
+  .pay-chip input { accent-color: var(--c-green); cursor: pointer; }
+  .pay-chip.sel { background: var(--c-green-light); border-color: var(--c-green); color: var(--c-green); }
+
+  /* NAV BUTTONS */
+  .form-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; }
+  .btn-back {
+    padding: 12px 24px; border-radius: var(--radius-md);
+    background: var(--c-surface); color: var(--c-muted);
+    border: 0.5px solid var(--c-border); font-size: 14px; font-weight: 500;
+    cursor: pointer; font-family: var(--font-body); transition: background 0.15s;
+  }
+  .btn-back:hover { background: var(--c-bg); }
+  .btn-next {
+    padding: 12px 32px; border-radius: var(--radius-md);
+    background: var(--c-accent); color: #fff; border: none;
+    font-size: 14px; font-weight: 500; cursor: pointer;
+    font-family: var(--font-body); transition: background 0.15s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .btn-next:hover { background: var(--c-accent-dark); }
+  .btn-next:disabled { background: var(--c-hint); cursor: default; }
+
+  /* SUCCESS SCREEN */
+  .success-screen {
+    text-align: center; padding: 60px 24px;
+    display: none;
+  }
+  .success-icon { font-size: 56px; margin-bottom: 20px; }
+  .success-title { font-family: var(--font-display); font-size: 32px; margin-bottom: 12px; }
+  .success-sub { font-size: 16px; color: var(--c-muted); max-width: 400px; margin: 0 auto 28px; line-height: 1.6; }
+  .success-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary { padding: 12px 28px; border-radius: var(--radius-md); background: var(--c-accent); color: #fff; border: none; font-size: 15px; font-weight: 500; cursor: pointer; font-family: var(--font-body); text-decoration: none; }
+  .btn-secondary { padding: 12px 28px; border-radius: var(--radius-md); background: var(--c-surface); color: var(--c-text); border: 0.5px solid var(--c-border); font-size: 15px; font-weight: 500; cursor: pointer; font-family: var(--font-body); text-decoration: none; }
+
+  /* LANG */
+  [data-en] { display: none !important; }
+  body.en [data-es] { display: none !important; }
+  body.en [data-en] { display: revert !important; }
+
+  /* MOBILE */
+  @media (max-width: 600px) {
+    .pricing-grid { grid-template-columns: 1fr; }
+    .two-col { grid-template-columns: 1fr; }
+    .cat-grid { grid-template-columns: 1fr 1fr; }
+    .upload-grid { grid-template-columns: 1fr; }
+    nav { padding: 0 16px; }
+    .page-wrap { padding: 20px 14px 60px; }
+    /* Step indicator — smaller on mobile */
+    .progress-inner { padding: 0 14px; }
+    .step-dot { width: 28px; height: 28px; font-size: 11px; }
+    .step-label { font-size: 10px; }
+    .step-line { margin: 0 4px; }
+    /* Section cards */
+    .section-card { padding: 18px 14px; }
+    /* Buttons */
+    .btn-primary, .btn-next { width: 100%; text-align: center; }
+    /* Staffing availability grid */
+    #staffing-availability-grid { grid-template-columns: 1fr 1fr !important; }
+    /* Plan features list smaller */
+    .plan-feature { font-size: 12px; }
+    /* Modal */
+    .modal-card { padding: 22px 18px; }
+    .modal-row { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 380px) {
+    .cat-grid { grid-template-columns: 1fr 1fr; }
+    .cat-chip { font-size: 12px; padding: 6px 8px; }
+    #staffing-availability-grid { grid-template-columns: 1fr !important; }
+  }
+
+  /* PAID-PLAN PAYMENT MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(26,26,24,0.55); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+  .modal-overlay.open { display: flex; }
+  .modal-card { background: var(--c-surface); border-radius: var(--radius-lg); padding: 30px 28px; max-width: 400px; width: 100%; box-shadow: var(--shadow); }
+  .modal-title { font-family: var(--font-display); font-size: 21px; font-weight: 400; margin-bottom: 6px; }
+  .modal-desc { font-size: 13.5px; color: var(--c-muted); line-height: 1.6; margin-bottom: 20px; }
+  .modal-plan-summary { background: var(--c-accent-light); border-radius: var(--radius-md); padding: 14px 16px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; }
+  .modal-plan-name { font-size: 14px; font-weight: 600; }
+  .modal-plan-price { font-family: var(--font-display); font-size: 20px; color: var(--c-accent-dark); }
+  .modal-field { margin-bottom: 14px; }
+  .modal-label { font-size: 12.5px; font-weight: 500; color: var(--c-muted); margin-bottom: 5px; display: block; }
+  .modal-input { width: 100%; padding: 10px 13px; border-radius: var(--radius-sm); border: 0.5px solid var(--c-border); background: var(--c-bg); font-size: 14px; font-family: var(--font-body); }
+  .modal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: end; }
+  .modal-btn-primary { display: block; width: 100%; padding: 12px; border-radius: var(--radius-sm); border: none; background: var(--c-accent); color: #fff; font-size: 14.5px; font-weight: 500; cursor: pointer; font-family: var(--font-body); margin-top: 6px; margin-bottom: 8px; }
+  .modal-btn-primary:hover { background: var(--c-accent-dark); }
+  .modal-btn-ghost { display: block; width: 100%; padding: 9px; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--c-muted); font-size: 13px; cursor: pointer; font-family: var(--font-body); }
+  .modal-btn-ghost:hover { color: var(--c-text); }
+  .modal-note { font-size: 11px; color: var(--c-hint); margin-top: 8px; text-align: center; }
+
+  /* Payment method tabs */
+  .pay-tab { padding: 7px 13px; border-radius: var(--radius-sm); border: 0.5px solid var(--c-border); background: var(--c-bg); font-size: 12.5px; font-weight: 500; color: var(--c-muted); cursor: pointer; font-family: var(--font-body); transition: all 0.15s; }
+  .pay-tab:hover { border-color: var(--c-accent); color: var(--c-accent); }
+  .pay-tab.selected { background: var(--c-accent); color: #fff; border-color: var(--c-accent); }
+</style>
+
+<!-- Toast for upgrade confirmation -->
+<style>
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--c-text); color: #fff; padding: 12px 20px; border-radius: var(--radius-sm); font-size: 13px; opacity: 0; pointer-events: none; transition: all 0.25s; z-index: 300; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">Amigos<span>NearMe</span></a>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="lang-btn active" id="btn-es" onclick="setLang('es')">ES</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    <a href="login.html" class="nav-login" data-es>Ya tengo cuenta</a>
+    <a href="login.html" class="nav-login" data-en>I have an account</a>
+  </div>
+</nav>
+
+<!-- PROGRESS -->
+<div class="progress-bar">
+  <div class="progress-inner">
+    <div class="step-labels">
+      <div class="step-label done" id="lbl-1" data-es>1. Plan</div>
+      <div class="step-label done" id="lbl-1en" data-en>1. Plan</div>
+      <div class="step-label active" id="lbl-2" data-es>2. Info básica</div>
+      <div class="step-label active" id="lbl-2en" data-en>2. Basic info</div>
+      <div class="step-label" id="lbl-3" data-es>3. Verificación</div>
+      <div class="step-label" id="lbl-3en" data-en>3. Verification</div>
+      <div class="step-label" id="lbl-4" data-es>4. Perfil</div>
+      <div class="step-label" id="lbl-4en" data-en>4. Profile</div>
+    </div>
+    <div class="prog-track">
+      <div class="prog-seg done" id="seg-1"></div>
+      <div class="prog-seg active" id="seg-2"></div>
+      <div class="prog-seg" id="seg-3"></div>
+      <div class="prog-seg" id="seg-4"></div>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrap">
+
+  <!-- ── STEP 1: PLAN ── -->
+  <div id="step-1">
+    <h1 style="font-family:var(--font-display);font-size:28px;margin-bottom:8px" data-es>Elige tu plan</h1>
+    <h1 style="font-family:var(--font-display);font-size:28px;margin-bottom:8px" data-en>Choose your plan</h1>
+    <p style="color:var(--c-muted);font-size:15px;margin-bottom:28px" data-es>Empieza gratis. Actualiza cuando estés listo.</p>
+    <p style="color:var(--c-muted);font-size:15px;margin-bottom:28px" data-en>Start free. Upgrade when you're ready.</p>
+
+    <div class="pricing-grid" id="pricing-section">
+      <div class="plan-card" onclick="selectPlan(this,'free')">
+        <div class="plan-name">Free</div>
+        <div class="plan-price">$0<span data-es>/mes</span><span data-en>/mo</span></div>
+        <div style="height:10px"></div>
+        <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>Perfil básico</span><span data-en>Basic profile</span></div>
+        <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>3 solicitudes/mes</span><span data-en>3 requests/mo</span></div>
+        <div class="plan-feature"><span class="feat-no">✗</span> <span data-es>Análisis</span><span data-en>Analytics</span></div>
+        <div class="plan-feature"><span class="feat-no">✗</span> <span data-es>Fotos del negocio</span><span data-en>Business photos</span></div>
+        <div class="plan-feature"><span class="feat-no">✗</span> <span data-es>Notas superiores</span><span data-en>Top placement</span></div>
+      </div>
+      <div class="plan-card featured selected" data-badge="⭐ Más popular" onclick="selectPlan(this,'basic')">
+        <div class="plan-name">Basic</div>
+        <div class="plan-price">$29<span data-es>/mes</span><span data-en>/mo</span></div>
+        <div style="font-size:11px;color:var(--c-accent-dark);margin-bottom:10px" data-es>🔄 Suscripción mensual · cancela cuando quieras</div>
+        <div style="font-size:11px;color:var(--c-accent-dark);margin-bottom:10px" data-en>🔄 Monthly subscription · cancel anytime</div>
+        <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>Perfil completo</span><span data-en>Full profile</span></div>
+        <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>10 solicitudes/mes</span><span data-en>10 requests/mo</span></div>
+        <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>Análisis básico</span><span data-en>Basic analytics</span></div>
+        <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>5 fotos</span><span data-en>5 photos</span></div>
+        <div class="plan-feature"><span class="feat-no">✗</span> <span data-es>Prioridad en búsquedas</span><span data-en>Priority search placement</span></div>
+      </div>
+      <div class="plan-card" onclick="selectPlan(this,'premium')">
+        <div class="plan-name">Premium</div>
+        <div class="plan-price">$79<span data-es>/mes</span><span data-en>/mo</span></div>
+        <div style="font-size:11px;color:var(--c-accent-dark);margin-bottom:10px" data-es>🔄 Suscripción mensual · cancela cuando quieras</div>
+        <div style="font-size:11px;color:var(--c-accent-dark);margin-bottom:10px" data-en>🔄 Monthly subscription · cancel anytime</div>
+        <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>Todo en Basic</span><span data-en>Everything in Basic</span></div>
+        <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>Solicitudes ilimitadas</span><span data-en>Unlimited requests</span></div>
+        <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>Análisis completo</span><span data-en>Full analytics</span></div>
+        <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>30 fotos</span><span data-en>30 photos</span></div>
+        <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>Prioridad en búsquedas</span><span data-en>Priority search placement</span></div>
+      </div>
+    </div>
+
+    <div class="info-box" style="margin-top:14px">
+      <span>🚀</span>
+      <span data-es>Con Premium, tu negocio recibe automáticamente <strong>puntos de prioridad</strong> que lo ubican más arriba en los resultados de búsqueda. Nuestro equipo puede ajustar esta prioridad según tu desempeño.</span>
+      <span data-en>With Premium, your business automatically receives <strong>priority points</strong> that place it higher in search results. Our team may adjust this priority based on your performance.</span>
+    </div>
+
+    <div class="info-box">
+      <span>✅</span>
+      <span data-es>La insignia <strong>Verified</strong> es <strong>gratis con cualquier plan</strong> — incluido Free. Solo necesitas subir tu EIN o un documento en el siguiente paso.</span>
+      <span data-en>The <strong>Verified</strong> badge is <strong>free with any plan</strong> — including Free. You just need to upload your EIN or a document in the next step.</span>
+    </div>
+
+    <div class="success-box">
+      <span>💡</span>
+      <span data-es>Puedes cambiar de plan en cualquier momento desde tu panel de control. Sin contratos.</span>
+      <span data-en>You can change your plan anytime from your dashboard. No contracts.</span>
+    </div>
+
+    <div class="field-error" id="err-plan" data-es-text="Por favor selecciona un plan para continuar." data-en-text="Please select a plan to continue.">Por favor selecciona un plan para continuar.</div>
+
+    <div class="form-nav">
+      <div></div>
+      <button class="btn-next" onclick="validateStep1()" data-es>Continuar →</button>
+      <button class="btn-next" onclick="validateStep1()" data-en>Continue →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 2: BASIC INFO ── -->
+  <div id="step-2" style="display:none">
+    <h1 style="font-family:var(--font-display);font-size:28px;margin-bottom:8px" data-es>Información de tu negocio</h1>
+    <h1 style="font-family:var(--font-display);font-size:28px;margin-bottom:8px" data-en>Your business information</h1>
+    <p style="color:var(--c-muted);font-size:15px;margin-bottom:28px" data-es>Esta información aparecerá en tu perfil público.</p>
+    <p style="color:var(--c-muted);font-size:15px;margin-bottom:28px" data-en>This information will appear on your public profile.</p>
+
+    <div class="form-card">
+      <div class="form-card-title"><span>🏢</span> <span data-es>Datos del negocio</span><span data-en>Business details</span></div>
+
+      <div class="two-col">
+        <div class="field-row">
+          <div class="field-label" data-es>Nombre legal del negocio <span class="req">*</span></div>
+          <div class="field-label" data-en>Legal business name <span class="req">*</span></div>
+          <input type="text" id="f-legal-name" oninput="clearNameError()" placeholder="e.g. Garcia Landscaping LLC">
+        </div>
+        <div class="field-row">
+          <div class="field-label" data-es>Nombre comercial <span class="opt">(si es diferente)</span></div>
+          <div class="field-label" data-en>Trade name <span class="opt">(if different)</span></div>
+          <input type="text" id="f-trade-name" oninput="clearNameError()" placeholder="e.g. Garcia's Garden">
+        </div>
+      </div>
+      <div class="field-error" id="err-name" data-es-text="Ingresa el nombre legal o el nombre comercial de tu negocio." data-en-text="Enter your legal business name or trade name.">Ingresa el nombre legal o el nombre comercial de tu negocio.</div>
+
+      <div class="two-col">
+        <div class="field-row">
+          <div class="field-label" data-es>Tipo de entidad <span class="opt">(opcional)</span></div>
+          <div class="field-label" data-en>Business type <span class="opt">(optional)</span></div>
+          <select id="biz-type-select">
+            <option value="" class="i18n-biz-type" data-es-text="Seleccionar..." data-en-text="Select...">Seleccionar...</option>
+            <option value="sole" class="i18n-biz-type" data-es-text="Propietario Único (Sole Proprietorship)" data-en-text="Sole Proprietorship">Propietario Único (Sole Proprietorship)</option>
+            <option value="dba" class="i18n-biz-type" data-es-text="DBA (Nombre Comercial)" data-en-text="DBA (Doing Business As)">DBA (Nombre Comercial)</option>
+            <option value="llc" class="i18n-biz-type" data-es-text="LLC (Soc. de Resp. Limitada)" data-en-text="LLC (Limited Liability Company)">LLC (Soc. de Resp. Limitada)</option>
+            <option value="partnership" class="i18n-biz-type" data-es-text="Sociedad / Asociación (Partnership)" data-en-text="Partnership">Sociedad / Asociación (Partnership)</option>
+            <option value="corp" class="i18n-biz-type" data-es-text="Corporación (Inc.)" data-en-text="Corporation (Inc.)">Corporación (Inc.)</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <div class="field-label" data-es>Estado de registro <span class="opt">(opcional)</span></div>
+          <div class="field-label" data-en>State of registration <span class="opt">(optional)</span></div>
+          <select>
+            <option>Georgia</option>
+            <option>Florida</option>
+            <option>Texas</option>
+            <option>North Carolina</option>
+            <option data-es>Otro</option>
+            <option data-en>Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-label" data-es>Categoría principal <span class="req">*</span></div>
+        <div class="field-label" data-en>Main category <span class="req">*</span></div>
+        <div class="cat-grid" id="cat-grid">
+          <div class="cat-chip" data-cat-id="staffing" onclick="toggleCat(this)">👷 <span data-es>Personal y Mano de Obra</span><span data-en>Staffing & Labor</span></div>
+          <div class="cat-chip" onclick="toggleCat(this)">🌿 <span data-es>Landscaping</span><span data-en>Landscaping</span></div>
+          <div class="cat-chip" onclick="toggleCat(this)">🧹 <span data-es>Limpieza</span><span data-en>Cleaning</span></div>
+          <div class="cat-chip" onclick="toggleCat(this)">🏗️ <span data-es>Construcción</span><span data-en>Construction</span></div>
+          <div class="cat-chip" onclick="toggleCat(this)">📦 <span data-es>Mudanzas</span><span data-en>Moving</span></div>
+          <div class="cat-chip" onclick="toggleCat(this)">🍽️ <span data-es>Comida</span><span data-en>Food</span></div>
+          <div class="cat-chip" onclick="toggleCat(this)">🚗 <span data-es>Autos</span><span data-en>Auto</span></div>
+          <div class="cat-chip" onclick="toggleCat(this)">🗣️ <span data-es>Traducción</span><span data-en>Translation</span></div>
+          <div class="cat-chip" onclick="toggleCat(this)">🔧 <span data-es>Plomería</span><span data-en>Plumbing</span></div>
+          <div class="cat-chip" onclick="toggleCat(this)">⚡ <span data-es>Electricidad</span><span data-en>Electrical</span></div>
+          <div class="cat-chip" onclick="toggleCat(this)">🪟 <span data-es>Pintura</span><span data-en>Painting</span></div>
+          <div class="cat-chip" onclick="toggleCat(this)">🌳 <span data-es>Árboles</span><span data-en>Tree Removal</span></div>
+          <div class="cat-chip" onclick="toggleCat(this)">🏠 <span data-es>Bienes Raíces</span><span data-en>Real Estate</span></div>
+        </div>
+        <div class="field-error" id="err-cat" data-es-text="Selecciona al menos una categoría." data-en-text="Select at least one category.">Selecciona al menos una categoría.</div>
+      </div>
+    </div>
+
+    <div class="form-card" id="staffing-card" style="display:none">
+      <div class="form-card-title"><span>👷</span> <span data-es>Detalles de personal y mano de obra</span><span data-en>Staffing & labor details</span></div>
+      <div class="info-box" style="margin-bottom:14px">
+        <span>ℹ️</span>
+        <span data-es>Esta sección aparece porque seleccionaste "Personal y Mano de Obra". Ayuda a los clientes a saber qué tipo de trabajadores ofreces y cómo contratarlos.</span>
+        <span data-en>This section appears because you selected "Staffing & Labor". It helps clients know what kind of workers you offer and how to hire them.</span>
+      </div>
+
+      <div class="field-row">
+        <div class="field-label" data-es>Tipos de trabajadores disponibles <span class="req">*</span></div>
+        <div class="field-label" data-en>Types of workers available <span class="req">*</span></div>
+        <div class="cat-grid" id="staffing-types-grid">
+          <div class="cat-chip" onclick="toggleStaffingType(this)">🍳 <span data-es>Cocina / Restaurante</span><span data-en>Kitchen / Restaurant</span></div>
+          <div class="cat-chip" onclick="toggleStaffingType(this)">📦 <span data-es>Mudanzas / Carga</span><span data-en>Moving / Loading</span></div>
+          <div class="cat-chip" onclick="toggleStaffingType(this)">🏗️ <span data-es>Construcción (jornaleros)</span><span data-en>Construction (day labor)</span></div>
+          <div class="cat-chip" onclick="toggleStaffingType(this)">🏭 <span data-es>Producción / Almacén</span><span data-en>Production / Warehouse</span></div>
+          <div class="cat-chip" onclick="toggleStaffingType(this)">🧹 <span data-es>Limpieza comercial</span><span data-en>Commercial cleaning crews</span></div>
+          <div class="cat-chip" onclick="toggleStaffingType(this)">🌾 <span data-es>Trabajo agrícola</span><span data-en>Agricultural work</span></div>
+          <div class="cat-chip" onclick="toggleStaffingType(this)">🅿️ <span data-es>Eventos / Estacionamiento</span><span data-en>Events / Valet parking</span></div>
+          <div class="cat-chip" onclick="toggleStaffingType(this)">🔧 <span data-es>Otro trabajo general</span><span data-en>Other general labor</span></div>
+        </div>
+        <div class="field-error" id="err-staffing-types" data-es-text="Selecciona al menos un tipo de trabajador." data-en-text="Select at least one worker type.">Selecciona al menos un tipo de trabajador.</div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-label" data-es>Disponibilidad de contratación <span class="req">*</span></div>
+        <div class="field-label" data-en>Hiring availability <span class="req">*</span></div>
+        <div class="lang-toggles" id="staffing-availability-grid">
+          <label class="lang-toggle"><input type="checkbox" onchange="syncChipState(this); clearStaffingAvailabilityError()"> <span data-es>Por día</span><span data-en>By the day</span></label>
+          <label class="lang-toggle"><input type="checkbox" onchange="syncChipState(this); clearStaffingAvailabilityError()"> <span data-es>Por semana</span><span data-en>By the week</span></label>
+          <label class="lang-toggle"><input type="checkbox" onchange="syncChipState(this); clearStaffingAvailabilityError()"> <span data-es>Contrato permanente</span><span data-en>Permanent placement</span></label>
+        </div>
+        <div class="field-error" id="err-staffing-availability" data-es-text="Selecciona al menos una disponibilidad de contratación." data-en-text="Select at least one hiring availability option.">Selecciona al menos una disponibilidad de contratación.</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="field-row">
+          <div class="field-label" data-es>Mínimo de trabajadores</div>
+          <div class="field-label" data-en>Minimum workers per request</div>
+          <input class="form-input" type="number" min="1" placeholder="1" id="f-staffing-min">
+        </div>
+        <div class="field-row">
+          <div class="field-label" data-es>Máximo de trabajadores</div>
+          <div class="field-label" data-en>Maximum workers available</div>
+          <input class="form-input" type="number" min="1" placeholder="20" id="f-staffing-max">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-label" data-es>Tarifa aproximada</div>
+        <div class="field-label" data-en>Approximate rate</div>
+        <select class="form-select" id="f-staffing-rate">
+          <option value="" id="sf-opt-placeholder" class="i18n-biz-type" data-es-text="Selecciona un rango..." data-en-text="Select a range...">Selecciona un rango...</option>
+          <option value="15-18" id="sf-opt-1">$15 – $18 / hora · hour</option>
+          <option value="18-22" id="sf-opt-2">$18 – $22 / hora · hour</option>
+          <option value="22-28" id="sf-opt-3">$22 – $28 / hora · hour</option>
+          <option value="28+" id="sf-opt-4">$28+ / hora · hour</option>
+          <option value="negotiable" id="sf-opt-5">A negociar · Negotiable</option>
+        </select>
+      </div>
+
+      <div class="field-row" style="margin-bottom:0">
+        <label class="lang-toggle" style="display:inline-flex">
+          <input type="checkbox" onchange="syncChipState(this)">
+          <span data-es>Trabajadores cubiertos por seguro de compensación laboral</span>
+          <span data-en>Workers covered by workers' compensation insurance</span>
+        </label>
+      </div>
+
+      <div class="field-row" style="margin-top:14px; margin-bottom:0">
+        <div class="field-label" data-es>Trabajos completados hasta ahora <span class="opt">(opcional)</span></div>
+        <div class="field-label" data-en>Jobs completed so far <span class="opt">(optional)</span></div>
+        <input class="form-input" type="number" min="0" placeholder="0" id="f-staffing-jobs-completed" style="max-width:140px">
+        <div style="font-size:11px; color:var(--c-hint); margin-top:4px" data-es>Este número lo ingresas tú mismo y aparecerá en tu perfil público. AmigosNearMe no lo verifica.</div>
+        <div style="font-size:11px; color:var(--c-hint); margin-top:4px" data-en>You enter this number yourself and it will show on your public profile. AmigosNearMe does not verify it.</div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-card-title"><span>📞</span> <span data-es>Contacto</span><span data-en>Contact</span></div>
+
+      <div class="two-col">
+        <div class="field-row">
+          <div class="field-label" data-es>Teléfono / WhatsApp <span class="req">*</span></div>
+          <div class="field-label" data-en>Phone / WhatsApp <span class="req">*</span></div>
+          <input type="tel" id="f-phone" oninput="if(this.value.trim()){hideError('err-phone');clearInvalid(this);}" placeholder="+1 (404) 000-0000">
+          <div class="field-error" id="err-phone" data-es-text="Ingresa tu número de teléfono o WhatsApp." data-en-text="Enter your phone or WhatsApp number.">Ingresa tu número de teléfono o WhatsApp.</div>
+        </div>
+        <div class="field-row">
+          <div class="field-label" data-es>Correo de contacto público <span class="opt">(opcional)</span></div>
+          <div class="field-label" data-en>Public contact email <span class="opt">(optional)</span></div>
+          <input type="email" id="f-public-email" placeholder="negocio@email.com">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-label" data-es>Sitio web <span class="opt">(opcional)</span></div>
+        <div class="field-label" data-en>Website <span class="opt">(optional)</span></div>
+        <input type="url" placeholder="https://tunegocio.com">
+      </div>
+
+      <div class="field-row">
+        <div class="field-label" data-es>Áreas de servicio <span class="req">*</span> <span class="opt">(selecciona todas las que apliquen)</span></div>
+        <div class="field-label" data-en>Service areas <span class="req">*</span> <span class="opt">(select all that apply)</span></div>
+        <div id="service-area-grid" style="border:0.5px solid var(--c-border);border-radius:var(--radius-md);padding:14px;background:var(--c-bg);display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;">
+          <div style="grid-column:1/-1;font-size:11px;font-weight:600;color:var(--c-hint);letter-spacing:.04em;text-transform:uppercase;padding:4px 0 2px">Atlanta (Fulton)</div>
+          <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--c-muted);cursor:pointer;padding:3px 0"><input type="checkbox" value="atlanta" style="accent-color:var(--c-green)"> Atlanta</label>
+          <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--c-muted);cursor:pointer;padding:3px 0"><input type="checkbox" value="roswell" style="accent-color:var(--c-green)"> Roswell</label>
+          <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--c-muted);cursor:pointer;padding:3px 0"><input type="checkbox" value="tucker" style="accent-color:var(--c-green)"> Tucker</label>
+
+          <div style="grid-column:1/-1;font-size:11px;font-weight:600;color:var(--c-hint);letter-spacing:.04em;text-transform:uppercase;padding:8px 0 2px">Cobb</div>
+          <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--c-muted);cursor:pointer;padding:3px 0"><input type="checkbox" value="marietta" style="accent-color:var(--c-green)"> Marietta</label>
+          <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--c-muted);cursor:pointer;padding:3px 0"><input type="checkbox" value="smyrna" style="accent-color:var(--c-green)"> Smyrna</label>
+
+          <div style="grid-column:1/-1;font-size:11px;font-weight:600;color:var(--c-hint);letter-spacing:.04em;text-transform:uppercase;padding:8px 0 2px">Gwinnett</div>
+          <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--c-muted);cursor:pointer;padding:3px 0"><input type="checkbox" value="duluth" style="accent-color:var(--c-green)"> Duluth</label>
+          <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--c-muted);cursor:pointer;padding:3px 0"><input type="checkbox" value="norcross" style="accent-color:var(--c-green)"> Norcross</label>
+          <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--c-muted);cursor:pointer;padding:3px 0"><input type="checkbox" value="lawrenceville" style="accent-color:var(--c-green)"> Lawrenceville</label>
+          <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--c-muted);cursor:pointer;padding:3px 0"><input type="checkbox" value="buford" style="accent-color:var(--c-green)"> Buford</label>
+          <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--c-muted);cursor:pointer;padding:3px 0"><input type="checkbox" value="lilburn" style="accent-color:var(--c-green)"> Lilburn</label>
+          <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--c-muted);cursor:pointer;padding:3px 0"><input type="checkbox" value="dacula" style="accent-color:var(--c-green)"> Dacula</label>
+          <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--c-muted);cursor:pointer;padding:3px 0"><input type="checkbox" value="auburn" style="accent-color:var(--c-green)"> Auburn</label>
+
+          <div style="grid-column:1/-1;font-size:11px;font-weight:600;color:var(--c-hint);letter-spacing:.04em;text-transform:uppercase;padding:8px 0 2px">Forsyth / Cherokee</div>
+          <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--c-muted);cursor:pointer;padding:3px 0"><input type="checkbox" value="cumming" style="accent-color:var(--c-green)"> Cumming</label>
+          <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--c-muted);cursor:pointer;padding:3px 0"><input type="checkbox" value="canton" style="accent-color:var(--c-green)"> Canton</label>
+          <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--c-muted);cursor:pointer;padding:3px 0"><input type="checkbox" value="woodstock" style="accent-color:var(--c-green)"> Woodstock</label>
+
+          <div style="grid-column:1/-1;font-size:11px;font-weight:600;color:var(--c-hint);letter-spacing:.04em;text-transform:uppercase;padding:8px 0 2px">Hall / Barrow</div>
+          <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--c-muted);cursor:pointer;padding:3px 0"><input type="checkbox" value="gainesville" style="accent-color:var(--c-green)"> Gainesville</label>
+          <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--c-muted);cursor:pointer;padding:3px 0"><input type="checkbox" value="winder" style="accent-color:var(--c-green)"> Winder</label>
+          <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--c-muted);cursor:pointer;padding:3px 0"><input type="checkbox" value="braselton" style="accent-color:var(--c-green)"> Braselton</label>
+        </div>
+        <div class="field-error" id="err-area" data-es-text="Selecciona al menos un área de servicio." data-en-text="Select at least one service area.">Selecciona al menos un área de servicio.</div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-label" data-es>Idiomas de servicio <span class="opt">(opcional)</span></div>
+        <div class="field-label" data-en>Service languages <span class="opt">(optional)</span></div>
+        <div class="lang-toggles">
+          <label class="lang-toggle">
+            <input type="checkbox" onchange="syncChipState(this)"> Español
+          </label>
+          <label class="lang-toggle">
+            <input type="checkbox" onchange="syncChipState(this)"> English
+          </label>
+          <label class="lang-toggle">
+            <input type="checkbox" onchange="syncChipState(this)"> Português
+          </label>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-label" data-es>Métodos de pago aceptados <span class="req">*</span></div>
+        <div class="field-label" data-en>Accepted payment methods <span class="req">*</span></div>
+        <div class="payment-grid" id="payment-grid">
+          <label class="pay-chip"><input type="checkbox" onchange="syncChipState(this)"> Cash</label>
+          <label class="pay-chip"><input type="checkbox" onchange="syncChipState(this)"> Zelle</label>
+          <label class="pay-chip"><input type="checkbox" onchange="syncChipState(this)"> Venmo</label>
+          <label class="pay-chip"><input type="checkbox" onchange="syncChipState(this)"> Check</label>
+          <label class="pay-chip"><input type="checkbox" onchange="syncChipState(this)"> Credit Card</label>
+          <label class="pay-chip"><input type="checkbox" onchange="syncChipState(this)"> PayPal</label>
+        </div>
+        <div class="field-error" id="err-payment" data-es-text="Selecciona al menos un método de pago." data-en-text="Select at least one payment method.">Selecciona al menos un método de pago.</div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-card-title"><span>👤</span> <span data-es>Tu cuenta</span><span data-en>Your account</span></div>
+      <div class="info-box">
+        <span>ℹ️</span>
+        <span data-es>Este correo se usa para <strong>iniciar sesión</strong> y gestionar tu negocio. Es diferente del correo de contacto público (opcional) que verán tus clientes.</span>
+        <span data-en>This email is used to <strong>log in</strong> and manage your business. It's different from the public contact email (optional) shown to customers.</span>
+      </div>
+      <div class="two-col">
+        <div class="field-row">
+          <div class="field-label" data-es>Tu nombre <span class="req">*</span></div>
+          <div class="field-label" data-en>Your name <span class="req">*</span></div>
+          <input type="text" id="f-owner-name" oninput="clearAccountError()" placeholder="Jose Garcia">
+        </div>
+        <div class="field-row">
+          <div class="field-label" data-es>Correo de acceso (login) <span class="req">*</span></div>
+          <div class="field-label" data-en>Login email <span class="req">*</span></div>
+          <input type="email" id="f-account-email" oninput="clearAccountError()" placeholder="jose@email.com">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-label" data-es>Contraseña <span class="req">*</span></div>
+        <div class="field-label" data-en>Password <span class="req">*</span></div>
+        <input type="password" id="f-password" oninput="clearAccountError()" placeholder="Mínimo 8 caracteres" style="max-width:300px">
+      </div>
+      <div class="field-error" id="err-account" data-es-text="Ingresa tu nombre, correo de acceso válido y una contraseña (mínimo 8 caracteres)." data-en-text="Enter your name, a valid login email, and a password (minimum 8 characters).">Ingresa tu nombre, correo de acceso válido y una contraseña (mínimo 8 caracteres).</div>
+    </div>
+
+    <div class="form-nav">
+      <button class="btn-back" onclick="goStep(1)" data-es>← Atrás</button>
+      <button class="btn-back" onclick="goStep(1)" data-en>← Back</button>
+      <button class="btn-next" onclick="validateStep2()" data-es>Continuar →</button>
+      <button class="btn-next" onclick="validateStep2()" data-en>Continue →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: VERIFICATION ── -->
+  <div id="step-3" style="display:none">
+    <h1 style="font-family:var(--font-display);font-size:28px;margin-bottom:8px" data-es>Verificación del negocio</h1>
+    <h1 style="font-family:var(--font-display);font-size:28px;margin-bottom:8px" data-en>Business verification</h1>
+    <p style="color:var(--c-muted);font-size:15px;margin-bottom:24px" data-es>La verificación es opcional pero aumenta tu visibilidad y credibilidad.</p>
+    <p style="color:var(--c-muted);font-size:15px;margin-bottom:24px" data-en>Verification is optional but increases your visibility and credibility.</p>
+
+    <!-- Badge tier explanation -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px">
+      <div style="border:0.5px solid var(--c-border);border-radius:var(--radius-md);padding:16px;text-align:center;background:var(--c-surface)">
+        <div style="font-size:26px;margin-bottom:8px">📋</div>
+        <div style="font-size:13px;font-weight:600;color:var(--c-text);margin-bottom:6px">Basic</div>
+        <div style="font-size:12px;color:var(--c-muted);line-height:1.5" data-es>Solo nombre y contacto.<br>Sin insignia. Visible en búsquedas.</div>
+        <div style="font-size:12px;color:var(--c-muted);line-height:1.5" data-en>Name & contact only.<br>No badge. Visible in search.</div>
+      </div>
+      <div style="border:2px solid var(--c-green);border-radius:var(--radius-md);padding:16px;text-align:center;background:var(--c-green-light)">
+        <div style="font-size:26px;margin-bottom:8px">✅</div>
+        <div style="font-size:13px;font-weight:600;color:var(--c-green);margin-bottom:6px">Verified</div>
+        <div style="font-size:12px;color:var(--c-green);line-height:1.5" data-es>EIN o licencia comercial.<br>Aparece primero. +3x contactos.</div>
+        <div style="font-size:12px;color:var(--c-green);line-height:1.5" data-en>EIN or business license.<br>Appears first. +3x contacts.</div>
+      </div>
+    </div>
+
+    <!-- Skip option at top -->
+    <div style="background:var(--c-bg);border:0.5px solid var(--c-border);border-radius:var(--radius-md);padding:14px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-size:13px;font-weight:500;color:var(--c-text)" data-es>¿Quieres verificar más tarde?</div>
+        <div style="font-size:13px;font-weight:500;color:var(--c-text)" data-en>Want to verify later?</div>
+        <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-es>Tu negocio aparecerá como Basic hasta que subas documentos.</div>
+        <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-en>Your business will appear as Basic until you upload documents.</div>
+      </div>
+      <button class="btn-back" onclick="skipVerification()" data-es>Omitir por ahora →</button>
+      <button class="btn-back" onclick="skipVerification()" data-en>Skip for now →</button>
+    </div>
+
+    <!-- EIN -->
+    <div class="form-card">
+      <div class="form-card-title"><span>🔢</span> EIN <span style="font-size:12px;font-weight:400;color:var(--c-muted)" data-es>(opcional)</span><span style="font-size:12px;font-weight:400;color:var(--c-muted)" data-en>(optional)</span></div>
+      <div class="field-row">
+        <div class="field-label" data-es>Número EIN (Employer Identification Number)</div>
+        <div class="field-label" data-en>EIN (Employer Identification Number)</div>
+        <input type="text" id="f-ein" oninput="if(this.value.trim()){hideError('err-verify');}" placeholder="XX-XXXXXXX" style="max-width:220px">
+      </div>
+      <div class="info-box">
+        <span>ℹ️</span>
+        <span data-es>El EIN es el número de identificación fiscal otorgado por el IRS. Con EIN obtienes la insignia <strong>Verified</strong>.</span>
+        <span data-en>The EIN is your business tax ID issued by the IRS. With EIN you get the <strong>Verified</strong> badge.</span>
+      </div>
+    </div>
+
+    <!-- Documents -->
+    <div class="form-card">
+      <div class="form-card-title">
+        <span>📄</span>
+        <span data-es>Documentos <span style="font-size:12px;font-weight:400;color:var(--c-muted)">(opcional — sube al menos 1 para Verified)</span></span>
+        <span data-en>Documents <span style="font-size:12px;font-weight:400;color:var(--c-muted)">(optional — upload at least 1 for Verified)</span></span>
+      </div>
+
+      <div class="warn-box">
+        <span>🔒</span>
+        <span data-es>Tus documentos son confidenciales. Solo se usan para verificación y nunca se comparten. Revisamos en 24 horas.</span>
+        <span data-en>Your documents are confidential. Only used for verification, never shared publicly. We review within 24 hours.</span>
+      </div>
+
+      <div class="upload-grid">
+        <div class="upload-box" onclick="simulateUpload(this, 'doc')">
+          <div class="upload-icon">📋</div>
+          <div class="upload-label">Business License</div>
+          <div class="upload-hint" data-es>Ciudad o condado → <strong style="color:var(--c-green)">Verified</strong></div>
+          <div class="upload-hint" data-en>City or county → <strong style="color:var(--c-green)">Verified</strong></div>
+        </div>
+        <div class="upload-box" onclick="simulateUpload(this, 'doc')">
+          <div class="upload-icon">🏛️</div>
+          <div class="upload-label">State Registration</div>
+          <div class="upload-hint">Secretary of State → <strong style="color:var(--c-green)">Verified</strong></div>
+        </div>
+        <div class="upload-box" onclick="simulateUpload(this, 'doc')">
+          <div class="upload-icon">📨</div>
+          <div class="upload-label">IRS EIN Letter</div>
+          <div class="upload-hint">IRS CP 575 → <strong style="color:var(--c-green)">Verified</strong></div>
+        </div>
+      </div>
+
+      <div class="success-box" style="margin-top:4px">
+        <span>💡</span>
+        <span data-es>Si subes EIN o al menos un documento, obtienes la insignia <strong style="color:var(--c-green)">✅ Verified</strong> y apareces primero en los resultados.</span>
+        <span data-en>Upload your EIN or at least one document to get the <strong style="color:var(--c-green)">✅ Verified</strong> badge and appear first in results.</span>
+      </div>
+    </div>
+
+    <div class="field-error" id="err-verify" data-es-text="Sube al menos un documento, ingresa tu EIN, o presiona "Omitir por ahora" arriba para continuar." data-en-text="Upload at least one document, enter your EIN, or press "Skip for now" above to continue.">Sube al menos un documento, ingresa tu EIN, o presiona "Omitir por ahora" arriba para continuar.</div>
+
+    <div class="form-nav">
+      <button class="btn-back" onclick="goStep(2)" data-es>← Atrás</button>
+      <button class="btn-back" onclick="goStep(2)" data-en>← Back</button>
+      <button class="btn-next" onclick="validateStep3()" data-es>Continuar →</button>
+      <button class="btn-next" onclick="validateStep3()" data-en>Continue →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 4: PROFILE ── -->
+  <div id="step-4" style="display:none">
+    <h1 style="font-family:var(--font-display);font-size:28px;margin-bottom:8px" data-es>Completa tu perfil</h1>
+    <h1 style="font-family:var(--font-display);font-size:28px;margin-bottom:8px" data-en>Complete your profile</h1>
+    <p style="color:var(--c-muted);font-size:15px;margin-bottom:28px" data-es>Un perfil completo recibe 3x más contactos.</p>
+    <p style="color:var(--c-muted);font-size:15px;margin-bottom:28px" data-en>A complete profile gets 3x more contacts.</p>
+
+    <div class="form-card">
+      <div class="form-card-title"><span>✍️</span> <span data-es>Descripción del negocio</span><span data-en>Business description</span></div>
+      <div class="field-row">
+        <div class="field-label" data-es>Cuéntale a los clientes sobre tu negocio <span class="req">*</span></div>
+        <div class="field-label" data-en>Tell customers about your business <span class="req">*</span></div>
+        <textarea rows="4" id="f-description" oninput="updateWordCount()" data-es-placeholder="Ej: Somos una empresa familiar con 10 años de experiencia en paisajismo residencial y comercial en el área de Atlanta..." data-en-placeholder="e.g. We are a family business with 10 years of experience in residential and commercial landscaping in the Atlanta area..." placeholder="Ej: Somos una empresa familiar con 10 años de experiencia en paisajismo residencial y comercial en el área de Atlanta..."></textarea>
+        <div style="font-size:11px;color:var(--c-hint);margin-top:4px;text-align:right" id="word-count">
+          <span id="word-count-text">0 palabras (mínimo 10)</span>
+        </div>
+        <div class="field-error" id="err-desc" data-es-text="Escribe una descripción de al menos 10 palabras." data-en-text="Write a description of at least 10 words.">Escribe una descripción de al menos 10 palabras.</div>
+      </div>
+    </div>
+
+    <div class="form-card" id="hours-card">
+      <div class="form-card-title"><span>⏰</span> <span data-es>Horario de atención</span><span data-en>Business hours</span></div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:grid;grid-template-columns:120px 1fr 1fr 40px;gap:10px;align-items:center;font-size:13px">
+          <span style="color:var(--c-muted)" data-es>Lunes – Viernes</span>
+          <span style="color:var(--c-muted)" data-en>Mon – Fri</span>
+          <input type="time" value="07:00">
+          <input type="time" value="18:00">
+          <input type="checkbox" checked style="width:16px;height:16px;accent-color:var(--c-green)">
+        </div>
+        <div style="display:grid;grid-template-columns:120px 1fr 1fr 40px;gap:10px;align-items:center;font-size:13px">
+          <span style="color:var(--c-muted)" data-es>Sábado</span>
+          <span style="color:var(--c-muted)" data-en>Saturday</span>
+          <input type="time" value="08:00">
+          <input type="time" value="16:00">
+          <input type="checkbox" checked style="width:16px;height:16px;accent-color:var(--c-green)">
+        </div>
+        <div style="display:grid;grid-template-columns:120px 1fr 1fr 40px;gap:10px;align-items:center;font-size:13px">
+          <span style="color:var(--c-muted)" data-es>Domingo</span>
+          <span style="color:var(--c-muted)" data-en>Sunday</span>
+          <input type="time" value="09:00" disabled style="opacity:0.4">
+          <input type="time" value="17:00" disabled style="opacity:0.4">
+          <input type="checkbox" style="width:16px;height:16px;accent-color:var(--c-green)" onchange="toggleDay(this)">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card" id="photos-card">
+      <div class="form-card-title"><span>📸</span> <span data-es>Fotos del negocio</span><span data-en>Business photos</span><span class="req" id="photos-req-mark"> *</span><span style="font-size:13px;font-weight:400;color:var(--c-hint)" data-es> (mínimo 1, hasta 5)</span><span style="font-size:13px;font-weight:400;color:var(--c-hint)" data-en> (minimum 1, up to 5)</span></div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px" id="photo-grid">
+        <div class="upload-box" style="aspect-ratio:1" onclick="simulateUpload(this, 'photo')"><div class="upload-icon">📷</div><div class="upload-hint" data-es>Foto 1</div><div class="upload-hint" data-en>Photo 1</div></div>
+        <div class="upload-box" style="aspect-ratio:1" onclick="simulateUpload(this, 'photo')"><div class="upload-icon">📷</div><div class="upload-hint" data-es>Foto 2</div><div class="upload-hint" data-en>Photo 2</div></div>
+        <div class="upload-box" style="aspect-ratio:1" onclick="simulateUpload(this, 'photo')"><div class="upload-icon">📷</div><div class="upload-hint" data-es>Foto 3</div><div class="upload-hint" data-en>Photo 3</div></div>
+        <div class="upload-box" style="aspect-ratio:1" onclick="simulateUpload(this, 'photo')"><div class="upload-icon">📷</div><div class="upload-hint" data-es>Foto 4</div><div class="upload-hint" data-en>Photo 4</div></div>
+        <div class="upload-box" style="aspect-ratio:1" onclick="simulateUpload(this, 'photo')"><div class="upload-icon">📷</div><div class="upload-hint" data-es>Foto 5</div><div class="upload-hint" data-en>Photo 5</div></div>
+      </div>
+      <div class="field-error" id="err-photo" data-es-text="Sube al menos 1 foto de tu negocio." data-en-text="Upload at least 1 photo of your business.">Sube al menos 1 foto de tu negocio.</div>
+    </div>
+
+    <div style="background:var(--c-bg);border-radius:var(--radius-md);padding:14px 16px;font-size:13px;color:var(--c-muted);margin-bottom:8px;display:flex;gap:8px">
+      <input type="checkbox" id="f-terms" style="width:15px;height:15px;accent-color:var(--c-green);flex-shrink:0;margin-top:2px">
+      <span data-es>Acepto los <a href="terms.html" style="color:var(--c-accent)">Términos de Uso</a> y la <a href="privacy.html" style="color:var(--c-accent)">Política de Privacidad</a> de AmigosNearMe.</span>
+      <span data-en>I agree to AmigosNearMe's <a href="terms.html" style="color:var(--c-accent)">Terms of Use</a> and <a href="privacy.html" style="color:var(--c-accent)">Privacy Policy</a>.</span>
+    </div>
+    <div class="field-error" id="err-terms" data-es-text="Debes aceptar los Términos de Uso para publicar tu negocio." data-en-text="You must accept the Terms of Use to publish your business.">Debes aceptar los Términos de Uso para publicar tu negocio.</div>
+
+    <div class="form-nav">
+      <button class="btn-back" onclick="goStep(3)" data-es>← Atrás</button>
+      <button class="btn-back" onclick="goStep(3)" data-en>← Back</button>
+      <button class="btn-next" onclick="validateStep4()" data-es>🎉 Publicar mi negocio</button>
+      <button class="btn-next" onclick="validateStep4()" data-en>🎉 Publish my business</button>
+    </div>
+  </div>
+
+  <!-- ── SUCCESS ── -->
+  <div id="step-success" class="success-screen">
+    <div class="success-icon">🎉</div>
+    <h2 class="success-title" data-es>¡Tu negocio fue registrado!</h2>
+    <h2 class="success-title" data-en>Your business is live!</h2>
+    <p class="success-sub" data-es>Revisaremos tus documentos en las próximas 24 horas y activaremos tu insignia Verified. Te avisaremos por correo y WhatsApp.</p>
+    <p class="success-sub" data-en>We'll review your documents within 24 hours and activate your Verified badge. We'll notify you by email and WhatsApp.</p>
+    <div class="success-actions">
+      <a href="dashboard.html" class="btn-primary" data-es>Ir a mi panel →</a>
+      <a href="dashboard.html" class="btn-primary" data-en>Go to dashboard →</a>
+      <a href="search.html" class="btn-secondary" data-es>Ver la plataforma</a>
+      <a href="search.html" class="btn-secondary" data-en>Browse platform</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var currentStep = 1;
+var selectedPlan = 'basic';   // default selected on load (Basic card has class="selected")
+var verificationSkipped = false;
+var photoCount = 0;
+var docCount = 0;
+
+function setLang(lang) {
+  document.body.classList.toggle('en', lang === 'en');
+  document.querySelectorAll('.i18n-biz-type').forEach(function(opt) {
+    var es = opt.getAttribute('data-es-text');
+    var en = opt.getAttribute('data-en-text');
+    if (es && en) opt.textContent = lang === 'en' ? en : es;
+  });
+  // Generic handler for any element using data-es-text / data-en-text (e.g. field-error messages)
+  document.querySelectorAll('[data-es-text][data-en-text]').forEach(function(el) {
+    if (el.classList.contains('i18n-biz-type')) return; // already handled above
+    var es = el.getAttribute('data-es-text');
+    var en = el.getAttribute('data-en-text');
+    el.textContent = lang === 'en' ? en : es;
+  });
+  var btnEs = document.getElementById('btn-es');
+  var btnEn = document.getElementById('btn-en');
+  if (btnEs) btnEs.classList.toggle('active', lang !== 'en');
+  if (btnEn) btnEn.classList.toggle('active', lang === 'en');
+
+  // Update description textarea placeholder
+  var desc = document.getElementById('f-description');
+  if (desc) {
+    var ph = lang === 'en' ? desc.getAttribute('data-en-placeholder') : desc.getAttribute('data-es-placeholder');
+    desc.setAttribute('placeholder', ph);
+  }
+  updateWordCount();
+
+  try { localStorage.setItem('anm-lang', lang); } catch(e) {}
+}
+
+function goStep(n) {
+  document.getElementById('step-' + currentStep).style.display = 'none';
+  document.getElementById('step-' + n).style.display = 'block';
+  currentStep = n;
+  updateProgress(n);
+  if (n === 4) updateProfileStepForStaffing();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function isStaffingSelected() {
+  var staffingChip = document.querySelector('.cat-chip[data-cat-id="staffing"]');
+  return !!(staffingChip && staffingChip.classList.contains('sel'));
+}
+
+function updateProfileStepForStaffing() {
+  var staffing = isStaffingSelected();
+  var hoursCard = document.getElementById('hours-card');
+  var photosCard = document.getElementById('photos-card');
+  var photosReqMark = document.getElementById('photos-req-mark');
+  if (hoursCard) hoursCard.style.display = staffing ? 'none' : 'block';
+  if (photosCard) photosCard.style.display = staffing ? 'none' : 'block';
+  // Photos are required for regular businesses, but not for Staffing & Labor —
+  // hide the asterisk too so the (now-hidden) requirement isn't visually implied.
+  if (photosReqMark) photosReqMark.style.display = staffing ? 'none' : 'inline';
+}
+
+function goSuccess() {
+  // Save the selected plan to localStorage so dashboard.html reflects it immediately.
+  // Also save a business account record so login.html can authenticate the owner.
+  // In production this is written to the DB by the backend after account creation.
+  try {
+    localStorage.setItem('anm-sim-plan', selectedPlan || 'free');
+    // Register the business owner account so they can log in via login.html
+    var email = document.getElementById('f-account-email');
+    var password = document.getElementById('f-password');
+    var ownerName = document.getElementById('f-owner-name');
+    if (email && password && email.value && password.value) {
+      var accounts = [];
+      try { accounts = JSON.parse(localStorage.getItem('anm-accounts') || '[]'); } catch(e) {}
+      var exists = accounts.find(function(a){ return a.email === email.value.trim(); });
+      if (!exists) {
+        accounts.push({
+          name: ownerName ? ownerName.value.trim() : '',
+          email: email.value.trim(),
+          password: password.value,
+          type: 'business',
+          createdAt: Date.now()
+        });
+        localStorage.setItem('anm-accounts', JSON.stringify(accounts));
+      }
+    }
+  } catch(e) {}
+  document.getElementById('step-4').style.display = 'none';
+  document.getElementById('step-success').style.display = 'block';
+  document.querySelector('.progress-bar').style.display = 'none';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function updateProgress(n) {
+  ['lbl-1','lbl-2','lbl-3','lbl-4','lbl-1en','lbl-2en','lbl-3en','lbl-4en'].forEach(function(id, i) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var step = (i % 4) + 1;
+    el.className = 'step-label ' + (step < n ? 'done' : step === n ? 'active' : '');
+  });
+  ['seg-1','seg-2','seg-3','seg-4'].forEach(function(id, i) {
+    var el = document.getElementById(id);
+    var step = i + 1;
+    el.className = 'prog-seg ' + (step < n ? 'done' : step === n ? 'active' : '');
+  });
+}
+
+function selectPlan(card, plan) {
+  document.querySelectorAll('.plan-card').forEach(function(c){ c.classList.remove('selected'); });
+  card.classList.add('selected');
+  selectedPlan = plan;
+  hideError('err-plan');
+}
+
+function toggleCat(el) {
+  var grid = document.getElementById('cat-grid');
+  var selected = grid.querySelectorAll('.cat-chip.sel');
+  if (el.classList.contains('sel')) {
+    el.classList.remove('sel');
+  } else {
+    if (selected.length < 3) el.classList.add('sel');
+  }
+  if (grid.querySelectorAll('.cat-chip.sel').length > 0) {
+    hideError('err-cat'); grid.classList.remove('section-error');
+  }
+  updateStaffingCardVisibility();
+}
+
+function updateStaffingCardVisibility() {
+  var staffingChip = document.querySelector('.cat-chip[data-cat-id="staffing"]');
+  var card = document.getElementById('staffing-card');
+  if (!staffingChip || !card) return;
+  var wasHidden = card.style.display === 'none' || card.style.display === '';
+  var nowSelected = staffingChip.classList.contains('sel');
+  card.style.display = nowSelected ? 'block' : 'none';
+  // When the user just turned Staffing ON, scroll them to the new section so they notice
+  // the additional required field (worker types) instead of missing it further down the page.
+  if (nowSelected && wasHidden) {
+    setTimeout(function() {
+      card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+function toggleStaffingType(el) {
+  el.classList.toggle('sel');
+  var grid = document.getElementById('staffing-types-grid');
+  if (grid.querySelectorAll('.cat-chip.sel').length > 0) {
+    hideError('err-staffing-types'); grid.classList.remove('section-error');
+  }
+}
+
+function clearStaffingAvailabilityError() {
+  var grid = document.getElementById('staffing-availability-grid');
+  if (grid && grid.querySelectorAll('input[type=checkbox]:checked').length > 0) {
+    hideError('err-staffing-availability');
+    grid.classList.remove('section-error');
+  }
+}
+
+function simulateUpload(box, type) {
+  if (!box.classList.contains('uploaded')) {
+    if (type === 'doc') { docCount++; } else { photoCount++; }
+  }
+  box.classList.add('uploaded');
+  box.querySelector('.upload-icon').textContent = '✅';
+  if (type === 'doc' && docCount > 0) { hideError('err-verify'); }
+  if (type !== 'doc' && photoCount > 0) {
+    hideError('err-photo');
+    var pg = document.getElementById('photo-grid');
+    if (pg) pg.classList.remove('section-error');
+  }
+}
+
+function toggleDay(cb) {
+  var row = cb.closest('div');
+  row.querySelectorAll('input[type=time]').forEach(function(i){ i.disabled = !cb.checked; i.style.opacity = cb.checked ? '1' : '0.4'; });
+}
+
+// Keeps the parent label's "sel" class perfectly in sync with the checkbox's real checked state.
+// This avoids the visual bug where clicking directly on the checkbox vs the label text
+// could toggle the class twice and desync it from the actual checked value.
+function syncChipState(checkbox) {
+  var label = checkbox.closest('label');
+  if (!label) return;
+  label.classList.toggle('sel', checkbox.checked);
+
+  // Clear payment-related error/section highlight as soon as one is checked
+  if (label.classList.contains('pay-chip')) {
+    var grid = document.getElementById('payment-grid');
+    if (grid && grid.querySelectorAll('input[type=checkbox]:checked').length > 0) {
+      hideError('err-payment');
+      grid.classList.remove('section-error');
+    }
+  }
+}
+
+function skipVerification() {
+  verificationSkipped = true;
+  goStep(4);
+}
+
+function updateWordCount() {
+  var desc = document.getElementById('f-description');
+  var counter = document.getElementById('word-count-text');
+  if (!desc || !counter) return;
+  var text = desc.value.trim();
+  var words = text.length ? text.split(/\s+/).length : 0;
+  var en = document.body.classList.contains('en');
+  counter.textContent = en ? (words + ' words (minimum 10)') : (words + ' palabras (mínimo 10)');
+  counter.style.color = words >= 10 ? 'var(--c-green)' : 'var(--c-hint)';
+  if (words >= 10) { hideError('err-desc'); }
+}
+
+function showError(id) {
+  var el = document.getElementById(id);
+  if (el) el.classList.add('show');
+}
+function hideError(id) {
+  var el = document.getElementById(id);
+  if (el) el.classList.remove('show');
+}
+function markInvalid(el) {
+  if (el) el.classList.add('input-error');
+}
+function clearInvalid(el) {
+  if (el) el.classList.remove('input-error');
+}
+function clearNameError() {
+  var legalName = document.getElementById('f-legal-name');
+  var tradeName = document.getElementById('f-trade-name');
+  if (legalName.value.trim() !== '' || tradeName.value.trim() !== '') {
+    hideError('err-name');
+    clearInvalid(legalName); clearInvalid(tradeName);
+  }
+}
+function clearAccountError() {
+  var ownerName = document.getElementById('f-owner-name');
+  var accountEmail = document.getElementById('f-account-email');
+  var password = document.getElementById('f-password');
+  var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  var emailValid = emailPattern.test(accountEmail.value.trim());
+  if (ownerName.value.trim() !== '') clearInvalid(ownerName);
+  if (emailValid) clearInvalid(accountEmail);
+  if (password.value.length >= 8) clearInvalid(password);
+  if (ownerName.value.trim() !== '' && emailValid && password.value.length >= 8) {
+    hideError('err-account');
+  }
+}
+function markInvalidSection(id) {
+  var el = document.getElementById(id);
+  if (el) el.classList.add('section-error');
+}
+function clearInvalidSection(id) {
+  var el = document.getElementById(id);
+  if (el) el.classList.remove('section-error');
+}
+
+// ── STEP 1 VALIDATION: Plan must be selected ──
+function validateStep1() {
+  if (!selectedPlan) {
+    showError('err-plan');
+    var el = document.getElementById('err-plan');
+    if (el) { el.scrollIntoView({behavior:'smooth', block:'center'}); el.classList.add('shake'); setTimeout(function(){el.classList.remove('shake');}, 400); }
+    return;
+  }
+  hideError('err-plan');
+  goStep(2);
+}
+
+// ── STEP 2 VALIDATION ──
+function validateStep2() {
+  var valid = true;
+
+  // 1. Legal name OR trade name
+  var legalName = document.getElementById('f-legal-name');
+  var tradeName = document.getElementById('f-trade-name');
+  var hasName = (legalName.value.trim() !== '') || (tradeName.value.trim() !== '');
+  if (!hasName) {
+    showError('err-name');
+    markInvalid(legalName); markInvalid(tradeName);
+    valid = false;
+  } else {
+    hideError('err-name');
+    clearInvalid(legalName); clearInvalid(tradeName);
+  }
+
+  // 2. Main category - at least 1
+  var catSelected = document.querySelectorAll('#cat-grid .cat-chip.sel').length;
+  if (catSelected === 0) {
+    showError('err-cat');
+    markInvalidSection('cat-grid');
+    valid = false;
+  } else {
+    hideError('err-cat');
+    clearInvalidSection('cat-grid');
+  }
+
+  // 2b. If "Staffing & Labor" is selected, at least one worker type is required
+  var staffingChip = document.querySelector('.cat-chip[data-cat-id="staffing"]');
+  if (staffingChip && staffingChip.classList.contains('sel')) {
+    var staffingTypesSelected = document.querySelectorAll('#staffing-types-grid .cat-chip.sel').length;
+    if (staffingTypesSelected === 0) {
+      showError('err-staffing-types');
+      markInvalidSection('staffing-types-grid');
+      valid = false;
+    } else {
+      hideError('err-staffing-types');
+      clearInvalidSection('staffing-types-grid');
+    }
+
+    // 2c. Hiring availability - at least one required
+    var availabilityChecked = document.querySelectorAll('#staffing-availability-grid input[type=checkbox]:checked').length;
+    if (availabilityChecked === 0) {
+      showError('err-staffing-availability');
+      markInvalidSection('staffing-availability-grid');
+      valid = false;
+    } else {
+      hideError('err-staffing-availability');
+      clearInvalidSection('staffing-availability-grid');
+    }
+  }
+
+  // 3. Phone/WhatsApp required
+  var phone = document.getElementById('f-phone');
+  if (phone.value.trim() === '') {
+    showError('err-phone');
+    markInvalid(phone);
+    valid = false;
+  } else {
+    hideError('err-phone');
+    clearInvalid(phone);
+  }
+
+  // 4. Service area - at least 1
+  var areaChecked = document.querySelectorAll('#service-area-grid input[type=checkbox]:checked').length;
+  if (areaChecked === 0) {
+    showError('err-area');
+    markInvalidSection('service-area-grid');
+    valid = false;
+  } else {
+    hideError('err-area');
+    clearInvalidSection('service-area-grid');
+  }
+
+  // 5. Payment method - at least 1
+  var paymentChecked = document.querySelectorAll('#payment-grid input[type=checkbox]:checked').length;
+  if (paymentChecked === 0) {
+    showError('err-payment');
+    markInvalidSection('payment-grid');
+    valid = false;
+  } else {
+    hideError('err-payment');
+    clearInvalidSection('payment-grid');
+  }
+
+  // 6. Account - name + valid login email + password (min 8 chars)
+  var ownerName = document.getElementById('f-owner-name');
+  var accountEmail = document.getElementById('f-account-email');
+  var password = document.getElementById('f-password');
+  var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  var emailValid = emailPattern.test(accountEmail.value.trim());
+  var accountValid = ownerName.value.trim() !== '' && emailValid && password.value.length >= 8;
+  if (!accountValid) {
+    showError('err-account');
+    if (ownerName.value.trim() === '') markInvalid(ownerName); else clearInvalid(ownerName);
+    if (!emailValid) markInvalid(accountEmail); else clearInvalid(accountEmail);
+    if (password.value.length < 8) markInvalid(password); else clearInvalid(password);
+    valid = false;
+  } else {
+    hideError('err-account');
+    clearInvalid(ownerName); clearInvalid(accountEmail); clearInvalid(password);
+  }
+
+  if (!valid) {
+    // scroll to first visible error and shake it
+    var firstError = document.querySelector('.field-error.show');
+    if (firstError) {
+      firstError.scrollIntoView({behavior:'smooth', block:'center'});
+      firstError.classList.add('shake');
+      setTimeout(function(){ firstError.classList.remove('shake'); }, 400);
+    }
+    return;
+  }
+  goStep(3);
+}
+
+// ── STEP 3 VALIDATION: must skip OR provide EIN/document ──
+function validateStep3() {
+  var ein = document.getElementById('f-ein');
+  var hasEin = ein && ein.value.trim() !== '';
+  var hasDoc = photoCountUploadedDocs() > 0;
+
+  if (!verificationSkipped && !hasEin && !hasDoc) {
+    showError('err-verify');
+    var firstError = document.getElementById('err-verify');
+    if (firstError) {
+      firstError.scrollIntoView({behavior:'smooth', block:'center'});
+      firstError.classList.add('shake');
+      setTimeout(function(){ firstError.classList.remove('shake'); }, 400);
+    }
+    return;
+  }
+  hideError('err-verify');
+  goStep(4);
+}
+
+function photoCountUploadedDocs() {
+  return docCount;
+}
+
+// ── STEP 4 VALIDATION: description 10+ words, photo 1+, terms checked ──
+function validateStep4() {
+  var valid = true;
+
+  // 9. Description min 10 words
+  var desc = document.getElementById('f-description');
+  var words = desc.value.trim().length ? desc.value.trim().split(/\s+/).length : 0;
+  if (words < 10) {
+    showError('err-desc');
+    markInvalid(desc);
+    valid = false;
+  } else {
+    hideError('err-desc');
+    clearInvalid(desc);
+  }
+
+  // 10. At least 1 photo — not required for Staffing & Labor (photos section is hidden for them)
+  if (!isStaffingSelected() && photoCount < 1) {
+    showError('err-photo');
+    markInvalidSection('photo-grid');
+    valid = false;
+  } else {
+    hideError('err-photo');
+    clearInvalidSection('photo-grid');
+  }
+
+  // Terms agreement
+  var terms = document.getElementById('f-terms');
+  var termsBox = terms ? terms.closest('div') : null;
+  if (!terms.checked) {
+    showError('err-terms');
+    if (termsBox) termsBox.classList.add('section-error');
+    valid = false;
+  } else {
+    hideError('err-terms');
+    if (termsBox) termsBox.classList.remove('section-error');
+  }
+
+  if (!valid) {
+    var firstError = document.querySelector('#step-4 .field-error.show');
+    if (firstError) {
+      firstError.scrollIntoView({behavior:'smooth', block:'center'});
+      firstError.classList.add('shake');
+      setTimeout(function(){ firstError.classList.remove('shake'); }, 400);
+    }
+    return;
+  }
+  // Free plan: no payment needed, complete signup immediately.
+  // Basic/Premium: collect payment first — goSuccess() only fires after
+  // simulatePlanPayment() confirms the (simulated) charge below.
+  if (selectedPlan === 'free') {
+    goSuccess();
+  } else {
+    openPaymentModal(selectedPlan);
+  }
+}
+
+function switchPayTab(method, btn) {
+  // Update tab active state — only affect the visible-language tab
+  document.querySelectorAll('.pay-tab').forEach(function(t){ t.classList.remove('selected'); });
+  // Mark both ES and EN tabs for the same method as selected
+  document.querySelectorAll('.pay-tab').forEach(function(t){
+    if (t.getAttribute('onclick') && t.getAttribute('onclick').includes("'" + method + "'")) {
+      t.classList.add('selected');
+    }
+  });
+  // Show/hide panels
+  ['card','venmo','ach','zelle'].forEach(function(m){
+    var p = document.getElementById('pay-panel-' + m);
+    if (p) p.style.display = m === method ? 'block' : 'none';
+  });
+  // Zelle: hide the standard pay button, show instructions only
+  var payBtn = document.getElementById('modal-pay-btn');
+  if (payBtn) {
+    payBtn.style.display = method === 'zelle' ? 'none' : 'block';
+  }
+}
+
+function openPaymentModal(plan) {
+  var prices = { basic: { name: 'Basic', priceEs: '$29/mes', priceEn: '$29/mo' }, premium: { name: 'Premium', priceEs: '$79/mes', priceEn: '$79/mo' } };
+  var p = prices[plan] || prices.basic;
+  var isEn = document.body.classList.contains('en');
+  document.getElementById('modal-plan-name').textContent = p.name;
+  document.getElementById('modal-plan-price').textContent = isEn ? p.priceEn : p.priceEs;
+  // Populate Zelle plan name in instructions
+  var zelleEs = document.getElementById('zelle-plan-es');
+  var zelleEn = document.getElementById('zelle-plan-en');
+  if (zelleEs) zelleEs.textContent = p.name;
+  if (zelleEn) zelleEn.textContent = p.name;
+  // Reset to card tab
+  switchPayTab('card', null);
+  document.getElementById('payment-modal').classList.add('open');
+}
+function closePaymentModal() {
+  document.getElementById('payment-modal').classList.remove('open');
+}
+function simulatePlanPayment() {
+  // FRONTEND SIMULATION: in production this calls the payment gateway with the plan's
+  // real monthly price, sets up recurring billing, and only proceeds once the charge
+  // succeeds. No real charge happens here — any card input is discarded.
+  // Save the selected plan so dashboard.html shows the correct plan status.
+  try { localStorage.setItem('anm-sim-plan', selectedPlan); } catch(e) {}
+  closePaymentModal();
+  goSuccess();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var saved = ''; try { saved = localStorage.getItem('anm-lang'); } catch(e) {}
+  var browser = (navigator.language || 'es').toLowerCase();
+  setLang(saved || (browser.startsWith('en') ? 'en' : 'es'));
+  updateProgress(1);
+  updateWordCount();
+
+  // Entry routing: people arriving from the "what are you registering?" selection page
+  // (register-type.html) carry ?type=staffing or ?type=business in the URL. Staffing
+  // workers don't pay for a plan, so Step 1 (plan selection) is irrelevant to them —
+  // skip straight to Basic Info and pre-select the Staffing & Labor category chip so
+  // the worker-specific fields (worker types, hiring availability, etc.) are already visible.
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('type') === 'staffing') {
+    selectedPlan = 'free'; // staffing has no paid plan; default to Free internally
+    var staffingChip = document.querySelector('.cat-chip[data-cat-id="staffing"]');
+    if (staffingChip && !staffingChip.classList.contains('sel')) {
+      staffingChip.classList.add('sel');
+      updateStaffingCardVisibility();
+    }
+    goStep(2);
+  }
+
+  // Clear section-error highlight as soon as user checks a box
+  var areaGrid = document.getElementById('service-area-grid');
+  if (areaGrid) {
+    areaGrid.addEventListener('change', function() {
+      if (areaGrid.querySelectorAll('input[type=checkbox]:checked').length > 0) {
+        hideError('err-area');
+        areaGrid.classList.remove('section-error');
+      }
+    });
+  }
+  var paymentGrid = document.getElementById('payment-grid');
+  if (paymentGrid) {
+    paymentGrid.addEventListener('change', function() {
+      if (paymentGrid.querySelectorAll('input[type=checkbox]:checked').length > 0) {
+        hideError('err-payment');
+        paymentGrid.classList.remove('section-error');
+      }
+    });
+  }
+  var termsBox = document.getElementById('f-terms');
+  if (termsBox) {
+    termsBox.addEventListener('change', function() {
+      if (termsBox.checked) {
+        hideError('err-terms');
+        var box = termsBox.closest('div');
+        if (box) box.classList.remove('section-error');
+      }
+    });
+  }
+});
+</script>
+
+<!-- PAID-PLAN PAYMENT MODAL -->
+<!-- Frontend simulation only — no real charge happens here.
+     In production: powered by Braintree (PayPal subsidiary).
+     Supported methods: Credit/Debit Card, Venmo, ACH Direct Debit, PayPal, Apple Pay, Google Pay.
+     Zelle is handled manually — customer sends payment to the operator's Zelle account,
+     operator confirms receipt in Admin console and manually activates the plan. -->
+<div class="modal-overlay" id="payment-modal" onclick="if(event.target===this) closePaymentModal()">
+  <div class="modal-card">
+    <div class="modal-title"><span data-es>Elige cómo pagar</span><span data-en>Choose how to pay</span></div>
+
+    <div class="modal-plan-summary">
+      <span class="modal-plan-name" id="modal-plan-name">Basic</span>
+      <div style="text-align:right">
+        <div class="modal-plan-price" id="modal-plan-price">$29/mo</div>
+        <div style="font-size:11px;color:var(--c-accent-dark);margin-top:2px" data-es>🔄 Cobro mensual automático</div>
+        <div style="font-size:11px;color:var(--c-accent-dark);margin-top:2px" data-en>🔄 Recurring monthly charge</div>
+      </div>
+    </div>
+
+    <!-- Payment method tabs -->
+    <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap">
+      <button class="pay-tab active" onclick="switchPayTab('card',this)" data-es>💳 Tarjeta</button>
+      <button class="pay-tab active" onclick="switchPayTab('card',this)" data-en>💳 Card</button>
+      <button class="pay-tab" onclick="switchPayTab('venmo',this)">Venmo</button>
+      <button class="pay-tab" onclick="switchPayTab('ach',this)">ACH</button>
+      <button class="pay-tab" onclick="switchPayTab('zelle',this)">Zelle</button>
+    </div>
+
+    <!-- Card fields -->
+    <div id="pay-panel-card">
+      <div class="modal-field">
+        <label class="modal-label"><span data-es>Número de tarjeta</span><span data-en>Card number</span></label>
+        <input class="modal-input" type="text" placeholder="4242 4242 4242 4242" id="modal-card-number">
+      </div>
+      <div class="modal-row">
+        <div class="modal-field">
+          <label class="modal-label"><span data-es>Vencimiento</span><span data-en>Expiry</span></label>
+          <input class="modal-input" type="text" placeholder="MM/YY" id="modal-card-exp">
+        </div>
+        <div class="modal-field">
+          <label class="modal-label">CVC</label>
+          <input class="modal-input" type="text" placeholder="123" id="modal-card-cvc">
+        </div>
+      </div>
+      <p class="modal-desc" style="font-size:12px;margin-top:4px"><span data-es>Procesado por Braintree. También puedes usar una tarjeta prepagada.</span><span data-en>Processed by Braintree. Prepaid debit cards also accepted.</span></p>
+    </div>
+
+    <!-- Venmo panel -->
+    <div id="pay-panel-venmo" style="display:none">
+      <div style="text-align:center;padding:12px 0">
+        <div style="font-size:32px;margin-bottom:8px">💜</div>
+        <p class="modal-desc" data-es>Al hacer clic en "Pagar con Venmo", serás redirigido a la app de Venmo para completar el pago de forma segura a través de Braintree.</p>
+        <p class="modal-desc" data-en>Clicking "Pay with Venmo" will redirect you to the Venmo app to complete payment securely through Braintree.</p>
+        <p style="font-size:12px;color:var(--c-hint)" data-es>Tu saldo de Venmo o cualquier método guardado en Venmo puede ser usado.</p>
+        <p style="font-size:12px;color:var(--c-hint)" data-en>Your Venmo balance or any saved payment method in Venmo can be used.</p>
+      </div>
+    </div>
+
+    <!-- ACH panel -->
+    <div id="pay-panel-ach" style="display:none">
+      <div class="modal-field">
+        <label class="modal-label"><span data-es>Número de cuenta bancaria</span><span data-en>Bank account number</span></label>
+        <input class="modal-input" type="text" placeholder="000123456789" id="modal-ach-account">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label"><span data-es>Número de ruta (routing)</span><span data-en>Routing number</span></label>
+        <input class="modal-input" type="text" placeholder="021000021" id="modal-ach-routing">
+      </div>
+      <p class="modal-desc" style="font-size:12px;margin-top:4px"><span data-es>Débito directo desde tu cuenta bancaria. Sin tarjeta necesaria. Procesado por Braintree.</span><span data-en>Direct debit from your bank account. No card needed. Processed by Braintree.</span></p>
+    </div>
+
+    <!-- Zelle manual panel -->
+    <div id="pay-panel-zelle" style="display:none">
+      <div style="background:var(--c-amber-light);border-radius:var(--radius-md);padding:16px;margin-bottom:12px;border:0.5px solid rgba(186,117,23,0.2)">
+        <div style="font-size:13px;font-weight:600;margin-bottom:8px" data-es>📲 Instrucciones para pagar con Zelle</div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:8px" data-en>📲 How to pay with Zelle</div>
+        <ol style="font-size:13px;color:var(--c-text);line-height:1.8;padding-left:18px" data-es>
+          <li>Abre tu app bancaria o la app de Zelle</li>
+          <li>Envía el monto exacto a: <strong>pagos@amigosnearme.com</strong></li>
+          <li>En el memo escribe tu <strong>nombre de negocio</strong> y el plan (<strong id="zelle-plan-es">Basic</strong>)</li>
+          <li>Toma una captura de pantalla y envíala a <strong>hola@amigosnearme.com</strong></li>
+        </ol>
+        <ol style="font-size:13px;color:var(--c-text);line-height:1.8;padding-left:18px" data-en>
+          <li>Open your bank app or the Zelle app</li>
+          <li>Send the exact amount to: <strong>pagos@amigosnearme.com</strong></li>
+          <li>In the memo write your <strong>business name</strong> and plan (<strong id="zelle-plan-en">Basic</strong>)</li>
+          <li>Take a screenshot and email it to <strong>hola@amigosnearme.com</strong></li>
+        </ol>
+      </div>
+      <p style="font-size:12px;color:var(--c-muted)" data-es>⏱ Tu plan será activado manualmente dentro de 24 horas hábiles después de confirmar tu pago.</p>
+      <p style="font-size:12px;color:var(--c-muted)" data-en>⏱ Your plan will be manually activated within 24 business hours after we confirm your payment.</p>
+    </div>
+
+    <button class="modal-btn-primary" id="modal-pay-btn" onclick="simulatePlanPayment()"><span data-es>Pagar y continuar →</span><span data-en>Pay & continue →</span></button>
+    <button class="modal-btn-ghost" onclick="closePaymentModal()"><span data-es>Cancelar</span><span data-en>Cancel</span></button>
+    <div class="modal-note"><span data-es>Tarjeta, Venmo y ACH procesados por Braintree. Zelle es manual.</span><span data-en>Card, Venmo, and ACH processed by Braintree. Zelle is manual.</span></div>
+  </div>
+</div>
+
+<div class="toast" id="plan-toast"></div>
+
+</body>
+</html>

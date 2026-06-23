@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>List Your Business or Yourself — AmigosNearMe</title>
+<meta name="description" content="Choose whether you're listing a business or registering yourself as available for hire on AmigosNearMe.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display:ital@0;1&display=swap');
+
+  :root {
+    --c-bg: #FAFAF7;
+    --c-surface: #FFFFFF;
+    --c-border: rgba(0,0,0,0.09);
+    --c-text: #1A1A18;
+    --c-muted: #6B6B66;
+    --c-hint: #A8A8A2;
+    --c-accent: #C94F2B;
+    --c-accent-light: #FAF0EC;
+    --c-accent-dark: #9C3A1E;
+    --c-green: #1D9E75;
+    --c-green-light: #EBF8F3;
+    --c-amber: #BA7517;
+    --c-amber-light: #FEF6E4;
+    --c-blue: #185FA5;
+    --c-blue-light: #EEF4FB;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.05);
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-body); background: var(--c-bg); color: var(--c-text); font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(250,250,247,0.92); backdrop-filter: blur(12px);
+    border-bottom: 0.5px solid var(--c-border);
+    padding: 0 24px; height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { font-family: var(--font-display); font-size: 20px; font-weight: 400; color: var(--c-text); text-decoration: none; }
+  .nav-logo span { color: var(--c-accent); }
+  .lang-switch { display: flex; gap: 4px; }
+  .lang-btn { padding: 5px 10px; border-radius: var(--radius-sm); border: 0.5px solid var(--c-border); background: var(--c-surface); font-size: 12px; font-weight: 500; color: var(--c-muted); cursor: pointer; font-family: var(--font-body); }
+  .lang-btn.active { background: var(--c-text); color: #fff; border-color: var(--c-text); }
+
+  .page-wrap { max-width: 880px; margin: 0 auto; padding: 56px 24px 80px; }
+  .eyebrow { font-size: 13px; font-weight: 500; color: var(--c-accent); letter-spacing: 0.02em; margin-bottom: 10px; }
+  h1 { font-family: var(--font-display); font-size: 34px; font-weight: 400; line-height: 1.2; margin-bottom: 12px; }
+  .lede { font-size: 16px; color: var(--c-muted); max-width: 540px; margin-bottom: 44px; }
+
+  .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .choice-card {
+    background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius-lg);
+    padding: 32px 28px; cursor: pointer; text-align: left; text-decoration: none; color: inherit;
+    transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+    display: flex; flex-direction: column; gap: 14px; position: relative; overflow: hidden;
+  }
+  .choice-card:hover { border-color: var(--c-accent); transform: translateY(-2px); box-shadow: var(--shadow); }
+  .choice-card:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 2px; }
+  .choice-icon { font-size: 30px; line-height: 1; }
+  .choice-title { font-family: var(--font-display); font-size: 21px; font-weight: 400; }
+  .choice-desc { font-size: 13.5px; color: var(--c-muted); line-height: 1.55; }
+  .choice-tag { display: inline-flex; align-self: flex-start; font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 999px; margin-top: 2px; }
+  .tag-biz { background: var(--c-blue-light); color: var(--c-blue); }
+  .tag-worker { background: var(--c-green-light); color: var(--c-green); }
+  .choice-arrow { position: absolute; top: 28px; right: 24px; font-size: 18px; color: var(--c-hint); transition: transform 0.15s, color 0.15s; }
+  .choice-card:hover .choice-arrow { transform: translateX(3px); color: var(--c-accent); }
+
+  .helper-note { margin-top: 28px; font-size: 13px; color: var(--c-hint); }
+  .helper-note a { color: var(--c-accent); text-decoration: none; }
+  .helper-note a:hover { text-decoration: underline; }
+
+  body.en [data-es] { display: none; }
+  body:not(.en) [data-en] { display: none; }
+
+  @media (max-width: 680px) {
+    .choice-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 27px; }
+    .page-wrap { padding: 36px 18px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Amigos<span>NearMe</span></a>
+  <div style="display:flex;align-items:center;gap:6px">
+    <div class="lang-switch">
+      <button class="lang-btn active" id="btn-es" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+    <a href="login.html" style="font-size:13px;color:var(--c-muted);text-decoration:none;padding:8px 10px" data-es>Iniciar sesión</a>
+    <a href="login.html" style="font-size:13px;color:var(--c-muted);text-decoration:none;padding:8px 10px" data-en>Log in</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="eyebrow" data-es>Antes de empezar</div>
+  <div class="eyebrow" data-en>Before you start</div>
+
+  <h1 data-es>¿Qué quieres registrar?</h1>
+  <h1 data-en>What are you registering?</h1>
+
+  <p class="lede" data-es>Esto nos ayuda a mostrarte el formulario correcto. Puedes cambiar de opinión más adelante contactando a soporte.</p>
+  <p class="lede" data-en>This helps us show you the right form. You can change this later by contacting support.</p>
+
+  <div class="choice-grid">
+    <a href="register.html?type=business" class="choice-card">
+      <span class="choice-arrow">→</span>
+      <div class="choice-icon">🏢</div>
+      <span class="choice-tag tag-biz" data-es>Negocio</span>
+      <span class="choice-tag tag-biz" data-en>Business</span>
+      <div class="choice-title" data-es>Tengo un negocio</div>
+      <div class="choice-title" data-en>I have a business</div>
+      <div class="choice-desc" data-es>Landscaping, limpieza, construcción, plomería y más. Tu negocio aparecerá en los resultados de búsqueda con tu propio perfil.</div>
+      <div class="choice-desc" data-en>Landscaping, cleaning, construction, plumbing, and more. Your business will appear in search results with its own profile.</div>
+    </a>
+
+    <a href="register.html?type=staffing" class="choice-card">
+      <span class="choice-arrow">→</span>
+      <div class="choice-icon">👷</div>
+      <span class="choice-tag tag-worker" data-es>Personal</span>
+      <span class="choice-tag tag-worker" data-en>Worker</span>
+      <div class="choice-title" data-es>Busco trabajo / ofrezco mi mano de obra</div>
+      <div class="choice-title" data-en>I'm looking for work / offering my labor</div>
+      <div class="choice-desc" data-es>Cocina, mudanzas, construcción, producción y más. Los negocios que necesitan personal podrán encontrarte y contactarte directamente. Gratis para ti.</div>
+      <div class="choice-desc" data-en>Kitchen, moving, construction, production, and more. Businesses that need workers will find and contact you directly. Free for you.</div>
+    </a>
+  </div>
+
+  <p class="helper-note" data-es>¿No estás seguro? <a href="index.html">Vuelve al inicio</a> para explorar las categorías.</p>
+  <p class="helper-note" data-en>Not sure? <a href="index.html">Go back home</a> to explore categories.</p>
+</div>
+
+<script>
+function setLang(lang) {
+  document.body.classList.toggle('en', lang === 'en');
+  document.getElementById('btn-es').classList.toggle('active', lang !== 'en');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  try { localStorage.setItem('anm-lang', lang); } catch(e) {}
+}
+document.addEventListener('DOMContentLoaded', function() {
+  var saved = ''; try { saved = localStorage.getItem('anm-lang'); } catch(e) {}
+  var browser = (navigator.language || 'es').toLowerCase();
+  setLang(saved || (browser.startsWith('en') ? 'en' : 'es'));
+});
+</script>
+
+</body>
+</html>

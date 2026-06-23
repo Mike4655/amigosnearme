@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Use — AmigosNearMe</title>
+<meta name="description" content="The rules and terms governing use of AmigosNearMe by customers, businesses, and workers.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display:ital@0;1&display=swap');
+
+  :root {
+    --c-bg: #FAFAF7; --c-surface: #FFFFFF; --c-border: rgba(0,0,0,0.09);
+    --c-text: #1A1A18; --c-muted: #6B6B66; --c-hint: #A8A8A2;
+    --c-accent: #C94F2B; --c-accent-light: #FAF0EC;
+    --radius-sm: 8px; --radius-md: 12px;
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-body); background: var(--c-bg); color: var(--c-text); font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+  nav { position: sticky; top: 0; z-index: 100; background: rgba(250,250,247,0.92); backdrop-filter: blur(12px); border-bottom: 0.5px solid var(--c-border); padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+  .nav-logo { font-family: var(--font-display); font-size: 20px; color: var(--c-text); text-decoration: none; }
+  .nav-logo span { color: var(--c-accent); }
+  .nav-lang { display: flex; gap: 4px; }
+  .lang-btn { padding: 5px 10px; border-radius: var(--radius-sm); border: 0.5px solid var(--c-border); background: var(--c-surface); font-size: 12px; font-weight: 500; color: var(--c-muted); cursor: pointer; font-family: var(--font-body); }
+  .lang-btn.active { background: var(--c-text); color: #fff; border-color: var(--c-text); }
+  .btn-nav { padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13.5px; font-weight: 500; text-decoration: none; }
+  .btn-nav.primary { background: var(--c-accent); color: #fff; }
+
+  .legal-wrap { max-width: 760px; margin: 0 auto; padding: 48px 24px 80px; display: grid; grid-template-columns: 200px 1fr; gap: 40px; align-items: start; }
+  .toc { position: sticky; top: 80px; }
+  .toc-title { font-size: 11px; font-weight: 600; color: var(--c-hint); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 10px; }
+  .toc a { display: block; font-size: 13px; color: var(--c-muted); text-decoration: none; padding: 5px 0; }
+  .toc a:hover { color: var(--c-accent); }
+
+  .eyebrow { font-size: 13px; font-weight: 500; color: var(--c-accent); margin-bottom: 8px; }
+  h1 { font-family: var(--font-display); font-size: 30px; font-weight: 400; margin-bottom: 8px; }
+  .updated { font-size: 12.5px; color: var(--c-hint); margin-bottom: 32px; }
+  h2 { font-family: var(--font-display); font-size: 19px; font-weight: 400; margin: 32px 0 10px; scroll-margin-top: 80px; }
+  p { color: var(--c-text); margin-bottom: 12px; line-height: 1.75; font-size: 14.5px; }
+  ul { margin: 0 0 14px 20px; }
+  li { font-size: 14.5px; line-height: 1.7; margin-bottom: 4px; }
+  strong { font-weight: 600; }
+
+  .note-box { background: var(--c-accent-light); border-radius: var(--radius-md); padding: 14px 18px; font-size: 13.5px; margin: 16px 0; }
+  .warn-box { background: #FEF6E4; border-radius: var(--radius-md); padding: 14px 18px; font-size: 13.5px; margin: 16px 0; border-left: 3px solid var(--c-accent); }
+
+  footer { background: var(--c-text); color: rgba(255,255,255,0.6); padding: 40px 24px 28px; margin-top: 40px; }
+  .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+  .footer-copy { font-size: 12px; }
+  .footer-links a { font-size: 12px; color: rgba(255,255,255,0.5); text-decoration: none; margin-left: 16px; }
+  .footer-links a:hover { color: #fff; }
+
+  [data-en] { display: none; }
+  body.en [data-es] { display: none; }
+  body.en [data-en] { display: revert; }
+
+  @media (max-width: 720px) {
+    .legal-wrap { grid-template-columns: 1fr; }
+    .toc { display: none; }
+    .footer-inner { flex-direction: column; align-items: flex-start; }
+    .footer-links a { margin-left: 0; margin-right: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Amigos<span>NearMe</span></a>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div class="nav-lang">
+      <button class="lang-btn active" id="btn-es" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+    <a href="register-type.html" class="btn-nav primary" data-es>Registrar Negocio</a>
+    <a href="register-type.html" class="btn-nav primary" data-en>List Your Business</a>
+  </div>
+</nav>
+
+<div class="legal-wrap">
+  <div class="toc">
+    <div class="toc-title" data-es>En esta página</div>
+    <div class="toc-title" data-en>On this page</div>
+    <a href="#acceptance" data-es>Aceptación</a><a href="#acceptance" data-en>Acceptance</a>
+    <a href="#platform-role" data-es>Nuestro rol</a><a href="#platform-role" data-en>Our role</a>
+    <a href="#businesses" data-es>Negocios y planes</a><a href="#businesses" data-en>Businesses & plans</a>
+    <a href="#staffing" data-es>Personal y mano de obra</a><a href="#staffing" data-en>Staffing & labor</a>
+    <a href="#conduct" data-es>Conducta del usuario</a><a href="#conduct" data-en>User conduct</a>
+    <a href="#liability" data-es>Limitación de responsabilidad</a><a href="#liability" data-en>Limitation of liability</a>
+    <a href="#changes" data-es>Cambios a estos términos</a><a href="#changes" data-en>Changes to these terms</a>
+  </div>
+
+  <div>
+    <div class="eyebrow" data-es>Legal</div>
+    <div class="eyebrow" data-en>Legal</div>
+    <h1 data-es>Términos de Uso</h1>
+    <h1 data-en>Terms of Use</h1>
+    <div class="updated" data-es>Última actualización: junio de 2026</div>
+    <div class="updated" data-en>Last updated: June 2026</div>
+
+    <p data-es>Estos términos rigen el uso de AmigosNearMe. Al crear una cuenta, registrar un negocio, registrarte como trabajador, o simplemente buscar en la plataforma, aceptas estos términos.</p>
+    <p data-en>These terms govern your use of AmigosNearMe. By creating an account, listing a business, registering as a worker, or simply browsing the platform, you agree to these terms.</p>
+
+    <h2 id="acceptance" data-es>1. Aceptación de los términos</h2>
+    <h2 data-en>1. Acceptance of terms</h2>
+    <p data-es>Debes tener al menos 18 años para crear una cuenta o registrar un perfil de negocio o trabajador en AmigosNearMe. Si no estás de acuerdo con estos términos, no debes usar la plataforma.</p>
+    <p data-en>You must be at least 18 years old to create an account or register a business or worker profile on AmigosNearMe. If you don't agree with these terms, you should not use the platform.</p>
+
+    <h2 id="platform-role" data-es>2. Nuestro rol como plataforma</h2>
+    <h2 data-en>2. Our role as a platform</h2>
+    <p data-es>AmigosNearMe es un directorio que conecta a clientes con negocios y trabajadores independientes en el área de Atlanta. <strong>No somos parte del acuerdo</strong> entre un cliente y un negocio o trabajador — no empleamos a los trabajadores listados, no somos dueños de los negocios listados, y no garantizamos la calidad de ningún servicio.</p>
+    <p data-en>AmigosNearMe is a directory that connects customers with independent businesses and workers in the Atlanta area. <strong>We are not a party to the agreement</strong> between a customer and a business or worker — we do not employ the workers listed, we do not own the businesses listed, and we do not guarantee the quality of any service.</p>
+    <p data-es>Cualquier trabajo, pago, garantía o disputa es exclusivamente entre el cliente y el negocio o trabajador involucrado.</p>
+    <p data-en>Any work, payment, warranty, or dispute is solely between the customer and the business or worker involved.</p>
+
+    <h2 id="businesses" data-es>3. Negocios y planes pagados</h2>
+    <h2 data-en>3. Businesses & paid plans</h2>
+    <p data-es>Los negocios pueden registrarse en un plan gratuito (Free) o en planes pagados (Basic, Premium) que ofrecen mayor visibilidad y funciones adicionales. Los precios mostrados en el momento del registro son los vigentes; podemos actualizarlos con aviso previo de 30 días.</p>
+    <p data-en>Businesses may register under a free plan (Free) or paid plans (Basic, Premium) that offer greater visibility and additional features. Prices shown at the time of registration are current; we may update them with 30 days' notice.</p>
+    <p data-es><strong>Facturación recurrente:</strong> Los planes Basic ($29/mes) y Premium ($79/mes) son suscripciones mensuales con cobro automático. El cargo se realiza el mismo día de cada mes a partir de la fecha de registro. Puedes cancelar o cambiar de plan en cualquier momento desde tu panel de control — el cambio aplica al inicio del siguiente ciclo de facturación, sin penalización por cancelación anticipada.</p>
+    <p data-en><strong>Recurring billing:</strong> The Basic ($29/mo) and Premium ($79/mo) plans are monthly subscriptions billed automatically. The charge occurs on the same day each month starting from your registration date. You may cancel or change plans at any time from your dashboard — the change takes effect at the start of the next billing cycle, with no early-cancellation fee.</p>
+    <div class="note-box">
+      <span data-es>La insignia "Verified" requiere subir documentación de negocio (como un EIN). AmigosNearMe revisa esta documentación de forma razonable, pero no puede garantizar su autenticidad al 100%.</span>
+      <span data-en>The "Verified" badge requires uploading business documentation (such as an EIN). AmigosNearMe reviews this documentation in a reasonable manner but cannot guarantee its authenticity 100%.</span>
+    </div>
+
+    <h2 id="staffing" data-es>4. Personal y mano de obra (trabajadores individuales)</h2>
+    <h2 data-en>4. Staffing & labor (individual workers)</h2>
+    <p data-es>La categoría "Personal y Mano de Obra" permite a personas individuales — sin necesidad de un negocio formal — crear un perfil gratuito para ofrecer su trabajo. Al registrarte en esta categoría:</p>
+    <p data-en>The "Staffing & Labor" category allows individuals — without needing a formal business — to create a free profile to offer their work. By registering in this category:</p>
+    <ul>
+      <li data-es>Confirmas que la información de tu perfil (experiencia, disponibilidad, número de trabajos completados) es verídica y la ingresas tú mismo bajo tu propia responsabilidad.</li>
+      <li data-en>You confirm that your profile information (experience, availability, number of jobs completed) is truthful and entered by you under your own responsibility.</li>
+      <li data-es>Entiendes que tu número de "trabajos completados" es auto-reportado y se muestra como tal a los negocios que vean tu perfil.</li>
+      <li data-en>You understand that your "jobs completed" number is self-reported and shown as such to businesses viewing your profile.</li>
+      <li data-es>Entiendes que cualquier arreglo de trabajo, pago, horario o condición laboral se negocia directamente entre tú y el negocio que te contacta — AmigosNearMe no participa en esa negociación ni actúa como tu empleador.</li>
+      <li data-en>You understand that any work arrangement, payment, schedule, or working condition is negotiated directly between you and the business contacting you — AmigosNearMe does not participate in that negotiation or act as your employer.</li>
+    </ul>
+    <div class="warn-box">
+      <span data-es><strong>Nota:</strong> AmigosNearMe no procesa pagos entre trabajadores y negocios en este momento. Cualquier compensación se acuerda y se realiza directamente entre las partes.</span>
+      <span data-en><strong>Note:</strong> AmigosNearMe does not process payments between workers and businesses at this time. Any compensation is agreed upon and handled directly between the parties.</span>
+    </div>
+
+    <h2 id="conduct" data-es>5. Conducta del usuario</h2>
+    <h2 data-en>5. User conduct</h2>
+    <p data-es>No está permitido: publicar información falsa, suplantar a otra persona o negocio, usar la plataforma para fines ilegales, o enviar contenido de odio, acoso o spam a través de las solicitudes de contacto. Nos reservamos el derecho de suspender cuentas que violen estas reglas.</p>
+    <p data-en>Not permitted: posting false information, impersonating another person or business, using the platform for unlawful purposes, or sending hateful, harassing, or spam content through contact requests. We reserve the right to suspend accounts that violate these rules.</p>
+
+    <h2 id="liability" data-es>6. Limitación de responsabilidad</h2>
+    <h2 data-en>6. Limitation of liability</h2>
+    <p data-es>AmigosNearMe se ofrece "tal cual". No garantizamos que la plataforma esté libre de errores en todo momento. En la máxima medida permitida por la ley, no somos responsables de daños indirectos derivados del uso de la plataforma o de cualquier servicio contratado a través de ella.</p>
+    <p data-en>AmigosNearMe is provided "as is." We do not guarantee the platform will be error-free at all times. To the maximum extent permitted by law, we are not liable for indirect damages arising from use of the platform or any service hired through it.</p>
+
+    <h2 id="changes" data-es>7. Cambios a estos términos</h2>
+    <h2 data-en>7. Changes to these terms</h2>
+    <p data-es>Podemos actualizar estos términos ocasionalmente. Si los cambios son significativos, te avisaremos por correo electrónico o mediante un aviso en la plataforma. El uso continuo de AmigosNearMe después de un cambio implica tu aceptación.</p>
+    <p data-en>We may update these terms occasionally. If changes are significant, we'll notify you by email or via a notice on the platform. Continued use of AmigosNearMe after a change means you accept it.</p>
+    <p data-es>Para preguntas sobre estos términos, visita nuestra <a href="contact.html" style="color:var(--c-accent)">página de contacto</a>.</p>
+    <p data-en>For questions about these terms, visit our <a href="contact.html" style="color:var(--c-accent)">contact page</a>.</p>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <span class="footer-copy">© 2026 AmigosNearMe · Atlanta, Georgia</span>
+    <div class="footer-links">
+      <a href="about.html" data-es>Acerca de</a><a href="about.html" data-en>About</a>
+      <a href="contact.html" data-es>Contacto</a><a href="contact.html" data-en>Contact</a>
+      <a href="privacy.html" data-es>Privacidad</a><a href="privacy.html" data-en>Privacy</a>
+      <a href="terms.html" data-es>Términos</a><a href="terms.html" data-en>Terms</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+function setLang(lang) {
+  document.body.classList.toggle('en', lang === 'en');
+  document.getElementById('btn-es').classList.toggle('active', lang !== 'en');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  try { localStorage.setItem('anm-lang', lang); } catch(e) {}
+}
+document.addEventListener('DOMContentLoaded', function() {
+  var saved = ''; try { saved = localStorage.getItem('anm-lang'); } catch(e) {}
+  var browser = (navigator.language || 'es').toLowerCase();
+  setLang(saved || (browser.startsWith('en') ? 'en' : 'es'));
+});
+</script>
+
+</body>
+</html>

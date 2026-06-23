@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us — AmigosNearMe</title>
+<meta name="description" content="Get in touch with the AmigosNearMe team — questions, support, or partnership inquiries.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display:ital@0;1&display=swap');
+
+  :root {
+    --c-bg: #FAFAF7; --c-surface: #FFFFFF; --c-border: rgba(0,0,0,0.09);
+    --c-text: #1A1A18; --c-muted: #6B6B66; --c-hint: #A8A8A2;
+    --c-accent: #C94F2B; --c-accent-light: #FAF0EC; --c-accent-dark: #9C3A1E;
+    --c-green: #1D9E75; --c-green-light: #EBF8F3;
+    --c-amber: #BA7517; --c-amber-light: #FEF6E4;
+    --c-blue: #185FA5; --c-blue-light: #EEF4FB;
+    --radius-sm: 8px; --radius-md: 12px; --radius-lg: 18px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.05);
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-body); background: var(--c-bg); color: var(--c-text); font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+  nav { position: sticky; top: 0; z-index: 100; background: rgba(250,250,247,0.92); backdrop-filter: blur(12px); border-bottom: 0.5px solid var(--c-border); padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+  .nav-logo { font-family: var(--font-display); font-size: 20px; color: var(--c-text); text-decoration: none; }
+  .nav-logo span { color: var(--c-accent); }
+  .nav-lang { display: flex; gap: 4px; }
+  .lang-btn { padding: 5px 10px; border-radius: var(--radius-sm); border: 0.5px solid var(--c-border); background: var(--c-surface); font-size: 12px; font-weight: 500; color: var(--c-muted); cursor: pointer; font-family: var(--font-body); }
+  .lang-btn.active { background: var(--c-text); color: #fff; border-color: var(--c-text); }
+  .nav-links { display: flex; gap: 18px; margin: 0 18px; }
+  .nav-links a { font-size: 13.5px; color: var(--c-muted); text-decoration: none; font-weight: 500; }
+  .btn-nav { padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13.5px; font-weight: 500; text-decoration: none; }
+  .btn-nav.primary { background: var(--c-accent); color: #fff; }
+
+  .page-wrap { max-width: 960px; margin: 0 auto; padding: 56px 24px 80px; }
+  .eyebrow { font-size: 13px; font-weight: 500; color: var(--c-accent); margin-bottom: 10px; }
+  h1 { font-family: var(--font-display); font-size: 36px; font-weight: 400; line-height: 1.2; margin-bottom: 14px; }
+  .lede { font-size: 16px; color: var(--c-muted); max-width: 540px; margin-bottom: 44px; }
+
+  .contact-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 36px; align-items: start; }
+
+  .channel-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 32px; }
+  .channel-card { display: flex; gap: 14px; align-items: flex-start; background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius-md); padding: 18px; }
+  .channel-icon { font-size: 20px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: var(--c-accent-light); border-radius: var(--radius-sm); flex-shrink: 0; }
+  .channel-title { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+  .channel-desc { font-size: 13px; color: var(--c-muted); }
+  .channel-val { font-size: 13.5px; color: var(--c-accent); text-decoration: none; font-weight: 500; }
+
+  .faq-note { background: var(--c-accent-light); border-radius: var(--radius-md); padding: 16px 18px; font-size: 13px; color: var(--c-text); line-height: 1.6; }
+  .faq-note a { color: var(--c-accent-dark); font-weight: 500; }
+
+  .form-card { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius-lg); padding: 28px; }
+  .form-field { margin-bottom: 16px; }
+  .form-label { font-size: 13px; font-weight: 500; color: var(--c-muted); margin-bottom: 5px; display: block; }
+  .form-input, .form-select, textarea { width: 100%; padding: 10px 13px; border-radius: var(--radius-sm); border: 0.5px solid var(--c-border); background: var(--c-bg); font-size: 14px; color: var(--c-text); font-family: var(--font-body); }
+  textarea { resize: vertical; min-height: 100px; }
+  .btn-submit { width: 100%; padding: 12px; border-radius: var(--radius-sm); border: none; background: var(--c-accent); color: #fff; font-size: 14.5px; font-weight: 500; cursor: pointer; font-family: var(--font-body); margin-top: 6px; }
+  .btn-submit:hover { background: var(--c-accent-dark); }
+  .form-success { display: none; background: var(--c-green-light); color: var(--c-green); border-radius: var(--radius-sm); padding: 14px; font-size: 13.5px; margin-top: 14px; text-align: center; }
+  .form-success.show { display: block; }
+  .form-note { font-size: 11.5px; color: var(--c-hint); margin-top: 10px; text-align: center; }
+
+  footer { background: var(--c-text); color: rgba(255,255,255,0.6); padding: 40px 24px 28px; margin-top: 60px; }
+  .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+  .footer-copy { font-size: 12px; }
+  .footer-links a { font-size: 12px; color: rgba(255,255,255,0.5); text-decoration: none; margin-left: 16px; }
+  .footer-links a:hover { color: #fff; }
+
+  [data-en] { display: none; }
+  body.en [data-es] { display: none; }
+  body.en [data-en] { display: revert; }
+
+  @media (max-width: 760px) {
+    .contact-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 28px; }
+    .nav-links { display: none; }
+    .footer-inner { flex-direction: column; align-items: flex-start; }
+    .footer-links a { margin-left: 0; margin-right: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Amigos<span>NearMe</span></a>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div class="nav-lang">
+      <button class="lang-btn active" id="btn-es" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+    <div class="nav-links">
+      <a href="search.html" data-es>Buscar Negocios</a><a href="search.html" data-en>Find Businesses</a>
+    </div>
+    <a href="login.html" class="btn-nav" style="font-size:13px;color:var(--c-muted)" data-es>Iniciar sesión</a>
+    <a href="login.html" class="btn-nav" style="font-size:13px;color:var(--c-muted)" data-en>Log in</a>
+    <a href="register-type.html" class="btn-nav primary" data-es>Registrar Negocio</a>
+    <a href="register-type.html" class="btn-nav primary" data-en>List Your Business</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="eyebrow" data-es>Contáctanos</div>
+  <div class="eyebrow" data-en>Get in touch</div>
+  <h1 data-es>¿En qué te podemos ayudar?</h1>
+  <h1 data-en>How can we help?</h1>
+  <p class="lede" data-es>Ya seas cliente, dueño de negocio, o quieras registrarte como trabajador, aquí puedes contactarnos directamente.</p>
+  <p class="lede" data-en>Whether you're a customer, a business owner, or want to register as a worker, you can reach us directly here.</p>
+
+  <div class="contact-grid">
+    <div>
+      <div class="channel-list">
+        <div class="channel-card">
+          <div class="channel-icon">📧</div>
+          <div>
+            <div class="channel-title" data-es>Correo electrónico</div>
+            <div class="channel-title" data-en>Email</div>
+            <div class="channel-desc" data-es>Respondemos en menos de 24 horas, lunes a sábado.</div>
+            <div class="channel-desc" data-en>We reply within 24 hours, Monday through Saturday.</div>
+            <a href="mailto:hola@amigosnearme.com" class="channel-val">hola@amigosnearme.com</a>
+          </div>
+        </div>
+        <div class="channel-card">
+          <div class="channel-icon">💬</div>
+          <div>
+            <div class="channel-title">WhatsApp</div>
+            <div class="channel-desc" data-es>Para preguntas rápidas sobre tu perfil o una solicitud.</div>
+            <div class="channel-desc" data-en>For quick questions about your profile or a request.</div>
+            <a href="https://wa.me/17865550100" class="channel-val">+1 (786) 555-0100</a>
+          </div>
+        </div>
+        <div class="channel-card">
+          <div class="channel-icon">🏢</div>
+          <div>
+            <div class="channel-title" data-es>¿Eres negocio o trabajador?</div>
+            <div class="channel-title" data-en>Are you a business or worker?</div>
+            <div class="channel-desc" data-es>Gestiona tu perfil directamente desde tu panel.</div>
+            <div class="channel-desc" data-en>Manage your profile directly from your dashboard.</div>
+            <a href="login.html" class="channel-val" data-es>Ir al panel →</a>
+            <a href="login.html" class="channel-val" data-en>Go to dashboard →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-note">
+        <span data-es>¿Buscas información sobre cómo manejamos tus datos? Consulta nuestra <a href="privacy.html">Política de Privacidad</a> o nuestros <a href="terms.html">Términos de Uso</a>.</span>
+        <span data-en>Looking for info on how we handle your data? Check our <a href="privacy.html">Privacy Policy</a> or <a href="terms.html">Terms of Use</a>.</span>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-field">
+        <label class="form-label" data-es>Tu nombre</label>
+        <label class="form-label" data-en>Your name</label>
+        <input class="form-input" type="text" id="f-name" placeholder="Maria G.">
+      </div>
+      <div class="form-field">
+        <label class="form-label" data-es>Correo electrónico</label>
+        <label class="form-label" data-en>Email</label>
+        <input class="form-input" type="email" id="f-email" placeholder="tu@correo.com">
+      </div>
+      <div class="form-field">
+        <label class="form-label" data-es>Asunto</label>
+        <label class="form-label" data-en>Subject</label>
+        <select class="form-select" id="f-subject">
+          <option value="general" data-es="Pregunta general" data-en="General question">Pregunta general</option>
+          <option value="business" data-es="Soy un negocio registrado" data-en="I'm a registered business">Soy un negocio registrado</option>
+          <option value="worker" data-es="Soy trabajador registrado" data-en="I'm a registered worker">Soy trabajador registrado</option>
+          <option value="report" data-es="Quiero reportar un problema" data-en="I want to report an issue">Quiero reportar un problema</option>
+          <option value="partner" data-es="Propuesta de colaboración" data-en="Partnership inquiry">Propuesta de colaboración</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label" data-es>Mensaje</label>
+        <label class="form-label" data-en>Message</label>
+        <textarea id="f-message" placeholder="..."></textarea>
+      </div>
+      <button class="btn-submit" onclick="submitContactForm()" data-es>Enviar mensaje</button>
+      <button class="btn-submit" onclick="submitContactForm()" data-en>Send message</button>
+      <div class="form-success" id="form-success">
+        <span data-es>✓ Mensaje recibido. Te responderemos pronto por correo.</span>
+        <span data-en>✓ Message received. We'll reply by email soon.</span>
+      </div>
+      <div class="form-note" data-es>Al enviar, aceptas nuestra Política de Privacidad.</div>
+      <div class="form-note" data-en>By submitting, you agree to our Privacy Policy.</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <span class="footer-copy">© 2026 AmigosNearMe · Atlanta, Georgia</span>
+    <div class="footer-links">
+      <a href="about.html" data-es>Acerca de</a><a href="about.html" data-en>About</a>
+      <a href="contact.html" data-es>Contacto</a><a href="contact.html" data-en>Contact</a>
+      <a href="privacy.html" data-es>Privacidad</a><a href="privacy.html" data-en>Privacy</a>
+      <a href="terms.html" data-es>Términos</a><a href="terms.html" data-en>Terms</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+function setLang(lang) {
+  document.body.classList.toggle('en', lang === 'en');
+  document.getElementById('btn-es').classList.toggle('active', lang !== 'en');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  try { localStorage.setItem('anm-lang', lang); } catch(e) {}
+  // Re-apply select option text for the new language
+  document.querySelectorAll('#f-subject option').forEach(function(opt){
+    opt.textContent = lang === 'en' ? opt.getAttribute('data-en') : opt.getAttribute('data-es');
+  });
+}
+document.addEventListener('DOMContentLoaded', function() {
+  var saved = ''; try { saved = localStorage.getItem('anm-lang'); } catch(e) {}
+  var browser = (navigator.language || 'es').toLowerCase();
+  setLang(saved || (browser.startsWith('en') ? 'en' : 'es'));
+});
+
+// NOTE: This form is front-end only — no backend exists yet to actually deliver
+// the message. See the project's backend roadmap (database + notifications) for
+// when this becomes a real submission instead of a simulated confirmation.
+function submitContactForm() {
+  var name = document.getElementById('f-name').value.trim();
+  var email = document.getElementById('f-email').value.trim();
+  var message = document.getElementById('f-message').value.trim();
+  if (!name || !email || !message) {
+    var isEn = document.body.classList.contains('en');
+    alert(isEn ? 'Please fill in your name, email, and message.' : 'Por favor completa tu nombre, correo y mensaje.');
+    return;
+  }
+  document.getElementById('form-success').classList.add('show');
+}
+</script>
+
+</body>
+</html>

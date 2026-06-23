@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AmigosNearMe — Latin Businesses Near You</title>
+<meta name="description" content="Find trusted, verified Latin-owned businesses in Atlanta, Georgia. Landscaping, cleaning, construction, and more — in English & Español.">
+<meta property="og:title" content="AmigosNearMe — Latin Businesses Near You">
+<meta property="og:description" content="Verified Hispanic-owned businesses in Georgia — quality work at fair, honest prices.">
+<meta property="og:url" content="https://www.amigosnearme.com">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display:ital@0;1&display=swap');
+
+  :root {
+    --c-bg: #FAFAF7;
+    --c-surface: #FFFFFF;
+    --c-border: rgba(0,0,0,0.09);
+    --c-text: #1A1A18;
+    --c-muted: #6B6B66;
+    --c-hint: #A8A8A2;
+    --c-accent: #C94F2B;
+    --c-accent-light: #FAF0EC;
+    --c-accent-dark: #9C3A1E;
+    --c-green: #1D9E75;
+    --c-green-light: #EBF8F3;
+    --c-amber: #BA7517;
+    --c-amber-light: #FEF6E4;
+    --c-blue: #185FA5;
+    --c-blue-light: #EEF4FB;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --radius-xl: 24px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.05);
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--c-bg);
+    color: var(--c-text);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(250,250,247,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 0.5px solid var(--c-border);
+    padding: 0 24px;
+    height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--c-text);
+    text-decoration: none;
+    letter-spacing: -0.3px;
+  }
+  .nav-logo span { color: var(--c-accent); }
+  .nav-links { display: flex; align-items: center; gap: 8px; }
+  .nav-links a {
+    font-size: 14px; color: var(--c-muted);
+    text-decoration: none; padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    transition: background 0.15s, color 0.15s;
+  }
+  .nav-links a:hover { background: var(--c-border); color: var(--c-text); }
+  .btn-nav {
+    font-size: 13px; font-weight: 500;
+    padding: 7px 16px; border-radius: var(--radius-sm);
+    text-decoration: none; cursor: pointer;
+    border: 0.5px solid var(--c-border);
+    background: var(--c-surface); color: var(--c-text);
+    transition: background 0.15s;
+  }
+  .btn-nav:hover { background: var(--c-bg); }
+  .btn-nav.primary {
+    background: var(--c-accent); color: #fff; border-color: var(--c-accent);
+  }
+  .btn-nav.primary:hover { background: var(--c-accent-dark); }
+  .nav-lang {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 12px; color: var(--c-muted);
+    margin-right: 8px;
+  }
+  .lang-btn {
+    padding: 3px 8px; border-radius: 99px; font-size: 12px; cursor: pointer;
+    border: 0.5px solid var(--c-border); background: transparent;
+    color: var(--c-muted); transition: all 0.15s; font-family: var(--font-body);
+  }
+  .lang-btn.active {
+    background: var(--c-accent-light); color: var(--c-accent);
+    border-color: var(--c-accent);
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 80px 24px 72px;
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 500; color: var(--c-accent);
+    background: var(--c-accent-light); padding: 4px 12px;
+    border-radius: 99px; margin-bottom: 20px;
+    border: 0.5px solid rgba(201,79,43,0.2);
+  }
+  .hero-eyebrow::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--c-accent); display: inline-block; }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 5vw, 52px);
+    line-height: 1.1; letter-spacing: -0.5px;
+    color: var(--c-text); margin-bottom: 20px;
+  }
+  .hero h1 em { font-style: italic; color: var(--c-accent); }
+  .hero-sub {
+    font-size: 17px; color: var(--c-muted); line-height: 1.6;
+    margin-bottom: 32px; max-width: 440px;
+  }
+  .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn-primary {
+    padding: 13px 28px; border-radius: var(--radius-md);
+    background: var(--c-accent); color: #fff;
+    font-size: 15px; font-weight: 500; text-decoration: none;
+    border: none; cursor: pointer; font-family: var(--font-body);
+    transition: background 0.15s, transform 0.1s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary:hover { background: var(--c-accent-dark); transform: translateY(-1px); }
+  .btn-secondary {
+    padding: 13px 28px; border-radius: var(--radius-md);
+    background: var(--c-surface); color: var(--c-text);
+    font-size: 15px; font-weight: 500; text-decoration: none;
+    border: 0.5px solid var(--c-border); cursor: pointer;
+    font-family: var(--font-body); transition: background 0.15s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-secondary:hover { background: var(--c-bg); }
+  .hero-stats {
+    display: flex; gap: 28px; margin-top: 36px;
+    padding-top: 28px; border-top: 0.5px solid var(--c-border);
+  }
+  .hero-stat-num {
+    font-family: var(--font-display); font-size: 28px; color: var(--c-text);
+  }
+  .hero-stat-label { font-size: 12px; color: var(--c-muted); margin-top: 1px; }
+
+  /* Hero right — search card */
+  .hero-card {
+    background: var(--c-surface);
+    border: 0.5px solid var(--c-border);
+    border-radius: var(--radius-xl);
+    padding: 28px;
+    box-shadow: var(--shadow);
+  }
+  .hero-card-title {
+    font-size: 14px; font-weight: 500; color: var(--c-muted);
+    margin-bottom: 16px;
+  }
+  .search-wrap {
+    display: flex; gap: 8px; margin-bottom: 14px;
+  }
+  .search-input {
+    flex: 1; padding: 11px 14px; border-radius: var(--radius-sm);
+    border: 0.5px solid var(--c-border); background: var(--c-bg);
+    font-size: 14px; color: var(--c-text); font-family: var(--font-body);
+    outline: none; transition: border-color 0.15s;
+  }
+  .search-input:focus { border-color: var(--c-accent); }
+  .search-btn {
+    padding: 11px 18px; border-radius: var(--radius-sm);
+    background: var(--c-accent); color: #fff; border: none; cursor: pointer;
+    font-size: 14px; font-weight: 500; font-family: var(--font-body);
+    white-space: nowrap; transition: background 0.15s;
+  }
+  .search-btn:hover { background: var(--c-accent-dark); }
+  .category-chips {
+    display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 20px;
+  }
+  .chip {
+    padding: 6px 13px; border-radius: 99px; font-size: 13px;
+    border: 0.5px solid var(--c-border); background: var(--c-bg);
+    color: var(--c-muted); cursor: pointer; transition: all 0.15s;
+    font-family: var(--font-body);
+  }
+  .chip:hover, .chip.active {
+    background: var(--c-accent-light); color: var(--c-accent);
+    border-color: rgba(201,79,43,0.3);
+  }
+  .featured-biz {
+    border-top: 0.5px solid var(--c-border); padding-top: 16px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .featured-label { font-size: 11px; font-weight: 500; color: var(--c-hint); letter-spacing: .05em; text-transform: uppercase; }
+  .biz-mini-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: var(--radius-md);
+    border: 0.5px solid var(--c-border); background: var(--c-bg);
+    cursor: pointer; transition: background 0.15s;
+    text-decoration: none; color: inherit;
+  }
+  .biz-mini-item:hover { background: var(--c-surface); }
+  .biz-mini-avatar {
+    width: 38px; height: 38px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; flex-shrink: 0;
+  }
+  .av-coral { background: #FAF0EC; color: var(--c-accent); }
+  .av-teal  { background: var(--c-green-light); color: var(--c-green); }
+  .av-blue  { background: var(--c-blue-light); color: var(--c-blue); }
+  .biz-mini-name { font-size: 13px; font-weight: 500; color: var(--c-text); }
+  .biz-mini-cat  { font-size: 12px; color: var(--c-muted); }
+  .biz-mini-badge {
+    margin-left: auto; font-size: 11px; padding: 2px 8px;
+    border-radius: 99px; background: var(--c-green-light); color: var(--c-green);
+    font-weight: 500; white-space: nowrap;
+  }
+
+  /* ── SECTION WRAPPER ── */
+  .section { padding: 72px 24px; }
+  .section-inner { max-width: 1100px; margin: 0 auto; }
+  .section-eyebrow {
+    font-size: 12px; font-weight: 500; color: var(--c-accent);
+    letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 3.5vw, 40px);
+    line-height: 1.15; letter-spacing: -0.3px; margin-bottom: 14px;
+  }
+  .section-sub { font-size: 16px; color: var(--c-muted); max-width: 540px; line-height: 1.6; }
+
+  /* ── CATEGORIES ── */
+  .categories-section { background: var(--c-surface); border-top: 0.5px solid var(--c-border); border-bottom: 0.5px solid var(--c-border); }
+  .cat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 40px; }
+  .cat-card {
+    padding: 22px 18px; border-radius: var(--radius-lg);
+    border: 0.5px solid var(--c-border); background: var(--c-bg);
+    cursor: pointer; transition: all 0.15s; text-align: center;
+    text-decoration: none; color: inherit;
+  }
+  .cat-card:hover { background: var(--c-surface); border-color: rgba(201,79,43,0.3); transform: translateY(-2px); box-shadow: var(--shadow); }
+  .cat-icon { font-size: 28px; margin-bottom: 10px; }
+  .cat-name { font-size: 14px; font-weight: 500; color: var(--c-text); margin-bottom: 3px; }
+  .cat-count { font-size: 12px; color: var(--c-muted); }
+
+  /* ── HOW IT WORKS ── */
+  .how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; }
+  .how-card {
+    padding: 28px 24px; border-radius: var(--radius-lg);
+    border: 0.5px solid var(--c-border); background: var(--c-surface);
+  }
+  .how-num {
+    font-family: var(--font-display); font-size: 36px; color: var(--c-accent);
+    opacity: 0.3; line-height: 1; margin-bottom: 16px;
+  }
+  .how-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+  .how-desc { font-size: 14px; color: var(--c-muted); line-height: 1.6; }
+
+  /* ── TRUST ── */
+  .trust-section { background: var(--c-text); color: #fff; }
+  .trust-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: 48px; }
+  .trust-item {
+    padding: 32px 28px;
+    background: rgba(255,255,255,0.04);
+    border: 0.5px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius-lg);
+  }
+  .trust-icon { font-size: 24px; margin-bottom: 14px; }
+  .trust-title { font-size: 15px; font-weight: 500; margin-bottom: 8px; }
+  .trust-desc { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+
+  /* ── CTA BAND ── */
+  .cta-band {
+    background: var(--c-accent-light);
+    border-top: 0.5px solid rgba(201,79,43,0.15);
+    border-bottom: 0.5px solid rgba(201,79,43,0.15);
+  }
+  .cta-inner {
+    max-width: 1100px; margin: 0 auto; padding: 64px 24px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center;
+  }
+  .cta-title {
+    font-family: var(--font-display);
+    font-size: clamp(26px, 3vw, 36px); line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  .cta-sub { font-size: 15px; color: var(--c-muted); line-height: 1.6; }
+  .cta-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--c-text); color: rgba(255,255,255,0.6);
+    padding: 48px 24px 32px;
+  }
+  .footer-inner { max-width: 1100px; margin: 0 auto; }
+  .footer-top {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px;
+    padding-bottom: 36px; border-bottom: 0.5px solid rgba(255,255,255,0.1);
+    margin-bottom: 28px;
+  }
+  .footer-logo {
+    font-family: var(--font-display); font-size: 20px;
+    color: #fff; margin-bottom: 10px; display: block;
+  }
+  .footer-logo span { color: var(--c-accent); }
+  .footer-tagline { font-size: 13px; line-height: 1.6; margin-bottom: 16px; }
+  .footer-col-title { font-size: 12px; font-weight: 600; color: #fff; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 14px; }
+  .footer-links { display: flex; flex-direction: column; gap: 8px; }
+  .footer-links a { font-size: 13px; color: rgba(255,255,255,0.55); text-decoration: none; transition: color 0.15s; }
+  .footer-links a:hover { color: #fff; }
+  .footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+  .footer-copy { font-size: 12px; }
+  .footer-lang { display: flex; gap: 8px; }
+  .footer-lang a { font-size: 12px; color: rgba(255,255,255,0.4); text-decoration: none; }
+  .footer-lang a:hover { color: rgba(255,255,255,0.8); }
+
+  /* ── LANG SWITCH ── */
+  [data-en] { display: none; }
+  body.en [data-es] { display: none; }
+  body.en [data-en] { display: revert; }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    .hero { grid-template-columns: 1fr; gap: 32px; padding: 36px 20px 48px; }
+    .hero-card { display: none; }
+    .hero-title { font-size: 32px; }
+    .hero-sub { font-size: 15px; }
+    .hero-actions { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .hero-actions a { width: 100%; text-align: center; }
+    .how-grid { grid-template-columns: 1fr; }
+    .trust-grid { grid-template-columns: 1fr; }
+    .cta-inner { grid-template-columns: 1fr; }
+    .cta-actions { justify-content: flex-start; flex-direction: column; }
+    .cta-actions a { width: 100%; text-align: center; }
+    .footer-top { grid-template-columns: 1fr 1fr; }
+    nav { padding: 0 16px; }
+    .nav-links { display: none; }
+    .btn-nav.primary { font-size: 12px; padding: 7px 12px; }
+    /* Category grid — 2 columns on mobile */
+    .cat-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+    .cat-card { padding: 16px 12px !important; }
+    /* Section headings */
+    .section-title { font-size: 22px !important; }
+    /* Business cards — single column */
+    .biz-grid { grid-template-columns: 1fr !important; }
+  }
+  @media (max-width: 380px) {
+    .cat-grid { grid-template-columns: 1fr 1fr !important; }
+    .hero-title { font-size: 26px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; transform: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">Amigos<span>NearMe</span></a>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div class="nav-lang">
+      <button class="lang-btn active" id="btn-es" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+    <div class="nav-links">
+      <a href="search.html" id="nav-search" data-es>Buscar Negocios</a>
+      <a href="search.html" id="nav-search-en" data-en>Find Businesses</a>
+    </div>
+    <a href="login.html" class="btn-nav" style="font-size:13px;color:var(--c-muted)" data-es>Iniciar sesión</a>
+    <a href="login.html" class="btn-nav" style="font-size:13px;color:var(--c-muted)" data-en>Log in</a>
+    <a href="register-type.html" class="btn-nav primary" id="nav-cta" data-es>Registrar Negocio</a>
+    <a href="register-type.html" class="btn-nav primary" id="nav-cta-en" data-en>List Your Business</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section style="background: var(--c-surface);">
+  <div class="hero">
+    <div>
+      <div class="hero-eyebrow" data-es>Atlanta, Georgia · Negocios latinos · Verificados · Precio justo</div>
+      <div class="hero-eyebrow" data-en>Atlanta, Georgia · Hispanic-owned · Verified · Fair Priced</div>
+      <h1 data-es>Negocios latinos verificados. <em>Precio justo, vecinos de confianza.</em></h1>
+      <h1 data-en>Hispanic-owned businesses. <em>Fair prices, trusted neighbors.</em></h1>
+      <p class="hero-sub" data-es>Descubre negocios latinos verificados en Atlanta — trabajo de calidad a precios justos y honestos.</p>
+      <p class="hero-sub" data-en>Discover verified Hispanic-owned businesses in Atlanta — quality work at fair, honest prices.</p>
+      <div class="hero-actions">
+        <a href="search.html" class="btn-primary" data-es>Buscar Negocios →</a>
+        <a href="search.html" class="btn-primary" data-en>Find Businesses →</a>
+        <a href="register-type.html" class="btn-secondary" data-es>Registrar mi Negocio</a>
+        <a href="register-type.html" class="btn-secondary" data-en>List My Business</a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-num">175+</div>
+          <div class="hero-stat-label" data-es>Negocios verificados</div>
+          <div class="hero-stat-label" data-en>Verified businesses</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">13</div>
+          <div class="hero-stat-label" data-es>Categorías de servicio</div>
+          <div class="hero-stat-label" data-en>Service categories</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">4.8★</div>
+          <div class="hero-stat-label" data-es>Calificación promedio</div>
+          <div class="hero-stat-label" data-en>Average rating</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search card -->
+    <div class="hero-card">
+      <p class="hero-card-title" data-es>¿Qué servicio necesitas?</p>
+      <p class="hero-card-title" data-en>What service do you need?</p>
+      <div class="search-wrap">
+        <input class="search-input" id="hero-search" type="text"
+          placeholder="Landscaping, cleaning, construction..."
+          onkeydown="if(event.key==='Enter') doSearch()">
+        <button class="search-btn" onclick="doSearch()" data-es>Buscar</button>
+        <button class="search-btn" onclick="doSearch()" data-en>Search</button>
+      </div>
+      <div class="category-chips">
+        <span class="chip" onclick="setSearch('Landscaping')">🌿 Landscaping</span>
+        <span class="chip" onclick="setSearch('Cleaning')">🧹 Cleaning</span>
+        <span class="chip" onclick="setSearch('Construction')">🏗️ Construction</span>
+        <span class="chip" onclick="setSearch('Moving')">📦 Moving</span>
+        <span class="chip" onclick="setSearch('Food')">🍽️ Food</span>
+      </div>
+      <div class="featured-biz">
+        <div class="featured-label" data-es>Negocios destacados</div>
+        <div class="featured-label" data-en>Featured businesses</div>
+        <a href="profile.html" class="biz-mini-item">
+          <div class="biz-mini-avatar av-coral">GG</div>
+          <div>
+            <div class="biz-mini-name">Garcia's Garden & Landscaping</div>
+            <div class="biz-mini-cat">Landscaping · Duluth, GA</div>
+          </div>
+          <span class="biz-mini-badge">✓ Verified</span>
+        </a>
+        <a href="profile.html" class="biz-mini-item">
+          <div class="biz-mini-avatar av-teal">RM</div>
+          <div>
+            <div class="biz-mini-name">Rodriguez Cleaning Services</div>
+            <div class="biz-mini-cat">Cleaning · Norcross, GA</div>
+          </div>
+          <span class="biz-mini-badge">✓ Verified</span>
+        </a>
+        <a href="profile.html" class="biz-mini-item">
+          <div class="biz-mini-avatar av-blue">HL</div>
+          <div>
+            <div class="biz-mini-name">Hernandez Construction LLC</div>
+            <div class="biz-mini-cat">Construction · Atlanta, GA</div>
+          </div>
+          <span class="biz-mini-badge">✓ Verified</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="section categories-section">
+  <div class="section-inner">
+    <div class="section-eyebrow" data-es>Categorías</div>
+    <div class="section-eyebrow" data-en>Categories</div>
+    <h2 class="section-title" data-es>Encuentra el servicio que necesitas</h2>
+    <h2 class="section-title" data-en>Find the service you need</h2>
+    <p class="section-sub" data-es>Todos los negocios latinos son verificados, legalmente registrados y multilingües.</p>
+    <p class="section-sub" data-en>All Hispanic-owned businesses are verified, legally registered, and multilingual.</p>
+    <div class="cat-grid">
+      <a href="search.html?cat=staffing" class="cat-card">
+        <div class="cat-icon">👷</div>
+        <div class="cat-name" data-es>Personal y Mano de Obra</div>
+        <div class="cat-name" data-en>Staffing & Labor</div>
+        <div class="cat-count" data-es>3 negocios</div>
+        <div class="cat-count" data-en>3 businesses</div>
+      </a>
+      <a href="search.html?cat=landscaping" class="cat-card">
+        <div class="cat-icon">🌿</div>
+        <div class="cat-name" data-es>Landscaping</div>
+        <div class="cat-name" data-en>Landscaping</div>
+        <div class="cat-count" data-es>1 negocios</div>
+        <div class="cat-count" data-en>1 businesses</div>
+      </a>
+      <a href="search.html?cat=cleaning" class="cat-card">
+        <div class="cat-icon">🧹</div>
+        <div class="cat-name" data-es>Limpieza</div>
+        <div class="cat-name" data-en>Cleaning</div>
+        <div class="cat-count" data-es>1 negocios</div>
+        <div class="cat-count" data-en>1 businesses</div>
+      </a>
+      <a href="search.html?cat=construction" class="cat-card">
+        <div class="cat-icon">🏗️</div>
+        <div class="cat-name" data-es>Construcción</div>
+        <div class="cat-name" data-en>Construction</div>
+        <div class="cat-count" data-es>1 negocios</div>
+        <div class="cat-count" data-en>1 businesses</div>
+      </a>
+      <a href="search.html?cat=moving" class="cat-card">
+        <div class="cat-icon">📦</div>
+        <div class="cat-name" data-es>Mudanzas</div>
+        <div class="cat-name" data-en>Moving</div>
+        <div class="cat-count" data-es>0 negocios</div>
+        <div class="cat-count" data-en>0 businesses</div>
+      </a>
+      <a href="search.html?cat=food" class="cat-card">
+        <div class="cat-icon">🍽️</div>
+        <div class="cat-name" data-es>Comida & Catering</div>
+        <div class="cat-name" data-en>Food & Catering</div>
+        <div class="cat-count" data-es>0 negocios</div>
+        <div class="cat-count" data-en>0 businesses</div>
+      </a>
+      <a href="search.html?cat=auto" class="cat-card">
+        <div class="cat-icon">🚗</div>
+        <div class="cat-name" data-es>Autos</div>
+        <div class="cat-name" data-en>Auto Repair</div>
+        <div class="cat-count" data-es>0 negocios</div>
+        <div class="cat-count" data-en>0 businesses</div>
+      </a>
+      <a href="search.html?cat=translation" class="cat-card">
+        <div class="cat-icon">🗣️</div>
+        <div class="cat-name" data-es>Traducción</div>
+        <div class="cat-name" data-en>Translation</div>
+        <div class="cat-count" data-es>0 negocios</div>
+        <div class="cat-count" data-en>0 businesses</div>
+      </a>
+      <a href="search.html?cat=plumbing" class="cat-card">
+        <div class="cat-icon">🔧</div>
+        <div class="cat-name" data-es>Plomería</div>
+        <div class="cat-name" data-en>Plumbing</div>
+        <div class="cat-count" data-es>1 negocios</div>
+        <div class="cat-count" data-en>1 businesses</div>
+      </a>
+      <a href="search.html?cat=electrical" class="cat-card">
+        <div class="cat-icon">⚡</div>
+        <div class="cat-name" data-es>Electricidad</div>
+        <div class="cat-name" data-en>Electrical</div>
+        <div class="cat-count" data-es>1 negocios</div>
+        <div class="cat-count" data-en>1 businesses</div>
+      </a>
+      <a href="search.html?cat=painting" class="cat-card">
+        <div class="cat-icon">🪟</div>
+        <div class="cat-name" data-es>Pintura</div>
+        <div class="cat-name" data-en>Painting</div>
+        <div class="cat-count" data-es>1 negocios</div>
+        <div class="cat-count" data-en>1 businesses</div>
+      </a>
+      <a href="search.html?cat=tree" class="cat-card">
+        <div class="cat-icon">🌳</div>
+        <div class="cat-name" data-es>Árboles</div>
+        <div class="cat-name" data-en>Tree Removal</div>
+        <div class="cat-count" data-es>0 negocios</div>
+        <div class="cat-count" data-en>0 businesses</div>
+      </a>
+      <a href="search.html?cat=realestate" class="cat-card">
+        <div class="cat-icon">🏠</div>
+        <div class="cat-name" data-es>Agente Inmobiliario</div>
+        <div class="cat-name" data-en>Real Estate</div>
+        <div class="cat-count" data-es>0 negocios</div>
+        <div class="cat-count" data-en>0 businesses</div>
+      </a>
+      <a href="search.html" class="cat-card">
+        <div class="cat-icon">➕</div>
+        <div class="cat-name" data-es>Ver todo</div>
+        <div class="cat-name" data-en>See all</div>
+        <div class="cat-count" data-es>9 negocios</div>
+        <div class="cat-count" data-en>9 businesses</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-eyebrow" data-es>¿Cómo funciona?</div>
+    <div class="section-eyebrow" data-en>How it works</div>
+    <h2 class="section-title" data-es>Simple y rápido</h2>
+    <h2 class="section-title" data-en>Simple and fast</h2>
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="how-num">01</div>
+        <div class="how-title" data-es>Busca el servicio</div>
+        <div class="how-title" data-en>Search for a service</div>
+        <div class="how-desc" data-es>Filtra por tipo de servicio, área, y idioma. Todos los negocios están verificados y registrados legalmente.</div>
+        <div class="how-desc" data-en>Filter by service type, area, and language. All businesses are verified and legally registered.</div>
+      </div>
+      <div class="how-card">
+        <div class="how-num">02</div>
+        <div class="how-title" data-es>Contacta directo</div>
+        <div class="how-title" data-en>Contact directly</div>
+        <div class="how-desc" data-es>Envía un mensaje por WhatsApp o solicita un presupuesto gratis. Sin intermediarios.</div>
+        <div class="how-desc" data-en>Send a WhatsApp message or request a free quote. No middlemen, no fees.</div>
+      </div>
+      <div class="how-card">
+        <div class="how-num">03</div>
+        <div class="how-title" data-es>Deja tu opinión</div>
+        <div class="how-title" data-en>Leave a review</div>
+        <div class="how-desc" data-es>Ayuda a la comunidad calificando al negocio. Tus reseñas fortalecen la confianza.</div>
+        <div class="how-desc" data-en>Help the community by rating the business. Your reviews build community trust.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<section class="section trust-section">
+  <div class="section-inner">
+    <div class="section-eyebrow" style="color:rgba(255,255,255,0.5)" data-es>Por qué confiar en nosotros</div>
+    <div class="section-eyebrow" style="color:rgba(255,255,255,0.5)" data-en>Why trust us</div>
+    <h2 class="section-title" style="color:#fff" data-es>Latinos verificados. Precio justo. Vecinos de confianza.</h2>
+    <h2 class="section-title" style="color:#fff" data-en>Hispanic-owned. Fair-priced. Trusted neighbors.</h2>
+    <div class="trust-grid">
+      <div class="trust-item">
+        <div class="trust-icon">✅</div>
+        <div class="trust-title" data-es>Negocios con verificación disponible</div>
+        <div class="trust-title" data-en>Verification available</div>
+        <div class="trust-desc" data-es>Los negocios pueden verificar su identidad presentando documentos legales: licencia comercial, EIN o registro estatal. Busca el sello ✅ Verified.</div>
+        <div class="trust-desc" data-en>Businesses can verify their identity by submitting legal documents — business license, EIN, or state registration. Look for the ✅ Verified badge.</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">💬</div>
+        <div class="trust-title" data-es>En tu idioma</div>
+        <div class="trust-title" data-en>In your language</div>
+        <div class="trust-desc" data-es>Toda la plataforma está disponible en español e inglés. Busca, contacta y reseña en el idioma que prefieras.</div>
+        <div class="trust-desc" data-en>The entire platform is available in Spanish and English. Search, contact, and review in your preferred language.</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">💵</div>
+        <div class="trust-title" data-es>Precios justos y honestos</div>
+        <div class="trust-title" data-en>Fair &amp; honest pricing</div>
+        <div class="trust-desc" data-es>Negocios locales verificados que ofrecen calidad real a precios competitivos — sin sorpresas ni cobros ocultos.</div>
+        <div class="trust-desc" data-en>Verified local businesses offering real quality at competitive prices — no surprises, no hidden fees.</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">📍</div>
+        <div class="trust-title" data-es>Negocios locales de Georgia</div>
+        <div class="trust-title" data-en>Local Georgia businesses</div>
+        <div class="trust-desc" data-es>Comenzamos en Atlanta y el área de Buford Highway — negocios locales que conocen tu vecindario.</div>
+        <div class="trust-desc" data-en>We started in Atlanta and the Buford Highway area — local businesses that know your neighborhood.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section class="cta-band">
+  <div class="cta-inner">
+    <div>
+      <h2 class="cta-title" data-es>¿Tienes un negocio latino?<br>Regístralo gratis hoy.</h2>
+      <h2 class="cta-title" data-en>Own a Hispanic-owned business?<br>List it for free today.</h2>
+      <p class="cta-sub" data-es>Llega a miles de clientes en tu área. Muestra tus precios justos. Empieza gratis — sin tarjeta de crédito.</p>
+      <p class="cta-sub" data-en>Reach thousands of customers in your area. Showcase your fair pricing. Start free — no credit card required.</p>
+    </div>
+    <div class="cta-actions">
+      <a href="register-type.html" class="btn-primary" data-es>Registrar mi Negocio →</a>
+      <a href="register-type.html" class="btn-primary" data-en>List My Business →</a>
+      <a href="search.html" class="btn-secondary" data-es>Ver negocios</a>
+      <a href="search.html" class="btn-secondary" data-en>Browse businesses</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <span class="footer-logo">Amigos<span>NearMe</span></span>
+        <p class="footer-tagline" data-es>Negocios latinos verificados. Precios justos. Vecinos de confianza. Georgia.</p>
+        <p class="footer-tagline" data-en>Hispanic-owned businesses. Fair prices. Trusted neighbors. Georgia.</p>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <a href="#" style="font-size:12px;color:rgba(255,255,255,0.4);text-decoration:none">WhatsApp</a>
+          <a href="#" style="font-size:12px;color:rgba(255,255,255,0.4);text-decoration:none">Instagram</a>
+          <a href="#" style="font-size:12px;color:rgba(255,255,255,0.4);text-decoration:none">Facebook</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title" data-es>Para Clientes</div>
+        <div class="footer-col-title" data-en>For Customers</div>
+        <div class="footer-links">
+          <a href="search.html" data-es>Buscar Negocios</a>
+          <a href="search.html" data-en>Find Businesses</a>
+          <a href="search.html?cat=landscaping" data-es>Landscaping</a>
+          <a href="search.html?cat=landscaping" data-en>Landscaping</a>
+          <a href="search.html?cat=cleaning" data-es>Limpieza</a>
+          <a href="search.html?cat=cleaning" data-en>Cleaning</a>
+          <a href="search.html?cat=construction" data-es>Construcción</a>
+          <a href="search.html?cat=construction" data-en>Construction</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title" data-es>Para Negocios</div>
+        <div class="footer-col-title" data-en>For Businesses</div>
+        <div class="footer-links">
+          <a href="register-type.html" data-es>Registrar Negocio</a>
+          <a href="register-type.html" data-en>List Your Business</a>
+          <a href="register.html#pricing" data-es>Precios</a>
+          <a href="register.html#pricing" data-en>Pricing</a>
+          <a href="login.html?type=business" data-es>Acceder al Dashboard</a>
+          <a href="login.html?type=business" data-en>Owner Dashboard</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title" data-es>Compañía</div>
+        <div class="footer-col-title" data-en>Company</div>
+        <div class="footer-links">
+          <a href="about.html" data-es>Acerca de</a>
+          <a href="about.html" data-en>About Us</a>
+          <a href="contact.html" data-es>Contacto</a>
+          <a href="contact.html" data-en>Contact</a>
+          <a href="privacy.html" data-es>Privacidad</a>
+          <a href="privacy.html" data-en>Privacy Policy</a>
+          <a href="terms.html" data-es>Términos</a>
+          <a href="terms.html" data-en>Terms of Use</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 AmigosNearMe · Atlanta, Georgia</span>
+      <div class="footer-lang">
+        <a href="#" onclick="setLang('es');return false">Español</a>
+        <span style="opacity:0.3">·</span>
+        <a href="#" onclick="setLang('en');return false">English</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+function setLang(lang) {
+  document.body.classList.toggle('en', lang === 'en');
+  document.getElementById('btn-es').classList.toggle('active', lang !== 'en');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  var cta = document.getElementById('nav-cta');
+  if (cta) cta.textContent = lang === 'en' ? 'List Your Business' : 'Registrar Negocio';
+  var srch = document.getElementById('nav-search');
+  if (srch) srch.textContent = lang === 'en' ? 'Find Businesses' : 'Buscar Negocios';
+  try { localStorage.setItem('anm-lang', lang); } catch(e) {}
+}
+function setSearch(val) {
+  document.getElementById('hero-search').value = val;
+}
+function doSearch() {
+  var q = document.getElementById('hero-search').value.trim();
+  window.location.href = 'search.html' + (q ? '?q=' + encodeURIComponent(q) : '');
+}
+document.addEventListener('DOMContentLoaded', function() {
+  var saved = ''; try { saved = localStorage.getItem('anm-lang'); } catch(e) {}
+  var browser = (navigator.language || 'es').toLowerCase();
+  var lang = saved || (browser.startsWith('en') ? 'en' : 'es');
+  setLang(lang);
+});
+</script>
+</body>
+</html>
