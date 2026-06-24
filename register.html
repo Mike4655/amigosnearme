@@ -953,10 +953,10 @@ function updateProfileStepForStaffing() {
 }
 
 async function goSuccess() {
-  // 회원가입 이메일/비밀번호 수집 (Step 4 필드)
-  var emailEl = document.getElementById('reg-email');
-  var passwordEl = document.getElementById('reg-password');
-  var businessNameEl = document.getElementById('reg-biz-name') || document.getElementById('biz-name');
+  // 회원가입 이메일/비밀번호 수집 — 실제 필드 ID 사용
+  var emailEl = document.getElementById('f-account-email');
+  var passwordEl = document.getElementById('f-password');
+  var businessNameEl = document.getElementById('f-legal-name') || document.getElementById('f-trade-name');
   var isEn = document.body.classList.contains('en');
 
   if (emailEl && passwordEl) {
