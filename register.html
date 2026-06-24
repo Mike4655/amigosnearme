@@ -887,8 +887,10 @@
 
 </div>
 
-<script>
-var currentStep = 1;
+<!-- Supabase JS v2 -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
+<script>var currentStep = 1;
 var selectedPlan = 'basic';   // default selected on load (Basic card has class="selected")
 var verificationSkipped = false;
 var photoCount = 0;
@@ -950,36 +952,52 @@ function updateProfileStepForStaffing() {
   if (photosReqMark) photosReqMark.style.display = staffing ? 'none' : 'inline';
 }
 
-function goSuccess() {
-  // Save the selected plan to localStorage so dashboard.html reflects it immediately.
-  // Also save a business account record so login.html can authenticate the owner.
-  // In production this is written to the DB by the backend after account creation.
-  try {
-    localStorage.setItem('anm-sim-plan', selectedPlan || 'free');
-    // Register the business owner account so they can log in via login.html
-    var email = document.getElementById('f-account-email');
-    var password = document.getElementById('f-password');
-    var ownerName = document.getElementById('f-owner-name');
-    if (email && password && email.value && password.value) {
-      var accounts = [];
-      try { accounts = JSON.parse(localStorage.getItem('anm-accounts') || '[]'); } catch(e) {}
-      var exists = accounts.find(function(a){ return a.email === email.value.trim(); });
-      if (!exists) {
-        accounts.push({
-          name: ownerName ? ownerName.value.trim() : '',
-          email: email.value.trim(),
-          password: password.value,
-          type: 'business',
-          createdAt: Date.now()
-        });
-        localStorage.setItem('anm-accounts', JSON.stringify(accounts));
-      }
+async function goSuccess() {
+  // 회원가입 이메일/비밀번호 수집 (Step 4 필드)
+  var emailEl = document.getElementById('reg-email');
+  var passwordEl = document.getElementById('reg-password');
+  var businessNameEl = document.getElementById('reg-biz-name') || document.getElementById('biz-name');
+  var isEn = document.body.classList.contains('en');
+
+  if (emailEl && passwordEl) {
+    var email = emailEl.value.trim();
+    var password = passwordEl.value;
+    var bizName = businessNameEl ? businessNameEl.value.trim() : '';
+
+    if (!email || password.length < 8) {
+      alert(isEn ? 'Please enter a valid email and password (min 8 characters).' : 'Por favor ingresa un correo válido y contraseña (mínimo 8 caracteres).');
+      return;
     }
-  } catch(e) {}
+
+    try {
+      // Supabase 회원가입
+      await signUp({
+        email,
+        password,
+        userType: isStaffingSelected() ? 'worker' : 'business',
+        businessName: bizName
+      });
+    } catch(err) {
+      // 이미 가입된 이메일이면 로그인으로 유도
+      if (err.message && err.message.includes('already')) {
+        alert(isEn ? 'This email is already registered. Please log in.' : 'Este correo ya está registrado. Por favor inicia sesión.');
+        window.location.href = 'login.html';
+        return;
+      }
+      console.error('Signup error:', err);
+    }
+  }
+
   document.getElementById('step-4').style.display = 'none';
   document.getElementById('step-success').style.display = 'block';
   document.querySelector('.progress-bar').style.display = 'none';
   window.scrollTo({top:0, behavior:'smooth'});
+}
+
+async function simulatePlanPayment() {
+  // 결제 후 플랜 업그레이드 — 현재는 UI만 처리, Braintree 연동 시 실제 결제 추가
+  closePaymentModal();
+  await goSuccess();
 }
 
 function updateProgress(n) {
@@ -1396,15 +1414,7 @@ function openPaymentModal(plan) {
 function closePaymentModal() {
   document.getElementById('payment-modal').classList.remove('open');
 }
-function simulatePlanPayment() {
-  // FRONTEND SIMULATION: in production this calls the payment gateway with the plan's
-  // real monthly price, sets up recurring billing, and only proceeds once the charge
-  // succeeds. No real charge happens here — any card input is discarded.
-  // Save the selected plan so dashboard.html shows the correct plan status.
-  try { localStorage.setItem('anm-sim-plan', selectedPlan); } catch(e) {}
-  closePaymentModal();
-  goSuccess();
-}
+// simulatePlanPayment replaced above with async version
 
 document.addEventListener('DOMContentLoaded', function() {
   var saved = ''; try { saved = localStorage.getItem('anm-lang'); } catch(e) {}
