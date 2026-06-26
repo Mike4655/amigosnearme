@@ -1367,14 +1367,27 @@ document.addEventListener('DOMContentLoaded', async function(){
       refreshPlanUI();
 
     } else {
-      // businesses 테이블에 레코드가 없으면 — register에서 DB 저장이 안 된 케이스
-      // 기본 레코드 생성
+      // businesses 테이블에 레코드가 없으면 — metadata에서 가져와서 생성
+      const meta = user.user_metadata || {};
       const newBiz = await createBusiness({
-        businessName: user.user_metadata?.business_name || user.email.split('@')[0],
-        plan: 'free'
+        businessName: meta.business_name || user.email.split('@')[0],
+        tradeName: meta.trade_name || '',
+        plan: meta.plan || 'free'
       });
-      window._bizPlan = 'free';
+      window._bizPlan = newBiz.plan || 'free';
       window._bizId = newBiz.id;
+
+      // 프로필 폼에도 채우기
+      var f2 = function(id, val){ var el = document.getElementById(id); if(el && val) el.value = val; };
+      f2('ep-legal-name', meta.business_name);
+      f2('ep-trade-name', meta.trade_name);
+      f2('ep-phone', meta.phone);
+      f2('ep-desc', meta.description);
+
+      document.querySelectorAll('.biz-display-name').forEach(function(el){
+        el.textContent = meta.business_name || user.email.split('@')[0];
+      });
+
       refreshPlanUI();
     }
 

@@ -965,6 +965,9 @@ async function goSuccess() {
     var email = emailEl.value.trim();
     var password = passwordEl.value;
     var bizName = businessNameEl ? businessNameEl.value.trim() : '';
+    var tradeName = tradeNameEl ? tradeNameEl.value.trim() : '';
+    var phone = phoneEl ? phoneEl.value.trim() : '';
+    var desc = descEl ? descEl.value.trim() : '';
 
     if (!email || password.length < 8) {
       alert(isEn ? 'Please enter a valid email and password (min 8 characters).' : 'Por favor ingresa un correo válido y contraseña (mínimo 8 caracteres).');
@@ -972,26 +975,31 @@ async function goSuccess() {
     }
 
     try {
-      // 1. Supabase 회원가입
+      // 1. 기존 세션 로그아웃 (다른 계정으로 로그인되어 있을 수 있음)
+      try { await signOut(); } catch(e) {}
+
+      // 2. Supabase 회원가입 — 업체 정보를 metadata에 함께 저장
       var authData = await signUp({
         email,
         password,
         userType: isStaffingSelected() ? 'worker' : 'business',
-        businessName: bizName
+        businessName: bizName,
+        tradeName: tradeName,
+        phone: phone,
+        description: desc,
+        plan: selectedPlan || 'free'
       });
 
-      // 2. 로그인 후 businesses 테이블에 저장
+      // 3. 이메일 확인 없이 세션이 바로 생성된 경우 businesses 테이블에 저장
       if (authData && authData.session) {
-        // 이메일 확인 없이 바로 세션이 생성된 경우 (confirm email OFF일 때)
         try {
           await createBusiness({
             businessName: bizName,
-            tradeName: tradeNameEl ? tradeNameEl.value.trim() : '',
+            tradeName: tradeName,
             plan: selectedPlan || 'free'
           });
         } catch(dbErr) { console.error('Business record error:', dbErr); }
       }
-      // 이메일 확인이 필요한 경우 — 로그인 후 dashboard에서 자동 생성됨
 
     } catch(err) {
       if (err.message && err.message.includes('already')) {

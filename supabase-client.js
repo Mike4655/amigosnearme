@@ -19,15 +19,19 @@ function getSupabase() {
 // =============================================
 // AUTH — 회원가입
 // =============================================
-async function signUp({ email, password, userType, businessName }) {
+async function signUp({ email, password, userType, businessName, tradeName, phone, description, plan }) {
   const sb = getSupabase();
   const { data, error } = await sb.auth.signUp({
     email,
     password,
     options: {
       data: {
-        user_type: userType,       // 'business' | 'worker' | 'customer'
-        business_name: businessName || ''
+        user_type: userType,
+        business_name: businessName || '',
+        trade_name: tradeName || '',
+        phone: phone || '',
+        description: description || '',
+        plan: plan || 'free'
       }
     }
   });
