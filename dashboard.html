@@ -230,11 +230,13 @@
   </div>
   <div class="sb-biz">
     <div class="sb-avatar">GG</div>
-    <div class="sb-biz-name">Garcia's Garden & Landscaping</div>
+    <div class="sb-biz-name biz-display-name">Garcia's Garden & Landscaping</div>
     <div style="display:flex;gap:5px;margin-top:5px;flex-wrap:wrap">
       <span class="sb-badge verified">✓ Verified</span>
       <span class="sb-badge plan">⭐ Basic</span>
     </div>
+    <button onclick="doLogout()" style="margin-top:8px;background:none;border:0.5px solid rgba(255,255,255,0.15);border-radius:6px;color:rgba(255,255,255,0.5);font-size:11px;padding:4px 10px;cursor:pointer;font-family:var(--font-body)" data-es>Cerrar sesión</button>
+    <button onclick="doLogout()" style="margin-top:8px;background:none;border:0.5px solid rgba(255,255,255,0.15);border-radius:6px;color:rgba(255,255,255,0.5);font-size:11px;padding:4px 10px;cursor:pointer;font-family:var(--font-body)" data-en>Log out</button>
   </div>
   <nav class="sb-nav">
     <div class="sb-section" data-es>Principal</div>
@@ -260,6 +262,8 @@
     <a href="profile.html" data-en>👁 View public profile</a>
     <a href="index.html" data-es>← Volver a la plataforma</a>
     <a href="index.html" data-en>← Back to platform</a>
+    <a onclick="doLogout()" style="cursor:pointer;color:var(--c-muted);margin-top:4px" data-es>🚪 Cerrar sesión</a>
+    <a onclick="doLogout()" style="cursor:pointer;color:var(--c-muted);margin-top:4px" data-en>🚪 Log out</a>
   </div>
 </aside>
 
