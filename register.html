@@ -872,14 +872,16 @@
 
   <!-- ── SUCCESS ── -->
   <div id="step-success" class="success-screen">
-    <div class="success-icon">🎉</div>
-    <h2 class="success-title" data-es>¡Tu negocio fue registrado!</h2>
-    <h2 class="success-title" data-en>Your business is live!</h2>
-    <p class="success-sub" data-es>Revisaremos tus documentos en las próximas 24 horas y activaremos tu insignia Verified. Te avisaremos por correo y WhatsApp.</p>
-    <p class="success-sub" data-en>We'll review your documents within 24 hours and activate your Verified badge. We'll notify you by email and WhatsApp.</p>
+    <div class="success-icon">📧</div>
+    <h2 class="success-title" data-es>¡Casi listo! Confirma tu correo</h2>
+    <h2 class="success-title" data-en>Almost there! Confirm your email</h2>
+    <p class="success-sub" data-es>Te enviamos un enlace de confirmación a <strong id="confirm-email-display"></strong>. Haz clic en el enlace para activar tu cuenta y acceder a tu panel.</p>
+    <p class="success-sub" data-en>We sent a confirmation link to <strong id="confirm-email-display-en"></strong>. Click the link to activate your account and access your dashboard.</p>
+    <p class="success-sub" style="font-size:13px;margin-top:8px" data-es>¿No lo ves? Revisa tu carpeta de spam.</p>
+    <p class="success-sub" style="font-size:13px;margin-top:8px" data-en>Don't see it? Check your spam folder.</p>
     <div class="success-actions">
-      <a href="dashboard.html" class="btn-primary" data-es>Ir a mi panel →</a>
-      <a href="dashboard.html" class="btn-primary" data-en>Go to dashboard →</a>
+      <a href="login.html" class="btn-secondary" data-es>Ya confirmé — Iniciar sesión →</a>
+      <a href="login.html" class="btn-secondary" data-en>I confirmed — Log in →</a>
       <a href="search.html" class="btn-secondary" data-es>Ver la plataforma</a>
       <a href="search.html" class="btn-secondary" data-en>Browse platform</a>
     </div>
@@ -1014,6 +1016,14 @@ async function goSuccess() {
   document.getElementById('step-4').style.display = 'none';
   document.getElementById('step-success').style.display = 'block';
   document.querySelector('.progress-bar').style.display = 'none';
+
+  // 이메일 주소를 success 화면에 표시
+  var emailVal = emailEl ? emailEl.value.trim() : '';
+  var dispEs = document.getElementById('confirm-email-display');
+  var dispEn = document.getElementById('confirm-email-display-en');
+  if (dispEs) dispEs.textContent = emailVal;
+  if (dispEn) dispEn.textContent = emailVal;
+
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
