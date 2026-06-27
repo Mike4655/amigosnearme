@@ -19,7 +19,7 @@ function getSupabase() {
 // =============================================
 // AUTH — 회원가입
 // =============================================
-async function signUp({ email, password, userType, businessName, tradeName, phone, description, plan }) {
+async function signUp({ email, password, userType, businessName, tradeName, phone, publicEmail, description, plan, categories, serviceArea, languages, paymentMethods, hours }) {
   const sb = getSupabase();
   const { data, error } = await sb.auth.signUp({
     email,
@@ -30,8 +30,14 @@ async function signUp({ email, password, userType, businessName, tradeName, phon
         business_name: businessName || '',
         trade_name: tradeName || '',
         phone: phone || '',
+        public_email: publicEmail || '',
         description: description || '',
-        plan: plan || 'free'
+        plan: plan || 'free',
+        categories: categories || [],
+        service_area: serviceArea || '',
+        languages: languages || ['es'],
+        payment_methods: paymentMethods || [],
+        hours: hours || []
       }
     }
   });
@@ -104,21 +110,55 @@ async function getMyBusiness() {
 // =============================================
 // DB — 업체 프로필 생성
 // =============================================
-async function createBusiness({ businessName, tradeName, plan = 'free' }) {
+async function createBusiness({ businessName, tradeName, plan = 'free', publicEmail, phone, description, categories, serviceArea, languages, paymentMethods, hours }) {
   const sb = getSupabase();
   const user = await getCurrentUser();
   if (!user) throw new Error('Not authenticated');
 
-  const { data, error } = await sb
+  // 기존 레코드 확인
+  const { data: existing } = await sb
     .from('businesses')
-    .insert({
-      owner_id: user.id,
-      business_name: businessName,
-      trade_name: tradeName || '',
-      plan
-    })
-    .select()
+    .select('id')
+    .eq('owner_id', user.id)
     .single();
+
+  const bizData = {
+    owner_id: user.id,
+    business_name: businessName || '',
+    trade_name: tradeName || '',
+    plan: plan || 'free',
+    public_email: publicEmail || '',
+    whatsapp_phone: phone || '',
+    description: description || '',
+    categories: categories && categories.length > 0 ? categories : [],
+    service_area: serviceArea || '',
+    languages: languages && languages.length > 0 ? languages : ['es'],
+    payment_methods: paymentMethods && paymentMethods.length > 0 ? paymentMethods : [],
+    hours: hours && hours.length > 0 ? hours : []
+  };
+
+  let data, error;
+
+  if (existing) {
+    // 기존 레코드 업데이트
+    const result = await sb
+      .from('businesses')
+      .update(bizData)
+      .eq('owner_id', user.id)
+      .select()
+      .single();
+    data = result.data;
+    error = result.error;
+  } else {
+    // 신규 생성
+    const result = await sb
+      .from('businesses')
+      .insert(bizData)
+      .select()
+      .single();
+    data = result.data;
+    error = result.error;
+  }
 
   if (error) throw error;
   return data;
