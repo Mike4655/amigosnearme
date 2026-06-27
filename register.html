@@ -975,11 +975,20 @@ async function goSuccess() {
     return;
   }
 
-  // ── 2. 카테고리 수집 (.cat-chip.sel 클래스 기준 — syncChipState가 sel 클래스 추가)
+  // ── 2. 카테고리 수집 (.cat-chip.sel — data-cat-id 없는 것은 텍스트로 수집)
   var categories = [];
   document.querySelectorAll('#cat-grid .cat-chip.sel').forEach(function(chip) {
     var catId = chip.getAttribute('data-cat-id');
-    if (catId) categories.push(catId);
+    if (catId) {
+      categories.push(catId);
+    } else {
+      // data-cat-id 없는 경우 영문 텍스트 사용
+      var enSpan = chip.querySelector('[data-en]');
+      var text = enSpan ? enSpan.textContent.trim() : chip.textContent.trim();
+      // 이모지 제거 후 소문자 변환
+      var catKey = text.replace(/[^\w\s]/g, '').trim().toLowerCase().replace(/\s+/g, '_');
+      if (catKey) categories.push(catKey);
+    }
   });
 
   // ── 3. 서비스 지역 수집 (value 속성 기준)
@@ -1085,9 +1094,15 @@ async function goSuccess() {
       hours: hoursData
     });
 
-    // ── 9. 이메일 확인 없이 세션이 바로 생성된 경우 DB에도 저장
-    if (authData && authData.session) {
-      try {
+    // ── 9. signUp 후 바로 로그인해서 DB에 저장
+    try {
+      // signUp 후 세션이 없으면 직접 로그인
+      var currentSession = await getSession();
+      if (!currentSession) {
+        var loginData = await signIn({ email, password });
+        currentSession = loginData.session;
+      }
+      if (currentSession) {
         await createBusiness({
           businessName: bizName,
           tradeName: tradeNameEl ? tradeNameEl.value.trim() : '',
@@ -1101,8 +1116,9 @@ async function goSuccess() {
           paymentMethods: paymentMethods,
           hours: hoursData
         });
-      } catch(dbErr) { console.error('Business record error:', dbErr); }
-    }
+        console.log('✅ Business record created in DB');
+      }
+    } catch(dbErr) { console.error('Business record error:', dbErr); }
 
   } catch(err) {
     if (err.message && err.message.includes('already')) {
