@@ -1039,8 +1039,11 @@ async function goSuccess() {
   }
 
   try {
-    // ── 7. 기존 세션 로그아웃
-    try { await signOut(); } catch(e) {}
+    // ── 7. 기존 세션이 있을 경우에만 로그아웃 (없으면 403 오류 발생)
+    try {
+      var existingSession = await getSession();
+      if (existingSession) { await signOut(); }
+    } catch(e) { /* 세션 없음 — 무시 */ }
 
     // ── 8. Supabase 회원가입 — 모든 정보를 metadata에 저장
     var authData = await signUp({
