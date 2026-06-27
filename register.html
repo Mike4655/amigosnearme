@@ -1091,7 +1091,17 @@ async function goSuccess() {
     console.error('Signup error:', err);
   }
 
-  // ── 10. 성공 화면 표시
+  // ── 10. 세션 여부에 따라 처리
+  try {
+    var newSession = await getSession();
+    if (newSession) {
+      // Confirm email OFF — 즉시 dashboard로 이동
+      window.location.href = 'dashboard.html';
+      return;
+    }
+  } catch(e) {}
+
+  // Confirm email ON — 이메일 확인 화면 표시
   document.getElementById('step-4').style.display = 'none';
   document.getElementById('step-success').style.display = 'block';
   document.querySelector('.progress-bar').style.display = 'none';
