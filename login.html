@@ -604,20 +604,13 @@ async function doLogin() {
   try {
     var data = await signIn({ email: emailEl.value.trim(), password: passwordEl.value });
     var userType = data.user?.user_metadata?.user_type || 'customer';
-    // If business owner → dashboard, else stay on this page (customer account)
     if (userType === 'business') {
       window.location.href = 'dashboard.html';
     } else {
-      var redirect = '';
-      try { redirect = sessionStorage.getItem('anm-contact-redirect') || ''; } catch(e) {}
-      if (redirect) { try { sessionStorage.removeItem('anm-contact-redirect'); } catch(e) {} window.location.href = redirect; return; }
-      enterAccount(data.user.user_metadata?.display_name || emailEl.value.split('@')[0], emailEl.value.trim());
+      var displayName = data.user.user_metadata?.display_name || emailEl.value.split('@')[0];
+      enterAccount(displayName, emailEl.value.trim());
     }
   } catch(err) {
-    var errEl = document.getElementById('err-login');
-    if (errEl) {
-      errEl.querySelector('span') ? errEl.querySelector('span').textContent = (isEn ? 'Incorrect email or password.' : 'Correo o contraseña incorrectos.') : (errEl.textContent = isEn ? 'Incorrect email or password.' : 'Correo o contraseña incorrectos.');
-    }
     showError('err-login');
     markInvalid(emailEl); markInvalid(passwordEl);
   } finally {
@@ -641,24 +634,14 @@ async function doSignup() {
   var btn = document.querySelector('[onclick="doSignup()"]');
   if (btn) { btn.disabled = true; btn.textContent = isEn ? 'Creating account…' : 'Creando cuenta…'; }
   try {
-    var selectedType = document.querySelector('.type-btn.active')?.dataset?.type || 'customer';
-    await signUp({
-      email: emailEl.value.trim(),
-      password: passwordEl.value,
-      userType: selectedType,
-      businessName: nameEl.value.trim()
-    });
-    // Show email confirmation message
+    await signUp({ email: emailEl.value.trim(), password: passwordEl.value, userType: 'customer', businessName: nameEl.value.trim() });
     document.getElementById('auth-wrap').innerHTML =
       '<div style="text-align:center;padding:48px 24px;max-width:440px;margin:0 auto">' +
       '<div style="font-size:40px;margin-bottom:16px">📧</div>' +
       '<h2 style="font-family:var(--font-display);font-size:22px;margin-bottom:10px">' + (isEn ? 'Check your email' : 'Revisa tu correo') + '</h2>' +
-      '<p style="color:var(--c-muted);font-size:14px">' + (isEn ? 'We sent a confirmation link to <strong>' + emailEl.value.trim() + '</strong>. Click the link to activate your account.' : 'Enviamos un enlace de confirmación a <strong>' + emailEl.value.trim() + '</strong>. Haz clic en el enlace para activar tu cuenta.') + '</p>' +
+      '<p style="color:var(--c-muted);font-size:14px">' + (isEn ? 'We sent a confirmation link to <strong>' + emailEl.value.trim() + '</strong>.' : 'Enviamos un enlace de confirmación a <strong>' + emailEl.value.trim() + '</strong>.') + '</p>' +
       '</div>';
   } catch(err) {
-    var errEl = document.getElementById('err-signup');
-    var msg = err.message || (isEn ? 'Could not create account. Try again.' : 'No se pudo crear la cuenta. Intenta de nuevo.');
-    if (errEl) errEl.textContent = msg;
     showError('err-signup');
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = isEn ? 'Create account' : 'Crear cuenta'; }
@@ -772,16 +755,19 @@ function changePassword() {
   if (okEl) { okEl.style.display = 'block'; setTimeout(function(){ okEl.style.display='none'; }, 3000); }
 }
 
-async function confirmDeleteAccount() {
+function confirmDeleteAccount() {
   var isEn = document.body.classList.contains('en');
   var msg = isEn
     ? 'Are you sure you want to delete your account? This will remove all your saved businesses and reviews. This action cannot be undone.'
     : '¿Estás seguro de que quieres eliminar tu cuenta? Esto eliminará todos tus negocios guardados y reseñas. Esta acción no se puede deshacer.';
   if (window.confirm(msg)) {
+    // In production: DELETE /api/customer/:id
     try {
-      await signOut();
-      window.location.href = 'index.html';
-    } catch(e) { console.error(e); }
+      localStorage.removeItem('anm-sim-logged-in');
+      localStorage.removeItem('anm-saved-businesses');
+      localStorage.removeItem('anm-customer-profile');
+    } catch(e) {}
+    window.location.href = 'index.html';
   }
 }
 
@@ -866,33 +852,6 @@ async function doLogout() {
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
-async function changePassword() {
-  var newPw = document.getElementById('settings-pw-new');
-  var conf = document.getElementById('settings-pw-confirm');
-  var errEl = document.getElementById('settings-pw-error');
-  var isEn = document.body.classList.contains('en');
-  var okEl = document.getElementById(isEn ? 'settings-pw-confirm-msg-en' : 'settings-pw-confirm-msg');
-  if (errEl) errEl.style.display = 'none';
-  if (okEl) okEl.style.display = 'none';
-  if (!newPw || newPw.value.length < 8) {
-    if (errEl) { errEl.textContent = isEn ? 'New password must be at least 8 characters.' : 'La nueva contraseña debe tener al menos 8 caracteres.'; errEl.style.display = 'block'; }
-    return;
-  }
-  if (!conf || conf.value !== newPw.value) {
-    if (errEl) { errEl.textContent = isEn ? 'Passwords do not match.' : 'Las contraseñas no coinciden.'; errEl.style.display = 'block'; }
-    return;
-  }
-  try {
-    const sb = getSupabase();
-    const { error } = await sb.auth.updateUser({ password: newPw.value });
-    if (error) throw error;
-    newPw.value = ''; conf.value = '';
-    if (okEl) { okEl.style.display = 'block'; setTimeout(function(){ okEl.style.display='none'; }, 3000); }
-  } catch(err) {
-    if (errEl) { errEl.textContent = err.message; errEl.style.display = 'block'; }
-  }
-}
-
 function switchAccTab(tab) {
   document.querySelectorAll('.acc-tab').forEach(function(t, i) {
     var tabs = ['saved','quotes','settings'];
@@ -907,34 +866,43 @@ document.addEventListener('DOMContentLoaded', async function() {
   var browser = (navigator.language || 'es').toLowerCase();
   setLang(saved || (browser.startsWith('en') ? 'en' : 'es'));
 
-  // Auto-select user type from URL param
+  // URL param으로 타입 미리 선택
   var params = new URLSearchParams(window.location.search);
   var typeParam = params.get('type');
   if (typeParam && USER_TYPE_INFO[typeParam]) {
     selectUserType(typeParam);
   }
 
-  // Check Supabase session
+  // Supabase 세션 확인
   try {
     const session = await getSession();
     if (session) {
       const user = session.user;
       const userType = user.user_metadata?.user_type || 'customer';
+
+      // Business owner → 바로 dashboard로
       if (userType === 'business') {
         window.location.href = 'dashboard.html';
         return;
       }
+
+      // 고객 계정 → 로그인 타입 묻지 않고 바로 계정 화면 표시
       const displayName = user.user_metadata?.display_name || user.email.split('@')[0];
       document.getElementById('auth-wrap').style.display = 'none';
       document.getElementById('account-wrap').classList.add('show');
       var nameEl = document.getElementById('acc-name');
       var avatarEl = document.getElementById('acc-avatar');
-      var emailEl = document.getElementById('acc-email');
+      var emailEl2 = document.getElementById('acc-email');
       if (nameEl) nameEl.textContent = displayName;
       if (avatarEl) avatarEl.textContent = displayName.charAt(0).toUpperCase();
-      if (emailEl) emailEl.textContent = user.email;
+      if (emailEl2) emailEl2.textContent = user.email;
       renderSavedGrid();
       loadNotifSettings();
+    } else {
+      // 로그인 안 된 상태 — URL 파라미터로 타입이 있으면 type-selector 건너뛰기
+      if (typeParam && USER_TYPE_INFO[typeParam]) {
+        // 이미 위에서 selectUserType 호출됨
+      }
     }
   } catch(e) { console.error('Session check error:', e); }
 });
