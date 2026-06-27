@@ -232,8 +232,8 @@
     <div class="sb-avatar">GG</div>
     <div class="sb-biz-name biz-display-name">Garcia's Garden & Landscaping</div>
     <div style="display:flex;gap:5px;margin-top:5px;flex-wrap:wrap">
-      <span class="sb-badge verified">✓ Verified</span>
-      <span class="sb-badge plan">⭐ Basic</span>
+      <span class="sb-badge verified" id="sb-verified-badge" style="display:none">✓ Verified</span>
+      <span class="sb-badge plan" id="sb-plan-badge">Free</span>
     </div>
     <button onclick="doLogout()" style="margin-top:8px;background:none;border:0.5px solid rgba(255,255,255,0.15);border-radius:6px;color:rgba(255,255,255,0.5);font-size:11px;padding:4px 10px;cursor:pointer;font-family:var(--font-body)" data-es>Cerrar sesión</button>
     <button onclick="doLogout()" style="margin-top:8px;background:none;border:0.5px solid rgba(255,255,255,0.15);border-radius:6px;color:rgba(255,255,255,0.5);font-size:11px;padding:4px 10px;cursor:pointer;font-family:var(--font-body)" data-en>Log out</button>
@@ -329,23 +329,9 @@
           <div class="card-title">
             <span data-es>Vistas — últimos 7 días</span><span data-en>Views — last 7 days</span>
           </div>
-          <div class="sparkline" id="sparkline">
-            <div class="spark-bar" style="height:40%" title="Mon: 28"></div>
-            <div class="spark-bar" style="height:55%" title="Tue: 38"></div>
-            <div class="spark-bar" style="height:48%" title="Wed: 34"></div>
-            <div class="spark-bar" style="height:70%" title="Thu: 49"></div>
-            <div class="spark-bar" style="height:60%" title="Fri: 42"></div>
-            <div class="spark-bar active" style="height:85%" title="Sat: 59"></div>
-            <div class="spark-bar" style="height:30%" title="Sun: 21"></div>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--c-hint);margin-top:6px">
-            <span data-es>Lun</span><span data-en>Mon</span>
-            <span data-es>Mar</span><span data-en>Tue</span>
-            <span data-es>Mié</span><span data-en>Wed</span>
-            <span data-es>Jue</span><span data-en>Thu</span>
-            <span data-es>Vie</span><span data-en>Fri</span>
-            <span data-es>Sáb</span><span data-en>Sat</span>
-            <span data-es>Dom</span><span data-en>Sun</span>
+          <div style="text-align:center;padding:20px;color:var(--c-hint);font-size:13px">
+            <span data-es>Sin datos aún. Las vistas se registrarán cuando clientes vean tu perfil.</span>
+            <span data-en>No data yet. Views will be tracked when customers see your profile.</span>
           </div>
         </div>
 
@@ -353,22 +339,8 @@
           <div class="card-title">
             <span data-es>Fuente de visitas</span><span data-en>Traffic source</span>
           </div>
-          <div class="bar-chart">
-            <div class="bar-row">
-              <span class="bar-lbl" data-es>Búsqueda</span><span class="bar-lbl" data-en>Search</span>
-              <div class="bar-track"><div class="bar-fill blue" style="width:72%"></div></div>
-              <span class="bar-num">178</span>
-            </div>
-            <div class="bar-row">
-              <span class="bar-lbl" data-es>Enlace directo</span><span class="bar-lbl" data-en>Direct link</span>
-              <div class="bar-track"><div class="bar-fill teal" style="width:24%"></div></div>
-              <span class="bar-num">59</span>
-            </div>
-            <div class="bar-row">
-              <span class="bar-lbl" data-es>Referido</span><span class="bar-lbl" data-en>Referral</span>
-              <div class="bar-track"><div class="bar-fill amber" style="width:4%"></div></div>
-              <span class="bar-num">10</span>
-            </div>
+          <div style="text-align:center;padding:20px;color:var(--c-hint);font-size:13px">
+            <span data-es>Disponible próximamente</span><span data-en>Coming soon</span>
           </div>
         </div>
       </div>
@@ -398,17 +370,16 @@
           <div style="margin-bottom:14px">
             <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--c-muted);margin-bottom:5px">
               <span data-es>Progreso</span><span data-en>Progress</span>
-              <span style="color:var(--c-amber);font-weight:500">72%</span>
+              <span style="color:var(--c-amber);font-weight:500" id="profile-pct">0%</span>
             </div>
             <div style="background:var(--c-bg);border-radius:4px;height:6px;overflow:hidden">
-              <div style="width:72%;height:100%;background:var(--c-amber);border-radius:4px"></div>
+              <div style="width:0%;height:100%;background:var(--c-amber);border-radius:4px" id="profile-pct-bar"></div>
             </div>
           </div>
-          <div class="check-row"><span class="check-lbl">✅ <span data-es>Información básica</span><span data-en>Basic info</span></span><span class="check-val ok" data-es>Completo</span><span class="check-val ok" data-en>Done</span></div>
-          <div class="check-row"><span class="check-lbl">✅ <span data-es>Verificación</span><span data-en>Verification</span></span><span class="check-val ok" data-es>Verificado</span><span class="check-val ok" data-en>Verified</span></div>
-          <div class="check-row"><span class="check-lbl">✅ <span data-es>Fotos (3)</span><span data-en>Photos (3)</span></span><span class="check-val ok" data-es>Completo</span><span class="check-val ok" data-en>Done</span></div>
-          <div class="check-row"><span class="check-lbl">⚠️ <span data-es>Área de servicio</span><span data-en>Service area</span></span><span class="check-val warn" data-es>Incompleto</span><span class="check-val warn" data-en>Incomplete</span></div>
-          <div class="check-row"><span class="check-lbl">⚠️ <span data-es>Portafolio</span><span data-en>Portfolio</span></span><span class="check-val warn">0 <span data-es>fotos</span><span data-en>photos</span></span></div>
+          <div id="profile-completeness-rows">
+            <div style="text-align:center;padding:8px;color:var(--c-hint);font-size:12px" data-es>Cargando...</div>
+            <div style="text-align:center;padding:8px;color:var(--c-hint);font-size:12px" data-en>Loading...</div>
+          </div>
         </div>
       </div>
 
@@ -443,58 +414,6 @@
 
       <div class="card">
         <div class="card-title"><span data-es>Historial de contactos</span><span data-en>Contact history</span></div>
-
-        <div class="inq-item">
-          <div class="inq-avatar" style="background:var(--c-green-light);color:var(--c-green)">📲</div>
-          <div class="inq-body">
-            <div class="inq-msg" style="font-weight:500" data-es>Corte de césped + poda de árboles · Duluth, GA</div>
-            <div class="inq-msg" style="font-weight:500" data-en>Lawn mowing + tree trimming · Duluth, GA</div>
-            <div class="inq-meta">
-              <span class="inq-time" data-es>Hace 5 min</span><span class="inq-time" data-en>5 min ago</span>
-              <span class="status-badge status-new">WhatsApp</span>
-              <span style="font-size:11px;color:var(--c-hint)">📍 2.3 mi</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="inq-item">
-          <div class="inq-avatar" style="background:var(--c-green-light);color:var(--c-green)">📲</div>
-          <div class="inq-body">
-            <div class="inq-msg" style="font-weight:500" data-es>Sistema de riego residencial · Norcross</div>
-            <div class="inq-msg" style="font-weight:500" data-en>Residential irrigation system · Norcross</div>
-            <div class="inq-meta">
-              <span class="inq-time" data-es>Hace 1h</span><span class="inq-time" data-en>1h ago</span>
-              <span class="status-badge status-new">WhatsApp</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="inq-item">
-          <div class="inq-avatar" style="background:var(--c-blue-light);color:var(--c-blue)">📋</div>
-          <div class="inq-body">
-            <div class="inq-msg" style="font-weight:500" data-es>Limpieza de hojas · Lawrenceville</div>
-            <div class="inq-msg" style="font-weight:500" data-en>Leaf cleanup · Lawrenceville</div>
-            <div class="inq-meta">
-              <span class="inq-time" data-es>Hace 2h</span><span class="inq-time" data-en>2h ago</span>
-              <span class="status-badge" style="background:var(--c-blue-light);color:var(--c-blue)" data-es>Formulario</span>
-              <span class="status-badge" style="background:var(--c-blue-light);color:var(--c-blue)" data-en>Form</span>
-            </div>
-            <div style="font-size:12px;color:var(--c-hint);margin-top:4px" data-es>📧 Datos del cliente enviados a tu correo y WhatsApp</div>
-            <div style="font-size:12px;color:var(--c-hint);margin-top:4px" data-en>📧 Customer details sent to your email and WhatsApp</div>
-          </div>
-        </div>
-
-        <div class="inq-item">
-          <div class="inq-avatar" style="background:var(--c-green-light);color:var(--c-green)">📲</div>
-          <div class="inq-body">
-            <div class="inq-msg" style="font-weight:500" data-es>Contrato mensual comercial · Norcross</div>
-            <div class="inq-msg" style="font-weight:500" data-en>Commercial monthly contract · Norcross</div>
-            <div class="inq-meta">
-              <span class="inq-time" data-es>Ayer</span><span class="inq-time" data-en>Yesterday</span>
-              <span class="status-badge status-new">WhatsApp</span>
-            </div>
-          </div>
-        </div>
 
         <div id="inq-list">
           <div style="text-align:center;padding:32px;color:var(--c-hint);font-size:13px">
@@ -537,42 +456,13 @@
 
     <!-- ══ ANALYTICS PANE ══ -->
     <div id="pane-analytics" style="display:none">
-      <div class="grid-2">
-        <div class="card">
-          <div class="card-title"><span data-es>Vistas mensuales</span><span data-en>Monthly views</span></div>
-          <div class="sparkline">
-            <div class="spark-bar" style="height:30%"></div>
-            <div class="spark-bar" style="height:45%"></div>
-            <div class="spark-bar" style="height:40%"></div>
-            <div class="spark-bar" style="height:65%"></div>
-            <div class="spark-bar" style="height:55%"></div>
-            <div class="spark-bar" style="height:80%"></div>
-            <div class="spark-bar active" style="height:100%"></div>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--c-hint);margin-top:6px">
-            <span>Dic</span><span>Ene</span><span>Feb</span><span>Mar</span><span>Abr</span><span>May</span><span>Jun</span>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-title"><span data-es>Conversión</span><span data-en>Conversion</span></div>
-          <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
-            <div>
-              <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--c-muted);margin-bottom:4px"><span data-es>Vistas → WhatsApp</span><span data-en>Views → WhatsApp</span><span style="color:var(--c-text);font-weight:500">12.6%</span></div>
-              <div style="background:var(--c-bg);height:6px;border-radius:3px;overflow:hidden"><div style="width:12.6%;height:100%;background:var(--c-green);border-radius:3px"></div></div>
-            </div>
-            <div>
-              <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--c-muted);margin-bottom:4px"><span data-es>Vistas → Solicitud</span><span data-en>Views → Request</span><span style="color:var(--c-text);font-weight:500">3.2%</span></div>
-              <div style="background:var(--c-bg);height:6px;border-radius:3px;overflow:hidden"><div style="width:3.2%;height:100%;background:var(--c-accent);border-radius:3px"></div></div>
-            </div>
-          </div>
-        </div>
-      </div>
       <div class="card">
-        <div class="card-title"><span data-es>Fuente de visitas — Este mes</span><span data-en>Traffic source — This month</span></div>
-        <div class="bar-chart">
-          <div class="bar-row"><span class="bar-lbl" data-es>Búsqueda</span><span class="bar-lbl" data-en>Search</span><div class="bar-track"><div class="bar-fill blue" style="width:72%"></div></div><span class="bar-num">178</span></div>
-          <div class="bar-row"><span class="bar-lbl" data-es>Directo</span><span class="bar-lbl" data-en>Direct</span><div class="bar-track"><div class="bar-fill teal" style="width:24%"></div></div><span class="bar-num">59</span></div>
-          <div class="bar-row"><span class="bar-lbl" data-es>Referido</span><span class="bar-lbl" data-en>Referral</span><div class="bar-track"><div class="bar-fill amber" style="width:4%"></div></div><span class="bar-num">10</span></div>
+        <div style="text-align:center;padding:40px 24px;color:var(--c-hint)">
+          <div style="font-size:40px;margin-bottom:14px">📈</div>
+          <div style="font-size:15px;font-weight:500;color:var(--c-text);margin-bottom:8px" data-es>Analytics próximamente</div>
+          <div style="font-size:15px;font-weight:500;color:var(--c-text);margin-bottom:8px" data-en>Analytics coming soon</div>
+          <div style="font-size:13px" data-es>Las estadísticas detalladas estarán disponibles en una próxima actualización. Por ahora, puedes ver el número de contactos en el Resumen.</div>
+          <div style="font-size:13px" data-en>Detailed analytics will be available in an upcoming update. For now, you can see contact counts in the Overview.</div>
         </div>
       </div>
     </div>
@@ -983,9 +873,18 @@ function toggleDayOpen(checkbox, idx) {
   });
 }
 
-function saveHours() {
-  // In production: PUT /api/business/:id/hours
-  showToast(document.body.classList.contains('en') ? '✅ Hours saved (simulation)' : '✅ Horario guardado (simulación)');
+async function saveHours() {
+  var isEn = document.body.classList.contains('en');
+  try {
+    var hoursData = DAYS.map(function(d) {
+      return { day_es: d.es, day_en: d.en, open: d.open, from: d.from, to: d.to };
+    });
+    await updateBusiness({ hours: hoursData });
+    showToast(isEn ? '✅ Hours saved' : '✅ Horario guardado');
+  } catch(e) {
+    console.error('Hours save error:', e);
+    showToast(isEn ? '❌ Could not save hours' : '❌ No se pudo guardar el horario');
+  }
 }
 
 function showPane(id){
@@ -1262,6 +1161,54 @@ function openWA(phone){
   window.open('https://wa.me/'+phone.replace(/\D/g,'')+'?text='+encodeURIComponent(msg),'_blank');
 }
 
+function renderProfileCompleteness(biz) {
+  var isEn = document.body.classList.contains('en');
+  var rows = [];
+  var score = 0;
+  var total = 4;
+
+  // 기본 정보
+  var hasBasic = !!(biz.business_name && biz.whatsapp_phone);
+  rows.push({ ok: hasBasic, es: 'Información básica', en: 'Basic info', valEs: hasBasic ? 'Completo' : 'Incompleto', valEn: hasBasic ? 'Done' : 'Incomplete' });
+  if (hasBasic) score++;
+
+  // 설명
+  var hasDesc = !!(biz.description && biz.description.length > 10);
+  rows.push({ ok: hasDesc, es: 'Descripción', en: 'Description', valEs: hasDesc ? 'Completo' : 'Incompleto', valEn: hasDesc ? 'Done' : 'Incomplete' });
+  if (hasDesc) score++;
+
+  // 서비스 지역
+  var hasArea = !!(biz.service_area);
+  rows.push({ ok: hasArea, es: 'Área de servicio', en: 'Service area', valEs: hasArea ? 'Completo' : 'Incompleto', valEn: hasArea ? 'Done' : 'Incomplete' });
+  if (hasArea) score++;
+
+  // 인증
+  var isVerified = !!biz.verified;
+  rows.push({ ok: isVerified, es: 'Verificación', en: 'Verification', valEs: isVerified ? 'Verificado' : 'Pendiente', valEn: isVerified ? 'Verified' : 'Pending' });
+  if (isVerified) score++;
+
+  var pct = Math.round((score / total) * 100);
+  var pctEl = document.getElementById('profile-pct');
+  var barEl = document.getElementById('profile-pct-bar');
+  if (pctEl) pctEl.textContent = pct + '%';
+  if (barEl) barEl.style.width = pct + '%';
+
+  var rowsEl = document.getElementById('profile-completeness-rows');
+  if (!rowsEl) return;
+  rowsEl.innerHTML = rows.map(function(r) {
+    var icon = r.ok ? '✅' : '⚠️';
+    var cls = r.ok ? 'ok' : 'warn';
+    return '<div class="check-row"><span class="check-lbl">' + icon + ' <span data-es>' + r.es + '</span><span data-en>' + r.en + '</span></span>' +
+      '<span class="check-val ' + cls + '" data-es>' + r.valEs + '</span>' +
+      '<span class="check-val ' + cls + '" data-en>' + r.valEn + '</span></div>';
+  }).join('');
+
+  // 언어 재적용
+  var lang = document.body.classList.contains('en') ? 'en' : 'es';
+  rowsEl.querySelectorAll('[data-es]').forEach(function(el){ el.style.display = lang === 'es' ? '' : 'none'; });
+  rowsEl.querySelectorAll('[data-en]').forEach(function(el){ el.style.display = lang === 'en' ? '' : 'none'; });
+}
+
 async function loadOverviewStats() {
   if (!window._bizId) return;
   try {
@@ -1406,6 +1353,31 @@ document.addEventListener('DOMContentLoaded', async function(){
       loadOverviewStats();
       loadRecentInquiries();
       loadReviews();
+
+      // Verified 배지 — DB 값 기반
+      var verifiedBadge = document.getElementById('sb-verified-badge');
+      if (verifiedBadge && biz.verified) verifiedBadge.style.display = 'inline-flex';
+
+      // 플랜 배지
+      var planBadge = document.getElementById('sb-plan-badge');
+      if (planBadge) {
+        var planLabels = { free: 'Free', basic: '⭐ Basic', premium: '🌟 Premium' };
+        planBadge.textContent = planLabels[biz.plan] || 'Free';
+      }
+
+      // Profile completeness 동적 렌더링
+      renderProfileCompleteness(biz);
+
+      // Hours DB에서 불러오기
+      if (biz.hours && Array.isArray(biz.hours)) {
+        biz.hours.forEach(function(h, i) {
+          if (DAYS[i]) {
+            DAYS[i].open = h.open;
+            DAYS[i].from = h.from || '08:00';
+            DAYS[i].to = h.to || '18:00';
+          }
+        });
+      }
 
     } else {
       // businesses 테이블에 레코드가 없으면 — metadata에서 가져와서 생성
