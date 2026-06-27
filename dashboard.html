@@ -1161,6 +1161,17 @@ function openWA(phone){
   window.open('https://wa.me/'+phone.replace(/\D/g,'')+'?text='+encodeURIComponent(msg),'_blank');
 }
 
+function refreshPlanUI() {
+  var plan = window._bizPlan || 'free';
+  var planBadge = document.getElementById('sb-plan-badge');
+  if (planBadge) {
+    var planLabels = { free: 'Free', basic: '⭐ Basic', premium: '🌟 Premium' };
+    planBadge.textContent = planLabels[plan] || 'Free';
+  }
+  // getCurrentPlan도 동기화
+  window._bizPlan = plan;
+}
+
 function renderProfileCompleteness(biz) {
   var isEn = document.body.classList.contains('en');
   var rows = [];
@@ -1308,13 +1319,33 @@ document.addEventListener('DOMContentLoaded', async function(){
       window._bizPlan = biz.plan || 'free';
       window._bizId = biz.id;
 
-      // 업체명 표시 (사이드바, 헤더 등)
+      // NULL 필드는 metadata에서 보완 후 DB 업데이트
+      const meta = user.user_metadata || {};
+      var needsUpdate = {};
+      if (!biz.whatsapp_phone && meta.phone) needsUpdate.whatsapp_phone = meta.phone;
+      if (!biz.public_email && meta.public_email) needsUpdate.public_email = meta.public_email;
+      if (!biz.description && meta.description) needsUpdate.description = meta.description;
+      if (!biz.service_area && meta.service_area) needsUpdate.service_area = meta.service_area;
+      if ((!biz.categories || biz.categories.length === 0) && meta.categories && meta.categories.length > 0) needsUpdate.categories = meta.categories;
+      if ((!biz.payment_methods || biz.payment_methods.length === 0) && meta.payment_methods && meta.payment_methods.length > 0) needsUpdate.payment_methods = meta.payment_methods;
+      if ((!biz.languages || biz.languages.length <= 1) && meta.languages && meta.languages.length > 1) needsUpdate.languages = meta.languages;
+      if ((!biz.hours || biz.hours.length === 0) && meta.hours && meta.hours.length > 0) needsUpdate.hours = meta.hours;
+
+      if (Object.keys(needsUpdate).length > 0) {
+        try {
+          await updateBusiness(needsUpdate);
+          // 로컬 biz 객체도 업데이트
+          Object.assign(biz, needsUpdate);
+        } catch(e) { console.error('Auto-fill update error:', e); }
+      }
+
+      // 업체명 표시
       document.querySelectorAll('.biz-display-name').forEach(function(el){
         el.textContent = biz.business_name || '';
       });
 
       // 프로필 폼 채우기
-      var f = function(id, val){ var el = document.getElementById(id); if(el && val) el.value = val; };
+      var f = function(id, val){ var el = document.getElementById(id); if(el && val !== undefined && val !== null) el.value = val; };
       f('ep-legal-name', biz.business_name);
       f('ep-trade-name', biz.trade_name);
       f('ep-phone', biz.whatsapp_phone);
@@ -1336,11 +1367,22 @@ document.addEventListener('DOMContentLoaded', async function(){
       if (document.getElementById('lang-en')) document.getElementById('lang-en').checked = langs.includes('en');
       if (document.getElementById('lang-pt')) document.getElementById('lang-pt').checked = langs.includes('pt');
 
-      // 연락 횟수 (Overview 통계)
+      // Hours DB에서 불러오기
+      if (biz.hours && Array.isArray(biz.hours) && biz.hours.length > 0) {
+        biz.hours.forEach(function(h, i) {
+          if (DAYS[i]) {
+            DAYS[i].open = h.open;
+            DAYS[i].from = h.from || '08:00';
+            DAYS[i].to = h.to || '18:00';
+          }
+        });
+      }
+
+      // 연락 횟수
       var contactEl = document.querySelector('.metric-val');
       if (biz.contact_count && contactEl) contactEl.textContent = biz.contact_count;
 
-      // 프로필 완성도 체크 — 정보가 있으면 info banner 숨기기
+      // 프로필 완성도
       if (biz.whatsapp_phone && biz.description) {
         var banner = document.querySelector('#pane-profile .info-banner');
         if (banner) banner.style.display = 'none';
@@ -1380,27 +1422,63 @@ document.addEventListener('DOMContentLoaded', async function(){
       }
 
     } else {
-      // businesses 테이블에 레코드가 없으면 — metadata에서 가져와서 생성
+      // businesses 레코드 없음 — metadata에서 모든 정보 가져와서 생성
       const meta = user.user_metadata || {};
       const newBiz = await createBusiness({
         businessName: meta.business_name || user.email.split('@')[0],
         tradeName: meta.trade_name || '',
-        plan: meta.plan || 'free'
+        plan: meta.plan || 'free',
+        publicEmail: meta.public_email || '',
+        phone: meta.phone || '',
+        description: meta.description || '',
+        categories: meta.categories || [],
+        serviceArea: meta.service_area || '',
+        languages: meta.languages || ['es'],
+        paymentMethods: meta.payment_methods || [],
+        hours: meta.hours || []
       });
       window._bizPlan = newBiz.plan || 'free';
       window._bizId = newBiz.id;
 
-      // 프로필 폼에도 채우기
+      // 프로필 폼 채우기
       var f2 = function(id, val){ var el = document.getElementById(id); if(el && val) el.value = val; };
       f2('ep-legal-name', meta.business_name);
       f2('ep-trade-name', meta.trade_name);
       f2('ep-phone', meta.phone);
+      f2('ep-email', meta.public_email);
       f2('ep-desc', meta.description);
+      f2('ep-area', meta.service_area);
+
+      // 결제 방법 체크박스
+      var pm2 = meta.payment_methods || [];
+      if (document.getElementById('pay-cash')) document.getElementById('pay-cash').checked = pm2.includes('cash');
+      if (document.getElementById('pay-zelle')) document.getElementById('pay-zelle').checked = pm2.includes('zelle');
+      if (document.getElementById('pay-venmo')) document.getElementById('pay-venmo').checked = pm2.includes('venmo');
+      if (document.getElementById('pay-card')) document.getElementById('pay-card').checked = pm2.includes('card');
+      if (document.getElementById('pay-check')) document.getElementById('pay-check').checked = pm2.includes('check');
+
+      // 언어 체크박스
+      var langs2 = meta.languages || ['es'];
+      if (document.getElementById('lang-es')) document.getElementById('lang-es').checked = langs2.includes('es');
+      if (document.getElementById('lang-en')) document.getElementById('lang-en').checked = langs2.includes('en');
+      if (document.getElementById('lang-pt')) document.getElementById('lang-pt').checked = langs2.includes('pt');
+
+      // Hours
+      if (meta.hours && Array.isArray(meta.hours) && meta.hours.length > 0) {
+        meta.hours.forEach(function(h, i) {
+          if (DAYS[i]) {
+            DAYS[i].open = h.open;
+            DAYS[i].from = h.from || '09:00';
+            DAYS[i].to = h.to || '18:00';
+          }
+        });
+      }
 
       document.querySelectorAll('.biz-display-name').forEach(function(el){
         el.textContent = meta.business_name || user.email.split('@')[0];
       });
 
+      renderProfileCompleteness(newBiz);
       refreshPlanUI();
     }
 
