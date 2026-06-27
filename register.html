@@ -1039,6 +1039,21 @@ async function goSuccess() {
   }
 
   try {
+    // ── 디버그: 수집된 데이터 콘솔 출력
+    console.log('=== goSuccess 데이터 수집 결과 ===');
+    console.log('email:', email);
+    console.log('bizName:', bizName);
+    console.log('phone:', phoneEl ? phoneEl.value.trim() : 'element not found');
+    console.log('publicEmail:', publicEmailEl ? publicEmailEl.value.trim() : 'element not found');
+    console.log('description:', descEl ? descEl.value.trim() : 'element not found');
+    console.log('categories:', categories);
+    console.log('serviceArea:', serviceArea);
+    console.log('languages:', languages);
+    console.log('paymentMethods:', paymentMethods);
+    console.log('hours:', hoursData);
+    console.log('plan:', selectedPlan);
+    console.log('================================');
+
     // ── 7. 기존 세션이 있을 경우에만 로그아웃 (없으면 403 오류 발생)
     try {
       var existingSession = await getSession();
