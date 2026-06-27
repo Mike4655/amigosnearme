@@ -875,8 +875,8 @@
     <div class="success-icon">📧</div>
     <h2 class="success-title" data-es>¡Casi listo! Confirma tu correo</h2>
     <h2 class="success-title" data-en>Almost there! Confirm your email</h2>
-    <p class="success-sub" data-es>Te enviamos un enlace de confirmación a <strong id="confirm-email-display"></strong>. Haz clic en el enlace para activar tu cuenta y acceder a tu panel.</p>
-    <p class="success-sub" data-en>We sent a confirmation link to <strong id="confirm-email-display-en"></strong>. Click the link to activate your account and access your dashboard.</p>
+    <p class="success-sub" data-es>Te enviamos un enlace de confirmación a <strong id="confirm-email-display"></strong>. Haz clic en el enlace para activar tu cuenta.</p>
+    <p class="success-sub" data-en>We sent a confirmation link to <strong id="confirm-email-display-en"></strong>. Click the link to activate your account.</p>
     <p class="success-sub" style="font-size:13px;margin-top:8px" data-es>¿No lo ves? Revisa tu carpeta de spam.</p>
     <p class="success-sub" style="font-size:13px;margin-top:8px" data-en>Don't see it? Check your spam folder.</p>
     <div class="success-actions">
@@ -955,80 +955,154 @@ function updateProfileStepForStaffing() {
 }
 
 async function goSuccess() {
-  var emailEl = document.getElementById('f-account-email');
-  var passwordEl = document.getElementById('f-password');
-  var businessNameEl = document.getElementById('f-legal-name');
-  var tradeNameEl = document.getElementById('f-trade-name');
-  var phoneEl = document.getElementById('f-phone');
-  var descEl = document.getElementById('f-description');
   var isEn = document.body.classList.contains('en');
 
-  if (emailEl && passwordEl) {
-    var email = emailEl.value.trim();
-    var password = passwordEl.value;
-    var bizName = businessNameEl ? businessNameEl.value.trim() : '';
-    var tradeName = tradeNameEl ? tradeNameEl.value.trim() : '';
-    var phone = phoneEl ? phoneEl.value.trim() : '';
-    var desc = descEl ? descEl.value.trim() : '';
+  // ── 1. 계정 정보 수집 (실제 필드 ID 사용)
+  var emailEl = document.getElementById('f-account-email');
+  var passwordEl = document.getElementById('f-password');
+  var bizNameEl = document.getElementById('f-legal-name');
+  var tradeNameEl = document.getElementById('f-trade-name');
+  var phoneEl = document.getElementById('f-phone');
+  var publicEmailEl = document.getElementById('f-public-email');
+  var descEl = document.getElementById('f-description');
 
-    if (!email || password.length < 8) {
-      alert(isEn ? 'Please enter a valid email and password (min 8 characters).' : 'Por favor ingresa un correo válido y contraseña (mínimo 8 caracteres).');
-      return;
-    }
+  var email = emailEl ? emailEl.value.trim() : '';
+  var password = passwordEl ? passwordEl.value : '';
+  var bizName = bizNameEl ? bizNameEl.value.trim() : '';
 
-    try {
-      // 1. 기존 세션 로그아웃 (다른 계정으로 로그인되어 있을 수 있음)
-      try { await signOut(); } catch(e) {}
-
-      // 2. Supabase 회원가입 — 업체 정보를 metadata에 함께 저장
-      var authData = await signUp({
-        email,
-        password,
-        userType: isStaffingSelected() ? 'worker' : 'business',
-        businessName: bizName,
-        tradeName: tradeName,
-        phone: phone,
-        description: desc,
-        plan: selectedPlan || 'free'
-      });
-
-      // 3. 이메일 확인 없이 세션이 바로 생성된 경우 businesses 테이블에 저장
-      if (authData && authData.session) {
-        try {
-          await createBusiness({
-            businessName: bizName,
-            tradeName: tradeName,
-            plan: selectedPlan || 'free'
-          });
-        } catch(dbErr) { console.error('Business record error:', dbErr); }
-      }
-
-    } catch(err) {
-      if (err.message && err.message.includes('already')) {
-        alert(isEn ? 'This email is already registered. Please log in.' : 'Este correo ya está registrado. Por favor inicia sesión.');
-        window.location.href = 'login.html';
-        return;
-      }
-      console.error('Signup error:', err);
-    }
+  if (!email || password.length < 8) {
+    alert(isEn ? 'Please enter a valid email and password (min 8 characters).' : 'Por favor ingresa un correo válido y contraseña (mínimo 8 caracteres).');
+    return;
   }
 
+  // ── 2. 카테고리 수집 (.cat-chip.sel 클래스 기준)
+  var categories = [];
+  document.querySelectorAll('#cat-grid .cat-chip.sel').forEach(function(chip) {
+    var catId = chip.getAttribute('data-cat-id');
+    if (catId) categories.push(catId);
+  });
+
+  // ── 3. 서비스 지역 수집 (체크박스 value 속성 기준)
+  var serviceAreas = [];
+  document.querySelectorAll('#service-area-grid input[type="checkbox"]:checked').forEach(function(cb) {
+    if (cb.value) serviceAreas.push(cb.value);
+  });
+  var serviceArea = serviceAreas.join(', ');
+
+  // ── 4. 언어 수집 (.lang-toggle input:checked 기준)
+  var languages = [];
+  document.querySelectorAll('.lang-toggles .lang-toggle').forEach(function(label) {
+    var cb = label.querySelector('input[type="checkbox"]');
+    if (cb && cb.checked) {
+      var text = label.textContent.trim();
+      if (text.includes('Español') || text.includes('Espanol')) languages.push('es');
+      else if (text.includes('English')) languages.push('en');
+      else if (text.includes('Portugu')) languages.push('pt');
+    }
+  });
+  if (languages.length === 0) languages = ['es'];
+
+  // ── 5. 결제 방법 수집 (.pay-chip input:checked 기준)
+  var paymentMethods = [];
+  document.querySelectorAll('#payment-grid .pay-chip').forEach(function(label) {
+    var cb = label.querySelector('input[type="checkbox"]');
+    if (cb && cb.checked) {
+      var text = label.textContent.trim().toLowerCase();
+      if (text.includes('cash')) paymentMethods.push('cash');
+      else if (text.includes('zelle')) paymentMethods.push('zelle');
+      else if (text.includes('venmo')) paymentMethods.push('venmo');
+      else if (text.includes('check')) paymentMethods.push('check');
+      else if (text.includes('credit') || text.includes('card')) paymentMethods.push('card');
+      else if (text.includes('paypal')) paymentMethods.push('paypal');
+    }
+  });
+
+  // ── 6. Hours 수집 (hours-card 내 grid 행 기준)
+  var hoursData = [];
+  var hoursCard = document.getElementById('hours-card');
+  if (hoursCard) {
+    var dayNames = ['Mon-Fri', 'Saturday', 'Sunday'];
+    var dayRows = hoursCard.querySelectorAll('[style*="grid-template-columns"]');
+    dayRows.forEach(function(row, idx) {
+      var timeInputs = row.querySelectorAll('input[type="time"]');
+      var checkbox = row.querySelector('input[type="checkbox"]');
+      var spanEl = row.querySelector('span[data-en]') || row.querySelector('span');
+      if (timeInputs.length >= 2) {
+        hoursData.push({
+          day_en: spanEl ? spanEl.textContent.trim() : dayNames[idx] || '',
+          open: checkbox ? checkbox.checked : true,
+          from: timeInputs[0].value || '09:00',
+          to: timeInputs[1].value || '18:00'
+        });
+      }
+    });
+  }
+
+  try {
+    // ── 7. 기존 세션 로그아웃
+    try { await signOut(); } catch(e) {}
+
+    // ── 8. Supabase 회원가입 — 모든 정보를 metadata에 저장
+    var authData = await signUp({
+      email,
+      password,
+      userType: isStaffingSelected() ? 'worker' : 'business',
+      businessName: bizName,
+      tradeName: tradeNameEl ? tradeNameEl.value.trim() : '',
+      phone: phoneEl ? phoneEl.value.trim() : '',
+      publicEmail: publicEmailEl ? publicEmailEl.value.trim() : '',
+      description: descEl ? descEl.value.trim() : '',
+      plan: selectedPlan || 'free',
+      categories: categories,
+      serviceArea: serviceArea,
+      languages: languages,
+      paymentMethods: paymentMethods,
+      hours: hoursData
+    });
+
+    // ── 9. 이메일 확인 없이 세션이 바로 생성된 경우 DB에도 저장
+    if (authData && authData.session) {
+      try {
+        await createBusiness({
+          businessName: bizName,
+          tradeName: tradeNameEl ? tradeNameEl.value.trim() : '',
+          plan: selectedPlan || 'free',
+          publicEmail: publicEmailEl ? publicEmailEl.value.trim() : '',
+          phone: phoneEl ? phoneEl.value.trim() : '',
+          description: descEl ? descEl.value.trim() : '',
+          categories: categories,
+          serviceArea: serviceArea,
+          languages: languages,
+          paymentMethods: paymentMethods,
+          hours: hoursData
+        });
+      } catch(dbErr) { console.error('Business record error:', dbErr); }
+    }
+
+  } catch(err) {
+    if (err.message && err.message.includes('already')) {
+      alert(isEn ? 'This email is already registered. Please log in.' : 'Este correo ya está registrado. Por favor inicia sesión.');
+      window.location.href = 'login.html';
+      return;
+    }
+    console.error('Signup error:', err);
+  }
+
+  // ── 10. 성공 화면 표시
   document.getElementById('step-4').style.display = 'none';
   document.getElementById('step-success').style.display = 'block';
   document.querySelector('.progress-bar').style.display = 'none';
 
-  // 이메일 주소를 success 화면에 표시
-  var emailVal = emailEl ? emailEl.value.trim() : '';
   var dispEs = document.getElementById('confirm-email-display');
   var dispEn = document.getElementById('confirm-email-display-en');
-  if (dispEs) dispEs.textContent = emailVal;
-  if (dispEn) dispEn.textContent = emailVal;
+  if (dispEs) dispEs.textContent = email;
+  if (dispEn) dispEn.textContent = email;
 
-  window.scrollTo({top:0, behavior:'smooth'});
+  window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
+// simulatePlanPayment은 goSuccess 호출
 async function simulatePlanPayment() {
-  // 결제 후 플랜 업그레이드 — 현재는 UI만 처리, Braintree 연동 시 실제 결제 추가
   closePaymentModal();
   await goSuccess();
 }
@@ -1402,7 +1476,7 @@ function validateStep4() {
   // Basic/Premium: collect payment first — goSuccess() only fires after
   // simulatePlanPayment() confirms the (simulated) charge below.
   if (selectedPlan === 'free') {
-    goSuccess();
+    goSuccess(); // async function
   } else {
     openPaymentModal(selectedPlan);
   }
@@ -1447,7 +1521,7 @@ function openPaymentModal(plan) {
 function closePaymentModal() {
   document.getElementById('payment-modal').classList.remove('open');
 }
-// simulatePlanPayment replaced above with async version
+// simulatePlanPayment: see async version above
 
 document.addEventListener('DOMContentLoaded', function() {
   var saved = ''; try { saved = localStorage.getItem('anm-lang'); } catch(e) {}
