@@ -866,12 +866,9 @@ document.addEventListener('DOMContentLoaded', async function() {
   var browser = (navigator.language || 'es').toLowerCase();
   setLang(saved || (browser.startsWith('en') ? 'en' : 'es'));
 
-  // URL param으로 타입 미리 선택
+  // URL param으로 타입 미리 선택 (수동 지정)
   var params = new URLSearchParams(window.location.search);
   var typeParam = params.get('type');
-  if (typeParam && USER_TYPE_INFO[typeParam]) {
-    selectUserType(typeParam);
-  }
 
   // Supabase 세션 확인
   try {
@@ -886,7 +883,13 @@ document.addEventListener('DOMContentLoaded', async function() {
         return;
       }
 
-      // 고객 계정 → 로그인 타입 묻지 않고 바로 계정 화면 표시
+      // Worker → staffing 타입 선택 화면으로
+      if (userType === 'worker') {
+        selectUserType('staffing');
+        return;
+      }
+
+      // 고객 계정 → 바로 계정 화면 표시
       const displayName = user.user_metadata?.display_name || user.email.split('@')[0];
       document.getElementById('auth-wrap').style.display = 'none';
       document.getElementById('account-wrap').classList.add('show');
@@ -898,10 +901,30 @@ document.addEventListener('DOMContentLoaded', async function() {
       if (emailEl2) emailEl2.textContent = user.email;
       renderSavedGrid();
       loadNotifSettings();
+
     } else {
-      // 로그인 안 된 상태 — URL 파라미터로 타입이 있으면 type-selector 건너뛰기
+      // 세션 없음 — URL 해시에 access_token이 있으면 이메일 확인 직후
+      // Supabase가 자동으로 세션을 설정하므로 잠시 후 재확인
+      if (window.location.hash && window.location.hash.includes('access_token')) {
+        setTimeout(async function() {
+          const session2 = await getSession();
+          if (session2) {
+            const userType2 = session2.user.user_metadata?.user_type || 'customer';
+            if (userType2 === 'business') {
+              window.location.href = 'dashboard.html';
+            } else if (userType2 === 'worker') {
+              selectUserType('staffing');
+            } else {
+              selectUserType('customer');
+            }
+          }
+        }, 800);
+        return;
+      }
+
+      // URL 파라미터로 타입 지정된 경우
       if (typeParam && USER_TYPE_INFO[typeParam]) {
-        // 이미 위에서 selectUserType 호출됨
+        selectUserType(typeParam);
       }
     }
   } catch(e) { console.error('Session check error:', e); }
