@@ -1367,14 +1367,17 @@ document.addEventListener('DOMContentLoaded', async function(){
       if (document.getElementById('lang-en')) document.getElementById('lang-en').checked = langs.includes('en');
       if (document.getElementById('lang-pt')) document.getElementById('lang-pt').checked = langs.includes('pt');
 
-      // Hours DB에서 불러오기
+      // Hours DB에서 불러오기 — day name으로 매핑
       if (biz.hours && Array.isArray(biz.hours) && biz.hours.length > 0) {
-        biz.hours.forEach(function(h, i) {
-          if (DAYS[i]) {
-            DAYS[i].open = h.open;
-            DAYS[i].from = h.from || '08:00';
-            DAYS[i].to = h.to || '18:00';
-          }
+        biz.hours.forEach(function(h) {
+          var dayEn = h.en || h.day_en || '';
+          DAYS.forEach(function(d) {
+            if (d.en.toLowerCase() === dayEn.toLowerCase()) {
+              d.open = h.open !== undefined ? h.open : true;
+              d.from = h.from || '09:00';
+              d.to   = h.to   || '18:00';
+            }
+          });
         });
       }
 
