@@ -751,7 +751,9 @@ function updateCategoryCounts() {
   var catValues = ['staffing','landscaping','cleaning','construction','painting','realestate','plumbing','electrical','moving','food','auto','translation','tree','real_estate','tree_removal'];
   catValues.forEach(function(val) {
     var count = allResults.filter(function(b){
-      return (b.categories||[]).some(function(c){ return c === val || c === val.replace('_',''); });
+      return (b.categories||[]).some(function(c){
+        return c === val || c === val.replace(/_/g,'') || c.replace(/_/g,'') === val;
+      });
     }).length;
     var inputs = document.querySelectorAll('#filter-cat input[value="' + val + '"]');
     inputs.forEach(function(inp){
@@ -776,7 +778,10 @@ function applyFiltersAndRender() {
     }
     if (areas.length > 0) {
       var bizArea = (biz.service_area || '').toLowerCase();
-      if (!areas.some(function(a){ return bizArea.includes(a.replace('_',' ')); })) return false;
+      if (!areas.some(function(a){
+        // DB에는 언더스코어(johns_creek) 또는 공백(johns creek) 둘 다 가능
+        return bizArea.includes(a) || bizArea.includes(a.replace(/_/g,' '));
+      })) return false;
     }
     if (q) {
       var searchable = (biz.business_name + ' ' + biz.trade_name + ' ' + (biz.description||'') + ' ' + (biz.service_area||'')).toLowerCase();
