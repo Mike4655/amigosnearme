@@ -1029,27 +1029,39 @@ async function goSuccess() {
     }
   });
 
-  // ── 6. Hours 수집 (hours-card 내 실제 구조 기준)
+  // ── 6. Hours 수집 — Mon-Fri를 5개로 펼쳐서 저장
   var hoursData = [];
   var hoursCard = document.getElementById('hours-card');
   if (hoursCard) {
-    var dayDefs = [
-      { day_es: 'Lunes – Viernes', day_en: 'Mon – Fri' },
-      { day_es: 'Sábado', day_en: 'Saturday' },
-      { day_es: 'Domingo', day_en: 'Sunday' }
+    var dayRows = hoursCard.querySelectorAll('[style*="grid-template-columns:120px"]');
+    var weekdayNames = [
+      { es: 'Lunes',     en: 'Monday'   },
+      { es: 'Martes',    en: 'Tuesday'  },
+      { es: 'Miércoles', en: 'Wednesday'},
+      { es: 'Jueves',    en: 'Thursday' },
+      { es: 'Viernes',   en: 'Friday'   }
     ];
-    var dayRows = hoursCard.querySelectorAll('[style*="grid-template-columns"]');
+
     dayRows.forEach(function(row, idx) {
       var timeInputs = row.querySelectorAll('input[type="time"]');
       var checkbox = row.querySelector('input[type="checkbox"]');
-      if (timeInputs.length >= 2) {
-        hoursData.push({
-          day_es: dayDefs[idx] ? dayDefs[idx].day_es : '',
-          day_en: dayDefs[idx] ? dayDefs[idx].day_en : '',
-          open: checkbox ? checkbox.checked : true,
-          from: timeInputs[0].value || '09:00',
-          to: timeInputs[1].value || '18:00'
+      if (timeInputs.length < 2) return;
+
+      var isOpen = checkbox ? checkbox.checked : true;
+      var fromVal = timeInputs[0].value || '09:00';
+      var toVal   = timeInputs[1].value || '18:00';
+
+      if (idx === 0) {
+        // Mon-Fri → 5개로 펼치기
+        weekdayNames.forEach(function(day) {
+          hoursData.push({ es: day.es, en: day.en, open: isOpen, from: fromVal, to: toVal });
         });
+      } else if (idx === 1) {
+        // Saturday
+        hoursData.push({ es: 'Sábado', en: 'Saturday', open: isOpen, from: fromVal, to: toVal });
+      } else if (idx === 2) {
+        // Sunday
+        hoursData.push({ es: 'Domingo', en: 'Sunday', open: isOpen, from: fromVal, to: toVal });
       }
     });
   }
