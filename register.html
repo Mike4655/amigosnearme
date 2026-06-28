@@ -583,9 +583,10 @@
           <div class="field-error" id="err-phone" data-es-text="Ingresa tu número de teléfono o WhatsApp." data-en-text="Enter your phone or WhatsApp number.">Ingresa tu número de teléfono o WhatsApp.</div>
         </div>
         <div class="field-row">
-          <div class="field-label" data-es>Correo de contacto público <span class="opt">(opcional)</span></div>
-          <div class="field-label" data-en>Public contact email <span class="opt">(optional)</span></div>
-          <input type="email" id="f-public-email" placeholder="negocio@email.com">
+          <div class="field-label" data-es>Correo de contacto público <span class="req">*</span></div>
+          <div class="field-label" data-en>Public contact email <span class="req">*</span></div>
+          <input type="email" id="f-public-email" placeholder="negocio@email.com" oninput="syncLoginEmail(this.value)" required>
+          <div class="field-error" id="err-public-email" data-es-text="Ingresa un correo de contacto público válido." data-en-text="Enter a valid public contact email.">Ingresa un correo de contacto público válido.</div>
         </div>
       </div>
 
@@ -692,8 +693,8 @@
       <div class="form-card-title"><span>👤</span> <span data-es>Tu cuenta</span><span data-en>Your account</span></div>
       <div class="info-box">
         <span>ℹ️</span>
-        <span data-es>Este correo se usa para <strong>iniciar sesión</strong> y gestionar tu negocio. Es diferente del correo de contacto público (opcional) que verán tus clientes.</span>
-        <span data-en>This email is used to <strong>log in</strong> and manage your business. It's different from the public contact email (optional) shown to customers.</span>
+        <span data-es>Se ha completado automáticamente con tu correo de contacto público. Puedes cambiarlo si prefieres usar un correo diferente para iniciar sesión.</span>
+        <span data-en>Auto-filled from your public contact email. You can change it if you prefer a different login email.</span>
       </div>
       <div class="two-col">
         <div class="field-row">
@@ -704,7 +705,7 @@
         <div class="field-row">
           <div class="field-label" data-es>Correo de acceso (login) <span class="req">*</span></div>
           <div class="field-label" data-en>Login email <span class="req">*</span></div>
-          <input type="email" id="f-account-email" oninput="clearAccountError()" placeholder="jose@email.com">
+          <input type="email" id="f-account-email" oninput="clearAccountError()" placeholder="jose@email.com" style="background:var(--c-green-light)">
         </div>
       </div>
       <div class="field-row">
@@ -1258,6 +1259,20 @@ function clearNameError() {
     clearInvalid(legalName); clearInvalid(tradeName);
   }
 }
+function syncLoginEmail(val) {
+  var loginEmail = document.getElementById('f-account-email');
+  if (loginEmail) {
+    loginEmail.value = val;
+    loginEmail.style.background = val ? 'var(--c-green-light)' : '';
+    clearAccountError();
+  }
+  // public email 오류 숨기기
+  var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (emailPattern.test(val)) {
+    hideError('err-public-email');
+  }
+}
+
 function clearAccountError() {
   var ownerName = document.getElementById('f-owner-name');
   var accountEmail = document.getElementById('f-account-email');
@@ -1354,6 +1369,18 @@ function validateStep2() {
   } else {
     hideError('err-phone');
     clearInvalid(phone);
+  }
+
+  // 3b. Public email required
+  var publicEmail = document.getElementById('f-public-email');
+  var emailPattern2 = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!publicEmail || !emailPattern2.test(publicEmail.value.trim())) {
+    showError('err-public-email');
+    if (publicEmail) markInvalid(publicEmail);
+    valid = false;
+  } else {
+    hideError('err-public-email');
+    if (publicEmail) clearInvalid(publicEmail);
   }
 
   // 4. Service area - at least 1
