@@ -425,6 +425,11 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-client.js"></script>
 <script>
+// ── CARD NAVIGATION ────────────────────────────────────────
+function goToProfile(bizId) {
+  if (bizId) window.location.href = 'profile.html?id=' + encodeURIComponent(bizId);
+}
+
 // ── SAVE BUSINESS (search page) ────────────────────────────
 function getSavedBusinesses() {
   try { return JSON.parse(localStorage.getItem('anm-saved-businesses') || '[]'); } catch(e) { return []; }
@@ -810,7 +815,7 @@ function renderPage(filtered) {
     var phone = (biz.whatsapp_phone || '').replace(/\D/g,'');
     var waMsg = isEn ? 'Hi! I found you on AmigosNearMe.' : 'Hola! Te encontré en AmigosNearMe.';
 
-    return '<div class="biz-card" data-id="' + biz.id + '" data-cat="' + cat + '" data-area="' + areaShort + '" data-rating="' + (rating||0) + '" data-verified="' + !!biz.verified + '">' +
+    return '<div class="biz-card" data-id="' + biz.id + '" data-cat="' + cat + '" data-area="' + areaShort + '" data-rating="' + (rating||0) + '" data-verified="' + !!biz.verified + '" onclick="goToProfile(\'' + biz.id + '\')">' +
       '<div class="biz-card-top">' +
       '<div class="biz-avatar ' + color + '">' + initials + '</div>' +
       '<div style="flex:1;min-width:0">' +
@@ -862,24 +867,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   if (q) { var ms = document.getElementById('main-search'); if (ms) { ms.value = q; applyFiltersAndRender(); } }
   if (cat) { var cb = document.querySelector('#filter-cat input[value="'+cat+'"]'); if (cb) { cb.checked = true; applyFiltersAndRender(); } }
 
-  // Sync admin-approved verified badges to search result cards.
-  // In production this comes from the DB; here we read from localStorage written
-  // by admin.html's reviewVerification() when an admin approves a business.
-  document.querySelectorAll('.biz-card[data-id]').forEach(function(card) {
-    var bizId = card.getAttribute('data-id');
-    var adminApproved = false;
-    try { adminApproved = localStorage.getItem('anm-verified-' + bizId) === '1'; } catch(e) {}
-    if (adminApproved) {
-      card.setAttribute('data-verified', 'true');
-      var badgeRow = card.querySelector('.badge-row');
-      if (badgeRow && !badgeRow.querySelector('.badge-verified')) {
-        var badge = document.createElement('span');
-        badge.className = 'badge badge-verified';
-        badge.textContent = '✅ Verified';
-        badgeRow.prepend(badge);
-      }
-    }
-  });
+  // Verified status comes directly from DB (businesses.verified column) — no localStorage sync needed.
 
   // Inject save buttons on all business cards
   injectSaveButtons();
