@@ -1067,11 +1067,12 @@ async function goSuccess() {
   }
   try {
     console.log('=== goSuccess ===', { email, bizName, serviceArea, languages, paymentMethods, categories });
+    var normalizedPhone = normalizePhone(phoneEl ? phoneEl.value.trim() : '');
     try { var es = await getSession(); if (es) { await signOut(); } } catch(e) {}
     await signUp({ email, password,
       userType: isStaffingSelected() ? 'worker' : 'business',
       businessName: bizName, tradeName: tradeNameEl ? tradeNameEl.value.trim() : '',
-      phone: phoneEl ? phoneEl.value.trim() : '', publicEmail: publicEmailEl ? publicEmailEl.value.trim() : '',
+      phone: normalizedPhone, publicEmail: publicEmailEl ? publicEmailEl.value.trim() : '',
       description: descEl ? descEl.value.trim() : '', plan: selectedPlan || 'free',
       categories: categories, serviceArea: serviceArea,
       languages: languages, paymentMethods: paymentMethods, hours: hoursData
@@ -1082,7 +1083,7 @@ async function goSuccess() {
       if (cs) {
         await createBusiness({ businessName: bizName, tradeName: tradeNameEl ? tradeNameEl.value.trim() : '',
           plan: selectedPlan || 'free', publicEmail: publicEmailEl ? publicEmailEl.value.trim() : '',
-          phone: phoneEl ? phoneEl.value.trim() : '', description: descEl ? descEl.value.trim() : '',
+          phone: normalizedPhone, description: descEl ? descEl.value.trim() : '',
           categories: categories, serviceArea: serviceArea,
           languages: languages, paymentMethods: paymentMethods, hours: hoursData
         });
@@ -1259,6 +1260,26 @@ function clearNameError() {
     clearInvalid(legalName); clearInvalid(tradeName);
   }
 }
+// 전화번호 정규화 — WhatsApp 국제번호 형식으로 통일
+function normalizePhone(raw) {
+  if (!raw) return '';
+  // 숫자만 추출
+  var digits = raw.replace(/\D/g, '');
+  // 이미 1로 시작하는 11자리 → +1XXXXXXXXXX
+  if (digits.length === 11 && digits.startsWith('1')) {
+    return '+' + digits;
+  }
+  // 10자리 → 미국번호로 간주 +1 추가
+  if (digits.length === 10) {
+    return '+1' + digits;
+  }
+  // 그 외 (이미 국제번호 포함 등) → +를 붙여서 반환
+  if (digits.length > 10) {
+    return '+' + digits;
+  }
+  return '+1' + digits;
+}
+
 function syncLoginEmail(val) {
   var loginEmail = document.getElementById('f-account-email');
   if (loginEmail) {
