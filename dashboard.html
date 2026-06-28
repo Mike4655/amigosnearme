@@ -230,19 +230,17 @@
   </div>
   <div class="sb-biz">
     <div class="sb-avatar">GG</div>
-    <div class="sb-biz-name biz-display-name">Garcia's Garden & Landscaping</div>
+    <div class="sb-biz-name">Garcia's Garden & Landscaping</div>
     <div style="display:flex;gap:5px;margin-top:5px;flex-wrap:wrap">
-      <span class="sb-badge verified" id="sb-verified-badge" style="display:none">✓ Verified</span>
-      <span class="sb-badge plan" id="sb-plan-badge">Free</span>
+      <span class="sb-badge verified">✓ Verified</span>
+      <span class="sb-badge plan">⭐ Basic</span>
     </div>
-    <button onclick="doLogout()" style="margin-top:8px;background:none;border:0.5px solid rgba(255,255,255,0.15);border-radius:6px;color:rgba(255,255,255,0.5);font-size:11px;padding:4px 10px;cursor:pointer;font-family:var(--font-body)" data-es>Cerrar sesión</button>
-    <button onclick="doLogout()" style="margin-top:8px;background:none;border:0.5px solid rgba(255,255,255,0.15);border-radius:6px;color:rgba(255,255,255,0.5);font-size:11px;padding:4px 10px;cursor:pointer;font-family:var(--font-body)" data-en>Log out</button>
   </div>
   <nav class="sb-nav">
     <div class="sb-section" data-es>Principal</div>
     <div class="sb-section" data-en>Main</div>
     <a class="sb-link active" onclick="showPane('overview')"><span class="icon">📊</span> <span data-es>Resumen</span><span data-en>Overview</span></a>
-    <a class="sb-link" onclick="showPane('inquiries')"><span class="icon">💬</span> <span data-es>Solicitudes</span><span data-en>Inquiries</span><span class="badge-dot" id="inq-badge" style="display:none">0</span></a>
+    <a class="sb-link" onclick="showPane('inquiries')"><span class="icon">💬</span> <span data-es>Solicitudes</span><span data-en>Inquiries</span><span class="badge-dot">3</span></a>
     <a class="sb-link" onclick="showPane('reviews')"><span class="icon">⭐</span> <span data-es>Reseñas</span><span data-en>Reviews</span></a>
     <a class="sb-link" onclick="showPane('analytics')"><span class="icon">📈</span> <span data-es>Análisis</span><span data-en>Analytics</span></a>
 
@@ -262,8 +260,6 @@
     <a href="profile.html" data-en>👁 View public profile</a>
     <a href="index.html" data-es>← Volver a la plataforma</a>
     <a href="index.html" data-en>← Back to platform</a>
-    <a onclick="doLogout()" style="cursor:pointer;color:var(--c-muted);margin-top:4px" data-es>🚪 Cerrar sesión</a>
-    <a onclick="doLogout()" style="cursor:pointer;color:var(--c-muted);margin-top:4px" data-en>🚪 Log out</a>
   </div>
 </aside>
 
@@ -299,27 +295,27 @@
       <!-- Plan banner — dynamically rendered by renderOverviewBanner() -->
       <div id="overview-banner"></div>
 
-      <!-- Metrics — populated by loadOverviewStats() -->
+      <!-- Metrics -->
       <div class="metrics">
         <div class="metric" onclick="showPane('analytics')">
           <div class="metric-label">👁 <span data-es>Vistas al perfil</span><span data-en>Profile views</span></div>
-          <div class="metric-val" id="stat-views">—</div>
-          <div class="metric-delta" style="color:var(--c-muted)" id="stat-views-sub" data-es>Sin datos aún</div>
+          <div class="metric-val">247</div>
+          <div class="metric-delta delta-up">↑ +34% <span data-es>este mes</span><span data-en>this month</span></div>
         </div>
         <div class="metric" onclick="showPane('inquiries')">
-          <div class="metric-label">💬 <span data-es>Contactos</span><span data-en>Contacts</span></div>
-          <div class="metric-val" id="stat-contacts">—</div>
-          <div class="metric-delta" style="color:var(--c-muted)" id="stat-contacts-sub" data-es>Sin datos aún</div>
+          <div class="metric-label">💬 <span data-es>Solicitudes</span><span data-en>Inquiries</span></div>
+          <div class="metric-val">8</div>
+          <div class="metric-delta delta-up">↑ +3 <span data-es>esta semana</span><span data-en>this week</span></div>
         </div>
         <div class="metric" onclick="showPane('analytics')">
           <div class="metric-label">📱 WhatsApp <span data-es>clics</span><span data-en>clicks</span></div>
-          <div class="metric-val" id="stat-whatsapp">—</div>
-          <div class="metric-delta" style="color:var(--c-muted)" id="stat-whatsapp-sub" data-es>Sin datos aún</div>
+          <div class="metric-val">31</div>
+          <div class="metric-delta delta-up">↑ +12% <span data-es>este mes</span><span data-en>this month</span></div>
         </div>
         <div class="metric" onclick="showPane('reviews')">
-          <div class="metric-label">⭐ <span data-es>Reseñas</span><span data-en>Reviews</span></div>
-          <div class="metric-val" id="stat-reviews">—</div>
-          <div class="metric-delta" style="color:var(--c-muted)" id="stat-reviews-sub" data-es>Sin reseñas aún</div>
+          <div class="metric-label">⭐ <span data-es>Calificación</span><span data-en>Rating</span></div>
+          <div class="metric-val">4.9</div>
+          <div class="metric-delta" style="color:var(--c-muted)">38 <span data-es>reseñas</span><span data-en>reviews</span></div>
         </div>
       </div>
 
@@ -329,9 +325,23 @@
           <div class="card-title">
             <span data-es>Vistas — últimos 7 días</span><span data-en>Views — last 7 days</span>
           </div>
-          <div style="text-align:center;padding:20px;color:var(--c-hint);font-size:13px">
-            <span data-es>Sin datos aún. Las vistas se registrarán cuando clientes vean tu perfil.</span>
-            <span data-en>No data yet. Views will be tracked when customers see your profile.</span>
+          <div class="sparkline" id="sparkline">
+            <div class="spark-bar" style="height:40%" title="Mon: 28"></div>
+            <div class="spark-bar" style="height:55%" title="Tue: 38"></div>
+            <div class="spark-bar" style="height:48%" title="Wed: 34"></div>
+            <div class="spark-bar" style="height:70%" title="Thu: 49"></div>
+            <div class="spark-bar" style="height:60%" title="Fri: 42"></div>
+            <div class="spark-bar active" style="height:85%" title="Sat: 59"></div>
+            <div class="spark-bar" style="height:30%" title="Sun: 21"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--c-hint);margin-top:6px">
+            <span data-es>Lun</span><span data-en>Mon</span>
+            <span data-es>Mar</span><span data-en>Tue</span>
+            <span data-es>Mié</span><span data-en>Wed</span>
+            <span data-es>Jue</span><span data-en>Thu</span>
+            <span data-es>Vie</span><span data-en>Fri</span>
+            <span data-es>Sáb</span><span data-en>Sat</span>
+            <span data-es>Dom</span><span data-en>Sun</span>
           </div>
         </div>
 
@@ -339,8 +349,22 @@
           <div class="card-title">
             <span data-es>Fuente de visitas</span><span data-en>Traffic source</span>
           </div>
-          <div style="text-align:center;padding:20px;color:var(--c-hint);font-size:13px">
-            <span data-es>Disponible próximamente</span><span data-en>Coming soon</span>
+          <div class="bar-chart">
+            <div class="bar-row">
+              <span class="bar-lbl" data-es>Búsqueda</span><span class="bar-lbl" data-en>Search</span>
+              <div class="bar-track"><div class="bar-fill blue" style="width:72%"></div></div>
+              <span class="bar-num">178</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-lbl" data-es>Enlace directo</span><span class="bar-lbl" data-en>Direct link</span>
+              <div class="bar-track"><div class="bar-fill teal" style="width:24%"></div></div>
+              <span class="bar-num">59</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-lbl" data-es>Referido</span><span class="bar-lbl" data-en>Referral</span>
+              <div class="bar-track"><div class="bar-fill amber" style="width:4%"></div></div>
+              <span class="bar-num">10</span>
+            </div>
           </div>
         </div>
       </div>
@@ -353,10 +377,37 @@
             <a onclick="showPane('inquiries')" data-es>Ver historial →</a>
             <a onclick="showPane('inquiries')" data-en>See history →</a>
           </div>
-          <div id="overview-recent-inq">
-            <div style="text-align:center;padding:24px;color:var(--c-hint);font-size:13px">
-              <span data-es>Sin contactos aún. Cuando un cliente te contacte, aparecerá aquí.</span>
-              <span data-en>No contacts yet. When a customer reaches out, it will appear here.</span>
+          <div class="inq-item">
+            <div class="inq-avatar" style="background:var(--c-green-light);color:var(--c-green)">📲</div>
+            <div class="inq-body">
+              <div class="inq-msg" style="font-weight:500" data-es>Corte de césped + poda · Duluth</div>
+              <div class="inq-msg" style="font-weight:500" data-en>Lawn mowing + trimming · Duluth</div>
+              <div class="inq-meta">
+                <span class="inq-time" data-es>Hace 5 min</span><span class="inq-time" data-en>5 min ago</span>
+                <span class="status-badge status-new">WhatsApp</span>
+              </div>
+            </div>
+          </div>
+          <div class="inq-item">
+            <div class="inq-avatar" style="background:var(--c-green-light);color:var(--c-green)">📲</div>
+            <div class="inq-body">
+              <div class="inq-msg" style="font-weight:500" data-es>Contrato mensual · Norcross</div>
+              <div class="inq-msg" style="font-weight:500" data-en>Monthly contract · Norcross</div>
+              <div class="inq-meta">
+                <span class="inq-time" data-es>Hace 2h</span><span class="inq-time" data-en>2h ago</span>
+                <span class="status-badge status-new">WhatsApp</span>
+              </div>
+            </div>
+          </div>
+          <div class="inq-item">
+            <div class="inq-avatar" style="background:var(--c-green-light);color:var(--c-green)">📲</div>
+            <div class="inq-body">
+              <div class="inq-msg" style="font-weight:500" data-es>Diseño de jardín · Atlanta</div>
+              <div class="inq-msg" style="font-weight:500" data-en>Garden design · Atlanta</div>
+              <div class="inq-meta">
+                <span class="inq-time" data-es>Ayer</span><span class="inq-time" data-en>Yesterday</span>
+                <span class="status-badge status-new">WhatsApp</span>
+              </div>
             </div>
           </div>
         </div>
@@ -370,16 +421,17 @@
           <div style="margin-bottom:14px">
             <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--c-muted);margin-bottom:5px">
               <span data-es>Progreso</span><span data-en>Progress</span>
-              <span style="color:var(--c-amber);font-weight:500" id="profile-pct">0%</span>
+              <span style="color:var(--c-amber);font-weight:500">72%</span>
             </div>
             <div style="background:var(--c-bg);border-radius:4px;height:6px;overflow:hidden">
-              <div style="width:0%;height:100%;background:var(--c-amber);border-radius:4px" id="profile-pct-bar"></div>
+              <div style="width:72%;height:100%;background:var(--c-amber);border-radius:4px"></div>
             </div>
           </div>
-          <div id="profile-completeness-rows">
-            <div style="text-align:center;padding:8px;color:var(--c-hint);font-size:12px" data-es>Cargando...</div>
-            <div style="text-align:center;padding:8px;color:var(--c-hint);font-size:12px" data-en>Loading...</div>
-          </div>
+          <div class="check-row"><span class="check-lbl">✅ <span data-es>Información básica</span><span data-en>Basic info</span></span><span class="check-val ok" data-es>Completo</span><span class="check-val ok" data-en>Done</span></div>
+          <div class="check-row"><span class="check-lbl">✅ <span data-es>Verificación</span><span data-en>Verification</span></span><span class="check-val ok" data-es>Verificado</span><span class="check-val ok" data-en>Verified</span></div>
+          <div class="check-row"><span class="check-lbl">✅ <span data-es>Fotos (3)</span><span data-en>Photos (3)</span></span><span class="check-val ok" data-es>Completo</span><span class="check-val ok" data-en>Done</span></div>
+          <div class="check-row"><span class="check-lbl">⚠️ <span data-es>Área de servicio</span><span data-en>Service area</span></span><span class="check-val warn" data-es>Incompleto</span><span class="check-val warn" data-en>Incomplete</span></div>
+          <div class="check-row"><span class="check-lbl">⚠️ <span data-es>Portafolio</span><span data-en>Portfolio</span></span><span class="check-val warn">0 <span data-es>fotos</span><span data-en>photos</span></span></div>
         </div>
       </div>
 
@@ -387,14 +439,28 @@
       <div class="card">
         <div class="card-title">
           <span data-es>Reseñas recientes</span><span data-en>Recent reviews</span>
-          <a onclick="showPane('reviews')" data-es>Ver todas →</a>
-          <a onclick="showPane('reviews')" data-en>See all →</a>
+          <a onclick="showPane('reviews')" data-es>Ver todas (38) →</a>
+          <a onclick="showPane('reviews')" data-en>See all (38) →</a>
         </div>
-        <div id="overview-recent-reviews">
-          <div style="text-align:center;padding:24px;color:var(--c-hint);font-size:13px">
-            <span data-es>Sin reseñas aún.</span>
-            <span data-en>No reviews yet.</span>
+        <div class="review-mini">
+          <div class="review-mini-top">
+            <div class="review-mini-name">Maria R.</div>
+            <div class="review-mini-stars">★★★★★</div>
+            <div class="review-mini-date" data-es>Hace 2 semanas</div>
+            <div class="review-mini-date" data-en>2 weeks ago</div>
           </div>
+          <div class="review-mini-text" data-es>¡Excelente servicio! Llegaron a tiempo y dejaron el jardín impecable. 100% recomendados.</div>
+          <div class="review-mini-text" data-en>Excellent service! Arrived on time and left the garden immaculate. 100% recommended.</div>
+        </div>
+        <div class="review-mini">
+          <div class="review-mini-top">
+            <div class="review-mini-name">Carlos L.</div>
+            <div class="review-mini-stars">★★★★★</div>
+            <div class="review-mini-date" data-es>Hace 1 mes</div>
+            <div class="review-mini-date" data-en>1 month ago</div>
+          </div>
+          <div class="review-mini-text" data-es>Muy profesionales, precios justos y siempre responden por WhatsApp.</div>
+          <div class="review-mini-text" data-en>Very professional, fair prices and always respond on WhatsApp.</div>
         </div>
       </div>
 
@@ -415,11 +481,67 @@
       <div class="card">
         <div class="card-title"><span data-es>Historial de contactos</span><span data-en>Contact history</span></div>
 
-        <div id="inq-list">
-          <div style="text-align:center;padding:32px;color:var(--c-hint);font-size:13px">
-            <div style="font-size:32px;margin-bottom:10px">💬</div>
-            <span data-es>Sin contactos aún. Cuando un cliente haga clic en tu WhatsApp, aparecerá aquí.</span>
-            <span data-en>No contacts yet. When a customer clicks your WhatsApp, it will appear here.</span>
+        <div class="inq-item">
+          <div class="inq-avatar" style="background:var(--c-green-light);color:var(--c-green)">📲</div>
+          <div class="inq-body">
+            <div class="inq-msg" style="font-weight:500" data-es>Corte de césped + poda de árboles · Duluth, GA</div>
+            <div class="inq-msg" style="font-weight:500" data-en>Lawn mowing + tree trimming · Duluth, GA</div>
+            <div class="inq-meta">
+              <span class="inq-time" data-es>Hace 5 min</span><span class="inq-time" data-en>5 min ago</span>
+              <span class="status-badge status-new">WhatsApp</span>
+              <span style="font-size:11px;color:var(--c-hint)">📍 2.3 mi</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="inq-item">
+          <div class="inq-avatar" style="background:var(--c-green-light);color:var(--c-green)">📲</div>
+          <div class="inq-body">
+            <div class="inq-msg" style="font-weight:500" data-es>Sistema de riego residencial · Norcross</div>
+            <div class="inq-msg" style="font-weight:500" data-en>Residential irrigation system · Norcross</div>
+            <div class="inq-meta">
+              <span class="inq-time" data-es>Hace 1h</span><span class="inq-time" data-en>1h ago</span>
+              <span class="status-badge status-new">WhatsApp</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="inq-item">
+          <div class="inq-avatar" style="background:var(--c-blue-light);color:var(--c-blue)">📋</div>
+          <div class="inq-body">
+            <div class="inq-msg" style="font-weight:500" data-es>Limpieza de hojas · Lawrenceville</div>
+            <div class="inq-msg" style="font-weight:500" data-en>Leaf cleanup · Lawrenceville</div>
+            <div class="inq-meta">
+              <span class="inq-time" data-es>Hace 2h</span><span class="inq-time" data-en>2h ago</span>
+              <span class="status-badge" style="background:var(--c-blue-light);color:var(--c-blue)" data-es>Formulario</span>
+              <span class="status-badge" style="background:var(--c-blue-light);color:var(--c-blue)" data-en>Form</span>
+            </div>
+            <div style="font-size:12px;color:var(--c-hint);margin-top:4px" data-es>📧 Datos del cliente enviados a tu correo y WhatsApp</div>
+            <div style="font-size:12px;color:var(--c-hint);margin-top:4px" data-en>📧 Customer details sent to your email and WhatsApp</div>
+          </div>
+        </div>
+
+        <div class="inq-item">
+          <div class="inq-avatar" style="background:var(--c-green-light);color:var(--c-green)">📲</div>
+          <div class="inq-body">
+            <div class="inq-msg" style="font-weight:500" data-es>Contrato mensual comercial · Norcross</div>
+            <div class="inq-msg" style="font-weight:500" data-en>Commercial monthly contract · Norcross</div>
+            <div class="inq-meta">
+              <span class="inq-time" data-es>Ayer</span><span class="inq-time" data-en>Yesterday</span>
+              <span class="status-badge status-new">WhatsApp</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="inq-item">
+          <div class="inq-avatar" style="background:var(--c-green-light);color:var(--c-green)">📲</div>
+          <div class="inq-body">
+            <div class="inq-msg" style="font-weight:500" data-es>Diseño de jardín completo · Atlanta</div>
+            <div class="inq-msg" style="font-weight:500" data-en>Full garden design · Atlanta</div>
+            <div class="inq-meta">
+              <span class="inq-time" data-es>Hace 3 días</span><span class="inq-time" data-en>3 days ago</span>
+              <span class="status-badge status-new">WhatsApp</span>
+            </div>
           </div>
         </div>
 
@@ -433,36 +555,68 @@
 
     <!-- ══ REVIEWS PANE ══ -->
     <div id="pane-reviews" style="display:none">
-      <div class="card" id="reviews-summary" style="margin-bottom:16px;display:none">
+      <div class="card" style="margin-bottom:16px">
         <div style="display:flex;gap:20px;align-items:center">
           <div style="text-align:center">
-            <div style="font-family:var(--font-display);font-size:48px;line-height:1" id="rev-avg">—</div>
-            <div style="color:var(--c-amber);font-size:18px;margin:4px 0" id="rev-stars">☆☆☆☆☆</div>
-            <div style="font-size:12px;color:var(--c-muted)"><span id="rev-count">0</span> <span data-es>reseñas</span><span data-en>reviews</span></div>
+            <div style="font-family:var(--font-display);font-size:48px;line-height:1">4.9</div>
+            <div style="color:var(--c-amber);font-size:18px;margin:4px 0">★★★★★</div>
+            <div style="font-size:12px;color:var(--c-muted)">38 <span data-es>reseñas</span><span data-en>reviews</span></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:5px">
+            <div class="bar-row"><span class="bar-lbl" style="color:var(--c-amber)">5★</span><div class="bar-track"><div class="bar-fill amber" style="width:85%"></div></div><span class="bar-num">32</span></div>
+            <div class="bar-row"><span class="bar-lbl" style="color:var(--c-amber)">4★</span><div class="bar-track"><div class="bar-fill amber" style="width:10%"></div></div><span class="bar-num">4</span></div>
+            <div class="bar-row"><span class="bar-lbl" style="color:var(--c-amber)">3★</span><div class="bar-track"><div class="bar-fill amber" style="width:3%"></div></div><span class="bar-num">1</span></div>
+            <div class="bar-row"><span class="bar-lbl" style="color:var(--c-amber)">2★</span><div class="bar-track"><div class="bar-fill amber" style="width:2%"></div></div><span class="bar-num">1</span></div>
+            <div class="bar-row"><span class="bar-lbl" style="color:var(--c-amber)">1★</span><div class="bar-track"><div class="bar-fill amber" style="width:0%"></div></div><span class="bar-num">0</span></div>
           </div>
         </div>
       </div>
       <div class="card">
         <div class="card-title"><span data-es>Todas las reseñas</span><span data-en>All reviews</span></div>
-        <div id="reviews-list">
-          <div style="text-align:center;padding:32px;color:var(--c-hint);font-size:13px">
-            <div style="font-size:32px;margin-bottom:10px">⭐</div>
-            <span data-es>Sin reseñas aún. Las reseñas de clientes aparecerán aquí.</span>
-            <span data-en>No reviews yet. Customer reviews will appear here.</span>
-          </div>
-        </div>
+        <div class="review-mini"><div class="review-mini-top"><div class="review-mini-name">Maria R.</div><div class="review-mini-stars">★★★★★</div><div class="review-mini-date" data-es>Hace 2 sem</div><div class="review-mini-date" data-en>2 wks ago</div></div><div class="review-mini-text" data-es>Excelente servicio. Llegaron puntual y dejaron todo impecable. 100% recomendados.</div><div class="review-mini-text" data-en>Excellent service. Arrived on time, left everything immaculate. 100% recommended.</div></div>
+        <div class="review-mini"><div class="review-mini-top"><div class="review-mini-name">Carlos L.</div><div class="review-mini-stars">★★★★★</div><div class="review-mini-date" data-es>Hace 1 mes</div><div class="review-mini-date" data-en>1 mo ago</div></div><div class="review-mini-text" data-es>Muy profesionales, precios justos y rápida respuesta por WhatsApp.</div><div class="review-mini-text" data-en>Very professional, fair prices and fast WhatsApp response.</div></div>
+        <div class="review-mini"><div class="review-mini-top"><div class="review-mini-name">Sarah J.</div><div class="review-mini-stars">★★★★☆</div><div class="review-mini-date" data-es>Hace 6 sem</div><div class="review-mini-date" data-en>6 wks ago</div></div><div class="review-mini-text" data-es>Buen trabajo en general. El resultado quedó muy bonito.</div><div class="review-mini-text" data-en>Good work overall. The result looked very nice.</div></div>
       </div>
     </div>
 
     <!-- ══ ANALYTICS PANE ══ -->
     <div id="pane-analytics" style="display:none">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title"><span data-es>Vistas mensuales</span><span data-en>Monthly views</span></div>
+          <div class="sparkline">
+            <div class="spark-bar" style="height:30%"></div>
+            <div class="spark-bar" style="height:45%"></div>
+            <div class="spark-bar" style="height:40%"></div>
+            <div class="spark-bar" style="height:65%"></div>
+            <div class="spark-bar" style="height:55%"></div>
+            <div class="spark-bar" style="height:80%"></div>
+            <div class="spark-bar active" style="height:100%"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--c-hint);margin-top:6px">
+            <span>Dic</span><span>Ene</span><span>Feb</span><span>Mar</span><span>Abr</span><span>May</span><span>Jun</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span data-es>Conversión</span><span data-en>Conversion</span></div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--c-muted);margin-bottom:4px"><span data-es>Vistas → WhatsApp</span><span data-en>Views → WhatsApp</span><span style="color:var(--c-text);font-weight:500">12.6%</span></div>
+              <div style="background:var(--c-bg);height:6px;border-radius:3px;overflow:hidden"><div style="width:12.6%;height:100%;background:var(--c-green);border-radius:3px"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--c-muted);margin-bottom:4px"><span data-es>Vistas → Solicitud</span><span data-en>Views → Request</span><span style="color:var(--c-text);font-weight:500">3.2%</span></div>
+              <div style="background:var(--c-bg);height:6px;border-radius:3px;overflow:hidden"><div style="width:3.2%;height:100%;background:var(--c-accent);border-radius:3px"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="card">
-        <div style="text-align:center;padding:40px 24px;color:var(--c-hint)">
-          <div style="font-size:40px;margin-bottom:14px">📈</div>
-          <div style="font-size:15px;font-weight:500;color:var(--c-text);margin-bottom:8px" data-es>Analytics próximamente</div>
-          <div style="font-size:15px;font-weight:500;color:var(--c-text);margin-bottom:8px" data-en>Analytics coming soon</div>
-          <div style="font-size:13px" data-es>Las estadísticas detalladas estarán disponibles en una próxima actualización. Por ahora, puedes ver el número de contactos en el Resumen.</div>
-          <div style="font-size:13px" data-en>Detailed analytics will be available in an upcoming update. For now, you can see contact counts in the Overview.</div>
+        <div class="card-title"><span data-es>Fuente de visitas — Este mes</span><span data-en>Traffic source — This month</span></div>
+        <div class="bar-chart">
+          <div class="bar-row"><span class="bar-lbl" data-es>Búsqueda</span><span class="bar-lbl" data-en>Search</span><div class="bar-track"><div class="bar-fill blue" style="width:72%"></div></div><span class="bar-num">178</span></div>
+          <div class="bar-row"><span class="bar-lbl" data-es>Directo</span><span class="bar-lbl" data-en>Direct</span><div class="bar-track"><div class="bar-fill teal" style="width:24%"></div></div><span class="bar-num">59</span></div>
+          <div class="bar-row"><span class="bar-lbl" data-es>Referido</span><span class="bar-lbl" data-en>Referral</span><div class="bar-track"><div class="bar-fill amber" style="width:4%"></div></div><span class="bar-num">10</span></div>
         </div>
       </div>
     </div>
@@ -537,6 +691,11 @@
           <label class="modal-label" data-es>Área de servicio (ciudades)</label>
           <label class="modal-label" data-en>Service area (cities)</label>
           <input class="modal-input" type="text" id="ep-area" placeholder="Duluth, Norcross, Lawrenceville, Suwanee">
+        </div>
+        <div style="margin-bottom:12px">
+          <label class="modal-label" data-es>Categorías</label>
+          <label class="modal-label" data-en>Categories</label>
+          <div id="ep-categories" style="font-size:13px;color:var(--c-muted);padding:10px 13px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);background:var(--c-bg)">—</div>
         </div>
         <div>
           <label class="modal-label" data-es>Descripción del negocio</label>
@@ -774,10 +933,20 @@ function markInqStatus(item, newStatus) {
 }
 
 // ── EDIT PROFILE ───────────────────────────────────────────
+// 전화번호 정규화 — WhatsApp 국제번호 형식
+function normalizePhone(raw) {
+  if (!raw) return '';
+  var digits = raw.replace(/\D/g, '');
+  if (digits.length === 11 && digits.startsWith('1')) return '+' + digits;
+  if (digits.length === 10) return '+1' + digits;
+  if (digits.length > 10) return '+' + digits;
+  return '+1' + digits;
+}
+
 async function saveProfileChanges() {
   var isEn = document.body.classList.contains('en');
-  var btn = document.querySelector('[onclick="saveProfileChanges()"]');
-  if (btn) { btn.disabled = true; }
+  var btns = document.querySelectorAll('[onclick="saveProfileChanges()"]');
+  btns.forEach(function(b){ b.disabled = true; });
 
   try {
     var paymentMethods = [];
@@ -796,7 +965,7 @@ async function saveProfileChanges() {
     await updateBusiness({
       business_name: document.getElementById('ep-legal-name')?.value.trim() || '',
       trade_name: document.getElementById('ep-trade-name')?.value.trim() || '',
-      whatsapp_phone: document.getElementById('ep-phone')?.value.trim() || '',
+      whatsapp_phone: normalizePhone(document.getElementById('ep-phone')?.value.trim() || ''),
       public_email: document.getElementById('ep-email')?.value.trim() || '',
       service_area: document.getElementById('ep-area')?.value.trim() || '',
       description: document.getElementById('ep-desc')?.value.trim() || '',
@@ -804,22 +973,15 @@ async function saveProfileChanges() {
       languages: languages
     });
 
-    // 업체명 업데이트
     var bizName = document.getElementById('ep-legal-name')?.value.trim();
-    if (bizName) {
-      document.querySelectorAll('.biz-display-name').forEach(function(el){ el.textContent = bizName; });
-    }
+    if (bizName) document.querySelectorAll('.biz-display-name').forEach(function(el){ el.textContent = bizName; });
     showToast(isEn ? '✅ Changes saved' : '✅ Cambios guardados');
-
-    // info banner 숨기기
-    var banner = document.querySelector('#pane-profile .info-banner');
-    if (banner) banner.style.display = 'none';
 
   } catch(err) {
     console.error('Save error:', err);
     showToast(isEn ? '❌ Could not save. Try again.' : '❌ No se pudo guardar. Intenta de nuevo.');
   } finally {
-    if (btn) { btn.disabled = false; }
+    btns.forEach(function(b){ b.disabled = false; });
   }
 }
 
@@ -875,18 +1037,9 @@ function toggleDayOpen(checkbox, idx) {
   });
 }
 
-async function saveHours() {
-  var isEn = document.body.classList.contains('en');
-  try {
-    var hoursData = DAYS.map(function(d) {
-      return { day_es: d.es, day_en: d.en, open: d.open, from: d.from, to: d.to };
-    });
-    await updateBusiness({ hours: hoursData });
-    showToast(isEn ? '✅ Hours saved' : '✅ Horario guardado');
-  } catch(e) {
-    console.error('Hours save error:', e);
-    showToast(isEn ? '❌ Could not save hours' : '❌ No se pudo guardar el horario');
-  }
+function saveHours() {
+  // In production: PUT /api/business/:id/hours
+  showToast(document.body.classList.contains('en') ? '✅ Hours saved (simulation)' : '✅ Horario guardado (simulación)');
 }
 
 function showPane(id){
@@ -1084,14 +1237,9 @@ function confirmUpgradePayment() {
   showPlanToast(isEn ? '✓ Upgraded to ' + info.name : '✓ Actualizado a ' + info.name);
 }
 
-async function doLogout() {
-  try { await signOut(); } catch(e) {}
+function doLogout() {
+  try { localStorage.removeItem('anm-sim-logged-in'); } catch(e) {}
   window.location.href = 'login.html';
-}
-
-function getCurrentPlan() {
-  // Will be loaded from Supabase — fallback to localStorage during transition
-  try { return window._bizPlan || localStorage.getItem('anm-sim-plan') || 'free'; } catch(e) { return 'free'; }
 }
 
 function openCancelRequestModal() {
@@ -1163,151 +1311,11 @@ function openWA(phone){
   window.open('https://wa.me/'+phone.replace(/\D/g,'')+'?text='+encodeURIComponent(msg),'_blank');
 }
 
-function refreshPlanUI() {
-  var plan = window._bizPlan || 'free';
-  var planBadge = document.getElementById('sb-plan-badge');
-  if (planBadge) {
-    var planLabels = { free: 'Free', basic: '⭐ Basic', premium: '🌟 Premium' };
-    planBadge.textContent = planLabels[plan] || 'Free';
-  }
-  // getCurrentPlan도 동기화
-  window._bizPlan = plan;
-}
-
-function renderProfileCompleteness(biz) {
-  var isEn = document.body.classList.contains('en');
-  var rows = [];
-  var score = 0;
-  var total = 4;
-
-  // 기본 정보
-  var hasBasic = !!(biz.business_name && biz.whatsapp_phone);
-  rows.push({ ok: hasBasic, es: 'Información básica', en: 'Basic info', valEs: hasBasic ? 'Completo' : 'Incompleto', valEn: hasBasic ? 'Done' : 'Incomplete' });
-  if (hasBasic) score++;
-
-  // 설명
-  var hasDesc = !!(biz.description && biz.description.length > 10);
-  rows.push({ ok: hasDesc, es: 'Descripción', en: 'Description', valEs: hasDesc ? 'Completo' : 'Incompleto', valEn: hasDesc ? 'Done' : 'Incomplete' });
-  if (hasDesc) score++;
-
-  // 서비스 지역
-  var hasArea = !!(biz.service_area);
-  rows.push({ ok: hasArea, es: 'Área de servicio', en: 'Service area', valEs: hasArea ? 'Completo' : 'Incompleto', valEn: hasArea ? 'Done' : 'Incomplete' });
-  if (hasArea) score++;
-
-  // 인증
-  var isVerified = !!biz.verified;
-  rows.push({ ok: isVerified, es: 'Verificación', en: 'Verification', valEs: isVerified ? 'Verificado' : 'Pendiente', valEn: isVerified ? 'Verified' : 'Pending' });
-  if (isVerified) score++;
-
-  var pct = Math.round((score / total) * 100);
-  var pctEl = document.getElementById('profile-pct');
-  var barEl = document.getElementById('profile-pct-bar');
-  if (pctEl) pctEl.textContent = pct + '%';
-  if (barEl) barEl.style.width = pct + '%';
-
-  var rowsEl = document.getElementById('profile-completeness-rows');
-  if (!rowsEl) return;
-  rowsEl.innerHTML = rows.map(function(r) {
-    var icon = r.ok ? '✅' : '⚠️';
-    var cls = r.ok ? 'ok' : 'warn';
-    return '<div class="check-row"><span class="check-lbl">' + icon + ' <span data-es>' + r.es + '</span><span data-en>' + r.en + '</span></span>' +
-      '<span class="check-val ' + cls + '" data-es>' + r.valEs + '</span>' +
-      '<span class="check-val ' + cls + '" data-en>' + r.valEn + '</span></div>';
-  }).join('');
-
-  // 언어 재적용
-  var lang = document.body.classList.contains('en') ? 'en' : 'es';
-  rowsEl.querySelectorAll('[data-es]').forEach(function(el){ el.style.display = lang === 'es' ? '' : 'none'; });
-  rowsEl.querySelectorAll('[data-en]').forEach(function(el){ el.style.display = lang === 'en' ? '' : 'none'; });
-}
-
-async function loadOverviewStats() {
-  if (!window._bizId) return;
-  try {
-    const sb = getSupabase();
-    // 연락 횟수
-    const { count: contactCount } = await sb.from('contact_log').select('*', {count:'exact',head:true}).eq('business_id', window._bizId);
-    var statC = document.getElementById('stat-contacts');
-    if (statC) statC.textContent = contactCount || 0;
-    var statWA = document.getElementById('stat-whatsapp');
-    if (statWA) statWA.textContent = contactCount || 0;
-
-    // 리뷰 통계
-    const { data: revData } = await sb.from('reviews').select('rating').eq('business_id', window._bizId);
-    var revCount = revData ? revData.length : 0;
-    var revAvg = revCount > 0 ? (revData.reduce(function(s,r){ return s+r.rating; }, 0) / revCount).toFixed(1) : '—';
-    var statR = document.getElementById('stat-reviews');
-    if (statR) statR.textContent = revAvg;
-    var statRsub = document.getElementById('stat-reviews-sub');
-    if (statRsub) statRsub.textContent = revCount + (document.body.classList.contains('en') ? ' reviews' : ' reseñas');
-
-    // stat-views 는 아직 추적 미구현
-    var statV = document.getElementById('stat-views');
-    if (statV) statV.textContent = '—';
-
-  } catch(e) { console.error('Stats error:', e); }
-}
-
-async function loadRecentInquiries() {
-  if (!window._bizId) return;
-  try {
-    const sb = getSupabase();
-    const { data } = await sb.from('contact_log').select('*').eq('business_id', window._bizId).order('created_at', {ascending:false}).limit(5);
-    var listEl = document.getElementById('overview-recent-inq');
-    var inqListEl = document.getElementById('inq-list');
-    if (!data || data.length === 0) return;
-
-    var isEn = document.body.classList.contains('en');
-    var html = data.map(function(item) {
-      var d = new Date(item.created_at);
-      var timeStr = d.toLocaleDateString(isEn ? 'en-US' : 'es-US', {month:'short', day:'numeric'});
-      return '<div class="inq-item"><div class="inq-avatar" style="background:var(--c-green-light);color:var(--c-green)">📲</div><div class="inq-body"><div class="inq-msg" style="font-weight:500">' + item.contact_type + '</div><div class="inq-meta"><span class="inq-time">' + timeStr + '</span><span class="status-badge status-new">' + item.contact_type + '</span></div></div></div>';
-    }).join('');
-
-    if (listEl) listEl.innerHTML = html;
-    if (inqListEl) inqListEl.innerHTML = html;
-  } catch(e) { console.error('Inquiries error:', e); }
-}
-
-async function loadReviews() {
-  if (!window._bizId) return;
-  try {
-    const sb = getSupabase();
-    const { data } = await sb.from('reviews').select('*').eq('business_id', window._bizId).order('created_at', {ascending:false});
-    if (!data || data.length === 0) return;
-
-    var isEn = document.body.classList.contains('en');
-    var avg = (data.reduce(function(s,r){ return s+r.rating; }, 0) / data.length).toFixed(1);
-    var stars = '★'.repeat(Math.round(avg)) + '☆'.repeat(5 - Math.round(avg));
-
-    var sumEl = document.getElementById('reviews-summary');
-    if (sumEl) {
-      sumEl.style.display = 'block';
-      document.getElementById('rev-avg').textContent = avg;
-      document.getElementById('rev-stars').textContent = stars;
-      document.getElementById('rev-count').textContent = data.length;
-    }
-
-    var listEl = document.getElementById('reviews-list');
-    var ovEl = document.getElementById('overview-recent-reviews');
-    var html = data.slice(0,3).map(function(r) {
-      var s = '★'.repeat(r.rating) + '☆'.repeat(5-r.rating);
-      var d = new Date(r.created_at).toLocaleDateString(isEn?'en-US':'es-US',{month:'short',day:'numeric'});
-      return '<div class="review-mini"><div class="review-mini-top"><div class="review-mini-name">' + r.reviewer_name + '</div><div class="review-mini-stars">' + s + '</div><div class="review-mini-date">' + d + '</div></div><div class="review-mini-text">' + (r.comment||'') + '</div></div>';
-    }).join('');
-
-    if (listEl) listEl.innerHTML = html;
-    if (ovEl) ovEl.innerHTML = html;
-  } catch(e) { console.error('Reviews error:', e); }
-}
-
 document.addEventListener('DOMContentLoaded', async function(){
   var saved=''; try{saved=localStorage.getItem('anm-lang');}catch(e){}
   var browser=(navigator.language||'es').toLowerCase();
   setLang(saved||(browser.startsWith('en')?'en':'es'));
 
-  // Supabase 세션 확인 — 로그인 안 되어 있으면 login.html로
   try {
     const session = await getSession();
     if (!session) { window.location.href = 'login.html'; return; }
@@ -1315,13 +1323,11 @@ document.addEventListener('DOMContentLoaded', async function(){
     const userType = user.user_metadata?.user_type || 'customer';
     if (userType !== 'business') { window.location.href = 'login.html'; return; }
 
-    // 업체 프로필 로드
     const biz = await getMyBusiness();
     if (biz) {
       window._bizPlan = biz.plan || 'free';
       window._bizId = biz.id;
 
-      // NULL 필드는 metadata에서 보완 후 DB 업데이트
       const meta = user.user_metadata || {};
       var needsUpdate = {};
       if (!biz.whatsapp_phone && meta.phone) needsUpdate.whatsapp_phone = meta.phone;
@@ -1334,17 +1340,11 @@ document.addEventListener('DOMContentLoaded', async function(){
       if ((!biz.hours || biz.hours.length === 0) && meta.hours && meta.hours.length > 0) needsUpdate.hours = meta.hours;
 
       if (Object.keys(needsUpdate).length > 0) {
-        try {
-          await updateBusiness(needsUpdate);
-          // 로컬 biz 객체도 업데이트
-          Object.assign(biz, needsUpdate);
-        } catch(e) { console.error('Auto-fill update error:', e); }
+        try { await updateBusiness(needsUpdate); Object.assign(biz, needsUpdate); } catch(e) {}
       }
 
       // 업체명 표시
-      document.querySelectorAll('.biz-display-name').forEach(function(el){
-        el.textContent = biz.business_name || '';
-      });
+      document.querySelectorAll('.biz-display-name').forEach(function(el){ el.textContent = biz.business_name || ''; });
 
       // 프로필 폼 채우기
       var f = function(id, val){ var el = document.getElementById(id); if(el && val !== undefined && val !== null) el.value = val; };
@@ -1354,6 +1354,12 @@ document.addEventListener('DOMContentLoaded', async function(){
       f('ep-email', biz.public_email);
       f('ep-area', biz.service_area);
       f('ep-desc', biz.description);
+
+      // Categories 표시
+      var catEl = document.getElementById('ep-categories');
+      if (catEl && biz.categories && biz.categories.length > 0) {
+        catEl.textContent = biz.categories.join(', ');
+      }
 
       // 결제 방법 체크박스
       var pm = biz.payment_methods || [];
@@ -1370,7 +1376,7 @@ document.addEventListener('DOMContentLoaded', async function(){
       if (document.getElementById('lang-en')) document.getElementById('lang-en').checked = langs.includes('en');
       if (document.getElementById('lang-pt')) document.getElementById('lang-pt').checked = langs.includes('pt');
 
-      // Hours DB에서 불러오기 — day name으로 매핑
+      // Hours — day name으로 매핑
       if (biz.hours && Array.isArray(biz.hours) && biz.hours.length > 0) {
         biz.hours.forEach(function(h) {
           var dayEn = h.en || h.day_en || '';
@@ -1384,25 +1390,7 @@ document.addEventListener('DOMContentLoaded', async function(){
         });
       }
 
-      // 연락 횟수
-      var contactEl = document.querySelector('.metric-val');
-      if (biz.contact_count && contactEl) contactEl.textContent = biz.contact_count;
-
-      // 프로필 완성도
-      if (biz.whatsapp_phone && biz.description) {
-        var banner = document.querySelector('#pane-profile .info-banner');
-        if (banner) banner.style.display = 'none';
-      }
-
-      // 플랜 UI 업데이트
-      refreshPlanUI();
-
-      // 통계, 문의, 리뷰 로드
-      loadOverviewStats();
-      loadRecentInquiries();
-      loadReviews();
-
-      // Verified 배지 — DB 값 기반
+      // Verified 배지
       var verifiedBadge = document.getElementById('sb-verified-badge');
       if (verifiedBadge && biz.verified) verifiedBadge.style.display = 'inline-flex';
 
@@ -1413,22 +1401,14 @@ document.addEventListener('DOMContentLoaded', async function(){
         planBadge.textContent = planLabels[biz.plan] || 'Free';
       }
 
-      // Profile completeness 동적 렌더링
       renderProfileCompleteness(biz);
-
-      // Hours DB에서 불러오기
-      if (biz.hours && Array.isArray(biz.hours)) {
-        biz.hours.forEach(function(h, i) {
-          if (DAYS[i]) {
-            DAYS[i].open = h.open;
-            DAYS[i].from = h.from || '08:00';
-            DAYS[i].to = h.to || '18:00';
-          }
-        });
-      }
+      refreshPlanUI();
+      loadOverviewStats();
+      loadRecentInquiries();
+      loadReviews();
 
     } else {
-      // businesses 레코드 없음 — metadata에서 모든 정보 가져와서 생성
+      // businesses 레코드 없음 — metadata로 생성
       const meta = user.user_metadata || {};
       const newBiz = await createBusiness({
         businessName: meta.business_name || user.email.split('@')[0],
@@ -1446,7 +1426,6 @@ document.addEventListener('DOMContentLoaded', async function(){
       window._bizPlan = newBiz.plan || 'free';
       window._bizId = newBiz.id;
 
-      // 프로필 폼 채우기
       var f2 = function(id, val){ var el = document.getElementById(id); if(el && val) el.value = val; };
       f2('ep-legal-name', meta.business_name);
       f2('ep-trade-name', meta.trade_name);
@@ -1455,7 +1434,11 @@ document.addEventListener('DOMContentLoaded', async function(){
       f2('ep-desc', meta.description);
       f2('ep-area', meta.service_area);
 
-      // 결제 방법 체크박스
+      var catEl2 = document.getElementById('ep-categories');
+      if (catEl2 && meta.categories && meta.categories.length > 0) {
+        catEl2.textContent = meta.categories.join(', ');
+      }
+
       var pm2 = meta.payment_methods || [];
       if (document.getElementById('pay-cash')) document.getElementById('pay-cash').checked = pm2.includes('cash');
       if (document.getElementById('pay-zelle')) document.getElementById('pay-zelle').checked = pm2.includes('zelle');
@@ -1463,29 +1446,13 @@ document.addEventListener('DOMContentLoaded', async function(){
       if (document.getElementById('pay-credit-card')) document.getElementById('pay-credit-card').checked = pm2.includes('credit_card');
       if (document.getElementById('pay-check')) document.getElementById('pay-check').checked = pm2.includes('check');
       if (document.getElementById('pay-paypal')) document.getElementById('pay-paypal').checked = pm2.includes('paypal');
-      if (document.getElementById('pay-check')) document.getElementById('pay-check').checked = pm2.includes('check');
 
-      // 언어 체크박스
       var langs2 = meta.languages || ['es'];
       if (document.getElementById('lang-es')) document.getElementById('lang-es').checked = langs2.includes('es');
       if (document.getElementById('lang-en')) document.getElementById('lang-en').checked = langs2.includes('en');
       if (document.getElementById('lang-pt')) document.getElementById('lang-pt').checked = langs2.includes('pt');
 
-      // Hours
-      if (meta.hours && Array.isArray(meta.hours) && meta.hours.length > 0) {
-        meta.hours.forEach(function(h, i) {
-          if (DAYS[i]) {
-            DAYS[i].open = h.open;
-            DAYS[i].from = h.from || '09:00';
-            DAYS[i].to = h.to || '18:00';
-          }
-        });
-      }
-
-      document.querySelectorAll('.biz-display-name').forEach(function(el){
-        el.textContent = meta.business_name || user.email.split('@')[0];
-      });
-
+      document.querySelectorAll('.biz-display-name').forEach(function(el){ el.textContent = meta.business_name || user.email.split('@')[0]; });
       renderProfileCompleteness(newBiz);
       refreshPlanUI();
     }
