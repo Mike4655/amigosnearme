@@ -229,18 +229,18 @@
     <a href="index.html">Amigos<span>NearMe</span></a>
   </div>
   <div class="sb-biz">
-    <div class="sb-avatar">GG</div>
-    <div class="sb-biz-name">Garcia's Garden & Landscaping</div>
+    <div class="sb-avatar" id="sb-avatar">GG</div>
+    <div class="sb-biz-name biz-display-name">—</div>
     <div style="display:flex;gap:5px;margin-top:5px;flex-wrap:wrap">
-      <span class="sb-badge verified">✓ Verified</span>
-      <span class="sb-badge plan">⭐ Basic</span>
+      <span class="sb-badge verified" id="sb-verified-badge" style="display:none">✓ Verified</span>
+      <span class="sb-badge plan" id="sb-plan-badge">Free</span>
     </div>
   </div>
   <nav class="sb-nav">
     <div class="sb-section" data-es>Principal</div>
     <div class="sb-section" data-en>Main</div>
     <a class="sb-link active" onclick="showPane('overview')"><span class="icon">📊</span> <span data-es>Resumen</span><span data-en>Overview</span></a>
-    <a class="sb-link" onclick="showPane('inquiries')"><span class="icon">💬</span> <span data-es>Solicitudes</span><span data-en>Inquiries</span><span class="badge-dot">3</span></a>
+    <a class="sb-link" onclick="showPane('inquiries')"><span class="icon">💬</span> <span data-es>Solicitudes</span><span data-en>Inquiries</span><span class="badge-dot" id="inq-badge" style="display:none">0</span></a>
     <a class="sb-link" onclick="showPane('reviews')"><span class="icon">⭐</span> <span data-es>Reseñas</span><span data-en>Reviews</span></a>
     <a class="sb-link" onclick="showPane('analytics')"><span class="icon">📈</span> <span data-es>Análisis</span><span data-en>Analytics</span></a>
 
@@ -299,23 +299,23 @@
       <div class="metrics">
         <div class="metric" onclick="showPane('analytics')">
           <div class="metric-label">👁 <span data-es>Vistas al perfil</span><span data-en>Profile views</span></div>
-          <div class="metric-val">247</div>
-          <div class="metric-delta delta-up">↑ +34% <span data-es>este mes</span><span data-en>this month</span></div>
+          <div class="metric-val" id="stat-views">—</div>
+          <div class="metric-delta" style="color:var(--c-muted)" id="stat-views-sub">—</div>
         </div>
         <div class="metric" onclick="showPane('inquiries')">
           <div class="metric-label">💬 <span data-es>Solicitudes</span><span data-en>Inquiries</span></div>
-          <div class="metric-val">8</div>
-          <div class="metric-delta delta-up">↑ +3 <span data-es>esta semana</span><span data-en>this week</span></div>
+          <div class="metric-val" id="stat-contacts">—</div>
+          <div class="metric-delta" style="color:var(--c-muted)" id="stat-contacts-sub">—</div>
         </div>
         <div class="metric" onclick="showPane('analytics')">
           <div class="metric-label">📱 WhatsApp <span data-es>clics</span><span data-en>clicks</span></div>
-          <div class="metric-val">31</div>
-          <div class="metric-delta delta-up">↑ +12% <span data-es>este mes</span><span data-en>this month</span></div>
+          <div class="metric-val" id="stat-whatsapp">—</div>
+          <div class="metric-delta" style="color:var(--c-muted)" id="stat-whatsapp-sub">—</div>
         </div>
         <div class="metric" onclick="showPane('reviews')">
           <div class="metric-label">⭐ <span data-es>Calificación</span><span data-en>Rating</span></div>
-          <div class="metric-val">4.9</div>
-          <div class="metric-delta" style="color:var(--c-muted)">38 <span data-es>reseñas</span><span data-en>reviews</span></div>
+          <div class="metric-val" id="stat-reviews">—</div>
+          <div class="metric-delta" style="color:var(--c-muted)" id="stat-reviews-sub">—</div>
         </div>
       </div>
 
@@ -325,23 +325,9 @@
           <div class="card-title">
             <span data-es>Vistas — últimos 7 días</span><span data-en>Views — last 7 days</span>
           </div>
-          <div class="sparkline" id="sparkline">
-            <div class="spark-bar" style="height:40%" title="Mon: 28"></div>
-            <div class="spark-bar" style="height:55%" title="Tue: 38"></div>
-            <div class="spark-bar" style="height:48%" title="Wed: 34"></div>
-            <div class="spark-bar" style="height:70%" title="Thu: 49"></div>
-            <div class="spark-bar" style="height:60%" title="Fri: 42"></div>
-            <div class="spark-bar active" style="height:85%" title="Sat: 59"></div>
-            <div class="spark-bar" style="height:30%" title="Sun: 21"></div>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--c-hint);margin-top:6px">
-            <span data-es>Lun</span><span data-en>Mon</span>
-            <span data-es>Mar</span><span data-en>Tue</span>
-            <span data-es>Mié</span><span data-en>Wed</span>
-            <span data-es>Jue</span><span data-en>Thu</span>
-            <span data-es>Vie</span><span data-en>Fri</span>
-            <span data-es>Sáb</span><span data-en>Sat</span>
-            <span data-es>Dom</span><span data-en>Sun</span>
+          <div style="text-align:center;padding:20px;color:var(--c-hint);font-size:13px" id="sparkline">
+            <span data-es>Sin datos aún. Las vistas se registrarán cuando clientes vean tu perfil.</span>
+            <span data-en>No data yet. Views will be tracked when customers see your profile.</span>
           </div>
         </div>
 
@@ -349,22 +335,8 @@
           <div class="card-title">
             <span data-es>Fuente de visitas</span><span data-en>Traffic source</span>
           </div>
-          <div class="bar-chart">
-            <div class="bar-row">
-              <span class="bar-lbl" data-es>Búsqueda</span><span class="bar-lbl" data-en>Search</span>
-              <div class="bar-track"><div class="bar-fill blue" style="width:72%"></div></div>
-              <span class="bar-num">178</span>
-            </div>
-            <div class="bar-row">
-              <span class="bar-lbl" data-es>Enlace directo</span><span class="bar-lbl" data-en>Direct link</span>
-              <div class="bar-track"><div class="bar-fill teal" style="width:24%"></div></div>
-              <span class="bar-num">59</span>
-            </div>
-            <div class="bar-row">
-              <span class="bar-lbl" data-es>Referido</span><span class="bar-lbl" data-en>Referral</span>
-              <div class="bar-track"><div class="bar-fill amber" style="width:4%"></div></div>
-              <span class="bar-num">10</span>
-            </div>
+          <div style="text-align:center;padding:20px;color:var(--c-hint);font-size:13px">
+            <span data-es>Disponible próximamente</span><span data-en>Coming soon</span>
           </div>
         </div>
       </div>
@@ -377,37 +349,10 @@
             <a onclick="showPane('inquiries')" data-es>Ver historial →</a>
             <a onclick="showPane('inquiries')" data-en>See history →</a>
           </div>
-          <div class="inq-item">
-            <div class="inq-avatar" style="background:var(--c-green-light);color:var(--c-green)">📲</div>
-            <div class="inq-body">
-              <div class="inq-msg" style="font-weight:500" data-es>Corte de césped + poda · Duluth</div>
-              <div class="inq-msg" style="font-weight:500" data-en>Lawn mowing + trimming · Duluth</div>
-              <div class="inq-meta">
-                <span class="inq-time" data-es>Hace 5 min</span><span class="inq-time" data-en>5 min ago</span>
-                <span class="status-badge status-new">WhatsApp</span>
-              </div>
-            </div>
-          </div>
-          <div class="inq-item">
-            <div class="inq-avatar" style="background:var(--c-green-light);color:var(--c-green)">📲</div>
-            <div class="inq-body">
-              <div class="inq-msg" style="font-weight:500" data-es>Contrato mensual · Norcross</div>
-              <div class="inq-msg" style="font-weight:500" data-en>Monthly contract · Norcross</div>
-              <div class="inq-meta">
-                <span class="inq-time" data-es>Hace 2h</span><span class="inq-time" data-en>2h ago</span>
-                <span class="status-badge status-new">WhatsApp</span>
-              </div>
-            </div>
-          </div>
-          <div class="inq-item">
-            <div class="inq-avatar" style="background:var(--c-green-light);color:var(--c-green)">📲</div>
-            <div class="inq-body">
-              <div class="inq-msg" style="font-weight:500" data-es>Diseño de jardín · Atlanta</div>
-              <div class="inq-msg" style="font-weight:500" data-en>Garden design · Atlanta</div>
-              <div class="inq-meta">
-                <span class="inq-time" data-es>Ayer</span><span class="inq-time" data-en>Yesterday</span>
-                <span class="status-badge status-new">WhatsApp</span>
-              </div>
+          <div id="overview-recent-inq">
+            <div style="text-align:center;padding:24px;color:var(--c-hint);font-size:13px">
+              <span data-es>Sin contactos aún. Cuando un cliente te contacte, aparecerá aquí.</span>
+              <span data-en>No contacts yet. When a customer reaches out, it will appear here.</span>
             </div>
           </div>
         </div>
@@ -421,17 +366,16 @@
           <div style="margin-bottom:14px">
             <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--c-muted);margin-bottom:5px">
               <span data-es>Progreso</span><span data-en>Progress</span>
-              <span style="color:var(--c-amber);font-weight:500">72%</span>
+              <span style="color:var(--c-amber);font-weight:500" id="profile-pct">0%</span>
             </div>
             <div style="background:var(--c-bg);border-radius:4px;height:6px;overflow:hidden">
-              <div style="width:72%;height:100%;background:var(--c-amber);border-radius:4px"></div>
+              <div style="width:0%;height:100%;background:var(--c-amber);border-radius:4px" id="profile-pct-bar"></div>
             </div>
           </div>
-          <div class="check-row"><span class="check-lbl">✅ <span data-es>Información básica</span><span data-en>Basic info</span></span><span class="check-val ok" data-es>Completo</span><span class="check-val ok" data-en>Done</span></div>
-          <div class="check-row"><span class="check-lbl">✅ <span data-es>Verificación</span><span data-en>Verification</span></span><span class="check-val ok" data-es>Verificado</span><span class="check-val ok" data-en>Verified</span></div>
-          <div class="check-row"><span class="check-lbl">✅ <span data-es>Fotos (3)</span><span data-en>Photos (3)</span></span><span class="check-val ok" data-es>Completo</span><span class="check-val ok" data-en>Done</span></div>
-          <div class="check-row"><span class="check-lbl">⚠️ <span data-es>Área de servicio</span><span data-en>Service area</span></span><span class="check-val warn" data-es>Incompleto</span><span class="check-val warn" data-en>Incomplete</span></div>
-          <div class="check-row"><span class="check-lbl">⚠️ <span data-es>Portafolio</span><span data-en>Portfolio</span></span><span class="check-val warn">0 <span data-es>fotos</span><span data-en>photos</span></span></div>
+          <div id="profile-completeness-rows">
+            <div style="text-align:center;padding:8px;color:var(--c-hint);font-size:12px" data-es>Cargando...</div>
+            <div style="text-align:center;padding:8px;color:var(--c-hint);font-size:12px" data-en>Loading...</div>
+          </div>
         </div>
       </div>
 
@@ -439,28 +383,14 @@
       <div class="card">
         <div class="card-title">
           <span data-es>Reseñas recientes</span><span data-en>Recent reviews</span>
-          <a onclick="showPane('reviews')" data-es>Ver todas (38) →</a>
-          <a onclick="showPane('reviews')" data-en>See all (38) →</a>
+          <a onclick="showPane('reviews')" data-es>Ver todas →</a>
+          <a onclick="showPane('reviews')" data-en>See all →</a>
         </div>
-        <div class="review-mini">
-          <div class="review-mini-top">
-            <div class="review-mini-name">Maria R.</div>
-            <div class="review-mini-stars">★★★★★</div>
-            <div class="review-mini-date" data-es>Hace 2 semanas</div>
-            <div class="review-mini-date" data-en>2 weeks ago</div>
+        <div id="overview-recent-reviews">
+          <div style="text-align:center;padding:24px;color:var(--c-hint);font-size:13px">
+            <span data-es>Sin reseñas aún.</span>
+            <span data-en>No reviews yet.</span>
           </div>
-          <div class="review-mini-text" data-es>¡Excelente servicio! Llegaron a tiempo y dejaron el jardín impecable. 100% recomendados.</div>
-          <div class="review-mini-text" data-en>Excellent service! Arrived on time and left the garden immaculate. 100% recommended.</div>
-        </div>
-        <div class="review-mini">
-          <div class="review-mini-top">
-            <div class="review-mini-name">Carlos L.</div>
-            <div class="review-mini-stars">★★★★★</div>
-            <div class="review-mini-date" data-es>Hace 1 mes</div>
-            <div class="review-mini-date" data-en>1 month ago</div>
-          </div>
-          <div class="review-mini-text" data-es>Muy profesionales, precios justos y siempre responden por WhatsApp.</div>
-          <div class="review-mini-text" data-en>Very professional, fair prices and always respond on WhatsApp.</div>
         </div>
       </div>
 
@@ -481,67 +411,11 @@
       <div class="card">
         <div class="card-title"><span data-es>Historial de contactos</span><span data-en>Contact history</span></div>
 
-        <div class="inq-item">
-          <div class="inq-avatar" style="background:var(--c-green-light);color:var(--c-green)">📲</div>
-          <div class="inq-body">
-            <div class="inq-msg" style="font-weight:500" data-es>Corte de césped + poda de árboles · Duluth, GA</div>
-            <div class="inq-msg" style="font-weight:500" data-en>Lawn mowing + tree trimming · Duluth, GA</div>
-            <div class="inq-meta">
-              <span class="inq-time" data-es>Hace 5 min</span><span class="inq-time" data-en>5 min ago</span>
-              <span class="status-badge status-new">WhatsApp</span>
-              <span style="font-size:11px;color:var(--c-hint)">📍 2.3 mi</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="inq-item">
-          <div class="inq-avatar" style="background:var(--c-green-light);color:var(--c-green)">📲</div>
-          <div class="inq-body">
-            <div class="inq-msg" style="font-weight:500" data-es>Sistema de riego residencial · Norcross</div>
-            <div class="inq-msg" style="font-weight:500" data-en>Residential irrigation system · Norcross</div>
-            <div class="inq-meta">
-              <span class="inq-time" data-es>Hace 1h</span><span class="inq-time" data-en>1h ago</span>
-              <span class="status-badge status-new">WhatsApp</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="inq-item">
-          <div class="inq-avatar" style="background:var(--c-blue-light);color:var(--c-blue)">📋</div>
-          <div class="inq-body">
-            <div class="inq-msg" style="font-weight:500" data-es>Limpieza de hojas · Lawrenceville</div>
-            <div class="inq-msg" style="font-weight:500" data-en>Leaf cleanup · Lawrenceville</div>
-            <div class="inq-meta">
-              <span class="inq-time" data-es>Hace 2h</span><span class="inq-time" data-en>2h ago</span>
-              <span class="status-badge" style="background:var(--c-blue-light);color:var(--c-blue)" data-es>Formulario</span>
-              <span class="status-badge" style="background:var(--c-blue-light);color:var(--c-blue)" data-en>Form</span>
-            </div>
-            <div style="font-size:12px;color:var(--c-hint);margin-top:4px" data-es>📧 Datos del cliente enviados a tu correo y WhatsApp</div>
-            <div style="font-size:12px;color:var(--c-hint);margin-top:4px" data-en>📧 Customer details sent to your email and WhatsApp</div>
-          </div>
-        </div>
-
-        <div class="inq-item">
-          <div class="inq-avatar" style="background:var(--c-green-light);color:var(--c-green)">📲</div>
-          <div class="inq-body">
-            <div class="inq-msg" style="font-weight:500" data-es>Contrato mensual comercial · Norcross</div>
-            <div class="inq-msg" style="font-weight:500" data-en>Commercial monthly contract · Norcross</div>
-            <div class="inq-meta">
-              <span class="inq-time" data-es>Ayer</span><span class="inq-time" data-en>Yesterday</span>
-              <span class="status-badge status-new">WhatsApp</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="inq-item">
-          <div class="inq-avatar" style="background:var(--c-green-light);color:var(--c-green)">📲</div>
-          <div class="inq-body">
-            <div class="inq-msg" style="font-weight:500" data-es>Diseño de jardín completo · Atlanta</div>
-            <div class="inq-msg" style="font-weight:500" data-en>Full garden design · Atlanta</div>
-            <div class="inq-meta">
-              <span class="inq-time" data-es>Hace 3 días</span><span class="inq-time" data-en>3 days ago</span>
-              <span class="status-badge status-new">WhatsApp</span>
-            </div>
+        <div id="inq-list">
+          <div style="text-align:center;padding:32px;color:var(--c-hint);font-size:13px">
+            <div style="font-size:32px;margin-bottom:10px">💬</div>
+            <span data-es>Sin contactos aún. Cuando un cliente haga clic en tu WhatsApp, aparecerá aquí.</span>
+            <span data-en>No contacts yet. When a customer clicks your WhatsApp, it will appear here.</span>
           </div>
         </div>
 
@@ -555,68 +429,36 @@
 
     <!-- ══ REVIEWS PANE ══ -->
     <div id="pane-reviews" style="display:none">
-      <div class="card" style="margin-bottom:16px">
+      <div class="card" id="reviews-summary" style="margin-bottom:16px;display:none">
         <div style="display:flex;gap:20px;align-items:center">
           <div style="text-align:center">
-            <div style="font-family:var(--font-display);font-size:48px;line-height:1">4.9</div>
-            <div style="color:var(--c-amber);font-size:18px;margin:4px 0">★★★★★</div>
-            <div style="font-size:12px;color:var(--c-muted)">38 <span data-es>reseñas</span><span data-en>reviews</span></div>
-          </div>
-          <div style="flex:1;display:flex;flex-direction:column;gap:5px">
-            <div class="bar-row"><span class="bar-lbl" style="color:var(--c-amber)">5★</span><div class="bar-track"><div class="bar-fill amber" style="width:85%"></div></div><span class="bar-num">32</span></div>
-            <div class="bar-row"><span class="bar-lbl" style="color:var(--c-amber)">4★</span><div class="bar-track"><div class="bar-fill amber" style="width:10%"></div></div><span class="bar-num">4</span></div>
-            <div class="bar-row"><span class="bar-lbl" style="color:var(--c-amber)">3★</span><div class="bar-track"><div class="bar-fill amber" style="width:3%"></div></div><span class="bar-num">1</span></div>
-            <div class="bar-row"><span class="bar-lbl" style="color:var(--c-amber)">2★</span><div class="bar-track"><div class="bar-fill amber" style="width:2%"></div></div><span class="bar-num">1</span></div>
-            <div class="bar-row"><span class="bar-lbl" style="color:var(--c-amber)">1★</span><div class="bar-track"><div class="bar-fill amber" style="width:0%"></div></div><span class="bar-num">0</span></div>
+            <div style="font-family:var(--font-display);font-size:48px;line-height:1" id="rev-avg">—</div>
+            <div style="color:var(--c-amber);font-size:18px;margin:4px 0" id="rev-stars">☆☆☆☆☆</div>
+            <div style="font-size:12px;color:var(--c-muted)"><span id="rev-count">0</span> <span data-es>reseñas</span><span data-en>reviews</span></div>
           </div>
         </div>
       </div>
       <div class="card">
         <div class="card-title"><span data-es>Todas las reseñas</span><span data-en>All reviews</span></div>
-        <div class="review-mini"><div class="review-mini-top"><div class="review-mini-name">Maria R.</div><div class="review-mini-stars">★★★★★</div><div class="review-mini-date" data-es>Hace 2 sem</div><div class="review-mini-date" data-en>2 wks ago</div></div><div class="review-mini-text" data-es>Excelente servicio. Llegaron puntual y dejaron todo impecable. 100% recomendados.</div><div class="review-mini-text" data-en>Excellent service. Arrived on time, left everything immaculate. 100% recommended.</div></div>
-        <div class="review-mini"><div class="review-mini-top"><div class="review-mini-name">Carlos L.</div><div class="review-mini-stars">★★★★★</div><div class="review-mini-date" data-es>Hace 1 mes</div><div class="review-mini-date" data-en>1 mo ago</div></div><div class="review-mini-text" data-es>Muy profesionales, precios justos y rápida respuesta por WhatsApp.</div><div class="review-mini-text" data-en>Very professional, fair prices and fast WhatsApp response.</div></div>
-        <div class="review-mini"><div class="review-mini-top"><div class="review-mini-name">Sarah J.</div><div class="review-mini-stars">★★★★☆</div><div class="review-mini-date" data-es>Hace 6 sem</div><div class="review-mini-date" data-en>6 wks ago</div></div><div class="review-mini-text" data-es>Buen trabajo en general. El resultado quedó muy bonito.</div><div class="review-mini-text" data-en>Good work overall. The result looked very nice.</div></div>
+        <div id="reviews-list">
+          <div style="text-align:center;padding:32px;color:var(--c-hint);font-size:13px">
+            <div style="font-size:32px;margin-bottom:10px">⭐</div>
+            <span data-es>Sin reseñas aún. Las reseñas de clientes aparecerán aquí.</span>
+            <span data-en>No reviews yet. Customer reviews will appear here.</span>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- ══ ANALYTICS PANE ══ -->
     <div id="pane-analytics" style="display:none">
-      <div class="grid-2">
-        <div class="card">
-          <div class="card-title"><span data-es>Vistas mensuales</span><span data-en>Monthly views</span></div>
-          <div class="sparkline">
-            <div class="spark-bar" style="height:30%"></div>
-            <div class="spark-bar" style="height:45%"></div>
-            <div class="spark-bar" style="height:40%"></div>
-            <div class="spark-bar" style="height:65%"></div>
-            <div class="spark-bar" style="height:55%"></div>
-            <div class="spark-bar" style="height:80%"></div>
-            <div class="spark-bar active" style="height:100%"></div>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--c-hint);margin-top:6px">
-            <span>Dic</span><span>Ene</span><span>Feb</span><span>Mar</span><span>Abr</span><span>May</span><span>Jun</span>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-title"><span data-es>Conversión</span><span data-en>Conversion</span></div>
-          <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
-            <div>
-              <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--c-muted);margin-bottom:4px"><span data-es>Vistas → WhatsApp</span><span data-en>Views → WhatsApp</span><span style="color:var(--c-text);font-weight:500">12.6%</span></div>
-              <div style="background:var(--c-bg);height:6px;border-radius:3px;overflow:hidden"><div style="width:12.6%;height:100%;background:var(--c-green);border-radius:3px"></div></div>
-            </div>
-            <div>
-              <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--c-muted);margin-bottom:4px"><span data-es>Vistas → Solicitud</span><span data-en>Views → Request</span><span style="color:var(--c-text);font-weight:500">3.2%</span></div>
-              <div style="background:var(--c-bg);height:6px;border-radius:3px;overflow:hidden"><div style="width:3.2%;height:100%;background:var(--c-accent);border-radius:3px"></div></div>
-            </div>
-          </div>
-        </div>
-      </div>
       <div class="card">
-        <div class="card-title"><span data-es>Fuente de visitas — Este mes</span><span data-en>Traffic source — This month</span></div>
-        <div class="bar-chart">
-          <div class="bar-row"><span class="bar-lbl" data-es>Búsqueda</span><span class="bar-lbl" data-en>Search</span><div class="bar-track"><div class="bar-fill blue" style="width:72%"></div></div><span class="bar-num">178</span></div>
-          <div class="bar-row"><span class="bar-lbl" data-es>Directo</span><span class="bar-lbl" data-en>Direct</span><div class="bar-track"><div class="bar-fill teal" style="width:24%"></div></div><span class="bar-num">59</span></div>
-          <div class="bar-row"><span class="bar-lbl" data-es>Referido</span><span class="bar-lbl" data-en>Referral</span><div class="bar-track"><div class="bar-fill amber" style="width:4%"></div></div><span class="bar-num">10</span></div>
+        <div style="text-align:center;padding:40px 24px;color:var(--c-hint)">
+          <div style="font-size:40px;margin-bottom:14px">📈</div>
+          <div style="font-size:15px;font-weight:500;color:var(--c-text);margin-bottom:8px" data-es>Analytics próximamente</div>
+          <div style="font-size:15px;font-weight:500;color:var(--c-text);margin-bottom:8px" data-en>Analytics coming soon</div>
+          <div style="font-size:13px" data-es>Las estadísticas detalladas estarán disponibles en una próxima actualización.</div>
+          <div style="font-size:13px" data-en>Detailed analytics will be available in an upcoming update.</div>
         </div>
       </div>
     </div>
@@ -688,14 +530,89 @@
           </div>
         </div>
         <div style="margin-bottom:12px">
-          <label class="modal-label" data-es>Área de servicio (ciudades)</label>
-          <label class="modal-label" data-en>Service area (cities)</label>
-          <input class="modal-input" type="text" id="ep-area" placeholder="Duluth, Norcross, Lawrenceville, Suwanee">
+          <label class="modal-label" data-es>Área de servicio <span style="font-size:11px;font-weight:400;color:var(--c-hint)">(selecciona todas las que apliquen)</span></label>
+          <label class="modal-label" data-en>Service area <span style="font-size:11px;font-weight:400;color:var(--c-hint)">(select all that apply)</span></label>
+          <div id="ep-area-grid" style="border:0.5px solid var(--c-border);border-radius:var(--radius-sm);padding:10px 12px;background:var(--c-bg);display:flex;flex-wrap:wrap;gap:4px 12px;max-height:200px;overflow-y:auto">
+            <div style="width:100%;font-size:10px;font-weight:600;color:var(--c-hint);text-transform:uppercase;letter-spacing:.04em;padding:6px 0 2px">Atlanta (Fulton)</div>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="atlanta" style="accent-color:var(--c-green)"> Atlanta</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="alpharetta" style="accent-color:var(--c-green)"> Alpharetta</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="johns_creek" style="accent-color:var(--c-green)"> Johns Creek</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="sandy_springs" style="accent-color:var(--c-green)"> Sandy Springs</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="milton" style="accent-color:var(--c-green)"> Milton</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="mountain_park" style="accent-color:var(--c-green)"> Mountain Park</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="roswell" style="accent-color:var(--c-green)"> Roswell</label>
+            <div style="width:100%;font-size:10px;font-weight:600;color:var(--c-hint);text-transform:uppercase;letter-spacing:.04em;padding:6px 0 2px">DeKalb</div>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="tucker" style="accent-color:var(--c-green)"> Tucker</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="chamblee" style="accent-color:var(--c-green)"> Chamblee</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="brookhaven" style="accent-color:var(--c-green)"> Brookhaven</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="decatur" style="accent-color:var(--c-green)"> Decatur</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="doraville" style="accent-color:var(--c-green)"> Doraville</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="dunwoody" style="accent-color:var(--c-green)"> Dunwoody</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="lithonia" style="accent-color:var(--c-green)"> Lithonia</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="pine_lake" style="accent-color:var(--c-green)"> Pine Lake</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="stone_mountain" style="accent-color:var(--c-green)"> Stone Mountain</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="stonecrest" style="accent-color:var(--c-green)"> Stonecrest</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="clarkston" style="accent-color:var(--c-green)"> Clarkston</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="avondale_estates" style="accent-color:var(--c-green)"> Avondale Estates</label>
+            <div style="width:100%;font-size:10px;font-weight:600;color:var(--c-hint);text-transform:uppercase;letter-spacing:.04em;padding:6px 0 2px">Cobb</div>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="marietta" style="accent-color:var(--c-green)"> Marietta</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="smyrna" style="accent-color:var(--c-green)"> Smyrna</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="mableton" style="accent-color:var(--c-green)"> Mableton</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="kennesaw" style="accent-color:var(--c-green)"> Kennesaw</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="acworth" style="accent-color:var(--c-green)"> Acworth</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="powder_springs" style="accent-color:var(--c-green)"> Powder Springs</label>
+            <div style="width:100%;font-size:10px;font-weight:600;color:var(--c-hint);text-transform:uppercase;letter-spacing:.04em;padding:6px 0 2px">Gwinnett</div>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="duluth" style="accent-color:var(--c-green)"> Duluth</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="suwanee" style="accent-color:var(--c-green)"> Suwanee</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="norcross" style="accent-color:var(--c-green)"> Norcross</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="lawrenceville" style="accent-color:var(--c-green)"> Lawrenceville</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="buford" style="accent-color:var(--c-green)"> Buford</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="lilburn" style="accent-color:var(--c-green)"> Lilburn</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="dacula" style="accent-color:var(--c-green)"> Dacula</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="snellville" style="accent-color:var(--c-green)"> Snellville</label>
+            <div style="width:100%;font-size:10px;font-weight:600;color:var(--c-hint);text-transform:uppercase;letter-spacing:.04em;padding:6px 0 2px">Forsyth / Cherokee</div>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="cumming" style="accent-color:var(--c-green)"> Cumming</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="canton" style="accent-color:var(--c-green)"> Canton</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="woodstock" style="accent-color:var(--c-green)"> Woodstock</label>
+            <div style="width:100%;font-size:10px;font-weight:600;color:var(--c-hint);text-transform:uppercase;letter-spacing:.04em;padding:6px 0 2px">Hall</div>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="gainesville" style="accent-color:var(--c-green)"> Gainesville</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="flowery_branch" style="accent-color:var(--c-green)"> Flowery Branch</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="lula" style="accent-color:var(--c-green)"> Lula</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="oakwood" style="accent-color:var(--c-green)"> Oakwood</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="clermont" style="accent-color:var(--c-green)"> Clermont</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="braselton" style="accent-color:var(--c-green)"> Braselton</label>
+            <div style="width:100%;font-size:10px;font-weight:600;color:var(--c-hint);text-transform:uppercase;letter-spacing:.04em;padding:6px 0 2px">Barrow</div>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="winder" style="accent-color:var(--c-green)"> Winder</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="auburn" style="accent-color:var(--c-green)"> Auburn</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="statham" style="accent-color:var(--c-green)"> Statham</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="bethlehem" style="accent-color:var(--c-green)"> Bethlehem</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="carl" style="accent-color:var(--c-green)"> Carl</label>
+            <div style="width:100%;font-size:10px;font-weight:600;color:var(--c-hint);text-transform:uppercase;letter-spacing:.04em;padding:6px 0 2px">Jackson</div>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="jefferson" style="accent-color:var(--c-green)"> Jefferson</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="pendergrass" style="accent-color:var(--c-green)"> Pendergrass</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="commerce" style="accent-color:var(--c-green)"> Commerce</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="hoschton" style="accent-color:var(--c-green)"> Hoschton</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="maysville" style="accent-color:var(--c-green)"> Maysville</label>
+          </div>
         </div>
         <div style="margin-bottom:12px">
-          <label class="modal-label" data-es>Categorías</label>
-          <label class="modal-label" data-en>Categories</label>
-          <div id="ep-categories" style="font-size:13px;color:var(--c-muted);padding:10px 13px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);background:var(--c-bg)">—</div>
+          <label class="modal-label" data-es>Categorías <span style="font-size:11px;font-weight:400;color:var(--c-hint)">(máx 3)</span></label>
+          <label class="modal-label" data-en>Categories <span style="font-size:11px;font-weight:400;color:var(--c-hint)">(max 3)</span></label>
+          <div id="ep-categories" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px 0">
+            <label style="display:flex;align-items:center;gap:5px;font-size:13px;padding:5px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="staffing"> <span data-es>Personal y Mano de Obra</span><span data-en>Staffing & Labor</span></label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:13px;padding:5px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="landscaping"> <span data-es>Landscaping</span><span data-en>Landscaping</span></label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:13px;padding:5px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="cleaning"> <span data-es>Limpieza</span><span data-en>Cleaning</span></label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:13px;padding:5px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="construction"> <span data-es>Construcción</span><span data-en>Construction</span></label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:13px;padding:5px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="moving"> <span data-es>Mudanzas</span><span data-en>Moving</span></label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:13px;padding:5px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="food"> <span data-es>Comida</span><span data-en>Food</span></label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:13px;padding:5px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="auto"> <span data-es>Autos</span><span data-en>Auto</span></label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:13px;padding:5px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="translation"> <span data-es>Traducción</span><span data-en>Translation</span></label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:13px;padding:5px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="plumbing"> <span data-es>Plomería</span><span data-en>Plumbing</span></label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:13px;padding:5px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="electrical"> <span data-es>Electricidad</span><span data-en>Electrical</span></label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:13px;padding:5px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="painting"> <span data-es>Pintura</span><span data-en>Painting</span></label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:13px;padding:5px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="tree_removal"> <span data-es>Árboles</span><span data-en>Tree Removal</span></label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:13px;padding:5px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="real_estate"> <span data-es>Bienes Raíces</span><span data-en>Real Estate</span></label>
+          </div>
         </div>
         <div>
           <label class="modal-label" data-es>Descripción del negocio</label>
@@ -710,7 +627,7 @@
           <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="pay-cash"> <span data-es>Efectivo</span><span data-en>Cash</span></label>
           <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="pay-zelle"> Zelle</label>
           <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="pay-venmo"> Venmo</label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="pay-credit-card"> <span data-es>Tarjeta de crédito</span><span data-en>Credit Card</span></label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="pay-card"> <span data-es>Tarjeta</span><span data-en>Card</span></label>
           <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="pay-check"> Check</label>
           <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="pay-paypal"> PayPal</label>
         </div>
@@ -719,7 +636,7 @@
       <div class="card">
         <div class="card-title"><span data-es>Idiomas</span><span data-en>Languages</span></div>
         <div style="display:flex;flex-wrap:wrap;gap:8px">
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="lang-es" checked> Español</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="lang-es"> Español</label>
           <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="lang-en"> English</label>
           <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="lang-pt"> Português</label>
         </div>
@@ -933,7 +850,7 @@ function markInqStatus(item, newStatus) {
 }
 
 // ── EDIT PROFILE ───────────────────────────────────────────
-// 전화번호 정규화 — WhatsApp 국제번호 형식
+// 전화번호 정규화
 function normalizePhone(raw) {
   if (!raw) return '';
   var digits = raw.replace(/\D/g, '');
@@ -947,7 +864,6 @@ async function saveProfileChanges() {
   var isEn = document.body.classList.contains('en');
   var btns = document.querySelectorAll('[onclick="saveProfileChanges()"]');
   btns.forEach(function(b){ b.disabled = true; });
-
   try {
     var paymentMethods = [];
     if (document.getElementById('pay-cash')?.checked) paymentMethods.push('cash');
@@ -962,21 +878,27 @@ async function saveProfileChanges() {
     if (document.getElementById('lang-en')?.checked) languages.push('en');
     if (document.getElementById('lang-pt')?.checked) languages.push('pt');
 
+    var categories = [];
+    document.querySelectorAll('#ep-categories input[type="checkbox"]:checked').forEach(function(cb){ categories.push(cb.value); });
+
+    var serviceAreas = [];
+    document.querySelectorAll('#ep-area-grid input[type="checkbox"]:checked').forEach(function(cb){ if(cb.value) serviceAreas.push(cb.value); });
+
     await updateBusiness({
       business_name: document.getElementById('ep-legal-name')?.value.trim() || '',
       trade_name: document.getElementById('ep-trade-name')?.value.trim() || '',
       whatsapp_phone: normalizePhone(document.getElementById('ep-phone')?.value.trim() || ''),
       public_email: document.getElementById('ep-email')?.value.trim() || '',
-      service_area: document.getElementById('ep-area')?.value.trim() || '',
+      service_area: serviceAreas.join(', '),
       description: document.getElementById('ep-desc')?.value.trim() || '',
       payment_methods: paymentMethods,
-      languages: languages
+      languages: languages,
+      categories: categories
     });
 
     var bizName = document.getElementById('ep-legal-name')?.value.trim();
     if (bizName) document.querySelectorAll('.biz-display-name').forEach(function(el){ el.textContent = bizName; });
     showToast(isEn ? '✅ Changes saved' : '✅ Cambios guardados');
-
   } catch(err) {
     console.error('Save error:', err);
     showToast(isEn ? '❌ Could not save. Try again.' : '❌ No se pudo guardar. Intenta de nuevo.');
@@ -1037,9 +959,18 @@ function toggleDayOpen(checkbox, idx) {
   });
 }
 
-function saveHours() {
-  // In production: PUT /api/business/:id/hours
-  showToast(document.body.classList.contains('en') ? '✅ Hours saved (simulation)' : '✅ Horario guardado (simulación)');
+async function saveHours() {
+  var isEn = document.body.classList.contains('en');
+  try {
+    var hoursData = DAYS.map(function(d) {
+      return { es: d.es, en: d.en, open: d.open, from: d.from, to: d.to };
+    });
+    await updateBusiness({ hours: hoursData });
+    showToast(isEn ? '✅ Hours saved' : '✅ Horario guardado');
+  } catch(e) {
+    console.error('Hours save error:', e);
+    showToast(isEn ? '❌ Could not save hours' : '❌ No se pudo guardar el horario');
+  }
 }
 
 function showPane(id){
@@ -1237,8 +1168,8 @@ function confirmUpgradePayment() {
   showPlanToast(isEn ? '✓ Upgraded to ' + info.name : '✓ Actualizado a ' + info.name);
 }
 
-function doLogout() {
-  try { localStorage.removeItem('anm-sim-logged-in'); } catch(e) {}
+async function doLogout() {
+  try { await signOut(); } catch(e) {}
   window.location.href = 'login.html';
 }
 
@@ -1320,14 +1251,12 @@ document.addEventListener('DOMContentLoaded', async function(){
     const session = await getSession();
     if (!session) { window.location.href = 'login.html'; return; }
     const user = session.user;
-    const userType = user.user_metadata?.user_type || 'customer';
-    if (userType !== 'business') { window.location.href = 'login.html'; return; }
+    if ((user.user_metadata?.user_type || 'customer') !== 'business') { window.location.href = 'login.html'; return; }
 
     const biz = await getMyBusiness();
     if (biz) {
       window._bizPlan = biz.plan || 'free';
       window._bizId = biz.id;
-
       const meta = user.user_metadata || {};
       var needsUpdate = {};
       if (!biz.whatsapp_phone && meta.phone) needsUpdate.whatsapp_phone = meta.phone;
@@ -1338,30 +1267,22 @@ document.addEventListener('DOMContentLoaded', async function(){
       if ((!biz.payment_methods || biz.payment_methods.length === 0) && meta.payment_methods && meta.payment_methods.length > 0) needsUpdate.payment_methods = meta.payment_methods;
       if ((!biz.languages || biz.languages.length <= 1) && meta.languages && meta.languages.length > 1) needsUpdate.languages = meta.languages;
       if ((!biz.hours || biz.hours.length === 0) && meta.hours && meta.hours.length > 0) needsUpdate.hours = meta.hours;
+      if (Object.keys(needsUpdate).length > 0) { try { await updateBusiness(needsUpdate); Object.assign(biz, needsUpdate); } catch(e) {} }
 
-      if (Object.keys(needsUpdate).length > 0) {
-        try { await updateBusiness(needsUpdate); Object.assign(biz, needsUpdate); } catch(e) {}
-      }
-
-      // 업체명 표시
       document.querySelectorAll('.biz-display-name').forEach(function(el){ el.textContent = biz.business_name || ''; });
-
-      // 프로필 폼 채우기
       var f = function(id, val){ var el = document.getElementById(id); if(el && val !== undefined && val !== null) el.value = val; };
-      f('ep-legal-name', biz.business_name);
-      f('ep-trade-name', biz.trade_name);
-      f('ep-phone', biz.whatsapp_phone);
-      f('ep-email', biz.public_email);
-      f('ep-area', biz.service_area);
-      f('ep-desc', biz.description);
+      f('ep-legal-name', biz.business_name); f('ep-trade-name', biz.trade_name);
+      f('ep-phone', biz.whatsapp_phone); f('ep-email', biz.public_email);
+      f('ep-area', biz.service_area); f('ep-desc', biz.description);
 
-      // Categories 표시
-      var catEl = document.getElementById('ep-categories');
-      if (catEl && biz.categories && biz.categories.length > 0) {
-        catEl.textContent = biz.categories.join(', ');
-      }
+      // Categories 체크박스 채우기
+      var cats = biz.categories || [];
+      document.querySelectorAll('#ep-categories input[type="checkbox"]').forEach(function(cb){ cb.checked = cats.includes(cb.value); });
 
-      // 결제 방법 체크박스
+      // Service area 체크박스 채우기
+      var areas = biz.service_area ? biz.service_area.split(',').map(function(s){ return s.trim(); }) : [];
+      document.querySelectorAll('#ep-area-grid input[type="checkbox"]').forEach(function(cb){ cb.checked = areas.includes(cb.value); });
+
       var pm = biz.payment_methods || [];
       if (document.getElementById('pay-cash')) document.getElementById('pay-cash').checked = pm.includes('cash');
       if (document.getElementById('pay-zelle')) document.getElementById('pay-zelle').checked = pm.includes('zelle');
@@ -1370,36 +1291,22 @@ document.addEventListener('DOMContentLoaded', async function(){
       if (document.getElementById('pay-check')) document.getElementById('pay-check').checked = pm.includes('check');
       if (document.getElementById('pay-paypal')) document.getElementById('pay-paypal').checked = pm.includes('paypal');
 
-      // 언어 체크박스
       var langs = biz.languages || ['es'];
       if (document.getElementById('lang-es')) document.getElementById('lang-es').checked = langs.includes('es');
       if (document.getElementById('lang-en')) document.getElementById('lang-en').checked = langs.includes('en');
       if (document.getElementById('lang-pt')) document.getElementById('lang-pt').checked = langs.includes('pt');
 
-      // Hours — day name으로 매핑
       if (biz.hours && Array.isArray(biz.hours) && biz.hours.length > 0) {
         biz.hours.forEach(function(h) {
           var dayEn = h.en || h.day_en || '';
-          DAYS.forEach(function(d) {
-            if (d.en.toLowerCase() === dayEn.toLowerCase()) {
-              d.open = h.open !== undefined ? h.open : true;
-              d.from = h.from || '09:00';
-              d.to   = h.to   || '18:00';
-            }
-          });
+          DAYS.forEach(function(d) { if (d.en.toLowerCase() === dayEn.toLowerCase()) { d.open = h.open !== undefined ? h.open : true; d.from = h.from || '09:00'; d.to = h.to || '18:00'; } });
         });
       }
 
-      // Verified 배지
-      var verifiedBadge = document.getElementById('sb-verified-badge');
-      if (verifiedBadge && biz.verified) verifiedBadge.style.display = 'inline-flex';
-
-      // 플랜 배지
-      var planBadge = document.getElementById('sb-plan-badge');
-      if (planBadge) {
-        var planLabels = { free: 'Free', basic: '⭐ Basic', premium: '🌟 Premium' };
-        planBadge.textContent = planLabels[biz.plan] || 'Free';
-      }
+      var vb = document.getElementById('sb-verified-badge');
+      if (vb && biz.verified) vb.style.display = 'inline-flex';
+      var pb = document.getElementById('sb-plan-badge');
+      if (pb) { var pl = { free: 'Free', basic: '⭐ Basic', premium: '🌟 Premium' }; pb.textContent = pl[biz.plan] || 'Free'; }
 
       renderProfileCompleteness(biz);
       refreshPlanUI();
@@ -1408,37 +1315,17 @@ document.addEventListener('DOMContentLoaded', async function(){
       loadReviews();
 
     } else {
-      // businesses 레코드 없음 — metadata로 생성
       const meta = user.user_metadata || {};
-      const newBiz = await createBusiness({
-        businessName: meta.business_name || user.email.split('@')[0],
-        tradeName: meta.trade_name || '',
-        plan: meta.plan || 'free',
-        publicEmail: meta.public_email || '',
-        phone: meta.phone || '',
-        description: meta.description || '',
-        categories: meta.categories || [],
-        serviceArea: meta.service_area || '',
-        languages: meta.languages || ['es'],
-        paymentMethods: meta.payment_methods || [],
-        hours: meta.hours || []
-      });
-      window._bizPlan = newBiz.plan || 'free';
-      window._bizId = newBiz.id;
-
+      const newBiz = await createBusiness({ businessName: meta.business_name || user.email.split('@')[0], tradeName: meta.trade_name || '', plan: meta.plan || 'free', publicEmail: meta.public_email || '', phone: meta.phone || '', description: meta.description || '', categories: meta.categories || [], serviceArea: meta.service_area || '', languages: meta.languages || ['es'], paymentMethods: meta.payment_methods || [], hours: meta.hours || [] });
+      window._bizPlan = newBiz.plan || 'free'; window._bizId = newBiz.id;
       var f2 = function(id, val){ var el = document.getElementById(id); if(el && val) el.value = val; };
-      f2('ep-legal-name', meta.business_name);
-      f2('ep-trade-name', meta.trade_name);
-      f2('ep-phone', meta.phone);
-      f2('ep-email', meta.public_email);
-      f2('ep-desc', meta.description);
-      f2('ep-area', meta.service_area);
-
-      var catEl2 = document.getElementById('ep-categories');
-      if (catEl2 && meta.categories && meta.categories.length > 0) {
-        catEl2.textContent = meta.categories.join(', ');
-      }
-
+      f2('ep-legal-name', meta.business_name); f2('ep-trade-name', meta.trade_name);
+      f2('ep-phone', meta.phone); f2('ep-email', meta.public_email);
+      f2('ep-desc', meta.description); f2('ep-area', meta.service_area);
+      var cats2 = meta.categories || [];
+      document.querySelectorAll('#ep-categories input[type="checkbox"]').forEach(function(cb){ cb.checked = cats2.includes(cb.value); });
+      var areas2 = meta.service_area ? meta.service_area.split(',').map(function(s){ return s.trim(); }) : [];
+      document.querySelectorAll('#ep-area-grid input[type="checkbox"]').forEach(function(cb){ cb.checked = areas2.includes(cb.value); });
       var pm2 = meta.payment_methods || [];
       if (document.getElementById('pay-cash')) document.getElementById('pay-cash').checked = pm2.includes('cash');
       if (document.getElementById('pay-zelle')) document.getElementById('pay-zelle').checked = pm2.includes('zelle');
@@ -1446,20 +1333,14 @@ document.addEventListener('DOMContentLoaded', async function(){
       if (document.getElementById('pay-credit-card')) document.getElementById('pay-credit-card').checked = pm2.includes('credit_card');
       if (document.getElementById('pay-check')) document.getElementById('pay-check').checked = pm2.includes('check');
       if (document.getElementById('pay-paypal')) document.getElementById('pay-paypal').checked = pm2.includes('paypal');
-
       var langs2 = meta.languages || ['es'];
       if (document.getElementById('lang-es')) document.getElementById('lang-es').checked = langs2.includes('es');
       if (document.getElementById('lang-en')) document.getElementById('lang-en').checked = langs2.includes('en');
       if (document.getElementById('lang-pt')) document.getElementById('lang-pt').checked = langs2.includes('pt');
-
       document.querySelectorAll('.biz-display-name').forEach(function(el){ el.textContent = meta.business_name || user.email.split('@')[0]; });
-      renderProfileCompleteness(newBiz);
-      refreshPlanUI();
+      renderProfileCompleteness(newBiz); refreshPlanUI();
     }
-
-  } catch(e) {
-    console.error('Dashboard init error:', e);
-  }
+  } catch(e) { console.error('Dashboard init error:', e); }
 });
 </script>
 
