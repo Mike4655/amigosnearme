@@ -191,6 +191,8 @@
   .btn-modal-cancel{flex:1;padding:10px;border-radius:var(--radius-sm);background:var(--c-bg);border:0.5px solid var(--c-border);font-size:13px;font-weight:500;color:var(--c-text);cursor:pointer;font-family:var(--font-body)}
   .btn-modal-confirm{flex:1;padding:10px;border-radius:var(--radius-sm);background:var(--c-accent);border:none;font-size:13px;font-weight:600;color:#fff;cursor:pointer;font-family:var(--font-body)}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
 </head>
 <body>
 
@@ -1016,6 +1018,156 @@
 </div>
 
 <script>
+/* ===== SUPABASE ADMIN INTEGRATION ===== */
+
+var PLAN_COLORS = {
+  free:    'plan-free',
+  basic:   'plan-badge plan-basic',
+  premium: 'plan-badge plan-premium'
+};
+var PLAN_LABELS = { free: 'Free', basic: '📋 Basic', premium: '⭐ Premium' };
+var CAT_LABELS = {
+  staffing:'Staffing & Labor', landscaping:'Landscaping', cleaning:'Cleaning',
+  construction:'Construction', moving:'Moving', food:'Food', auto:'Auto',
+  translation:'Translation', plumbing:'Plumbing', electrical:'Electrical',
+  painting:'Painting', tree_removal:'Tree Removal', real_estate:'Real Estate'
+};
+var AVATAR_CLASSES = ['av-coral','av-teal','av-blue','av-amber','av-gray'];
+
+function bizAvatarClass(i) { return AVATAR_CLASSES[i % AVATAR_CLASSES.length]; }
+
+function getAvatarInitialsAdmin(name) {
+  if (!name) return '?';
+  var parts = name.trim().split(/\s+/);
+  return parts.length >= 2 ? (parts[0][0]+parts[1][0]).toUpperCase() : name.slice(0,2).toUpperCase();
+}
+
+function buildBizRow(biz, idx) {
+  var name  = biz.trade_name || biz.business_name || '(unnamed)';
+  var cats  = Array.isArray(biz.categories) ? biz.categories : [];
+  var catLabel = cats.map(function(c){ return CAT_LABELS[c]||c; }).join(', ') || '—';
+  var area  = (biz.service_area || '').split(',')[0].trim() || 'GA';
+  var plan  = biz.plan || 'free';
+  var planClass = plan === 'premium' ? 'plan-badge plan-premium' : plan === 'basic' ? 'plan-badge plan-basic' : 'plan-badge plan-free';
+  var planLabel = PLAN_LABELS[plan] || plan;
+  var verBadge = biz.verified
+    ? '<span class="verified-badge">✅ Verified</span>'
+    : '<span class="basic-badge">⏳ Unverified</span>';
+  var autoPts = plan === 'premium' ? 10 : 0;
+  var priorityVal = biz.priority_score !== undefined ? biz.priority_score : autoPts;
+  var pvClass = priorityVal === 0 ? 'zero' : priorityVal <= 7 ? 'low' : priorityVal <= 13 ? 'mid' : 'high';
+  var autoTag = plan === 'premium' ? '<span class="auto-tag">auto +10</span>' : '';
+
+  return '<tr data-plan="'+plan+'" data-verify="'+(biz.verified?'verified':'basic-tier')+'" data-name="'+name.toLowerCase()+'" data-status="active" data-bizid="'+biz.id+'">'
+    + '<td><div class="biz-cell"><div class="biz-avatar '+bizAvatarClass(idx)+'">'+getAvatarInitialsAdmin(name)+'</div>'
+    + '<div><div class="biz-name">'+escHtml(name)+'</div><div class="biz-cat">'+escHtml(catLabel)+' · '+escHtml(area)+', GA</div></div></div></td>'
+    + '<td><span class="'+planClass+'">'+planLabel+'</span></td>'
+    + '<td>'+verBadge+'</td>'
+    + '<td>—</td>'
+    + '<td><div class="priority-cell"><input type="range" class="priority-slider" min="0" max="20" value="'+priorityVal+'" oninput="updatePriority(this)">'
+    + '<span class="priority-val '+pvClass+'">'+priorityVal+'</span>'+autoTag+'</div></td>'
+    + '<td><span class="verified-badge">Active</span></td>'
+    + '<td><div class="action-cell">'
+    + '<button class="btn-suspend" style="background:var(--c-accent-light);color:var(--c-accent)" onclick="toggleBusinessStatus(this)">Suspend</button>'
+    + '<button class="btn-save" onclick="savePriorityDB(this)">Save</button>'
+    + '</div></td>'
+    + '</tr>';
+}
+
+function buildVerifCard(biz, idx) {
+  var name = biz.trade_name || biz.business_name || '(unnamed)';
+  var cats = Array.isArray(biz.categories) ? biz.categories : [];
+  var catLabel = cats.map(function(c){ return CAT_LABELS[c]||c; }).join(', ') || '—';
+  var area = (biz.service_area || '').split(',')[0].trim() || 'GA';
+  var d = biz.created_at ? new Date(biz.created_at) : null;
+  var submittedStr = d ? 'Submitted ' + Math.floor((Date.now()-d)/86400000) + ' days ago' : '';
+
+  return '<div class="queue-card" data-vstatus="pending" data-bizid="'+biz.id+'">'
+    + '<div class="queue-main"><div class="biz-cell">'
+    + '<div class="biz-avatar '+bizAvatarClass(idx)+'">'+getAvatarInitialsAdmin(name)+'</div>'
+    + '<div><div class="biz-name">'+escHtml(name)+'</div>'
+    + '<div class="biz-cat">'+escHtml(catLabel)+' · '+escHtml(area)+', GA · '+submittedStr+'</div></div>'
+    + '</div><div class="doc-chips"><span class="doc-chip">📋 Registered business</span></div></div>'
+    + '<div class="queue-actions">'
+    + '<button class="btn-reject" onclick="openRejectModal(this,\'verification\')">Reject</button>'
+    + '<button class="btn-approve" onclick="reviewVerification(this,\'approved\')">✓ Approve</button>'
+    + '</div></div>';
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function initAdminPage() {
+  try {
+    var sb = getSupabase();
+
+    // ── businesses table ──────────────────────────────────────
+    var { data: businesses, error: bizErr } = await sb
+      .from('businesses')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (businesses && businesses.length) {
+      var tbody = document.getElementById('biz-table-body');
+      tbody.innerHTML = businesses.map(buildBizRow).join('');
+
+      // Update stats row
+      var total   = businesses.length;
+      var premium = businesses.filter(function(b){ return b.plan==='premium'; }).length;
+      var pending = businesses.filter(function(b){ return !b.verified; }).length;
+
+      var statVals = document.querySelectorAll('#pane-businesses .stat-val');
+      if (statVals[0]) statVals[0].textContent = total;
+      if (statVals[1]) statVals[1].textContent = premium;
+      if (statVals[2]) statVals[2].textContent = pending;
+    }
+
+    // ── verification queue (unverified businesses) ────────────
+    var unverified = (businesses || []).filter(function(b){ return !b.verified; });
+    var queue = document.getElementById('verification-queue');
+    var emptyEl = document.getElementById('verification-empty');
+    if (queue) {
+      if (unverified.length) {
+        queue.innerHTML = unverified.map(buildVerifCard).join('');
+        if (emptyEl) emptyEl.style.display = 'none';
+      } else {
+        queue.innerHTML = '';
+        if (emptyEl) emptyEl.style.display = 'block';
+      }
+      // Update verification stats
+      var vStats = document.querySelectorAll('#pane-verification .stat-val');
+      if (vStats[0]) vStats[0].textContent = unverified.length;
+    }
+
+  } catch(e) {
+    console.error('[Admin] initAdminPage error:', e);
+  }
+}
+
+async function savePriorityDB(btn) {
+  var row = btn.closest('tr');
+  var bizId = row.dataset.bizid;
+  var slider = row.querySelector('.priority-slider');
+  var score = slider ? parseInt(slider.value, 10) : 0;
+
+  btn.textContent = '…';
+  try {
+    if (bizId) {
+      var sb = getSupabase();
+      await sb.from('businesses').update({ priority_score: score }).eq('id', bizId);
+    }
+    btn.textContent = '✓ Saved';
+    btn.classList.add('saved');
+    setTimeout(function(){ btn.classList.remove('show'); }, 1200);
+  } catch(e) {
+    btn.textContent = 'Error';
+    console.error('[Admin] savePriorityDB error:', e);
+  }
+}
+
+/* ===== END SUPABASE ADMIN INTEGRATION ===== */
+
 function showError(id) { var el = document.getElementById(id); if (el) el.classList.add('show'); }
 function hideError(id) { var el = document.getElementById(id); if (el) el.classList.remove('show'); }
 function markInvalid(el) { if (el) el.classList.add('input-error'); }
@@ -1072,26 +1224,33 @@ function openCancelRejectModal(btn) {
   openRejectModal(btn, 'cancellation');
 }
 
-function reviewVerification(btn, decision) {
+async function reviewVerification(btn, decision) {
   var card = btn.closest('.queue-card');
   var bizId = card.getAttribute('data-bizid');
   var bizName = card.querySelector('.biz-name') ? card.querySelector('.biz-name').textContent : bizId;
 
   if (decision === 'approved' && bizId) {
-    // FRONTEND SIMULATION: store the verified status in localStorage.
-    // In production: sets businesses.verified = true in the DB, which immediately
-    // makes the ✅ Verified badge appear on that business's profile.html and search.html card.
-    // Also triggers an email + WhatsApp notification to the business owner.
-    try { localStorage.setItem('anm-verified-' + bizId, '1'); } catch(e) {}
-    showAdminToast('✅ ' + bizName + ' approved — Verified badge is now live');
-  } else if (decision === 'rejected') {
-    try { localStorage.removeItem('anm-verified-' + bizId); } catch(e) {}
+    btn.disabled = true;
+    btn.textContent = '…';
+    try {
+      var sb = getSupabase();
+      var { error } = await sb.from('businesses').update({ verified: true }).eq('id', bizId);
+      if (error) throw error;
+      showAdminToast('✅ ' + bizName + ' approved — Verified badge is now live');
+    } catch(e) {
+      console.error('[Admin] approve error:', e);
+      showAdminToast('⚠ DB error — could not approve ' + bizName);
+      btn.disabled = false;
+      btn.textContent = '✓ Approve';
+      return;
+    }
+  } else if (decision === 'rejected' && bizId) {
+    // rejected businesses remain verified=false; no DB change needed
     showAdminToast('✗ ' + bizName + ' rejected — owner will be notified');
   }
 
   dismissCard(card, 'verification-queue', 'verification-empty');
-  // Update the pending count in the stat card
-  var pendingEl = document.querySelector('#pane-verification .stat-card .stat-val[style*="accent"]');
+  var pendingEl = document.querySelector('#pane-verification .stat-card .stat-val');
   if (pendingEl) {
     var n = parseInt(pendingEl.textContent, 10);
     if (!isNaN(n) && n > 0) pendingEl.textContent = n - 1;
@@ -1344,6 +1503,16 @@ function filterTable() {
     row.style.display = show ? '' : 'none';
   });
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Pre-clear hardcoded placeholder rows; real data loads from Supabase
+  var tbody = document.getElementById('biz-table-body');
+  if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>';
+  var queue = document.getElementById('verification-queue');
+  if (queue) queue.innerHTML = '<div style="padding:20px;color:var(--c-muted);text-align:center">Loading…</div>';
+
+  initAdminPage();
+});
 </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -296,9 +296,35 @@
     background: var(--c-text); color: #fff; padding: 12px 20px; border-radius: var(--radius-sm);
     font-size: 13px; opacity: 0; pointer-events: none; transition: all 0.25s; z-index: 300; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #page-loading { display:none; position:fixed; inset:0; background:var(--c-bg); z-index:500;
+    align-items:center; justify-content:center; flex-direction:column; gap:12px; font-size:14px; color:var(--c-muted); }
+  .loading-spinner { width:32px; height:32px; border:3px solid var(--c-border);
+    border-top-color:var(--c-accent); border-radius:50%; animation:spin 0.7s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  #profile-not-found { display:none; text-align:center; padding:80px 24px; }
+  #profile-not-found .nf-icon { font-size:48px; margin-bottom:16px; }
+  #profile-not-found .nf-title { font-family:var(--font-display); font-size:26px; margin-bottom:8px; }
+  #profile-not-found .nf-sub { font-size:14px; color:var(--c-muted); margin-bottom:24px; }
+  #profile-not-found a { color:var(--c-accent); text-decoration:none; font-size:14px; }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
 </head>
 <body>
+
+<!-- LOADING OVERLAY -->
+<div id="page-loading">
+  <div class="loading-spinner"></div>
+  <span>Loading business profile…</span>
+</div>
+
+<!-- NOT FOUND STATE -->
+<div id="profile-not-found">
+  <div class="nf-icon">🔍</div>
+  <div class="nf-title">Business not found</div>
+  <div class="nf-sub">This listing may have been removed or the link is incorrect.</div>
+  <a href="search.html">← Back to search</a>
+</div>
 
 <!-- NAV -->
 <nav>
@@ -772,298 +798,173 @@
 <div class="toast" id="contact-toast"></div>
 
 <script>
-/* ===== BUSINESS DATA (simulates a backend lookup by ?id=) ===== */
-var BUSINESSES = {
-  garcia: {
-    avatar: 'GG', name: "Garcia's Garden & Landscaping",
-    catEs: '🌿 Landscaping · Duluth, GA 30096', catEn: '🌿 Landscaping · Duluth, GA 30096',
-    breadcrumbCatEs: 'Landscaping', breadcrumbCatEn: 'Landscaping', breadcrumbCatSlug: 'landscaping',
-    badges: ['verified', 'llc', 'es', 'en'],
-    rating: '4.9★', ratingNum: '4.9', stars: '★★★★★', reviewCount: 38, years: '10+', distance: '2.3mi',
-    services: [
-      ['✂️', 'Corte de césped', 'Lawn mowing'],
-      ['🌳', 'Poda de árboles', 'Tree trimming'],
-      ['🌿', 'Diseño de jardines', 'Garden design'],
-      ['🌱', 'Control de maleza', 'Weed control'],
-      ['💧', 'Sistemas de riego', 'Irrigation systems'],
-      ['🍂', 'Limpieza de hojas', 'Leaf cleanup'],
-      ['🪨', 'Bordillos y rocas', 'Edging & rocks'],
-      ['🏘️', 'Mantenimiento comercial', 'Commercial maintenance']
-    ],
-    aboutEs: "Somos una empresa familiar con más de 10 años de experiencia en el área metropolitana de Atlanta. Ofrecemos servicios de paisajismo residencial y comercial con los más altos estándares de calidad. Nuestro equipo es profesional, puntual y siempre dispuesto a satisfacer las necesidades de nuestros clientes. Contamos con licencia de Georgia y seguro de responsabilidad civil. Presupuesto gratis sin compromiso.",
-    aboutEn: "We are a family-owned business with 10+ years of experience in the Atlanta metro area. We offer residential and commercial landscaping services with the highest quality standards. Our team is professional, punctual, and always ready to meet our customers' needs. Georgia licensed and fully insured. Free estimates with no obligation.",
-    area: 'Duluth, Norcross, Lawrenceville, Buford, Atlanta',
-    type: 'LLC · Georgia registered',
-    languages: 'Español · English',
-    payment: 'Cash · Zelle · Venmo · Check',
-    sinceEs: 'Enero 2026 · Verificado ✓', sinceEn: 'January 2026 · Verified ✓',
-    reviews: [
-      { initials: 'MR', name: 'Maria R.', stars: '★★★★★', dateEs: 'Hace 2 semanas', dateEn: '2 weeks ago',
-        textEs: '¡Excelente servicio! Llegaron a tiempo, trabajaron rápido y dejaron el jardín impecable. Ya los contraté para mantenimiento mensual. 100% recomendados.',
-        textEn: 'Excellent service! They arrived on time, worked quickly and left the garden immaculate. I already hired them for monthly maintenance. 100% recommended.' },
-      { initials: 'CL', name: 'Carlos L.', stars: '★★★★★', dateEs: 'Hace 1 mes', dateEn: '1 month ago',
-        textEs: "Contraté a Garcia's para el mantenimiento de un estacionamiento comercial. Muy profesionales, precios justos y siempre responden por WhatsApp. Gran empresa.",
-        textEn: "I hired Garcia's for commercial parking lot maintenance. Very professional, fair prices and always respond on WhatsApp. Great company." },
-      { initials: 'SJ', name: 'Sarah J.', stars: '★★★★☆', dateEs: 'Hace 6 semanas', dateEn: '6 weeks ago',
-        textEs: 'Muy buen trabajo en general. Tardaron un poco más de lo esperado pero el resultado fue excelente. El jardín quedó muy bonito.',
-        textEn: 'Very good work overall. They took a little longer than expected but the result was excellent. The garden looked beautiful.' }
-    ],
-    hoursTodayEs: '7am – 6pm', hoursTodayEn: '7am – 6pm', hoursSatEs: '8am – 4pm', hoursSatEn: '8am – 4pm', hoursWeekdayEs: '7am – 6pm', hoursWeekdayEn: '7am – 6pm',
-    location: 'Duluth, GA 30096', mapQuery: 'Duluth+GA',
-    phone: '+17865550192', phoneDisplay: '+1 (786) 555-0192'
-  },
-  rodriguez: {
-    avatar: 'RC', name: 'Rodriguez Cleaning Services',
-    catEs: '🧹 Limpieza · Norcross, GA', catEn: '🧹 Cleaning · Norcross, GA',
-    breadcrumbCatEs: 'Limpieza', breadcrumbCatEn: 'Cleaning', breadcrumbCatSlug: 'cleaning',
-    badges: ['verified', 'es', 'pt'],
-    rating: '4.8★', ratingNum: '4.8', stars: '★★★★★', reviewCount: 21, years: '6+', distance: '4.1mi',
-    services: [
-      ['🧹', 'Limpieza residencial', 'Residential cleaning'],
-      ['🏢', 'Limpieza de oficinas', 'Office cleaning'],
-      ['🪟', 'Limpieza de ventanas', 'Window cleaning'],
-      ['🛋️', 'Limpieza profunda', 'Deep cleaning'],
-      ['📦', 'Limpieza de mudanza', 'Move-in/move-out cleaning'],
-      ['🧺', 'Limpieza post-construcción', 'Post-construction cleaning']
-    ],
-    aboutEs: "Ofrecemos limpieza residencial y de oficinas en el área de Norcross y alrededores. Contratos semanales o mensuales disponibles. Nuestro equipo está capacitado, es de confianza y usa productos de calidad. LLC registrada en Georgia.",
-    aboutEn: "We offer residential and office cleaning in the Norcross area and surroundings. Weekly or monthly contracts available. Our team is trained, trustworthy, and uses quality products. LLC registered in Georgia.",
-    area: 'Norcross, Duluth, Lawrenceville, Buford',
-    type: 'LLC · Georgia registered',
-    languages: 'Español · Português',
-    payment: 'Cash · Zelle · Check',
-    sinceEs: 'Marzo 2026 · Verificado ✓', sinceEn: 'March 2026 · Verified ✓',
-    reviews: [
-      { initials: 'KP', name: 'Karen P.', stars: '★★★★★', dateEs: 'Hace 1 semana', dateEn: '1 week ago',
-        textEs: 'Limpian mi oficina cada semana y siempre dejan todo impecable. Muy puntuales y de confianza, les he dado llave de repuesto.',
-        textEn: 'They clean my office every week and always leave everything spotless. Very punctual and trustworthy, I even gave them a spare key.' },
-      { initials: 'DT', name: 'David T.', stars: '★★★★★', dateEs: 'Hace 3 semanas', dateEn: '3 weeks ago',
-        textEs: 'Excelente limpieza profunda antes de mudarnos. El equipo fue muy minucioso, hasta limpiaron lugares que ni había pensado.',
-        textEn: 'Excellent deep cleaning before our move. The team was very thorough, they even cleaned spots I hadn\'t thought of.' },
-      { initials: 'LM', name: 'Lucia M.', stars: '★★★★☆', dateEs: 'Hace 2 meses', dateEn: '2 months ago',
-        textEs: 'Buen servicio en general, precios justos. Una vez llegaron 20 minutos tarde pero avisaron con anticipación.',
-        textEn: 'Good service overall, fair prices. They were 20 minutes late once but gave advance notice.' }
-    ],
-    hoursTodayEs: '8am – 5pm', hoursTodayEn: '8am – 5pm', hoursSatEs: '9am – 2pm', hoursSatEn: '9am – 2pm', hoursWeekdayEs: '8am – 5pm', hoursWeekdayEn: '8am – 5pm',
-    location: 'Norcross, GA 30071', mapQuery: 'Norcross+GA',
-    phone: '+17705550134', phoneDisplay: '+1 (770) 555-0134'
-  },
-  hernandez: {
-    avatar: 'HL', name: 'Hernandez Construction LLC',
-    catEs: '🏗️ Construcción · Atlanta, GA', catEn: '🏗️ Construction · Atlanta, GA',
-    breadcrumbCatEs: 'Construcción', breadcrumbCatEn: 'Construction', breadcrumbCatSlug: 'construction',
-    badges: ['verified', 'es', 'en'],
-    rating: '4.7★', ratingNum: '4.7', stars: '★★★★★', reviewCount: 14, years: '15+', distance: '5.8mi',
-    services: [
-      ['🏠', 'Remodelaciones', 'Remodeling'],
-      ['🏚️', 'Techos', 'Roofing'],
-      ['🪵', 'Pisos', 'Flooring'],
-      ['🧱', 'Adiciones a la casa', 'Home additions'],
-      ['🚪', 'Instalación de puertas', 'Door installation'],
-      ['🛁', 'Remodelación de baños', 'Bathroom remodeling']
-    ],
-    aboutEs: "Más de 15 años de experiencia en el área de Atlanta. Remodelaciones, techos, pisos y más. Empresa asegurada y con licencia de Georgia. Trabajos residenciales y comerciales con garantía.",
-    aboutEn: "15+ years of experience in the Atlanta area. Remodeling, roofing, flooring and more. Fully insured and Georgia licensed. Residential and commercial work with warranty.",
-    area: 'Atlanta, Marietta, Smyrna',
-    type: 'LLC · Georgia registered',
-    languages: 'Español · English',
-    payment: 'Cash · Zelle · Credit Card · Check',
-    sinceEs: 'Mayo 2026 · Verificado ✓', sinceEn: 'May 2026 · Verified ✓',
-    reviews: [
-      { initials: 'RW', name: 'Robert W.', stars: '★★★★★', dateEs: 'Hace 4 días', dateEn: '4 days ago',
-        textEs: 'Remodelaron nuestra cocina completa. Trabajo de primera calidad, cumplieron el presupuesto y el tiempo acordado. Muy recomendados.',
-        textEn: 'They remodeled our entire kitchen. Top quality work, stayed on budget and on schedule. Highly recommended.' },
-      { initials: 'AG', name: 'Ana G.', stars: '★★★★★', dateEs: 'Hace 2 semanas', dateEn: '2 weeks ago',
-        textEs: 'Instalaron un techo nuevo después de una tormenta. Vinieron rápido, el trabajo está asegurado y se nota la experiencia.',
-        textEn: 'They installed a new roof after a storm. Came quickly, the work is insured and you can tell they have experience.' },
-      { initials: 'JP', name: 'James P.', stars: '★★★★☆', dateEs: 'Hace 1 mes', dateEn: '1 month ago',
-        textEs: 'Buen trabajo en la remodelación del baño. Tardaron un par de días más de lo planeado pero el resultado valió la pena.',
-        textEn: 'Good work on the bathroom remodel. Took a couple extra days but the result was worth it.' }
-    ],
-    hoursTodayEs: '7am – 7pm', hoursTodayEn: '7am – 7pm', hoursSatEs: '8am – 3pm', hoursSatEn: '8am – 3pm', hoursWeekdayEs: '7am – 7pm', hoursWeekdayEn: '7am – 7pm',
-    location: 'Atlanta, GA 30303', mapQuery: 'Atlanta+GA',
-    phone: '+14045550178', phoneDisplay: '+1 (404) 555-0178'
-  },
-  martinez: {
-    avatar: 'MP', name: 'Martinez Plumbing & Repair',
-    catEs: '🔧 Plomería · Buford, GA', catEn: '🔧 Plumbing · Buford, GA',
-    breadcrumbCatEs: 'Plomería', breadcrumbCatEn: 'Plumbing', breadcrumbCatSlug: 'plumbing',
-    badges: ['verified', 'es'],
-    rating: '4.6★', ratingNum: '4.6', stars: '★★★★☆', reviewCount: 17, years: '8+', distance: '3.5mi',
-    services: [
-      ['🚰', 'Reparación de fugas', 'Leak repair'],
-      ['🚽', 'Instalación de inodoros', 'Toilet installation'],
-      ['🔥', 'Calentadores de agua', 'Water heaters'],
-      ['🚿', 'Reparación de tuberías', 'Pipe repair'],
-      ['🆘', 'Emergencias 24/7', '24/7 emergencies'],
-      ['🏢', 'Plomería comercial', 'Commercial plumbing']
-    ],
-    aboutEs: "Plomería residencial y comercial con emergencias 24/7. Más de 8 años de experiencia. Licencia de Georgia. Atendemos Buford y áreas cercanas de Gwinnett y Hall County.",
-    aboutEn: "Residential & commercial plumbing with 24/7 emergencies. 8+ years experience. Georgia licensed. Serving Buford and nearby Gwinnett and Hall County areas.",
-    area: 'Buford, Gainesville, Sugar Hill',
-    type: 'Sole Proprietorship · Georgia licensed',
-    languages: 'Español',
-    payment: 'Cash · Zelle',
-    sinceEs: 'Febrero 2026 · Verificado ✓', sinceEn: 'February 2026 · Verified ✓',
-    reviews: [
-      { initials: 'TC', name: 'Teresa C.', stars: '★★★★★', dateEs: 'Hace 3 días', dateEn: '3 days ago',
-        textEs: 'Tuve una fuga de agua a medianoche y vinieron en menos de una hora. Servicio de emergencia excelente, precio justo.',
-        textEn: 'I had a water leak at midnight and they came in under an hour. Excellent emergency service, fair price.' },
-      { initials: 'BH', name: 'Brian H.', stars: '★★★★★', dateEs: 'Hace 2 semanas', dateEn: '2 weeks ago',
-        textEs: 'Instalaron un calentador de agua nuevo. Trabajo limpio y profesional, explicaron todo claramente antes de empezar.',
-        textEn: 'They installed a new water heater. Clean and professional work, explained everything clearly before starting.' },
-      { initials: 'NV', name: 'Nancy V.', stars: '★★★★☆', dateEs: 'Hace 5 semanas', dateEn: '5 weeks ago',
-        textEs: 'Repararon una tubería rota. Buen trabajo aunque el costo fue un poco más alto de lo que esperaba.',
-        textEn: 'They repaired a broken pipe. Good work although the cost was a bit higher than I expected.' }
-    ],
-    hoursTodayEs: '24 horas', hoursTodayEn: '24 hours', hoursSatEs: '24 horas', hoursSatEn: '24 hours', hoursWeekdayEs: '24 horas', hoursWeekdayEn: '24 hours',
-    location: 'Buford, GA 30518', mapQuery: 'Buford+GA',
-    phone: '+16785550145', phoneDisplay: '+1 (678) 555-0145'
-  },
-  suarez: {
-    avatar: 'SE', name: 'Suarez Electrical Services',
-    catEs: '⚡ Electricidad · Duluth, GA', catEn: '⚡ Electrical · Duluth, GA',
-    breadcrumbCatEs: 'Electricidad', breadcrumbCatEn: 'Electrical', breadcrumbCatSlug: 'electrical',
-    badges: ['verified', 'es', 'en'],
-    rating: '4.8★', ratingNum: '4.8', stars: '★★★★★', reviewCount: 9, years: '7+', distance: '6.2mi',
-    services: [
-      ['💡', 'Instalaciones eléctricas', 'Electrical installations'],
-      ['🔌', 'Paneles eléctricos', 'Electrical panels'],
-      ['🛠️', 'Reparaciones', 'Repairs'],
-      ['🏠', 'Cableado residencial', 'Residential wiring'],
-      ['🏢', 'Cableado comercial', 'Commercial wiring'],
-      ['🔦', 'Iluminación exterior', 'Outdoor lighting']
-    ],
-    aboutEs: "Electricista certificado con experiencia en instalaciones, paneles y reparaciones residenciales y comerciales. Atendemos el área de Duluth y Gwinnett County.",
-    aboutEn: "Certified electrician with experience in residential and commercial installations, panels, and repairs. Serving the Duluth and Gwinnett County area.",
-    area: 'Duluth, Suwanee, Johns Creek',
-    type: 'LLC · Georgia registered',
-    languages: 'Español · English',
-    payment: 'Cash · Zelle · Credit Card',
-    sinceEs: 'Abril 2026 · Verificado ✓', sinceEn: 'April 2026 · Verified ✓',
-    reviews: [
-      { initials: 'EF', name: 'Elena F.', stars: '★★★★★', dateEs: 'Hace 1 semana', dateEn: '1 week ago',
-        textEs: 'Instalaron un panel eléctrico nuevo en mi casa. Certificados, conocen bien el código eléctrico de Georgia. Muy satisfecha.',
-        textEn: 'They installed a new electrical panel at my house. Certified, know the Georgia electrical code well. Very satisfied.' },
-      { initials: 'MK', name: 'Michael K.', stars: '★★★★★', dateEs: 'Hace 3 semanas', dateEn: '3 weeks ago',
-        textEs: 'Arreglaron un problema de cableado que llevaba meses. Llegaron a tiempo y el precio fue exactamente el presupuestado.',
-        textEn: 'They fixed a wiring issue that had been there for months. Arrived on time and the price matched the quote exactly.' },
-      { initials: 'PS', name: 'Patricia S.', stars: '★★★★☆', dateEs: 'Hace 2 meses', dateEn: '2 months ago',
-        textEs: 'Instalación de iluminación exterior, quedó muy bien. Tardaron en responder al principio pero el trabajo fue de calidad.',
-        textEn: 'Outdoor lighting installation came out great. Took a while to respond at first but the work was quality.' }
-    ],
-    hoursTodayEs: '8am – 6pm', hoursTodayEn: '8am – 6pm', hoursSatEs: '9am – 1pm', hoursSatEn: '9am – 1pm', hoursWeekdayEs: '8am – 6pm', hoursWeekdayEn: '8am – 6pm',
-    location: 'Duluth, GA 30096', mapQuery: 'Duluth+GA',
-    phone: '+14705550167', phoneDisplay: '+1 (470) 555-0167'
-  },
-  flores: {
-    avatar: 'FP', name: 'Flores Painting Co.',
-    catEs: '🪟 Pintura · Lawrenceville, GA', catEn: '🪟 Painting · Lawrenceville, GA',
-    breadcrumbCatEs: 'Pintura', breadcrumbCatEn: 'Painting', breadcrumbCatSlug: 'painting',
-    badges: ['es', 'basic'],
-    rating: '4.5★', ratingNum: '4.5', stars: '★★★★☆', reviewCount: 6, years: '4+', distance: '8.4mi',
-    services: [
-      ['🎨', 'Pintura interior', 'Interior painting'],
-      ['🏠', 'Pintura exterior', 'Exterior painting'],
-      ['🚪', 'Pintura de gabinetes', 'Cabinet painting'],
-      ['🪵', 'Reparación de paneles', 'Drywall repair'],
-      ['🏢', 'Pintura comercial', 'Commercial painting']
-    ],
-    aboutEs: "Pintura interior y exterior para trabajos residenciales y comerciales. Precios competitivos y atención personalizada. Atendemos Lawrenceville y áreas cercanas de Gwinnett County.",
-    aboutEn: "Interior and exterior painting for residential and commercial jobs. Competitive pricing and personalized attention. Serving Lawrenceville and nearby Gwinnett County areas.",
-    area: 'Lawrenceville, Dacula, Auburn',
-    type: 'DBA · Georgia registered',
-    languages: 'Español',
-    payment: 'Cash · Zelle',
-    sinceEs: 'Junio 2026 · Pendiente de verificación', sinceEn: 'June 2026 · Pending verification',
-    reviews: [
-      { initials: 'OW', name: 'Olivia W.', stars: '★★★★★', dateEs: 'Hace 1 semana', dateEn: '1 week ago',
-        textEs: 'Pintaron toda la fachada de mi casa. Trabajo limpio y cuidadoso, protegieron las plantas y ventanas todo el tiempo.',
-        textEn: 'They painted my entire house exterior. Clean and careful work, protected the plants and windows the whole time.' },
-      { initials: 'DR', name: 'Daniel R.', stars: '★★★★☆', dateEs: 'Hace 1 mes', dateEn: '1 month ago',
-        textEs: 'Pintaron el interior de la sala y cocina. Buen acabado, precio competitivo comparado con otros presupuestos que recibí.',
-        textEn: 'They painted the living room and kitchen interior. Good finish, competitive price compared to other quotes I got.' },
-      { initials: 'CM', name: 'Carmen M.', stars: '★★★★☆', dateEs: 'Hace 2 meses', dateEn: '2 months ago',
-        textEs: 'Buen trabajo de pintura comercial en mi local. Negocio pequeño pero responsable y con buena atención al cliente.',
-        textEn: 'Good commercial painting work at my shop. Small business but responsible with good customer attention.' }
-    ],
-    hoursTodayEs: '8am – 5pm', hoursTodayEn: '8am – 5pm', hoursSatEs: 'Cerrado', hoursSatEn: 'Closed', hoursWeekdayEs: '8am – 5pm', hoursWeekdayEn: '8am – 5pm',
-    location: 'Lawrenceville, GA 30043', mapQuery: 'Lawrenceville+GA',
-    phone: '+16785550199', phoneDisplay: '+1 (678) 555-0199'
-  },
-  luis: {
-    isWorker: true,
-    avatar: 'LM', name: 'Luis M.',
-    catEs: '👷 Cocina / Restaurante · Duluth, GA', catEn: '👷 Kitchen / Restaurant · Duluth, GA',
-    breadcrumbCatEs: 'Personal y Mano de Obra', breadcrumbCatEn: 'Staffing & Labor', breadcrumbCatSlug: 'staffing',
-    badges: ['verified', 'es', 'en'],
-    jobsCompleted: 12, years: '5+', distance: '1.8mi',
-    services: [
-      ['🍳', 'Cocina de línea', 'Line cook'],
-      ['🔪', 'Prep de cocina', 'Kitchen prep'],
-      ['🍽️', 'Lavado de platos', 'Dishwashing'],
-      ['📦', 'Recepción de inventario', 'Inventory receiving']
-    ],
-    aboutEs: "5 años de experiencia trabajando en cocinas de restaurantes en el área de Atlanta. Disponible por día o por semana según lo que necesites. Soy puntual, trabajo limpio y me adapto rápido a cualquier cocina. Hablo español e inglés.",
-    aboutEn: "5 years of experience working in restaurant kitchens in the Atlanta area. Available by the day or by the week depending on what you need. I'm punctual, work clean, and adapt quickly to any kitchen. I speak Spanish and English.",
-    area: 'Duluth, Norcross, Lawrenceville',
-    availabilityEs: 'Por día · Por semana', availabilityEn: 'By the day · By the week',
-    languages: 'Español · English',
-    sinceEs: 'Marzo 2026 · Verificado ✓', sinceEn: 'March 2026 · Verified ✓',
-    location: 'Duluth, GA 30096', mapQuery: 'Duluth+GA',
-    phone: '+17865550301', phoneDisplay: '+1 (786) 555-0301'
-  },
-  jorge: {
-    isWorker: true,
-    avatar: 'JR', name: 'Jorge R.',
-    catEs: '👷 Construcción (jornalero) · Atlanta, GA', catEn: '👷 Construction (day labor) · Atlanta, GA',
-    breadcrumbCatEs: 'Personal y Mano de Obra', breadcrumbCatEn: 'Staffing & Labor', breadcrumbCatSlug: 'staffing',
-    badges: ['verified', 'es'],
-    jobsCompleted: 27, years: '8+', distance: '4.6mi',
-    services: [
-      ['🏗️', 'Demolición', 'Demolition'],
-      ['📦', 'Carga y descarga', 'Loading & unloading'],
-      ['🧱', 'Trabajo general de construcción', 'General construction work'],
-      ['🧹', 'Limpieza de obra', 'Job site cleanup']
-    ],
-    aboutEs: "8 años de experiencia en trabajos de construcción y demolición. Disponible de inmediato para trabajos de uno o varios días. Soy fuerte, trabajador y sigo instrucciones bien. Disponible para trabajo en equipo o solo.",
-    aboutEn: "8 years of experience in construction and demolition work. Available immediately for one-day or multi-day jobs. I'm strong, hardworking, and follow instructions well. Available for team work or solo jobs.",
-    area: 'Atlanta, Marietta, Smyrna',
-    availabilityEs: 'Por día · Contrato permanente', availabilityEn: 'By the day · Permanent placement',
-    languages: 'Español',
-    sinceEs: 'Febrero 2026 · Verificado ✓', sinceEn: 'February 2026 · Verified ✓',
-    location: 'Atlanta, GA 30303', mapQuery: 'Atlanta+GA',
-    phone: '+14045550302', phoneDisplay: '+1 (404) 555-0302'
-  },
-  ana: {
-    isWorker: true,
-    avatar: 'AG', name: 'Ana G.',
-    catEs: '👷 Mudanzas / Carga · Norcross, GA', catEn: '👷 Moving / Loading · Norcross, GA',
-    breadcrumbCatEs: 'Personal y Mano de Obra', breadcrumbCatEn: 'Staffing & Labor', breadcrumbCatSlug: 'staffing',
-    badges: ['es'],
-    pendingVerification: true,
-    jobsCompleted: 4, years: '1+', distance: '3.2mi',
-    services: [
-      ['📦', 'Mudanzas residenciales', 'Residential moves'],
-      ['🚚', 'Carga y descarga de camiones', 'Truck loading & unloading'],
-      ['🛋️', 'Manejo de muebles', 'Furniture handling']
-    ],
-    aboutEs: "Disponible para ayudar con mudanzas residenciales los fines de semana. Trabajo en equipo, soy puntual y cuidadosa con los muebles y objetos frágiles. Apenas estoy empezando en la plataforma pero tengo buena disposición para aprender.",
-    aboutEn: "Available to help with residential moves on weekends. I'm a team player, punctual, and careful with furniture and fragile items. I'm just getting started on the platform but have a great attitude and am eager to learn.",
-    area: 'Norcross, Duluth, Lilburn',
-    availabilityEs: 'Por día (fines de semana)', availabilityEn: 'By the day (weekends)',
-    languages: 'Español',
-    sinceEs: 'Junio 2026 · Pendiente de verificación', sinceEn: 'June 2026 · Pending verification',
-    location: 'Norcross, GA 30071', mapQuery: 'Norcross+GA',
-    phone: '+14045550303', phoneDisplay: '+1 (404) 555-0303'
-  }
+/* ===== SUPABASE LIVE DATA LOADING ===== */
+
+var CATEGORY_MAP = {
+  staffing:     { emoji: '👷', es: 'Personal y Mano de Obra', en: 'Staffing & Labor' },
+  landscaping:  { emoji: '🌿', es: 'Jardinería',             en: 'Landscaping' },
+  cleaning:     { emoji: '🧹', es: 'Limpieza',               en: 'Cleaning' },
+  construction: { emoji: '🏗️', es: 'Construcción',           en: 'Construction' },
+  moving:       { emoji: '🚚', es: 'Mudanzas',               en: 'Moving' },
+  food:         { emoji: '🍽️', es: 'Comida y Restaurantes',  en: 'Food & Restaurants' },
+  auto:         { emoji: '🚗', es: 'Auto y Vehículos',       en: 'Auto & Vehicles' },
+  translation:  { emoji: '🌐', es: 'Traducción',             en: 'Translation' },
+  plumbing:     { emoji: '🔧', es: 'Plomería',               en: 'Plumbing' },
+  electrical:   { emoji: '⚡', es: 'Electricidad',           en: 'Electrical' },
+  painting:     { emoji: '🎨', es: 'Pintura',                en: 'Painting' },
+  tree_removal: { emoji: '🌲', es: 'Poda de Árboles',        en: 'Tree Removal' },
+  real_estate:  { emoji: '🏠', es: 'Bienes Raíces',          en: 'Real Estate' }
 };
+
+var LANG_LABELS = { es: 'Español', en: 'English', pt: 'Português', fr: 'Français' };
+var MONTH_ES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+var MONTH_EN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function getAvatarInitials(name) {
+  if (!name) return '?';
+  var parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+  return parts[0].slice(0, 2).toUpperCase();
+}
+
+function formatSinceDate(isoDate, lang, verified) {
+  if (!isoDate) return '';
+  var d = new Date(isoDate);
+  var m = lang === 'es' ? MONTH_ES[d.getMonth()] : MONTH_EN[d.getMonth()];
+  var base = m + ' ' + d.getFullYear();
+  if (verified) base += lang === 'es' ? ' · Verificado ✓' : ' · Verified ✓';
+  return base;
+}
+
+function formatHoursEntry(hours, day) {
+  if (!Array.isArray(hours)) return null;
+  var entry = hours.find(function(h) { return h.day === day; });
+  if (!entry || entry.closed) return null;
+  return (entry.open || '') + (entry.close ? ' – ' + entry.close : '');
+}
+
+function relativeDate(isoDate, lang) {
+  var d = new Date(isoDate);
+  var days = Math.floor((Date.now() - d) / 86400000);
+  if (lang === 'es') {
+    if (days < 2) return 'Ayer';
+    if (days < 7) return 'Hace ' + days + ' días';
+    if (days < 30) return 'Hace ' + Math.floor(days/7) + (Math.floor(days/7)===1?' semana':' semanas');
+    return 'Hace ' + Math.floor(days/30) + (Math.floor(days/30)===1?' mes':' meses');
+  } else {
+    if (days < 2) return 'Yesterday';
+    if (days < 7) return days + ' days ago';
+    var w = Math.floor(days/7);
+    if (days < 30) return w + (w===1?' week':' weeks') + ' ago';
+    var mo = Math.floor(days/30);
+    return mo + (mo===1?' month':' months') + ' ago';
+  }
+}
+
+function buildBizObject(biz, reviews) {
+  var cats = Array.isArray(biz.categories) ? biz.categories : [];
+  var primaryCat = cats.length ? (CATEGORY_MAP[cats[0]] || {}) : {};
+  var area = biz.service_area || '';
+  var cityName = area.split(',')[0].trim();
+  var location = cityName ? cityName + ', GA' : 'Georgia';
+
+  var langs = Array.isArray(biz.languages) ? biz.languages : ['es'];
+  var payments = Array.isArray(biz.payment_methods) ? biz.payment_methods : [];
+
+  var badges = [];
+  if (biz.verified) badges.push('verified');
+  langs.forEach(function(l) { if (['es','en','pt','fr'].indexOf(l) !== -1) badges.push(l); });
+  if (biz.plan === 'basic') badges.push('basic');
+  if (biz.plan === 'premium') badges.push('premium');
+
+  var services = cats.map(function(cat) {
+    var c = CATEGORY_MAP[cat] || {};
+    return [c.emoji || '🔹', c.es || cat, c.en || cat];
+  });
+  if (!services.length) services = [['🔹', 'Servicio general', 'General service']];
+
+  var h = Array.isArray(biz.hours) ? biz.hours : [];
+  var todayKey = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][new Date().getDay()];
+  var todayH = formatHoursEntry(h, todayKey) || '—';
+  var satH   = formatHoursEntry(h, 'Sat')   || '—';
+  var monH   = formatHoursEntry(h, 'Mon')   || '—';
+
+  var revCount = reviews.length;
+  var avgRating = revCount ? reviews.reduce(function(s,r){ return s+(r.rating||0); },0)/revCount : 0;
+  var ratingDisp = revCount ? avgRating.toFixed(1)+'★' : '—';
+  var ratingNum  = revCount ? avgRating.toFixed(1) : '—';
+  var stars = revCount ? '★'.repeat(Math.round(avgRating))+'☆'.repeat(5-Math.round(avgRating)) : '';
+
+  var reviewObjs = reviews.map(function(r) {
+    var nm = r.reviewer_name || r.name || 'Cliente';
+    return {
+      initials: getAvatarInitials(nm),
+      name: nm,
+      stars: '★'.repeat(r.rating||0)+'☆'.repeat(5-(r.rating||0)),
+      dateEs: relativeDate(r.created_at, 'es'),
+      dateEn: relativeDate(r.created_at, 'en'),
+      textEs: r.comment || '',
+      textEn: r.comment_en || r.comment || ''
+    };
+  });
+
+  return {
+    id: biz.id,
+    avatar: getAvatarInitials(biz.trade_name || biz.business_name),
+    name: biz.trade_name || biz.business_name,
+    legalName: biz.business_name,
+    catEs: (primaryCat.emoji||'🏢')+' '+(primaryCat.es||cats.join(', '))+' · '+cityName+', GA',
+    catEn: (primaryCat.emoji||'🏢')+' '+(primaryCat.en||cats.join(', '))+' · '+cityName+', GA',
+    breadcrumbCatEs: primaryCat.es || cats.join(', '),
+    breadcrumbCatEn: primaryCat.en || cats.join(', '),
+    breadcrumbCatSlug: cats[0] || '',
+    badges: badges,
+    rating: ratingDisp, ratingNum: ratingNum, stars: stars, reviewCount: revCount,
+    years: '—', distance: '—',
+    services: services,
+    aboutEs: biz.description || '', aboutEn: biz.description || '',
+    area: area, type: '',
+    languages: langs.map(function(l){ return LANG_LABELS[l]||l.toUpperCase(); }).join(' · '),
+    payment: payments.map(function(p){ return p.charAt(0).toUpperCase()+p.slice(1); }).join(' · '),
+    sinceEs: formatSinceDate(biz.created_at, 'es', biz.verified),
+    sinceEn: formatSinceDate(biz.created_at, 'en', biz.verified),
+    reviews: reviewObjs,
+    hoursTodayEs: todayH, hoursTodayEn: todayH,
+    hoursSatEs: satH, hoursSatEn: satH,
+    hoursWeekdayEs: monH, hoursWeekdayEn: monH,
+    location: location,
+    mapQuery: location.replace(/\s/g, '+'),
+    phone: biz.whatsapp_phone || '',
+    phoneDisplay: biz.whatsapp_phone || ''
+  };
+}
+
+function showNotFound() {
+  document.getElementById('page-loading').style.display = 'none';
+  document.getElementById('profile-not-found').style.display = 'block';
+  document.querySelector('nav') && (document.querySelector('nav').style.display = 'flex');
+  document.querySelector('.breadcrumb') && (document.querySelector('.breadcrumb').style.display = 'none');
+  document.querySelector('.page-body') && (document.querySelector('.page-body').style.display = 'none');
+}
+
+/* ===== replaced BUSINESSES object — data now from Supabase =====
+   URL param ?id= is now a Supabase UUID (e.g. profile.html?id=abc-123).
+   search.html must link with the real businesses.id value. */
 
 function getBusinessId() {
   var params = new URLSearchParams(window.location.search);
-  var id = params.get('id');
-  return (id && BUSINESSES[id]) ? id : 'garcia'; // fallback to Garcia if no/unknown id
+  return params.get('id') || '';
 }
+
+/* stub — filled after Supabase returns */
+var _bizData = null;
+
+/* ============================================================= */
+/* Legacy lookup removed. All business rendering now uses the    */
+/* buildBizObject() output returned by loadBusiness() below.     */
+/* ============================================================= */
+
+// ─── all hardcoded business data removed; loaded live from Supabase below ───
 
 function badgeHtml(badges) {
   var map = {
@@ -1077,9 +978,31 @@ function badgeHtml(badges) {
   return badges.map(function(b) { return map[b] || ''; }).join('\n            ');
 }
 
-function loadBusiness() {
+async function loadBusiness() {
   var id = getBusinessId();
-  var b = BUSINESSES[id];
+
+  if (!id) { showNotFound(); return; }
+
+  // Show loading overlay
+  document.getElementById('page-loading').style.display = 'flex';
+
+  var b;
+  try {
+    var sb = getSupabase();
+    var bizRes = await sb.from('businesses').select('*').eq('id', id).single();
+    if (bizRes.error || !bizRes.data) { showNotFound(); return; }
+    var reviewsRes = await sb.from('reviews').select('*').eq('business_id', id).order('created_at', { ascending: false }).limit(10);
+    b = buildBizObject(bizRes.data, reviewsRes.data || []);
+    b.id = id;
+    window.currentBusiness = b;
+  } catch(e) {
+    console.error('[AmigosNearMe] loadBusiness error:', e);
+    showNotFound();
+    return;
+  }
+
+  document.getElementById('page-loading').style.display = 'none';
+
   var isWorker = !!b.isWorker;
   var isEn = document.body.classList.contains('en');
 
@@ -1088,16 +1011,8 @@ function loadBusiness() {
   document.getElementById('biz-name').textContent = b.name;
   document.getElementById('biz-cat-es').textContent = b.catEs;
   document.getElementById('biz-cat-en').textContent = b.catEn;
-  // Check if admin has approved verification for this business since page was built.
-  // In production this comes from the DB; here we read from the same localStorage key
-  // that admin.html's reviewVerification() writes to when approving a business.
-  var adminApproved = false;
-  try { adminApproved = localStorage.getItem('anm-verified-' + id) === '1'; } catch(e) {}
-  var effectiveBadges = b.badges ? b.badges.slice() : [];
-  if (adminApproved && effectiveBadges.indexOf('verified') === -1) {
-    effectiveBadges.unshift('verified'); // prepend so it shows first
-  }
-  document.getElementById('biz-badges').innerHTML = badgeHtml(effectiveBadges) + (b.pendingVerification && !adminApproved ? '<span class="badge badge-pending">⏳ ' + (isEn ? 'Pending' : 'Pendiente') + '</span>' : '');
+  // badges come from DB (verified column + plan + languages) via buildBizObject()
+  document.getElementById('biz-badges').innerHTML = badgeHtml(b.badges || []);
 
   if (isWorker) {
     // Workers don't have a star rating — the first two stat slots become
@@ -1256,9 +1171,6 @@ function loadBusiness() {
   // Page title
   document.title = b.name + ' — AmigosNearMe';
 
-  // Store the full business object (with id) for WhatsApp links and request limit tracking
-  b.id = id;
-  window.currentBusiness = b;
   initSaveButton(); // update save button state based on localStorage
 }
 
