@@ -551,8 +551,9 @@
           <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="pay-cash"> <span data-es>Efectivo</span><span data-en>Cash</span></label>
           <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="pay-zelle"> Zelle</label>
           <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="pay-venmo"> Venmo</label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="pay-card"> <span data-es>Tarjeta</span><span data-en>Card</span></label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="pay-credit-card"> <span data-es>Tarjeta de crédito</span><span data-en>Credit Card</span></label>
           <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="pay-check"> Check</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="pay-paypal"> PayPal</label>
         </div>
       </div>
 
@@ -783,8 +784,9 @@ async function saveProfileChanges() {
     if (document.getElementById('pay-cash')?.checked) paymentMethods.push('cash');
     if (document.getElementById('pay-zelle')?.checked) paymentMethods.push('zelle');
     if (document.getElementById('pay-venmo')?.checked) paymentMethods.push('venmo');
-    if (document.getElementById('pay-card')?.checked) paymentMethods.push('card');
+    if (document.getElementById('pay-credit-card')?.checked) paymentMethods.push('credit_card');
     if (document.getElementById('pay-check')?.checked) paymentMethods.push('check');
+    if (document.getElementById('pay-paypal')?.checked) paymentMethods.push('paypal');
 
     var languages = [];
     if (document.getElementById('lang-es')?.checked) languages.push('es');
@@ -1358,8 +1360,9 @@ document.addEventListener('DOMContentLoaded', async function(){
       if (document.getElementById('pay-cash')) document.getElementById('pay-cash').checked = pm.includes('cash');
       if (document.getElementById('pay-zelle')) document.getElementById('pay-zelle').checked = pm.includes('zelle');
       if (document.getElementById('pay-venmo')) document.getElementById('pay-venmo').checked = pm.includes('venmo');
-      if (document.getElementById('pay-card')) document.getElementById('pay-card').checked = pm.includes('card');
+      if (document.getElementById('pay-credit-card')) document.getElementById('pay-credit-card').checked = pm.includes('credit_card');
       if (document.getElementById('pay-check')) document.getElementById('pay-check').checked = pm.includes('check');
+      if (document.getElementById('pay-paypal')) document.getElementById('pay-paypal').checked = pm.includes('paypal');
 
       // 언어 체크박스
       var langs = biz.languages || ['es'];
@@ -1457,7 +1460,9 @@ document.addEventListener('DOMContentLoaded', async function(){
       if (document.getElementById('pay-cash')) document.getElementById('pay-cash').checked = pm2.includes('cash');
       if (document.getElementById('pay-zelle')) document.getElementById('pay-zelle').checked = pm2.includes('zelle');
       if (document.getElementById('pay-venmo')) document.getElementById('pay-venmo').checked = pm2.includes('venmo');
-      if (document.getElementById('pay-card')) document.getElementById('pay-card').checked = pm2.includes('card');
+      if (document.getElementById('pay-credit-card')) document.getElementById('pay-credit-card').checked = pm2.includes('credit_card');
+      if (document.getElementById('pay-check')) document.getElementById('pay-check').checked = pm2.includes('check');
+      if (document.getElementById('pay-paypal')) document.getElementById('pay-paypal').checked = pm2.includes('paypal');
       if (document.getElementById('pay-check')) document.getElementById('pay-check').checked = pm2.includes('check');
 
       // 언어 체크박스
