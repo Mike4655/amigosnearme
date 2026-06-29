@@ -799,7 +799,9 @@ function renderPage(filtered) {
     return;
   }
 
-  var catLabels = { landscaping:'🌿 Landscaping', cleaning:'🧹 Limpieza / Cleaning', construction:'🏗️ Construcción', plumbing:'🔧 Plomería / Plumbing', electrical:'⚡ Electricidad / Electrical', painting:'🪟 Pintura / Painting', tree_removal:'🌳 Árboles / Tree Removal', moving:'📦 Mudanzas / Moving', food:'🍽️ Comida / Food', auto:'🚗 Autos / Auto', translation:'🗣️ Traducción / Translation', staffing:'👷 Personal / Staffing', real_estate:'🏠 Bienes Raíces / Real Estate' };
+  var catLabelsEs = { landscaping:'🌿 Landscaping', cleaning:'🧹 Limpieza', construction:'🏗️ Construcción', plumbing:'🔧 Plomería', electrical:'⚡ Electricidad', painting:'🪟 Pintura', tree_removal:'🌳 Árboles', moving:'📦 Mudanzas', food:'🍽️ Comida', auto:'🚗 Autos', translation:'🗣️ Traducción', staffing:'👷 Personal', real_estate:'🏠 Bienes Raíces' };
+  var catLabelsEn = { landscaping:'🌿 Landscaping', cleaning:'🧹 Cleaning', construction:'🏗️ Construction', plumbing:'🔧 Plumbing', electrical:'⚡ Electrical', painting:'🪟 Painting', tree_removal:'🌳 Tree Removal', moving:'📦 Moving', food:'🍽️ Food & Catering', auto:'🚗 Auto Repair', translation:'🗣️ Translation', staffing:'👷 Staffing', real_estate:'🏠 Real Estate' };
+  var catLabels = isEn ? catLabelsEn : catLabelsEs;
   var colors = ['av-coral','av-teal','av-amber','av-blue','av-green','av-purple'];
 
   list.innerHTML = page.map(function(biz, idx) {

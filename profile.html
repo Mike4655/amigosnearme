@@ -376,12 +376,12 @@
       </div>
       <div class="profile-stats">
         <div class="stat-item">
-          <div class="stat-val" style="color:var(--c-amber)" id="biz-rating">4.9★</div>
+          <div class="stat-val" style="color:var(--c-amber)" id="biz-rating">—</div>
           <div class="stat-label" data-es id="stat-label-1-es">Calificación</div>
           <div class="stat-label" data-en id="stat-label-1-en">Rating</div>
         </div>
         <div class="stat-item">
-          <div class="stat-val" id="biz-review-count">38</div>
+          <div class="stat-val" id="biz-review-count">0</div>
           <div class="stat-label" data-es id="stat-label-2-es">Reseñas</div>
           <div class="stat-label" data-en id="stat-label-2-en">Reviews</div>
         </div>
@@ -532,21 +532,7 @@
         <span data-en>💬 Only customers who have contacted this business can leave a review. Use the WhatsApp button or contact form to connect first.</span>
       </div>
 
-      <div id="reviews-list">
-        <div class="review-item">
-          <div class="review-top">
-            <div class="review-avatar">MR</div>
-            <div>
-              <div class="review-name">Maria R.</div>
-              <div class="review-stars">★★★★★</div>
-            </div>
-            <div class="review-date" data-es>Hace 2 semanas</div>
-            <div class="review-date" data-en>2 weeks ago</div>
-          </div>
-          <div class="review-text" data-es>¡Excelente servicio! Llegaron a tiempo, trabajaron rápido y dejaron el jardín impecable. Ya los contraté para mantenimiento mensual. 100% recomendados.</div>
-          <div class="review-text" data-en>Excellent service! They arrived on time, worked quickly and left the garden immaculate. I already hired them for monthly maintenance. 100% recommended.</div>
-        </div>
-      </div>
+      <div id="reviews-list"></div>
 
       <div style="text-align:center; margin-top:16px">
         <a href="#" style="font-size:13px; color:var(--c-accent); text-decoration:none" data-es id="see-all-reviews-es">Ver todas las reseñas (38) →</a>
@@ -913,10 +899,10 @@ function buildBizObject(biz, reviews) {
     avatar: getAvatarInitials(biz.trade_name || biz.business_name),
     name: biz.trade_name || biz.business_name,
     legalName: biz.business_name,
-    catEs: (primaryCat.emoji||'🏢')+' '+(primaryCat.es||cats.join(', '))+' · '+cityName+', GA',
-    catEn: (primaryCat.emoji||'🏢')+' '+(primaryCat.en||cats.join(', '))+' · '+cityName+', GA',
-    breadcrumbCatEs: primaryCat.es || cats.join(', '),
-    breadcrumbCatEn: primaryCat.en || cats.join(', '),
+    catEs: (cats.map(function(c){ var m=CATEGORY_MAP[c]||{}; return (m.emoji||'')+' '+(m.es||c); }).join(' · ') || '🏢 Negocio')+' · '+cityName+', GA',
+    catEn: (cats.map(function(c){ var m=CATEGORY_MAP[c]||{}; return (m.emoji||'')+' '+(m.en||c); }).join(' · ') || '🏢 Business')+' · '+cityName+', GA',
+    breadcrumbCatEs: cats.map(function(c){ return (CATEGORY_MAP[c]||{}).es||c; }).join(' · ') || cats.join(', '),
+    breadcrumbCatEn: cats.map(function(c){ return (CATEGORY_MAP[c]||{}).en||c; }).join(' · ') || cats.join(', '),
     breadcrumbCatSlug: cats[0] || '',
     badges: badges,
     rating: ratingDisp, ratingNum: ratingNum, stars: stars, reviewCount: revCount,
