@@ -846,13 +846,32 @@
     <div class="form-card">
       <div class="form-card-title"><span>✍️</span> <span data-es>Descripción del negocio</span><span data-en>Business description</span></div>
       <div class="field-row">
-        <div class="field-label" data-es>Cuéntale a los clientes sobre tu negocio <span class="req">*</span></div>
-        <div class="field-label" data-en>Tell customers about your business <span class="req">*</span></div>
-        <textarea rows="4" id="f-description" oninput="updateWordCount()" data-es-placeholder="Ej: Somos una empresa familiar con 10 años de experiencia en paisajismo residencial y comercial en el área de Atlanta..." data-en-placeholder="e.g. We are a family business with 10 years of experience in residential and commercial landscaping in the Atlanta area..." placeholder="Ej: Somos una empresa familiar con 10 años de experiencia en paisajismo residencial y comercial en el área de Atlanta..."></textarea>
-        <div style="font-size:11px;color:var(--c-hint);margin-top:4px;text-align:right" id="word-count">
-          <span id="word-count-text">0 palabras (mínimo 10)</span>
+        <div class="field-label" data-es>Español <span class="req">*</span></div>
+        <div class="field-label" data-en>Spanish <span class="req">*</span></div>
+        <textarea rows="4" id="f-desc-es" oninput="onDescInput()" data-es-placeholder="Ej: Somos una empresa familiar con 10 años de experiencia en paisajismo residencial y comercial en el área de Atlanta..." data-en-placeholder="Ej: Somos una empresa familiar con 10 años de experiencia en paisajismo residencial y comercial en el área de Atlanta..." placeholder="Ej: Somos una empresa familiar con 10 años de experiencia en paisajismo residencial y comercial en el área de Atlanta..."></textarea>
+        <div style="font-size:11px;color:var(--c-hint);margin-top:4px;text-align:right">
+          <span id="word-count-text-es">0 palabras (mínimo 10)</span>
         </div>
-        <div class="field-error" id="err-desc" data-es-text="Escribe una descripción de al menos 10 palabras." data-en-text="Write a description of at least 10 words.">Escribe una descripción de al menos 10 palabras.</div>
+        <div class="field-error" id="err-desc" data-es-text="Escribe una descripción en español de al menos 10 palabras." data-en-text="Write a Spanish description of at least 10 words.">Escribe una descripción en español de al menos 10 palabras.</div>
+      </div>
+
+      <!-- Translate button — shown dynamically -->
+      <div id="desc-translate-wrap" style="display:none;margin:6px 0 10px">
+        <button type="button" id="desc-translate-btn" onclick="translateDescription()" style="background:var(--c-accent);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
+          <span id="desc-translate-icon">🔄</span>
+          <span id="desc-translate-label">Convert to English</span>
+        </button>
+        <span id="desc-translate-status" style="margin-left:10px;font-size:12px;color:var(--c-hint)"></span>
+      </div>
+
+      <div class="field-row">
+        <div class="field-label" data-es>Inglés <span class="req">*</span></div>
+        <div class="field-label" data-en>English <span class="req">*</span></div>
+        <textarea rows="4" id="f-desc-en" oninput="onDescInput()" data-es-placeholder="e.g. We are a family business with 10 years of experience in residential and commercial landscaping in the Atlanta area..." data-en-placeholder="e.g. We are a family business with 10 years of experience in residential and commercial landscaping in the Atlanta area..." placeholder="e.g. We are a family business with 10 years of experience in residential and commercial landscaping in the Atlanta area..."></textarea>
+        <div style="font-size:11px;color:var(--c-hint);margin-top:4px;text-align:right">
+          <span id="word-count-text-en">0 words (minimum 10)</span>
+        </div>
+        <div class="field-error" id="err-desc-en" data-es-text="Escribe una descripción en inglés de al menos 10 palabras." data-en-text="Write an English description of at least 10 words.">Escribe una descripción en inglés de al menos 10 palabras.</div>
       </div>
     </div>
 
@@ -958,12 +977,6 @@ function setLang(lang) {
   if (btnEs) btnEs.classList.toggle('active', lang !== 'en');
   if (btnEn) btnEn.classList.toggle('active', lang === 'en');
 
-  // Update description textarea placeholder
-  var desc = document.getElementById('f-description');
-  if (desc) {
-    var ph = lang === 'en' ? desc.getAttribute('data-en-placeholder') : desc.getAttribute('data-es-placeholder');
-    desc.setAttribute('placeholder', ph);
-  }
   updateWordCount();
 
   try { localStorage.setItem('anm-lang', lang); } catch(e) {}
@@ -1003,7 +1016,8 @@ async function goSuccess() {
   var tradeNameEl = document.getElementById('f-trade-name');
   var phoneEl = document.getElementById('f-phone');
   var publicEmailEl = document.getElementById('f-public-email');
-  var descEl = document.getElementById('f-description');
+  var descEl = document.getElementById('f-desc-es');
+  var descEnEl = document.getElementById('f-desc-en');
   var email = emailEl ? emailEl.value.trim() : '';
   var password = passwordEl ? passwordEl.value : '';
   var bizName = bizNameEl ? bizNameEl.value.trim() : '';
@@ -1086,6 +1100,8 @@ async function goSuccess() {
       businessName: bizName, tradeName: tradeNameEl ? tradeNameEl.value.trim() : '',
       phone: normalizedPhone, publicEmail: publicEmailEl ? publicEmailEl.value.trim() : '',
       description: descEl ? descEl.value.trim() : '', plan: selectedPlan || 'free',
+      descriptionEs: descEl ? descEl.value.trim() : '',
+      descriptionEn: descEnEl ? descEnEl.value.trim() : '',
       categories: categories, serviceArea: serviceArea,
       languages: languages, paymentMethods: paymentMethods, hours: hoursData
     });
@@ -1098,6 +1114,8 @@ async function goSuccess() {
         await createBusiness({ businessName: bizName, tradeName: tradeNameEl ? tradeNameEl.value.trim() : '',
           plan: selectedPlan || 'free', publicEmail: publicEmailEl ? publicEmailEl.value.trim() : '',
           phone: normalizedPhone, description: descEl ? descEl.value.trim() : '',
+          descriptionEs: descEl ? descEl.value.trim() : '',
+          descriptionEn: descEnEl ? descEnEl.value.trim() : '',
           categories: categories, serviceArea: serviceArea,
           languages: languages, paymentMethods: paymentMethods, hours: hoursData,
           businessType: bizTypeEl ? bizTypeEl.value : '',
@@ -1243,15 +1261,86 @@ function skipVerification() {
 }
 
 function updateWordCount() {
-  var desc = document.getElementById('f-description');
-  var counter = document.getElementById('word-count-text');
-  if (!desc || !counter) return;
-  var text = desc.value.trim();
-  var words = text.length ? text.split(/\s+/).length : 0;
-  var en = document.body.classList.contains('en');
-  counter.textContent = en ? (words + ' words (minimum 10)') : (words + ' palabras (mínimo 10)');
-  counter.style.color = words >= 10 ? 'var(--c-green)' : 'var(--c-hint)';
-  if (words >= 10) { hideError('err-desc'); }
+  var isEn = document.body.classList.contains('en');
+  var descEs = document.getElementById('f-desc-es');
+  var descEn = document.getElementById('f-desc-en');
+  var counterEs = document.getElementById('word-count-text-es');
+  var counterEn = document.getElementById('word-count-text-en');
+  if (descEs && counterEs) {
+    var wordsEs = descEs.value.trim().length ? descEs.value.trim().split(/\s+/).length : 0;
+    counterEs.textContent = isEn ? (wordsEs + ' words (minimum 10)') : (wordsEs + ' palabras (mínimo 10)');
+    counterEs.style.color = wordsEs >= 10 ? 'var(--c-green)' : 'var(--c-hint)';
+    if (wordsEs >= 10) hideError('err-desc');
+  }
+  if (descEn && counterEn) {
+    var wordsEn = descEn.value.trim().length ? descEn.value.trim().split(/\s+/).length : 0;
+    counterEn.textContent = isEn ? (wordsEn + ' words (minimum 10)') : (wordsEn + ' palabras (mínimo 10)');
+    counterEn.style.color = wordsEn >= 10 ? 'var(--c-green)' : 'var(--c-hint)';
+    if (wordsEn >= 10) hideError('err-desc-en');
+  }
+}
+
+var SPANISH_CHARS = /[áéíóúñüÁÉÍÓÚÑÜ¿¡]/;
+
+function onDescInput() {
+  updateWordCount();
+  var esVal = (document.getElementById('f-desc-es') || {}).value || '';
+  var enVal = (document.getElementById('f-desc-en') || {}).value || '';
+  var wrap = document.getElementById('desc-translate-wrap');
+  var label = document.getElementById('desc-translate-label');
+  var icon = document.getElementById('desc-translate-icon');
+  if (!wrap) return;
+
+  // Detect which field has content and determine direction
+  if (esVal.trim().length > 5 && !enVal.trim()) {
+    // ES filled, EN empty → offer ES→EN
+    wrap.style.display = 'block';
+    label.textContent = 'Convert to English';
+    wrap.setAttribute('data-direction', 'es-en');
+  } else if (enVal.trim().length > 5 && !esVal.trim()) {
+    // EN filled, ES empty → offer EN→ES
+    wrap.style.display = 'block';
+    label.textContent = 'Traducir al español';
+    wrap.setAttribute('data-direction', 'en-es');
+  } else {
+    wrap.style.display = 'none';
+  }
+}
+
+async function translateDescription() {
+  var wrap = document.getElementById('desc-translate-wrap');
+  var direction = wrap ? wrap.getAttribute('data-direction') : 'es-en';
+  var srcId = direction === 'es-en' ? 'f-desc-es' : 'f-desc-en';
+  var dstId = direction === 'es-en' ? 'f-desc-en' : 'f-desc-es';
+  var srcEl = document.getElementById(srcId);
+  var dstEl = document.getElementById(dstId);
+  var statusEl = document.getElementById('desc-translate-status');
+  var btn = document.getElementById('desc-translate-btn');
+  if (!srcEl || !dstEl) return;
+
+  var text = srcEl.value.trim();
+  if (!text) return;
+
+  btn.disabled = true;
+  if (statusEl) statusEl.textContent = direction === 'es-en' ? 'Translating...' : 'Traduciendo...';
+
+  try {
+    var langpair = direction === 'es-en' ? 'es|en' : 'en|es';
+    var url = 'https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=' + langpair;
+    var resp = await fetch(url);
+    var data = await resp.json();
+    if (data.responseStatus === 200 && data.responseData && data.responseData.translatedText) {
+      dstEl.value = data.responseData.translatedText;
+      if (statusEl) statusEl.textContent = '✅';
+      updateWordCount();
+      wrap.style.display = 'none';
+    } else {
+      if (statusEl) statusEl.textContent = '❌ Error. Please type manually.';
+    }
+  } catch(e) {
+    if (statusEl) statusEl.textContent = '❌ Network error. Please type manually.';
+  }
+  btn.disabled = false;
 }
 
 function showError(id) {
@@ -1501,16 +1590,26 @@ function photoCountUploadedDocs() {
 function validateStep4() {
   var valid = true;
 
-  // 9. Description min 10 words
-  var desc = document.getElementById('f-description');
-  var words = desc.value.trim().length ? desc.value.trim().split(/\s+/).length : 0;
-  if (words < 10) {
+  // 9. Description min 10 words (both ES and EN)
+  var descEs = document.getElementById('f-desc-es');
+  var descEn = document.getElementById('f-desc-en');
+  var wordsEs = descEs && descEs.value.trim().length ? descEs.value.trim().split(/\s+/).length : 0;
+  var wordsEn = descEn && descEn.value.trim().length ? descEn.value.trim().split(/\s+/).length : 0;
+  if (wordsEs < 10) {
     showError('err-desc');
-    markInvalid(desc);
+    markInvalid(descEs);
     valid = false;
   } else {
     hideError('err-desc');
-    clearInvalid(desc);
+    clearInvalid(descEs);
+  }
+  if (wordsEn < 10) {
+    showError('err-desc-en');
+    markInvalid(descEn);
+    valid = false;
+  } else {
+    hideError('err-desc-en');
+    clearInvalid(descEn);
   }
 
   // 10. Photo — 개발 중 임시 비활성화 (Supabase Storage 연동 후 재활성화)

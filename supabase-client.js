@@ -110,7 +110,7 @@ async function getMyBusiness() {
 // =============================================
 // DB — 업체 프로필 생성
 // =============================================
-async function createBusiness({ businessName, tradeName, plan = 'free', publicEmail, phone, description, categories, serviceArea, languages, paymentMethods, hours, businessType, insured }) {
+async function createBusiness({ businessName, tradeName, plan = 'free', publicEmail, phone, description, descriptionEs, descriptionEn, categories, serviceArea, languages, paymentMethods, hours, businessType, insured }) {
   const sb = getSupabase();
   const user = await getCurrentUser();
   if (!user) throw new Error('Not authenticated');
@@ -135,6 +135,8 @@ async function createBusiness({ businessName, tradeName, plan = 'free', publicEm
     languages: languages && languages.length > 0 ? languages : ['es'],
     payment_methods: paymentMethods && paymentMethods.length > 0 ? paymentMethods : [],
     hours: hours && hours.length > 0 ? hours : [],
+    description_es: descriptionEs || description || null,
+    description_en: descriptionEn || null,
     business_type: businessType || null,
     insured: !!insured
   };
