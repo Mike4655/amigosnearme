@@ -524,7 +524,9 @@ function setLang(lang) {
   var num = document.getElementById('count-num');
   var cnt = document.getElementById('results-count');
   if (cnt && num) {
-    var pre = en ? 'Showing ' : 'Mostrando '; var suf = en ? ' businesses in Georgia' : ' negocios en Georgia'; cnt.textContent = pre + num.textContent + suf;
+    var pre = en ? 'Showing ' : 'Mostrando ';
+    var suf = en ? ' businesses in Georgia' : ' negocios en Georgia';
+    cnt.innerHTML = pre + '<strong id="count-num">' + num.textContent + '</strong>' + suf;
   }
 
   try { localStorage.setItem('anm-lang', lang); } catch(e) {}
