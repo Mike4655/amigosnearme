@@ -399,19 +399,13 @@
     </div>
 
     <!-- PHOTOS -->
-    <div class="section-card" id="photos-section">
+    <div class="section-card" id="photos-section" style="display:none">
       <div class="section-title">
         <span data-es>Fotos</span><span data-en>Photos</span>
-        <a href="#" data-es>Ver todas (12)</a>
-        <a href="#" data-en>See all (12)</a>
+        <a href="#" data-es id="photos-see-all-es">Ver todas (0)</a>
+        <a href="#" data-en id="photos-see-all-en">See all (0)</a>
       </div>
-      <div class="photo-grid">
-        <div class="photo-thumb main">🌿</div>
-        <div class="photo-thumb">🌳</div>
-        <div class="photo-thumb">🌾</div>
-        <div class="photo-thumb">🌺</div>
-        <div class="photo-thumb">🏡</div>
-      </div>
+      <div class="photo-grid" id="photo-grid"></div>
     </div>
 
     <!-- SERVICES -->
@@ -494,17 +488,17 @@
 
       <div class="rating-summary">
         <div class="big-rating">
-          <div class="big-rating-num" id="big-rating-num">4.9</div>
-          <div class="big-rating-stars" id="big-rating-stars">★★★★★</div>
-          <div class="big-rating-count" data-es id="big-rating-count-es">38 reseñas</div>
-          <div class="big-rating-count" data-en id="big-rating-count-en">38 reviews</div>
+          <div class="big-rating-num" id="big-rating-num">—</div>
+          <div class="big-rating-stars" id="big-rating-stars"></div>
+          <div class="big-rating-count" data-es id="big-rating-count-es">0 reseñas</div>
+          <div class="big-rating-count" data-en id="big-rating-count-en">0 reviews</div>
         </div>
-        <div class="rating-bars">
-          <div class="rbar-row"><span>5★</span><div class="rbar-track"><div class="rbar-fill" style="width:85%"></div></div><span>32</span></div>
-          <div class="rbar-row"><span>4★</span><div class="rbar-track"><div class="rbar-fill" style="width:10%"></div></div><span>4</span></div>
-          <div class="rbar-row"><span>3★</span><div class="rbar-track"><div class="rbar-fill" style="width:3%"></div></div><span>1</span></div>
-          <div class="rbar-row"><span>2★</span><div class="rbar-track"><div class="rbar-fill" style="width:2%"></div></div><span>1</span></div>
-          <div class="rbar-row"><span>1★</span><div class="rbar-track"><div class="rbar-fill" style="width:0%"></div></div><span>0</span></div>
+        <div class="rating-bars" id="rating-bars">
+          <div class="rbar-row"><span>5★</span><div class="rbar-track"><div class="rbar-fill" id="rbar-5" style="width:0%"></div></div><span id="rbar-5-n">0</span></div>
+          <div class="rbar-row"><span>4★</span><div class="rbar-track"><div class="rbar-fill" id="rbar-4" style="width:0%"></div></div><span id="rbar-4-n">0</span></div>
+          <div class="rbar-row"><span>3★</span><div class="rbar-track"><div class="rbar-fill" id="rbar-3" style="width:0%"></div></div><span id="rbar-3-n">0</span></div>
+          <div class="rbar-row"><span>2★</span><div class="rbar-track"><div class="rbar-fill" id="rbar-2" style="width:0%"></div></div><span id="rbar-2-n">0</span></div>
+          <div class="rbar-row"><span>1★</span><div class="rbar-track"><div class="rbar-fill" id="rbar-1" style="width:0%"></div></div><span id="rbar-1-n">0</span></div>
         </div>
       </div>
 
@@ -1095,7 +1089,7 @@ async function loadBusiness() {
   } else {
     document.getElementById('reviews').style.display = 'block';
     document.getElementById('jobs-completed-section').style.display = 'none';
-    document.getElementById('photos-section').style.display = 'block';
+    // photos-section shown only when actual photos exist (Supabase Storage not yet wired)
     document.getElementById('hours-sidebar-card').style.display = 'block';
 
     document.getElementById('quote-btn-text-es').textContent = 'Solicitar presupuesto por WhatsApp';
@@ -1109,6 +1103,22 @@ async function loadBusiness() {
     document.getElementById('big-rating-stars').textContent = b.stars;
     document.getElementById('big-rating-count-es').textContent = b.reviewCount + ' reseñas';
     document.getElementById('big-rating-count-en').textContent = b.reviewCount + ' reviews';
+
+    // Rating bars — hide entirely when no reviews, update counts when there are
+    var ratingSummary = document.querySelector('.rating-summary');
+    if (b.reviewCount === 0) {
+      if (ratingSummary) ratingSummary.style.display = 'none';
+    } else {
+      if (ratingSummary) ratingSummary.style.display = '';
+      var dist = [5,4,3,2,1].map(function(s){ return b.reviews.filter(function(r){ return Math.round(parseFloat(r.stars.match(/★/g)||[]).length||0) === s; }).length; });
+      [5,4,3,2,1].forEach(function(s, i) {
+        var fill = document.getElementById('rbar-' + s);
+        var num  = document.getElementById('rbar-' + s + '-n');
+        var pct  = b.reviewCount ? Math.round((dist[i] / b.reviewCount) * 100) : 0;
+        if (fill) fill.style.width = pct + '%';
+        if (num)  num.textContent = dist[i];
+      });
+    }
 
     // Reviews list (per-business — built from the same data each profile shows in the sidebar)
     var reviewsList = document.getElementById('reviews-list');
