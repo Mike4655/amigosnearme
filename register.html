@@ -472,6 +472,18 @@
         </div>
       </div>
 
+      <div class="field-row" style="margin-bottom:4px">
+        <label class="lang-toggle" style="display:inline-flex;gap:10px;align-items:flex-start;cursor:pointer">
+          <input type="checkbox" id="f-insured" style="margin-top:3px;accent-color:var(--c-accent)">
+          <span>
+            <span data-es style="font-weight:500">Seguro de responsabilidad general (General Liability Insurance)</span>
+            <span data-en style="font-weight:500">General Liability Insurance</span>
+            <br><small style="color:var(--c-hint)" data-es>Marcar si tu negocio tiene póliza de seguro activa</small>
+            <small style="color:var(--c-hint)" data-en>Check if your business has an active insurance policy</small>
+          </span>
+        </label>
+      </div>
+
       <div class="field-row">
         <div class="field-label" data-es>Categoría principal <span class="req">*</span></div>
         <div class="field-label" data-en>Main category <span class="req">*</span></div>
@@ -1081,11 +1093,15 @@ async function goSuccess() {
       var cs = await getSession();
       if (!cs) { var ld = await signIn({ email, password }); cs = ld.session; }
       if (cs) {
+        var bizTypeEl = document.getElementById('biz-type-select');
+        var insuredEl = document.getElementById('f-insured');
         await createBusiness({ businessName: bizName, tradeName: tradeNameEl ? tradeNameEl.value.trim() : '',
           plan: selectedPlan || 'free', publicEmail: publicEmailEl ? publicEmailEl.value.trim() : '',
           phone: normalizedPhone, description: descEl ? descEl.value.trim() : '',
           categories: categories, serviceArea: serviceArea,
-          languages: languages, paymentMethods: paymentMethods, hours: hoursData
+          languages: languages, paymentMethods: paymentMethods, hours: hoursData,
+          businessType: bizTypeEl ? bizTypeEl.value : '',
+          insured: insuredEl ? insuredEl.checked : false
         });
         console.log('✅ Business record created in DB');
       }

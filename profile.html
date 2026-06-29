@@ -78,7 +78,7 @@
   .badge-verified { background: var(--c-green-light); color: var(--c-green); }
   .badge-lang { background: var(--c-bg); color: var(--c-muted); border: 0.5px solid var(--c-border); }
   .badge-llc { background: var(--c-blue-light); color: var(--c-blue); }
-  .profile-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; padding-top: 20px; border-top: 0.5px solid var(--c-border); }
+  .profile-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; padding-top: 20px; border-top: 0.5px solid var(--c-border); }
   .stat-item { text-align: center; }
   .stat-val { font-family: var(--font-display); font-size: 22px; color: var(--c-text); }
   .stat-label { font-size: 12px; color: var(--c-muted); margin-top: 2px; }
@@ -386,12 +386,7 @@
           <div class="stat-label" data-en id="stat-label-2-en">Reviews</div>
         </div>
         <div class="stat-item">
-          <div class="stat-val" id="biz-years">10+</div>
-          <div class="stat-label" data-es id="stat-label-3-es">Años exp.</div>
-          <div class="stat-label" data-en id="stat-label-3-en">Years exp.</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-val" id="biz-distance">2.3mi</div>
+          <div class="stat-val" id="biz-distance">—</div>
           <div class="stat-label" data-es>Distancia</div>
           <div class="stat-label" data-en>Distance</div>
         </div>
@@ -446,14 +441,14 @@
           <div class="detail-icon">📋</div>
           <div class="detail-label" data-es id="detail-type-label-es">Tipo de negocio</div>
           <div class="detail-label" data-en id="detail-type-label-en">Business type</div>
-          <div class="detail-val" id="detail-type">LLC · Georgia registered</div>
+          <div class="detail-val" id="detail-type">—</div>
         </div>
         <div class="detail-row" id="detail-row-license">
           <div class="detail-icon">🛡️</div>
-          <div class="detail-label" data-es>Licencia</div>
-          <div class="detail-label" data-en>License</div>
-          <div class="detail-val" data-es>Licencia comercial de Georgia · Asegurado</div>
-          <div class="detail-val" data-en>Georgia business license · Fully insured</div>
+          <div class="detail-label" data-es>Seguro</div>
+          <div class="detail-label" data-en>Insurance</div>
+          <div class="detail-val" id="detail-insurance-es" data-es>—</div>
+          <div class="detail-val" id="detail-insurance-en" data-en>—</div>
         </div>
         <div class="detail-row">
           <div class="detail-icon">💬</div>
@@ -818,9 +813,10 @@ function formatSinceDate(isoDate, lang, verified) {
 
 function formatHoursEntry(hours, day) {
   if (!Array.isArray(hours)) return null;
-  var entry = hours.find(function(h) { return h.day === day; });
-  if (!entry || entry.closed) return null;
-  return (entry.open || '') + (entry.close ? ' – ' + entry.close : '');
+  // DB stores { en: "Monday", from: "09:00", to: "18:00", open: true }
+  var entry = hours.find(function(h) { return h.en && h.en.substring(0,3) === day; });
+  if (!entry || !entry.open) return null;
+  return (entry.from || '') + (entry.to ? ' – ' + entry.to : '');
 }
 
 function relativeDate(isoDate, lang) {
@@ -900,7 +896,9 @@ function buildBizObject(biz, reviews) {
     breadcrumbCatSlug: cats[0] || '',
     badges: badges,
     rating: ratingDisp, ratingNum: ratingNum, stars: stars, reviewCount: revCount,
-    years: '—', distance: '—',
+    distance: '—',
+    businessType: biz.business_type || '',
+    insured: !!biz.insured,
     services: services,
     aboutEs: biz.description || '', aboutEn: biz.description || '',
     area: area, type: '',
@@ -1003,9 +1001,6 @@ async function loadBusiness() {
     document.getElementById('biz-review-count').textContent = b.years;
     document.getElementById('stat-label-2-es').textContent = 'Experiencia';
     document.getElementById('stat-label-2-en').textContent = 'Experience';
-    document.getElementById('biz-years').textContent = (isEn ? b.availabilityEn : b.availabilityEs).split(' · ')[0];
-    document.getElementById('stat-label-3-es').textContent = 'Disponible';
-    document.getElementById('stat-label-3-en').textContent = 'Available';
   } else {
     document.getElementById('biz-rating').textContent = b.rating;
     document.getElementById('stat-label-1-es').textContent = 'Calificación';
@@ -1013,9 +1008,6 @@ async function loadBusiness() {
     document.getElementById('biz-review-count').textContent = b.reviewCount;
     document.getElementById('stat-label-2-es').textContent = 'Reseñas';
     document.getElementById('stat-label-2-en').textContent = 'Reviews';
-    document.getElementById('biz-years').textContent = b.years;
-    document.getElementById('stat-label-3-es').textContent = 'Años exp.';
-    document.getElementById('stat-label-3-en').textContent = 'Years exp.';
   }
   document.getElementById('biz-distance').textContent = b.distance;
 
@@ -1040,12 +1032,12 @@ async function loadBusiness() {
   ['quote-service', 'fallback-service'].forEach(function(selectId) {
     var select = document.getElementById(selectId);
     var placeholderEs = 'Selecciona un servicio...', placeholderEn = 'Select a service...';
-    var html = '<option value="" data-opt-es="' + placeholderEs + '" data-opt-en="' + placeholderEn + '">' + placeholderEs + '</option>';
+    var html = '<option value="" data-opt-es="' + placeholderEs + '" data-opt-en="' + placeholderEn + '">' + (isEn ? placeholderEn : placeholderEs) + '</option>';
     b.services.forEach(function(s) {
-      html += '<option value="' + s[1] + '|' + s[2] + '" data-opt-es="' + s[1] + '" data-opt-en="' + s[2] + '">' + s[1] + '</option>';
+      html += '<option value="' + s[1] + '|' + s[2] + '" data-opt-es="' + s[1] + '" data-opt-en="' + s[2] + '">' + (isEn ? s[2] : s[1]) + '</option>';
     });
     var otherEs = 'Otro', otherEn = 'Other';
-    html += '<option value="' + otherEs + '|' + otherEn + '" data-opt-es="' + otherEs + '" data-opt-en="' + otherEn + '">' + otherEs + '</option>';
+    html += '<option value="' + otherEs + '|' + otherEn + '" data-opt-es="' + otherEs + '" data-opt-en="' + otherEn + '">' + (isEn ? otherEn : otherEs) + '</option>';
     select.innerHTML = html;
   });
 
@@ -1063,6 +1055,16 @@ async function loadBusiness() {
   // The "Payment" row is repurposed to show hiring availability instead (day/week/permanent).
   document.getElementById('detail-row-type').style.display = isWorker ? 'none' : 'flex';
   document.getElementById('detail-row-license').style.display = isWorker ? 'none' : 'flex';
+
+  // Business type from DB
+  var typeEl = document.getElementById('detail-type');
+  if (typeEl) typeEl.textContent = b.businessType || '—';
+
+  // Insurance from DB
+  var insEs = document.getElementById('detail-insurance-es');
+  var insEn = document.getElementById('detail-insurance-en');
+  if (insEs) insEs.textContent = b.insured ? '✅ Asegurado' : '—';
+  if (insEn) insEn.textContent = b.insured ? '✅ Insured' : '—';
   if (isWorker) {
     document.getElementById('detail-payment-label-es').textContent = 'Disponibilidad';
     document.getElementById('detail-payment-label-en').textContent = 'Availability';
