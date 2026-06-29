@@ -652,10 +652,10 @@
         <span style="font-size:12px; font-weight:400; color:var(--c-green)" data-es>● Abierto ahora</span>
         <span style="font-size:12px; font-weight:400; color:var(--c-green)" data-en>● Open now</span>
       </div>
-      <div class="hours-row today"><span class="day" data-es>Hoy (Vie)</span><span class="day" data-en>Today (Fri)</span><span class="time" data-es id="hours-today-es">7am – 6pm</span><span class="time" data-en id="hours-today-en">7am – 6pm</span></div>
-      <div class="hours-row"><span class="day" data-es>Sábado</span><span class="day" data-en>Saturday</span><span class="time" data-es id="hours-sat-es">8am – 4pm</span><span class="time" data-en id="hours-sat-en">8am – 4pm</span></div>
-      <div class="hours-row"><span class="day" data-es>Domingo</span><span class="day" data-en>Sunday</span><span class="time" data-es>Cerrado</span><span class="time" data-en>Closed</span></div>
-      <div class="hours-row"><span class="day" data-es>Lun – Vie</span><span class="day" data-en>Mon – Fri</span><span class="time" data-es id="hours-weekday-es">7am – 6pm</span><span class="time" data-en id="hours-weekday-en">7am – 6pm</span></div>
+      <div class="hours-row today"><span class="day" data-es id="hours-today-label-es">Hoy</span><span class="day" data-en id="hours-today-label-en">Today</span><span class="time" data-es id="hours-today-es">—</span><span class="time" data-en id="hours-today-en">—</span></div>
+      <div class="hours-row"><span class="day" data-es>Lun – Vie</span><span class="day" data-en>Mon – Fri</span><span class="time" data-es id="hours-weekday-es">—</span><span class="time" data-en id="hours-weekday-en">—</span></div>
+      <div class="hours-row"><span class="day" data-es>Sábado</span><span class="day" data-en>Saturday</span><span class="time" data-es id="hours-sat-es">—</span><span class="time" data-en id="hours-sat-en">—</span></div>
+      <div class="hours-row"><span class="day" data-es>Domingo</span><span class="day" data-en>Sunday</span><span class="time" data-es id="hours-sun-es">—</span><span class="time" data-en id="hours-sun-en">—</span></div>
     </div>
 
     <div class="map-placeholder">
@@ -860,10 +860,14 @@ function buildBizObject(biz, reviews) {
   if (!services.length) services = [['🔹', 'Servicio general', 'General service']];
 
   var h = Array.isArray(biz.hours) ? biz.hours : [];
-  var todayKey = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][new Date().getDay()];
-  var todayH = formatHoursEntry(h, todayKey) || '—';
-  var satH   = formatHoursEntry(h, 'Sat')   || '—';
-  var monH   = formatHoursEntry(h, 'Mon')   || '—';
+  var dayIdx = new Date().getDay(); // 0=Sun … 6=Sat
+  var todayKey = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dayIdx];
+  var todayShortEn = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dayIdx];
+  var todayShortEs = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'][dayIdx];
+  var todayH = formatHoursEntry(h, todayKey);
+  var satH   = formatHoursEntry(h, 'Sat');
+  var sunH   = formatHoursEntry(h, 'Sun');
+  var monH   = formatHoursEntry(h, 'Mon');
 
   var revCount = reviews.length;
   var avgRating = revCount ? reviews.reduce(function(s,r){ return s+(r.rating||0); },0)/revCount : 0;
@@ -907,9 +911,11 @@ function buildBizObject(biz, reviews) {
     sinceEs: formatSinceDate(biz.created_at, 'es', biz.verified),
     sinceEn: formatSinceDate(biz.created_at, 'en', biz.verified),
     reviews: reviewObjs,
-    hoursTodayEs: todayH, hoursTodayEn: todayH,
-    hoursSatEs: satH, hoursSatEn: satH,
-    hoursWeekdayEs: monH, hoursWeekdayEn: monH,
+    todayLabelEs: 'Hoy (' + todayShortEs + ')', todayLabelEn: 'Today (' + todayShortEn + ')',
+    hoursTodayEs: todayH !== null ? todayH : 'Cerrado', hoursTodayEn: todayH !== null ? todayH : 'Closed',
+    hoursSatEs: satH !== null ? satH : 'Cerrado', hoursSatEn: satH !== null ? satH : 'Closed',
+    hoursSunEs: sunH !== null ? sunH : 'Cerrado', hoursSunEn: sunH !== null ? sunH : 'Closed',
+    hoursWeekdayEs: monH !== null ? monH : 'Cerrado', hoursWeekdayEn: monH !== null ? monH : 'Closed',
     location: location,
     mapQuery: location.replace(/\s/g, '+'),
     phone: biz.whatsapp_phone || '',
@@ -1142,12 +1148,16 @@ async function loadBusiness() {
     document.getElementById('see-all-reviews-en').textContent = 'See all reviews (' + b.reviewCount + ') →';
 
     // Hours (business profiles only)
+    document.getElementById('hours-today-label-es').textContent = b.todayLabelEs;
+    document.getElementById('hours-today-label-en').textContent = b.todayLabelEn;
     document.getElementById('hours-today-es').textContent = b.hoursTodayEs;
     document.getElementById('hours-today-en').textContent = b.hoursTodayEn;
-    document.getElementById('hours-sat-es').textContent = b.hoursSatEs;
-    document.getElementById('hours-sat-en').textContent = b.hoursSatEn;
     document.getElementById('hours-weekday-es').textContent = b.hoursWeekdayEs;
     document.getElementById('hours-weekday-en').textContent = b.hoursWeekdayEn;
+    document.getElementById('hours-sat-es').textContent = b.hoursSatEs;
+    document.getElementById('hours-sat-en').textContent = b.hoursSatEn;
+    document.getElementById('hours-sun-es').textContent = b.hoursSunEs;
+    document.getElementById('hours-sun-en').textContent = b.hoursSunEn;
   }
 
   // Sidebar contact card
