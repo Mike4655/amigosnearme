@@ -240,19 +240,19 @@
     <div class="stats-row">
       <div class="stat-card">
         <div class="stat-label">Total Businesses</div>
-        <div class="stat-val">137</div>
+        <div class="stat-val" id="stat-biz-total">—</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Premium (auto +10)</div>
-        <div class="stat-val" style="color:var(--c-amber)">18</div>
+        <div class="stat-val" style="color:var(--c-amber)" id="stat-biz-premium">—</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Pending Verification</div>
-        <div class="stat-val" style="color:var(--c-accent)">9</div>
+        <div class="stat-val" style="color:var(--c-accent)" id="stat-biz-pending">—</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Admin-Adjusted Priority</div>
-        <div class="stat-val" style="color:var(--c-blue)">4</div>
+        <div class="stat-val" style="color:var(--c-blue)" id="stat-biz-adjusted">—</div>
       </div>
     </div>
 
@@ -285,148 +285,7 @@
           </tr>
         </thead>
         <tbody id="biz-table-body">
-
-          <tr data-plan="premium" data-verify="verified" data-name="garcia's garden & landscaping" data-status="active">
-            <td>
-              <div class="biz-cell">
-                <div class="biz-avatar av-coral">GG</div>
-                <div>
-                  <div class="biz-name">Garcia's Garden & Landscaping</div>
-                  <div class="biz-cat">Landscaping · Duluth, GA</div>
-                </div>
-              </div>
-            </td>
-            <td><span class="plan-badge plan-premium">⭐ Premium</span></td>
-            <td><span class="verified-badge">✅ Verified</span></td>
-            <td>4.9 ★</td>
-            <td>
-              <div class="priority-cell">
-                <input type="range" class="priority-slider" min="0" max="20" value="10" oninput="updatePriority(this)">
-                <span class="priority-val mid">10</span>
-                <span class="auto-tag">auto +10</span>
-              </div>
-            </td>
-            <td><span class="verified-badge">Active</span></td>
-            <td><div class="action-cell"><button class="btn-suspend" style="background:var(--c-accent-light);color:var(--c-accent)" onclick="toggleBusinessStatus(this)">Suspend</button><button class="btn-save" onclick="savePriority(this)">Save</button></div></td>
-          </tr>
-
-          <tr data-plan="basic" data-verify="verified" data-name="rodriguez cleaning services" data-status="active">
-            <td>
-              <div class="biz-cell">
-                <div class="biz-avatar av-teal">RC</div>
-                <div>
-                  <div class="biz-name">Rodriguez Cleaning Services</div>
-                  <div class="biz-cat">Cleaning · Norcross, GA</div>
-                </div>
-              </div>
-            </td>
-            <td><span class="plan-badge plan-basic">Basic</span></td>
-            <td><span class="verified-badge">✅ Verified</span></td>
-            <td>4.8 ★</td>
-            <td>
-              <div class="priority-cell">
-                <input type="range" class="priority-slider" min="0" max="20" value="0" oninput="updatePriority(this)">
-                <span class="priority-val zero">0</span>
-              </div>
-            </td>
-            <td><span class="verified-badge">Active</span></td>
-            <td><div class="action-cell"><button class="btn-suspend" style="background:var(--c-accent-light);color:var(--c-accent)" onclick="toggleBusinessStatus(this)">Suspend</button><button class="btn-save" onclick="savePriority(this)">Save</button></div></td>
-          </tr>
-
-          <tr data-plan="premium" data-verify="verified" data-name="hernandez construction llc" data-status="active">
-            <td>
-              <div class="biz-cell">
-                <div class="biz-avatar av-blue">HL</div>
-                <div>
-                  <div class="biz-name">Hernandez Construction LLC</div>
-                  <div class="biz-cat">Construction · Atlanta, GA</div>
-                </div>
-              </div>
-            </td>
-            <td><span class="plan-badge plan-premium">⭐ Premium</span></td>
-            <td><span class="verified-badge">✅ Verified</span></td>
-            <td>4.7 ★</td>
-            <td>
-              <div class="priority-cell">
-                <input type="range" class="priority-slider" min="0" max="20" value="15" oninput="updatePriority(this)">
-                <span class="priority-val high">15</span>
-                <span class="auto-tag">+5 by admin</span>
-              </div>
-            </td>
-            <td><span class="verified-badge">Active</span></td>
-            <td><div class="action-cell"><button class="btn-suspend" style="background:var(--c-accent-light);color:var(--c-accent)" onclick="toggleBusinessStatus(this)">Suspend</button><button class="btn-save" onclick="savePriority(this)">Save</button></div></td>
-          </tr>
-
-          <tr data-plan="basic" data-verify="verified" data-name="martinez plumbing & repair" data-status="suspended">
-            <td>
-              <div class="biz-cell">
-                <div class="biz-avatar av-amber">MP</div>
-                <div>
-                  <div class="biz-name">Martinez Plumbing & Repair</div>
-                  <div class="biz-cat">Plumbing · Buford, GA</div>
-                </div>
-              </div>
-            </td>
-            <td><span class="plan-badge plan-basic">Basic</span></td>
-            <td><span class="verified-badge">✅ Verified</span></td>
-            <td>4.6 ★</td>
-            <td>
-              <div class="priority-cell">
-                <input type="range" class="priority-slider" min="0" max="20" value="0" oninput="updatePriority(this)">
-                <span class="priority-val zero">0</span>
-              </div>
-            </td>
-            <td><span class="basic-badge" style="background:var(--c-accent-light);color:var(--c-accent)">Suspended</span></td>
-            <td><div class="action-cell"><button class="btn-suspend" style="background:var(--c-green-light);color:var(--c-green)" onclick="toggleBusinessStatus(this)">Reactivate</button><button class="btn-save" onclick="savePriority(this)">Save</button></div></td>
-          </tr>
-
-          <tr data-plan="premium" data-verify="verified" data-name="suarez electrical services" data-status="active">
-            <td>
-              <div class="biz-cell">
-                <div class="biz-avatar av-coral">SE</div>
-                <div>
-                  <div class="biz-name">Suarez Electrical Services</div>
-                  <div class="biz-cat">Electrical · Duluth, GA</div>
-                </div>
-              </div>
-            </td>
-            <td><span class="plan-badge plan-premium">⭐ Premium</span></td>
-            <td><span class="verified-badge">✅ Verified</span></td>
-            <td>4.8 ★</td>
-            <td>
-              <div class="priority-cell">
-                <input type="range" class="priority-slider" min="0" max="20" value="10" oninput="updatePriority(this)">
-                <span class="priority-val mid">10</span>
-                <span class="auto-tag">auto +10</span>
-              </div>
-            </td>
-            <td><span class="verified-badge">Active</span></td>
-            <td><div class="action-cell"><button class="btn-suspend" style="background:var(--c-accent-light);color:var(--c-accent)" onclick="toggleBusinessStatus(this)">Suspend</button><button class="btn-save" onclick="savePriority(this)">Save</button></div></td>
-          </tr>
-
-          <tr data-plan="free" data-verify="basic-tier" data-name="flores painting co." data-status="active">
-            <td>
-              <div class="biz-cell">
-                <div class="biz-avatar av-gray">FP</div>
-                <div>
-                  <div class="biz-name">Flores Painting Co.</div>
-                  <div class="biz-cat">Painting · Lawrenceville, GA</div>
-                </div>
-              </div>
-            </td>
-            <td><span class="plan-badge plan-free">Free</span></td>
-            <td><span class="basic-badge">📋 Basic</span></td>
-            <td>4.5 ★</td>
-            <td>
-              <div class="priority-cell">
-                <input type="range" class="priority-slider" min="0" max="20" value="0" oninput="updatePriority(this)">
-                <span class="priority-val zero">0</span>
-              </div>
-            </td>
-            <td><span class="verified-badge">Active</span></td>
-            <td><div class="action-cell"><button class="btn-suspend" style="background:var(--c-accent-light);color:var(--c-accent)" onclick="toggleBusinessStatus(this)">Suspend</button><button class="btn-save" onclick="savePriority(this)">Save</button></div></td>
-          </tr>
-
+          <tr><td colspan="7" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>
         </tbody>
       </table>
     </div>
@@ -453,19 +312,19 @@
     <div class="stats-row">
       <div class="stat-card">
         <div class="stat-label">Fallback submissions this month</div>
-        <div class="stat-val">34</div>
+        <div class="stat-val">—</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">WhatsApp contact events</div>
-        <div class="stat-val" style="color:var(--c-green)">213</div>
+        <div class="stat-val" style="color:var(--c-green)">—</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Staffing contact events</div>
-        <div class="stat-val" style="color:var(--c-blue)">47</div>
+        <div class="stat-val" style="color:var(--c-blue)">—</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Pending purge (&gt;90 days)</div>
-        <div class="stat-val" style="color:var(--c-accent)">8</div>
+        <div class="stat-val" style="color:var(--c-accent)">—</div>
       </div>
     </div>
 
@@ -492,43 +351,7 @@
           </tr>
         </thead>
         <tbody id="customer-table-body">
-
-          <tr data-status="active" data-cname="rosa fernández">
-            <td><div class="biz-cell"><div class="biz-avatar av-coral">RF</div><div><div class="biz-name">Rosa Fernández</div></div></div></td>
-            <td style="font-size:13px;color:var(--c-muted)">+1 (404) 555-0181</td>
-            <td><div style="font-size:13px">Garcia's Garden</div></td>
-            <td><div style="font-size:13px">Lawn mowing</div></td>
-            <td style="font-size:12px;color:var(--c-muted)">Jun 21, 2026</td>
-            <td style="font-size:12px;color:var(--c-amber)">Sep 19, 2026</td>
-          </tr>
-
-          <tr data-status="active" data-cname="pedro alvarado">
-            <td><div class="biz-cell"><div class="biz-avatar av-blue">PA</div><div><div class="biz-name">Pedro Alvarado</div></div></div></td>
-            <td style="font-size:13px;color:var(--c-muted)">+1 (770) 555-0247</td>
-            <td><div style="font-size:13px">Diaz Landscaping</div></td>
-            <td><div style="font-size:13px">Sprinkler repair</div></td>
-            <td style="font-size:12px;color:var(--c-muted)">Jun 20, 2026</td>
-            <td style="font-size:12px;color:var(--c-amber)">Sep 18, 2026</td>
-          </tr>
-
-          <tr data-status="active" data-cname="linda park">
-            <td><div class="biz-cell"><div class="biz-avatar av-teal">LP</div><div><div class="biz-name">Linda Park</div></div></div></td>
-            <td style="font-size:13px;color:var(--c-muted)">+1 (678) 555-0133</td>
-            <td><div style="font-size:13px">Castillo Auto</div></td>
-            <td><div style="font-size:13px">Oil change</div></td>
-            <td style="font-size:12px;color:var(--c-muted)">Jun 18, 2026</td>
-            <td style="font-size:12px;color:var(--c-amber)">Sep 16, 2026</td>
-          </tr>
-
-          <tr data-status="purge" data-cname="james wright">
-            <td><div class="biz-cell"><div class="biz-avatar av-gray">JW</div><div><div class="biz-name" style="color:var(--c-muted)">James Wright</div></div></div></td>
-            <td style="font-size:13px;color:var(--c-hint)">+1 (404) 555-0092</td>
-            <td><div style="font-size:13px;color:var(--c-muted)">Vega Tree Service</div></td>
-            <td><div style="font-size:13px;color:var(--c-muted)">Tree removal</div></td>
-            <td style="font-size:12px;color:var(--c-muted)">Mar 15, 2026</td>
-            <td style="font-size:12px;color:var(--c-accent);font-weight:500">⚠️ Jun 30, 2026</td>
-          </tr>
-
+          <tr><td colspan="6" style="text-align:center;color:var(--c-muted);padding:20px">No data yet — fallback contact form coming soon.</td></tr>
         </tbody>
       </table>
     </div>
@@ -555,102 +378,23 @@
     <div class="stats-row">
       <div class="stat-card">
         <div class="stat-label">Pending Review</div>
-        <div class="stat-val" style="color:var(--c-accent)">9</div>
+        <div class="stat-val" style="color:var(--c-accent)" id="stat-verif-pending">—</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Approved This Month</div>
-        <div class="stat-val" style="color:var(--c-green)">31</div>
+        <div class="stat-val" style="color:var(--c-green)">—</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Rejected This Month</div>
-        <div class="stat-val" style="color:var(--c-hint)">4</div>
+        <div class="stat-val" style="color:var(--c-hint)">—</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Avg. Review Time</div>
-        <div class="stat-val">6h</div>
+        <div class="stat-val">—</div>
       </div>
     </div>
 
     <div class="queue-list" id="verification-queue">
-
-      <div class="queue-card" data-vstatus="pending" data-bizid="diaz">
-        <div class="queue-main">
-          <div class="biz-cell">
-            <div class="biz-avatar av-gray">DL</div>
-            <div>
-              <div class="biz-name">Diaz Landscaping & Lawn Care</div>
-              <div class="biz-cat">Landscaping · Marietta, GA · Submitted 2 days ago</div>
-            </div>
-          </div>
-          <div class="doc-chips">
-            <span class="doc-chip">📋 Business License</span>
-            <span class="doc-chip">🔢 EIN: 88-4471203</span>
-          </div>
-        </div>
-        <div class="queue-actions">
-          <button class="btn-reject" onclick="openRejectModal(this,'verification')">Reject</button>
-          <button class="btn-approve" onclick="reviewVerification(this,'approved')">✓ Approve</button>
-        </div>
-      </div>
-
-      <div class="queue-card" data-vstatus="pending" data-bizid="vega">
-        <div class="queue-main">
-          <div class="biz-cell">
-            <div class="biz-avatar av-gray">VT</div>
-            <div>
-              <div class="biz-name">Vega Tree Service</div>
-              <div class="biz-cat">Tree Removal · Woodstock, GA · Submitted 1 day ago</div>
-            </div>
-          </div>
-          <div class="doc-chips">
-            <span class="doc-chip">🏛️ State Registration</span>
-          </div>
-        </div>
-        <div class="queue-actions">
-          <button class="btn-reject" onclick="openRejectModal(this,'verification')">Reject</button>
-          <button class="btn-approve" onclick="reviewVerification(this,'approved')">✓ Approve</button>
-        </div>
-      </div>
-
-      <div class="queue-card" data-vstatus="pending" data-bizid="castillo">
-        <div class="queue-main">
-          <div class="biz-cell">
-            <div class="biz-avatar av-gray">CA</div>
-            <div>
-              <div class="biz-name">Castillo Auto Repair</div>
-              <div class="biz-cat">Auto Repair · Gainesville, GA · Submitted 4 hours ago</div>
-            </div>
-          </div>
-          <div class="doc-chips">
-            <span class="doc-chip">📨 IRS EIN Letter</span>
-            <span class="doc-chip">🔢 EIN: 81-2290114</span>
-          </div>
-        </div>
-        <div class="queue-actions">
-          <button class="btn-reject" onclick="openRejectModal(this,'verification')">Reject</button>
-          <button class="btn-approve" onclick="reviewVerification(this,'approved')">✓ Approve</button>
-        </div>
-      </div>
-
-      <div class="queue-card" data-vstatus="pending" data-bizid="morales">
-        <div class="queue-main">
-          <div class="biz-cell">
-            <div class="biz-avatar av-gray">MT</div>
-            <div>
-              <div class="biz-name">Morales Translation Services</div>
-              <div class="biz-cat">Translation · Cumming, GA · Submitted 6 hours ago</div>
-            </div>
-          </div>
-          <div class="doc-chips">
-            <span class="doc-chip">🔢 EIN: 47-6601882</span>
-          </div>
-        </div>
-        <div class="queue-actions">
-          <button class="btn-reject" onclick="openRejectModal(this,'verification')">Reject</button>
-          <button class="btn-approve" onclick="reviewVerification(this,'approved')">✓ Approve</button>
-        </div>
-      </div>
-
     </div>
 
     <div class="empty-queue" id="verification-empty" style="display:none">
@@ -1108,19 +852,25 @@ async function initAdminPage() {
       .select('*')
       .order('created_at', { ascending: false });
 
+    var tbody = document.getElementById('biz-table-body');
     if (businesses && businesses.length) {
-      var tbody = document.getElementById('biz-table-body');
       tbody.innerHTML = businesses.map(buildBizRow).join('');
 
-      // Update stats row
-      var total   = businesses.length;
-      var premium = businesses.filter(function(b){ return b.plan==='premium'; }).length;
-      var pending = businesses.filter(function(b){ return !b.verified; }).length;
+      var total    = businesses.length;
+      var premium  = businesses.filter(function(b){ return b.plan==='premium'; }).length;
+      var pending  = businesses.filter(function(b){ return !b.verified; }).length;
+      var adjusted = businesses.filter(function(b){ return b.priority_score && b.priority_score > 0; }).length;
 
-      var statVals = document.querySelectorAll('#pane-businesses .stat-val');
-      if (statVals[0]) statVals[0].textContent = total;
-      if (statVals[1]) statVals[1].textContent = premium;
-      if (statVals[2]) statVals[2].textContent = pending;
+      var el;
+      el = document.getElementById('stat-biz-total');    if (el) el.textContent = total;
+      el = document.getElementById('stat-biz-premium');  if (el) el.textContent = premium;
+      el = document.getElementById('stat-biz-pending');  if (el) el.textContent = pending;
+      el = document.getElementById('stat-biz-adjusted'); if (el) el.textContent = adjusted;
+    } else {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--c-muted);padding:20px">No businesses registered yet.</td></tr>';
+      ['stat-biz-total','stat-biz-premium','stat-biz-pending','stat-biz-adjusted'].forEach(function(id){
+        var el = document.getElementById(id); if (el) el.textContent = '0';
+      });
     }
 
     // ── verification queue (unverified businesses) ────────────
@@ -1132,12 +882,11 @@ async function initAdminPage() {
         queue.innerHTML = unverified.map(buildVerifCard).join('');
         if (emptyEl) emptyEl.style.display = 'none';
       } else {
-        queue.innerHTML = '';
-        if (emptyEl) emptyEl.style.display = 'block';
+        queue.innerHTML = '<div style="padding:20px;color:var(--c-muted);text-align:center">No pending verification requests.</div>';
+        if (emptyEl) emptyEl.style.display = 'none';
       }
-      // Update verification stats
-      var vStats = document.querySelectorAll('#pane-verification .stat-val');
-      if (vStats[0]) vStats[0].textContent = unverified.length;
+      var vEl = document.getElementById('stat-verif-pending');
+      if (vEl) vEl.textContent = unverified.length;
     }
 
   } catch(e) {
