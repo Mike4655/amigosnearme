@@ -207,7 +207,7 @@
     <a class="sb-link" id="nav-customers" onclick="showAdminPane('customers')"><span>👥</span> Customers</a>
     <a class="sb-link" id="nav-verification" onclick="showAdminPane('verification')"><span>✅</span> Verification Queue</a>
     <a class="sb-link" id="nav-reviews" onclick="showAdminPane('reviews')"><span>💬</span> Reviews Moderation</a>
-    <a class="sb-link" id="nav-cancellations" onclick="showAdminPane('cancellations')"><span>🚪</span> Cancellation Requests <span style="background:var(--c-accent);color:#fff;font-size:10px;padding:1px 6px;border-radius:99px;margin-left:4px">2</span></a>
+    <a class="sb-link" id="nav-cancellations" onclick="showAdminPane('cancellations')"><span>🚪</span> Cancellation Requests</a>
     <a class="sb-link" id="nav-analytics" onclick="showAdminPane('analytics')"><span>📊</span> Platform Analytics</a>
     <a class="sb-link" id="nav-settings" onclick="showAdminPane('settings')"><span>⚙️</span> Settings</a>
   </nav>
@@ -420,96 +420,28 @@
     <div class="stats-row">
       <div class="stat-card">
         <div class="stat-label">Flagged Reviews</div>
-        <div class="stat-val" style="color:var(--c-accent)">5</div>
+        <div class="stat-val" style="color:var(--c-accent)">—</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Total Reviews (platform)</div>
-        <div class="stat-val">1,284</div>
+        <div class="stat-val">—</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Removed This Month</div>
-        <div class="stat-val" style="color:var(--c-hint)">7</div>
+        <div class="stat-val" style="color:var(--c-hint)">—</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Avg. Rating (platform)</div>
-        <div class="stat-val" style="color:var(--c-amber)">4.7</div>
+        <div class="stat-val" style="color:var(--c-amber)">—</div>
       </div>
     </div>
 
-    <div class="queue-list" id="reviews-queue">
+    <div class="queue-list" id="reviews-queue"></div>
 
-      <div class="queue-card review-card" data-rstatus="pending">
-        <div class="queue-main">
-          <div class="biz-cell">
-            <div class="biz-avatar av-coral">GG</div>
-            <div>
-              <div class="biz-name">Garcia's Garden & Landscaping</div>
-              <div class="biz-cat">⭐ 1.0 · by "anon_user44"</div>
-            </div>
-          </div>
-          <div class="flag-source-row">
-            <span class="flag-source-tag source-business">🏢 Reported by business owner</span>
-            <span class="flag-reason-text">possible competitor / no service evidence</span>
-          </div>
-          <div class="review-quote" data-es>"Nunca usé este negocio pero quiero bajar su calificación."</div>
-          <div class="review-quote" data-en>"Never used this business but I want to lower their rating."</div>
-        </div>
-        <div class="queue-actions">
-          <button class="btn-approve-secondary" onclick="reviewModerate(this,'approved')">Keep</button>
-          <button class="btn-reject" onclick="openRejectModal(this,'review')">Remove</button>
-        </div>
-      </div>
-
-      <div class="queue-card review-card" data-rstatus="pending">
-        <div class="queue-main">
-          <div class="biz-cell">
-            <div class="biz-avatar av-amber">MP</div>
-            <div>
-              <div class="biz-name">Martinez Plumbing & Repair</div>
-              <div class="biz-cat">⭐ 5.0 · by "j.ramirez99"</div>
-            </div>
-          </div>
-          <div class="flag-source-row">
-            <span class="flag-source-tag source-system">⚙️ Auto-flagged by system</span>
-            <span class="flag-reason-text">suspected fake / same IP as 3 other reviews</span>
-          </div>
-          <div class="review-quote" data-es>"¡El mejor plomero de Georgia! Cinco estrellas, súper rápido."</div>
-          <div class="review-quote" data-en>"Best plumber in Georgia! Five stars, super fast."</div>
-        </div>
-        <div class="queue-actions">
-          <button class="btn-approve-secondary" onclick="reviewModerate(this,'approved')">Keep</button>
-          <button class="btn-reject" onclick="openRejectModal(this,'review')">Remove</button>
-        </div>
-      </div>
-
-      <div class="queue-card review-card" data-rstatus="pending">
-        <div class="queue-main">
-          <div class="biz-cell">
-            <div class="biz-avatar av-teal">RC</div>
-            <div>
-              <div class="biz-name">Rodriguez Cleaning Services</div>
-              <div class="biz-cat">⭐ 2.0 · by "homeowner_atl"</div>
-            </div>
-          </div>
-          <div class="flag-source-row">
-            <span class="flag-source-tag source-system">⚙️ Auto-flagged by system</span>
-            <span class="flag-reason-text">contains contact info / possible spam</span>
-          </div>
-          <div class="review-quote" data-es>"No muy puntuales. Llámenme al 404-555-0199 si quieren más detalles."</div>
-          <div class="review-quote" data-en>"Not very punctual. Call me at 404-555-0199 if you want more details."</div>
-        </div>
-        <div class="queue-actions">
-          <button class="btn-approve-secondary" onclick="reviewModerate(this,'approved')">Keep</button>
-          <button class="btn-reject" onclick="openRejectModal(this,'review')">Remove</button>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="empty-queue" id="reviews-empty" style="display:none">
+    <div class="empty-queue" id="reviews-empty">
       <div class="icon">💬</div>
       <div class="title">No flagged reviews</div>
-      <div class="sub">All reviews on the platform are in good standing.</div>
+      <div class="sub">Reviews moderation will be available once the reviews system is implemented.</div>
     </div>
 
   </div>
@@ -531,65 +463,21 @@
     <div class="stats-row" style="margin-bottom:16px">
       <div class="stat-card">
         <div class="stat-label">Pending review</div>
-        <div class="stat-val" style="color:var(--c-accent)" id="cancel-pending-count">2</div>
+        <div class="stat-val" style="color:var(--c-accent)" id="cancel-pending-count">—</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Processed this month</div>
-        <div class="stat-val">3</div>
+        <div class="stat-val">—</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Most common reason</div>
-        <div class="stat-val" style="font-size:13px;margin-top:4px">Not enough leads</div>
+        <div class="stat-val" style="font-size:13px;margin-top:4px">—</div>
       </div>
     </div>
 
-    <div id="cancellation-queue">
+    <div id="cancellation-queue"></div>
 
-      <div class="queue-card" data-cstatus="pending" data-bizid="diaz">
-        <div class="queue-main">
-          <div class="biz-cell">
-            <div class="biz-avatar av-gray">DL</div>
-            <div>
-              <div class="biz-name">Diaz Landscaping & Lawn Care</div>
-              <div class="biz-cat">Basic Plan · $29/mo · Next billing: Jul 1, 2026</div>
-            </div>
-          </div>
-          <div class="doc-chips">
-            <span class="doc-chip">📅 Requested: Jun 20, 2026</span>
-            <span class="doc-chip">💬 Not getting enough leads</span>
-          </div>
-        </div>
-        <div style="font-size:12px;color:var(--c-muted);padding:8px 0" id="cancel-notes-diaz">Notes: "I've been on Basic for 3 months and only got 2 inquiries."</div>
-        <div class="queue-actions">
-          <button class="btn-reject" onclick="openCancelRejectModal(this)">Decline request</button>
-          <button class="btn-approve" onclick="approveCancellation(this)">✓ Approve & schedule</button>
-        </div>
-      </div>
-
-      <div class="queue-card" data-cstatus="pending" data-bizid="morales">
-        <div class="queue-main">
-          <div class="biz-cell">
-            <div class="biz-avatar av-teal">MT</div>
-            <div>
-              <div class="biz-name">Morales Translation Services</div>
-              <div class="biz-cat">Free Plan · $0/mo · No active subscription</div>
-            </div>
-          </div>
-          <div class="doc-chips">
-            <span class="doc-chip">📅 Requested: Jun 22, 2026</span>
-            <span class="doc-chip">💬 Closing business</span>
-          </div>
-        </div>
-        <div style="font-size:12px;color:var(--c-muted);padding:8px 0">Notes: "We are closing operations at end of June."</div>
-        <div class="queue-actions">
-          <button class="btn-reject" onclick="openCancelRejectModal(this)">Decline request</button>
-          <button class="btn-approve" onclick="approveCancellation(this)">✓ Approve & schedule</button>
-        </div>
-      </div>
-
-    </div>
-
-    <div id="cancellation-empty" style="display:none;text-align:center;padding:48px;color:var(--c-hint)">
+    <div id="cancellation-empty" style="text-align:center;padding:48px;color:var(--c-hint)">
       ✅ No pending cancellation requests.
     </div>
 
@@ -601,23 +489,19 @@
     <div class="stats-row">
       <div class="stat-card">
         <div class="stat-label">Total Businesses</div>
-        <div class="stat-val">137</div>
-        <div class="stat-delta up">+12 this month</div>
+        <div class="stat-val" id="an-total-biz">—</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Total Customers</div>
-        <div class="stat-val">412</div>
-        <div class="stat-delta up">+38 this month</div>
+        <div class="stat-val" style="color:var(--c-muted);font-size:13px" id="an-total-cust">Coming soon</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Quote Requests (30d)</div>
-        <div class="stat-val">596</div>
-        <div class="stat-delta up">+9% vs last month</div>
+        <div class="stat-val" style="color:var(--c-muted);font-size:13px">Coming soon</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">MRR (Basic + Premium)</div>
-        <div class="stat-val">$2,184</div>
-        <div class="stat-delta up">+15% vs last month</div>
+        <div class="stat-val" style="color:var(--c-muted);font-size:13px">Coming soon</div>
       </div>
     </div>
 
@@ -625,41 +509,30 @@
 
       <div class="chart-card">
         <div class="chart-title">New businesses by month</div>
-        <div class="bar-chart">
-          <div class="bar-col"><div class="bar" style="height:38%"></div><span>Jan</span></div>
-          <div class="bar-col"><div class="bar" style="height:52%"></div><span>Feb</span></div>
-          <div class="bar-col"><div class="bar" style="height:46%"></div><span>Mar</span></div>
-          <div class="bar-col"><div class="bar" style="height:64%"></div><span>Apr</span></div>
-          <div class="bar-col"><div class="bar" style="height:71%"></div><span>May</span></div>
-          <div class="bar-col"><div class="bar accent" style="height:100%"></div><span>Jun</span></div>
+        <div class="bar-chart" id="an-monthly-chart">
+          <div style="padding:20px;color:var(--c-muted);font-size:12px;text-align:center;width:100%">Loading…</div>
         </div>
       </div>
 
       <div class="chart-card">
         <div class="chart-title">Plan distribution</div>
-        <div class="dist-row"><span class="dist-label">Free</span><div class="dist-bar"><div class="dist-fill" style="width:58%;background:#E2E0D9"></div></div><span class="dist-val">79</span></div>
-        <div class="dist-row"><span class="dist-label">Basic</span><div class="dist-bar"><div class="dist-fill" style="width:29%;background:var(--c-blue)"></div></div><span class="dist-val">40</span></div>
-        <div class="dist-row"><span class="dist-label">Premium</span><div class="dist-bar"><div class="dist-fill" style="width:13%;background:var(--c-amber)"></div></div><span class="dist-val">18</span></div>
+        <div id="an-plan-dist">
+          <div style="padding:20px;color:var(--c-muted);font-size:12px;text-align:center">Loading…</div>
+        </div>
       </div>
 
       <div class="chart-card">
         <div class="chart-title">Top categories</div>
-        <div class="dist-row"><span class="dist-label">Staffing & Labor</span><div class="dist-bar"><div class="dist-fill" style="width:100%"></div></div><span class="dist-val">3</span></div>
-        <div class="dist-row"><span class="dist-label">Landscaping</span><div class="dist-bar"><div class="dist-fill" style="width:33%"></div></div><span class="dist-val">1</span></div>
-        <div class="dist-row"><span class="dist-label">Cleaning</span><div class="dist-bar"><div class="dist-fill" style="width:33%"></div></div><span class="dist-val">1</span></div>
-        <div class="dist-row"><span class="dist-label">Construction</span><div class="dist-bar"><div class="dist-fill" style="width:33%"></div></div><span class="dist-val">1</span></div>
-        <div class="dist-row"><span class="dist-label">Plumbing</span><div class="dist-bar"><div class="dist-fill" style="width:33%"></div></div><span class="dist-val">1</span></div>
-        <div class="dist-row"><span class="dist-label">Painting</span><div class="dist-bar"><div class="dist-fill" style="width:33%"></div></div><span class="dist-val">1</span></div>
-        <div class="dist-row"><span class="dist-label">Electrical</span><div class="dist-bar"><div class="dist-fill" style="width:33%"></div></div><span class="dist-val">1</span></div>
+        <div id="an-categories">
+          <div style="padding:20px;color:var(--c-muted);font-size:12px;text-align:center">Loading…</div>
+        </div>
       </div>
 
       <div class="chart-card">
         <div class="chart-title">Businesses by service area</div>
-        <div class="dist-row"><span class="dist-label">Gwinnett</span><div class="dist-bar"><div class="dist-fill" style="width:100%"></div></div><span class="dist-val">54</span></div>
-        <div class="dist-row"><span class="dist-label">Atlanta (Fulton)</span><div class="dist-bar"><div class="dist-fill" style="width:70%"></div></div><span class="dist-val">38</span></div>
-        <div class="dist-row"><span class="dist-label">Cobb</span><div class="dist-bar"><div class="dist-fill" style="width:41%"></div></div><span class="dist-val">22</span></div>
-        <div class="dist-row"><span class="dist-label">Forsyth/Cherokee</span><div class="dist-bar"><div class="dist-fill" style="width:35%"></div></div><span class="dist-val">19</span></div>
-        <div class="dist-row"><span class="dist-label">Hall/Barrow</span><div class="dist-bar"><div class="dist-fill" style="width:26%"></div></div><span class="dist-val">14</span></div>
+        <div id="an-service-area">
+          <div style="padding:20px;color:var(--c-muted);font-size:12px;text-align:center">Coming soon</div>
+        </div>
       </div>
 
     </div>
@@ -942,6 +815,85 @@ function showAdminPane(pane) {
   };
   document.getElementById('top-bar-title').textContent = titles[pane][0];
   document.getElementById('top-bar-sub').textContent = titles[pane][1];
+
+  if (pane === 'analytics') loadAnalytics();
+}
+
+var _analyticsLoaded = false;
+async function loadAnalytics() {
+  if (_analyticsLoaded) return;
+  try {
+    var sb = getSupabase();
+    var { data: businesses } = await sb.from('businesses').select('plan, categories, created_at');
+    if (!businesses) return;
+
+    var total = businesses.length;
+    var el = document.getElementById('an-total-biz');
+    if (el) el.textContent = total;
+
+    // Plan distribution
+    var planCount = { free: 0, basic: 0, premium: 0 };
+    businesses.forEach(function(b) { var p = b.plan || 'free'; if (planCount[p] !== undefined) planCount[p]++; });
+    var maxPlan = Math.max(planCount.free, planCount.basic, planCount.premium) || 1;
+    var planEl = document.getElementById('an-plan-dist');
+    if (planEl) planEl.innerHTML = [
+      { label: 'Free',    key: 'free',    color: '#E2E0D9' },
+      { label: 'Basic',   key: 'basic',   color: 'var(--c-blue)' },
+      { label: 'Premium', key: 'premium', color: 'var(--c-amber)' }
+    ].map(function(p) {
+      var w = Math.round((planCount[p.key] / maxPlan) * 100);
+      return '<div class="dist-row"><span class="dist-label">' + p.label + '</span>'
+        + '<div class="dist-bar"><div class="dist-fill" style="width:' + w + '%;background:' + p.color + '"></div></div>'
+        + '<span class="dist-val">' + planCount[p.key] + '</span></div>';
+    }).join('');
+
+    // Top categories
+    var catCount = {};
+    businesses.forEach(function(b) {
+      (b.categories || []).forEach(function(c) { catCount[c] = (catCount[c] || 0) + 1; });
+    });
+    var cats = Object.keys(catCount).sort(function(a,b){ return catCount[b]-catCount[a]; }).slice(0, 7);
+    var maxCat = cats.length ? catCount[cats[0]] : 1;
+    var catEl = document.getElementById('an-categories');
+    if (catEl) {
+      catEl.innerHTML = cats.length
+        ? cats.map(function(c) {
+            var w = Math.round((catCount[c] / maxCat) * 100);
+            return '<div class="dist-row"><span class="dist-label">' + esc(c) + '</span>'
+              + '<div class="dist-bar"><div class="dist-fill" style="width:' + w + '%"></div></div>'
+              + '<span class="dist-val">' + catCount[c] + '</span></div>';
+          }).join('')
+        : '<div style="padding:16px;color:var(--c-muted);font-size:12px;text-align:center">No category data yet.</div>';
+    }
+
+    // Monthly bar chart (last 6 months)
+    var now = new Date();
+    var months = [];
+    for (var i = 5; i >= 0; i--) {
+      var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push({ label: d.toLocaleString('en', {month:'short'}), year: d.getFullYear(), month: d.getMonth() });
+    }
+    var monthCount = {};
+    businesses.forEach(function(b) {
+      if (!b.created_at) return;
+      var d = new Date(b.created_at);
+      var key = d.getFullYear() + '-' + d.getMonth();
+      monthCount[key] = (monthCount[key] || 0) + 1;
+    });
+    var maxMonth = Math.max.apply(null, months.map(function(m){ return monthCount[m.year+'-'+m.month] || 0; })) || 1;
+    var chartEl = document.getElementById('an-monthly-chart');
+    if (chartEl) chartEl.innerHTML = months.map(function(m, i) {
+      var cnt = monthCount[m.year + '-' + m.month] || 0;
+      var h = Math.max(4, Math.round((cnt / maxMonth) * 100));
+      var isLast = i === months.length - 1;
+      return '<div class="bar-col"><div class="bar' + (isLast ? ' accent' : '') + '" style="height:' + h + '%"></div>'
+        + '<span>' + m.label + '</span></div>';
+    }).join('');
+
+    _analyticsLoaded = true;
+  } catch(e) {
+    console.error('[Admin] loadAnalytics error:', e);
+  }
 }
 
 function approveCancellation(btn) {
