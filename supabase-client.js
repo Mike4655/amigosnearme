@@ -195,7 +195,6 @@ async function searchBusinesses({ category, query, limit = 20 } = {}) {
   let q = sb
     .from('businesses')
     .select('*')
-    .eq('verified', true)
     .limit(limit);
 
   if (category) q = q.contains('categories', [category]);

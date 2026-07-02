@@ -801,22 +801,25 @@
       </div>
 
       <div class="upload-grid">
-        <div class="upload-box" onclick="simulateUpload(this, 'doc')">
-          <div class="upload-icon">📋</div>
+        <label class="upload-box" onclick="event.stopPropagation()">
+          <input type="file" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload(this,'business_license')">
+          <div class="upload-icon" id="doc-icon-business_license">📋</div>
           <div class="upload-label">Business License</div>
           <div class="upload-hint" data-es>Ciudad o condado → <strong style="color:var(--c-green)">Verified</strong></div>
           <div class="upload-hint" data-en>City or county → <strong style="color:var(--c-green)">Verified</strong></div>
-        </div>
-        <div class="upload-box" onclick="simulateUpload(this, 'doc')">
-          <div class="upload-icon">🏛️</div>
+        </label>
+        <label class="upload-box" onclick="event.stopPropagation()">
+          <input type="file" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload(this,'state_registration')">
+          <div class="upload-icon" id="doc-icon-state_registration">🏛️</div>
           <div class="upload-label">State Registration</div>
           <div class="upload-hint">Secretary of State → <strong style="color:var(--c-green)">Verified</strong></div>
-        </div>
-        <div class="upload-box" onclick="simulateUpload(this, 'doc')">
-          <div class="upload-icon">📨</div>
+        </label>
+        <label class="upload-box" onclick="event.stopPropagation()">
+          <input type="file" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload(this,'irs_ein_letter')">
+          <div class="upload-icon" id="doc-icon-irs_ein_letter">📨</div>
           <div class="upload-label">IRS EIN Letter</div>
           <div class="upload-hint">IRS CP 575 → <strong style="color:var(--c-green)">Verified</strong></div>
-        </div>
+        </label>
       </div>
 
       <div class="success-box" style="margin-top:4px">
@@ -1122,6 +1125,9 @@ async function goSuccess() {
           insured: insuredEl ? insuredEl.checked : false
         });
         console.log('✅ Business record created in DB');
+        // Save verification documents to queue if submitted in Step 3
+        var biz = await getMyBusiness();
+        if (biz && biz.id) await saveVerificationQueue(biz.id);
       }
     } catch(dbErr) { console.error('Business record error:', dbErr); }
   } catch(err) {
@@ -1216,6 +1222,20 @@ function clearStaffingAvailabilityError() {
     hideError('err-staffing-availability');
     grid.classList.remove('section-error');
   }
+}
+
+var uploadedDocs = {}; // { doc_type: File }
+
+function handleDocUpload(input, docType) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  uploadedDocs[docType] = file;
+  docCount = Object.keys(uploadedDocs).length;
+  var icon = document.getElementById('doc-icon-' + docType);
+  if (icon) icon.textContent = '✅';
+  var box = input.closest('.upload-box');
+  if (box) box.classList.add('uploaded');
+  if (docCount > 0) hideError('err-verify');
 }
 
 function simulateUpload(box, type) {
@@ -1579,7 +1599,35 @@ function validateStep3() {
     return;
   }
   hideError('err-verify');
+  // Save verification data for later DB insert (after account creation in goSuccess)
+  if (!verificationSkipped && (hasEin || hasDoc)) {
+    window._pendingVerification = {
+      ein: hasEin ? ein.value.trim() : null,
+      docs: Object.keys(uploadedDocs) // doc type names; files stored in uploadedDocs
+    };
+  } else {
+    window._pendingVerification = null;
+  }
   goStep(4);
+}
+
+// Called after business is created in goSuccess() — saves to verification_queue
+async function saveVerificationQueue(businessId) {
+  var v = window._pendingVerification;
+  if (!v || (!v.ein && (!v.docs || v.docs.length === 0))) return;
+  var sb = getSupabase();
+  var rows = [];
+  if (v.ein) {
+    rows.push({ business_id: businessId, document_type: 'ein', document_url: v.ein, status: 'pending' });
+  }
+  v.docs.forEach(function(docType) {
+    rows.push({ business_id: businessId, document_type: docType, document_url: 'pending_upload', status: 'pending' });
+  });
+  if (rows.length > 0) {
+    var { error } = await sb.from('verification_queue').insert(rows);
+    if (error) console.error('verification_queue insert error:', error);
+    else console.log('✅ verification_queue saved:', rows.length, 'row(s)');
+  }
 }
 
 function photoCountUploadedDocs() {

@@ -94,27 +94,22 @@
     </div>
     <div class="field-error" id="err-admin-login">Enter a valid @amigosnearme.com email and your password.</div>
 
-    <button class="btn-primary" onclick="submitCredentials()">Continue</button>
-  </div>
-
-  <!-- STEP 2: MFA CODE -->
-  <div id="step-mfa" style="display:none">
-    <div class="step-back" onclick="backToCredentials()">← Back</div>
-    <div class="login-title">Verification code</div>
-    <div class="login-sub" id="mfa-sub">Enter the 6-digit code sent to your authenticator app.</div>
-
-    <div class="mfa-boxes">
-      <input type="text" maxlength="1" class="mfa-box" oninput="mfaAdvance(this)">
-      <input type="text" maxlength="1" class="mfa-box" oninput="mfaAdvance(this)">
-      <input type="text" maxlength="1" class="mfa-box" oninput="mfaAdvance(this)">
-      <input type="text" maxlength="1" class="mfa-box" oninput="mfaAdvance(this)">
-      <input type="text" maxlength="1" class="mfa-box" oninput="mfaAdvance(this)">
-      <input type="text" maxlength="1" class="mfa-box" oninput="mfaAdvance(this)">
+    <div style="text-align:right;margin:6px 0 10px">
+      <a href="#" onclick="showAdminForgot();return false" style="font-size:12px;color:var(--c-muted);text-decoration:none">Forgot password?</a>
     </div>
-    <div class="field-error" id="err-mfa">Enter the complete 6-digit code.</div>
-    <div class="mfa-hint">Didn't get a code? <a href="#" style="color:var(--c-accent)" onclick="return false">Resend</a></div>
 
-    <button class="btn-primary" onclick="submitMfa()">Verify & sign in</button>
+    <!-- FORGOT PASSWORD INLINE -->
+    <div id="admin-forgot-section" style="display:none;margin-bottom:12px;padding:14px;background:var(--c-accent-light);border-radius:var(--radius-sm)">
+      <div style="font-size:12px;font-weight:500;margin-bottom:8px;color:var(--c-text)">We'll send a reset link to your email.</div>
+      <input type="email" id="admin-forgot-email" placeholder="you@example.com" style="width:100%;padding:9px 11px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:13px;font-family:var(--font-body);background:rgba(255,255,255,0.06);color:var(--c-text);margin-bottom:8px">
+      <div id="admin-forgot-msg" style="display:none;font-size:12px;color:var(--c-green);margin-bottom:6px"></div>
+      <div style="display:flex;gap:8px">
+        <button onclick="sendAdminPasswordReset()" style="flex:1;padding:8px;border-radius:var(--radius-sm);background:var(--c-accent);color:#fff;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:var(--font-body)">Send link</button>
+        <button onclick="hideAdminForgot()" style="padding:8px 12px;border-radius:var(--radius-sm);background:none;border:0.5px solid var(--c-border);font-size:13px;color:var(--c-muted);cursor:pointer;font-family:var(--font-body)">Cancel</button>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="submitCredentials()">Continue</button>
   </div>
 
   <div class="security-note">
@@ -127,10 +122,20 @@
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-var emailPattern = /^[^\s@]+@amigosnearme\.com$/i;
+var SUPABASE_URL = 'https://itlcbqecqmenfolexkuj.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_2-VOhM33bU5T6F9eMNV7iw_GcVXyWPQ';
+var ADMIN_EMAILS = ['collegeessayboard@gmail.com'];
 
-function showError(id) { var el = document.getElementById(id); if (el) el.classList.add('show'); }
+var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+function showError(id, msg) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  if (msg) el.textContent = msg;
+  el.classList.add('show');
+}
 function hideError(id) { var el = document.getElementById(id); if (el) el.classList.remove('show'); }
 function markInvalid(el) { if (el) el.classList.add('input-error'); }
 function clearInvalid(el) { if (el) el.classList.remove('input-error'); }
@@ -141,52 +146,106 @@ function clearAdminError() {
   clearInvalid(document.getElementById('admin-password'));
 }
 
-function submitCredentials() {
-  var email = document.getElementById('admin-email');
-  var password = document.getElementById('admin-password');
-  var valid = emailPattern.test(email.value.trim()) && password.value.length >= 8;
+async function submitCredentials() {
+  var emailEl = document.getElementById('admin-email');
+  var passwordEl = document.getElementById('admin-password');
+  var email = emailEl.value.trim();
+  var password = passwordEl.value;
+  var btn = document.querySelector('.btn-primary');
 
-  if (!valid) {
-    showError('err-admin-login');
-    if (!emailPattern.test(email.value.trim())) markInvalid(email);
-    if (password.value.length < 8) markInvalid(password);
+  if (!email || password.length < 8) {
+    showError('err-admin-login', 'Enter your email and password (min 8 characters).');
+    if (!email) markInvalid(emailEl);
+    if (password.length < 8) markInvalid(passwordEl);
     return;
   }
 
-  // In production: credentials are verified server-side before issuing an MFA challenge.
-  // Admin accounts require MFA on every login — no exceptions, even for the owner account.
-  document.getElementById('step-credentials').style.display = 'none';
-  document.getElementById('step-mfa').style.display = 'block';
-  document.querySelector('.mfa-box').focus();
-}
+  btn.textContent = 'Signing in…';
+  btn.disabled = true;
 
-function backToCredentials() {
-  document.getElementById('step-mfa').style.display = 'none';
-  document.getElementById('step-credentials').style.display = 'block';
-}
+  try {
+    var { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) throw error;
 
-function mfaAdvance(box) {
-  hideError('err-mfa');
-  if (box.value.length === 1) {
-    var next = box.nextElementSibling;
-    if (next && next.classList.contains('mfa-box')) next.focus();
+    var userEmail = data.user && data.user.email ? data.user.email.toLowerCase() : '';
+    var isAdmin = ADMIN_EMAILS.some(function(e){ return e.toLowerCase() === userEmail; });
+
+    if (!isAdmin) {
+      await sb.auth.signOut();
+      showError('err-admin-login', 'This account does not have admin access.');
+      markInvalid(emailEl);
+      btn.textContent = 'Continue';
+      btn.disabled = false;
+      return;
+    }
+
+    window.location.href = 'admin.html';
+  } catch(err) {
+    showError('err-admin-login', err.message || 'Login failed. Check your credentials.');
+    markInvalid(emailEl);
+    markInvalid(passwordEl);
+    btn.textContent = 'Continue';
+    btn.disabled = false;
   }
 }
 
-function submitMfa() {
-  var boxes = document.querySelectorAll('.mfa-box');
-  var code = Array.from(boxes).map(function(b){ return b.value; }).join('');
-  if (code.length !== 6) {
-    showError('err-mfa');
+function showAdminForgot() {
+  var sec = document.getElementById('admin-forgot-section');
+  var emailVal = document.getElementById('admin-email');
+  if (sec) sec.style.display = 'block';
+  var fe = document.getElementById('admin-forgot-email');
+  if (fe && emailVal) fe.value = emailVal.value.trim();
+  var msg = document.getElementById('admin-forgot-msg');
+  if (msg) msg.style.display = 'none';
+}
+function hideAdminForgot() {
+  var sec = document.getElementById('admin-forgot-section');
+  if (sec) sec.style.display = 'none';
+}
+async function sendAdminPasswordReset() {
+  var emailEl = document.getElementById('admin-forgot-email');
+  var msgEl = document.getElementById('admin-forgot-msg');
+  var email = emailEl ? emailEl.value.trim() : '';
+  var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailPattern.test(email)) {
+    if (emailEl) emailEl.style.borderColor = 'var(--c-accent)';
     return;
   }
-  // In production: code is verified server-side, then a session is created and the user
-  // is redirected to admin.html. This page never stores credentials or codes client-side.
-  window.location.href = 'admin.html';
+  if (emailEl) emailEl.style.borderColor = '';
+  try {
+    await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + '/reset-password.html'
+    });
+    if (msgEl) {
+      msgEl.textContent = '✅ Reset link sent! Check your email.';
+      msgEl.style.color = 'var(--c-green)';
+      msgEl.style.display = 'block';
+    }
+  } catch(e) {
+    if (msgEl) {
+      msgEl.textContent = 'Error sending email. Try again.';
+      msgEl.style.color = 'var(--c-accent)';
+      msgEl.style.display = 'block';
+    }
+  }
 }
+
+// Allow Enter key to submit
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') submitCredentials();
+});
 
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('admin-email').focus();
+  // If already logged in as admin, skip login
+  sb.auth.getSession().then(function(res) {
+    var session = res.data && res.data.session;
+    if (!session) return;
+    var email = session.user && session.user.email ? session.user.email.toLowerCase() : '';
+    if (ADMIN_EMAILS.some(function(e){ return e.toLowerCase() === email; })) {
+      window.location.href = 'admin.html';
+    }
+  });
 });
 </script>
 </body>

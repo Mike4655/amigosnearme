@@ -211,7 +211,7 @@
     <a class="sb-link" id="nav-analytics" onclick="showAdminPane('analytics')"><span>📊</span> Platform Analytics</a>
     <a class="sb-link" id="nav-settings" onclick="showAdminPane('settings')"><span>⚙️</span> Settings</a>
   </nav>
-  <div class="sb-foot">Logged in as admin@amigosnearme.com<br><a href="admin-login.html" style="color:rgba(255,255,255,0.45);text-decoration:none">Sign out →</a></div>
+  <div class="sb-foot">Logged in as <span id="sb-user-email">…</span><br><a href="#" onclick="adminSignOut();return false" style="color:rgba(255,255,255,0.45);text-decoration:none">Sign out →</a></div>
 </aside>
 
 <!-- MAIN -->
@@ -1504,7 +1504,28 @@ function filterTable() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+var ADMIN_EMAILS = ['collegeessayboard@gmail.com'];
+
+document.addEventListener('DOMContentLoaded', async function() {
+  // Session guard — redirect to login if not an authenticated admin
+  try {
+    var sb = getSupabase();
+    var { data: { session } } = await sb.auth.getSession();
+    if (!session) { window.location.href = 'admin-login.html'; return; }
+    var userEmail = session.user.email ? session.user.email.toLowerCase() : '';
+    if (!ADMIN_EMAILS.some(function(e){ return e.toLowerCase() === userEmail; })) {
+      await sb.auth.signOut();
+      window.location.href = 'admin-login.html';
+      return;
+    }
+    // Show real email in sidebar
+    var foot = document.getElementById('sb-user-email');
+    if (foot) foot.textContent = session.user.email;
+  } catch(e) {
+    window.location.href = 'admin-login.html';
+    return;
+  }
+
   // Pre-clear hardcoded placeholder rows; real data loads from Supabase
   var tbody = document.getElementById('biz-table-body');
   if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>';
@@ -1513,6 +1534,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
   initAdminPage();
 });
+
+async function adminSignOut() {
+  try { await getSupabase().auth.signOut(); } catch(e) {}
+  window.location.href = 'admin-login.html';
+}
 </script>
 </body>
 </html>

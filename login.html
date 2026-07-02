@@ -244,6 +244,25 @@
       </div>
       <div class="field-error" id="err-login" data-es-text="Ingresa un correo válido y tu contraseña." data-en-text="Enter a valid email and your password.">Ingresa un correo válido y tu contraseña.</div>
 
+      <div style="text-align:right;margin-bottom:10px">
+        <a href="#" onclick="showForgotPassword();return false" style="font-size:12px;color:var(--c-muted);text-decoration:none" data-es>¿Olvidaste tu contraseña?</a>
+        <a href="#" onclick="showForgotPassword();return false" style="font-size:12px;color:var(--c-muted);text-decoration:none" data-en>Forgot password?</a>
+      </div>
+
+      <!-- FORGOT PASSWORD INLINE -->
+      <div id="forgot-section" style="display:none;margin-bottom:12px;padding:14px;background:var(--c-accent-light);border-radius:var(--radius-sm)">
+        <div style="font-size:12px;font-weight:500;margin-bottom:8px" data-es>Te enviaremos un enlace para restablecer tu contraseña.</div>
+        <div style="font-size:12px;font-weight:500;margin-bottom:8px" data-en>We'll send you a password reset link.</div>
+        <input type="email" id="forgot-email" placeholder="tu@correo.com" style="width:100%;padding:9px 11px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:13px;font-family:var(--font-body);background:#fff;color:var(--c-text);margin-bottom:8px">
+        <div id="forgot-msg" style="display:none;font-size:12px;color:var(--c-green);margin-bottom:6px"></div>
+        <div style="display:flex;gap:8px">
+          <button onclick="sendPasswordReset()" style="flex:1;padding:8px;border-radius:var(--radius-sm);background:var(--c-accent);color:#fff;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:var(--font-body)" data-es>Enviar enlace</button>
+          <button onclick="sendPasswordReset()" style="flex:1;padding:8px;border-radius:var(--radius-sm);background:var(--c-accent);color:#fff;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:var(--font-body)" data-en>Send link</button>
+          <button onclick="hideForgotPassword()" style="padding:8px 12px;border-radius:var(--radius-sm);background:none;border:0.5px solid var(--c-border);font-size:13px;color:var(--c-muted);cursor:pointer;font-family:var(--font-body)" data-es>Cancelar</button>
+          <button onclick="hideForgotPassword()" style="padding:8px 12px;border-radius:var(--radius-sm);background:none;border:0.5px solid var(--c-border);font-size:13px;color:var(--c-muted);cursor:pointer;font-family:var(--font-body)" data-en>Cancel</button>
+        </div>
+      </div>
+
       <button class="btn-primary" onclick="doLogin()" data-es>Iniciar sesión</button>
       <button class="btn-primary" onclick="doLogin()" data-en>Log in</button>
     </div>
@@ -578,6 +597,49 @@ function clearLoginError() {
   clearInvalid(document.getElementById('login-email'));
   clearInvalid(document.getElementById('login-password'));
   hideError('err-login');
+}
+
+function showForgotPassword() {
+  var sec = document.getElementById('forgot-section');
+  var emailVal = document.getElementById('login-email');
+  if (sec) sec.style.display = 'block';
+  var fe = document.getElementById('forgot-email');
+  if (fe && emailVal) fe.value = emailVal.value.trim();
+  var msg = document.getElementById('forgot-msg');
+  if (msg) msg.style.display = 'none';
+}
+function hideForgotPassword() {
+  var sec = document.getElementById('forgot-section');
+  if (sec) sec.style.display = 'none';
+}
+async function sendPasswordReset() {
+  var emailEl = document.getElementById('forgot-email');
+  var msgEl = document.getElementById('forgot-msg');
+  var email = emailEl ? emailEl.value.trim() : '';
+  var isEn = document.body.classList.contains('en');
+  if (!emailPattern.test(email)) {
+    if (emailEl) emailEl.style.borderColor = 'var(--c-accent)';
+    return;
+  }
+  if (emailEl) emailEl.style.borderColor = '';
+  try {
+    var sb = getSupabase();
+    await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + '/reset-password.html'
+    });
+    if (msgEl) {
+      msgEl.textContent = isEn
+        ? '✅ Reset link sent! Check your email.'
+        : '✅ Enlace enviado. Revisa tu correo.';
+      msgEl.style.display = 'block';
+    }
+  } catch(e) {
+    if (msgEl) {
+      msgEl.textContent = isEn ? 'Error sending email. Try again.' : 'Error al enviar. Intenta de nuevo.';
+      msgEl.style.color = 'var(--c-accent)';
+      msgEl.style.display = 'block';
+    }
+  }
 }
 function clearSignupError() {
   clearInvalid(document.getElementById('signup-name'));
