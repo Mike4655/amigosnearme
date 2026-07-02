@@ -696,7 +696,10 @@ async function doSignup() {
   var btn = document.querySelector('[onclick="doSignup()"]');
   if (btn) { btn.disabled = true; btn.textContent = isEn ? 'Creating account…' : 'Creando cuenta…'; }
   try {
-    await signUp({ email: emailEl.value.trim(), password: passwordEl.value, userType: 'customer', businessName: nameEl.value.trim() });
+    var resolvedType = (new URLSearchParams(window.location.search)).get('type') === 'employer' ? 'employer' : 'customer';
+    await signUp({ email: emailEl.value.trim(), password: passwordEl.value, userType: resolvedType, businessName: nameEl.value.trim() });
+    // CU1 / EM1: 가입 완료 이메일
+    sendEmail(resolvedType === 'employer' ? 'EM1' : 'CU1', emailEl.value.trim(), { name: nameEl.value.trim() });
     document.getElementById('auth-wrap').innerHTML =
       '<div style="text-align:center;padding:48px 24px;max-width:440px;margin:0 auto">' +
       '<div style="font-size:40px;margin-bottom:16px">📧</div>' +
@@ -942,6 +945,12 @@ document.addEventListener('DOMContentLoaded', async function() {
       // Business owner → 바로 dashboard로
       if (userType === 'business') {
         window.location.href = 'dashboard.html';
+        return;
+      }
+
+      // Employer → Worker 검색 화면으로
+      if (userType === 'employer') {
+        window.location.href = 'search.html?mode=workers';
         return;
       }
 

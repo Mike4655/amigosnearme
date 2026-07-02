@@ -1273,11 +1273,30 @@ function submitQuote() {
 
   // Check monthly request limit for this business.
   var bizId = (window.currentBusiness && window.currentBusiness.id) ? window.currentBusiness.id : 'unknown';
+  var bizEmail = (window.currentBusiness && window.currentBusiness.public_email) ? window.currentBusiness.public_email : null;
+  var bizName  = (window.currentBusiness && window.currentBusiness.business_name) ? window.currentBusiness.business_name : '';
   if (!checkRequestLimit(bizId)) {
+    // SB12: 한도 초과로 차단됨 — 업체에 알림
+    if (bizEmail) sendEmail('SB12', bizEmail, { biz_name: bizName }, bizId);
+    // SB13: 차단된 고객에게 알림 (로그인 사용자에게만)
+    getSession().then(function(sess) {
+      if (sess && sess.user && sess.user.email) {
+        sendEmail('SB13', sess.user.email, { biz_name: bizName });
+      }
+    });
     showLimitReachedMessage();
     return;
   }
   incrementRequestCount(bizId);
+
+  // SB8/SB9: 한도 임박·소진 알림 — 업체에 이메일
+  var limitNotif = checkLimitNotification(bizId);
+  if (limitNotif && bizEmail) {
+    sendEmail(limitNotif, bizEmail, { biz_name: bizName }, bizId);
+  }
+
+  // SB6: WhatsApp 문의 수신 — 업체에 이메일
+  if (bizEmail) sendEmail('SB6', bizEmail, { biz_name: bizName, service: serviceLabel }, bizId);
   trackContact('quote_request', serviceLabel);
 
   // Mark this customer as having contacted this business — unlocks review eligibility.
@@ -1493,10 +1512,16 @@ function openWorkerWhatsApp() {
    - localStorage below stands in for a real per-business monthly request counter in the DB.
    - The business's plan is read from the same 'anm-sim-plan' key used by dashboard.html,
      so switching plans in the dashboard is immediately reflected here too. */
-var REQUEST_LIMITS = { free: 3, basic: 10, premium: null }; // null = unlimited
+// null = unlimited
+// notify_remaining: 이 수치 이하로 남으면 SB8 알림 트리거
+var REQUEST_LIMITS = {
+  free:    { limit: 3,    notify_remaining: 1 },
+  basic:   { limit: 10,   notify_remaining: 3 },
+  premium: { limit: null, notify_remaining: null }
+};
 
 function getRequestKey(bizId) {
-  var month = new Date().toISOString().slice(0, 7); // e.g. "2026-06"
+  var month = new Date().toISOString().slice(0, 7);
   return 'anm-sim-req-' + bizId + '-' + month;
 }
 function getRequestCount(bizId) {
@@ -1508,17 +1533,25 @@ function incrementRequestCount(bizId) {
   catch(e) {}
 }
 function getBizPlan() {
-  // Reads from the same localStorage key that dashboard.html's plan switcher writes to,
-  // so plan changes in dashboard are instantly reflected here.
   try { return localStorage.getItem('anm-sim-plan') || 'free'; }
   catch(e) { return 'free'; }
 }
 function checkRequestLimit(bizId) {
-  // Returns true if the business can still accept requests; false if limit is reached.
+  var cfg = REQUEST_LIMITS[getBizPlan()];
+  if (!cfg || cfg.limit === null) return true;
+  return getRequestCount(bizId) < cfg.limit;
+}
+// SB8/SB9 판별: 연락 1건 추가 후 호출 — 알림 필요 여부 반환
+// 반환값: 'sb8' | 'sb9' | null
+function checkLimitNotification(bizId) {
   var plan = getBizPlan();
-  var limit = REQUEST_LIMITS[plan];
-  if (limit === null) return true; // Premium: unlimited
-  return getRequestCount(bizId) < limit;
+  var cfg = REQUEST_LIMITS[plan];
+  if (!cfg || cfg.limit === null) return null;
+  var used = getRequestCount(bizId);
+  var remaining = cfg.limit - used;
+  if (remaining === 0) return 'sb9';                        // 한도 100% 소진
+  if (remaining === cfg.notify_remaining) return 'sb8';    // Free:1개 남음 / Basic:3개 남음
+  return null;
 }
 function showLimitReachedMessage() {
   var isEn = document.body.classList.contains('en');
@@ -1573,12 +1606,26 @@ function submitFallback() {
   document.getElementById('err-fallback').classList.remove('show');
 
   // Check monthly request limit for this business before accepting the fallback form submission.
-  var bizId = (window.currentBusiness && window.currentBusiness.id) ? window.currentBusiness.id : 'unknown';
+  var bizId   = (window.currentBusiness && window.currentBusiness.id)           ? window.currentBusiness.id           : 'unknown';
+  var bizEmail = (window.currentBusiness && window.currentBusiness.public_email) ? window.currentBusiness.public_email : null;
+  var bizName  = (window.currentBusiness && window.currentBusiness.business_name)? window.currentBusiness.business_name: '';
   if (!checkRequestLimit(bizId)) {
+    if (bizEmail) sendEmail('SB12', bizEmail, { biz_name: bizName }, bizId);
+    getSession().then(function(sess) {
+      if (sess && sess.user && sess.user.email) {
+        sendEmail('SB13', sess.user.email, { biz_name: bizName });
+      }
+    });
     showLimitReachedMessage();
     return;
   }
   incrementRequestCount(bizId);
+
+  // SB8/SB9: 한도 임박·소진 알림 — 업체에 이메일
+  var limitNotif = checkLimitNotification(bizId);
+  if (limitNotif && bizEmail) {
+    sendEmail(limitNotif, bizEmail, { biz_name: bizName }, bizId);
+  }
 
   // Mark this customer as having contacted this business — unlocks review eligibility.
   recordContactForReview(bizId);
@@ -1587,19 +1634,8 @@ function submitFallback() {
   var parts = service.value.split('|');
   var serviceLabel = isEn ? parts[1] : parts[0];
 
-  // This path is 100% trackable: the request goes through AmigosNearMe's own form.
-  // BACKEND SPEC (production):
-  //   1. Save to admin_inquiries table: { biz_id, customer_name, customer_phone, service, timestamp }
-  //      — retained for 90 days then auto-purged. Never written to the business's own DB record.
-  //   2. Relay to business owner via email AND WhatsApp notification, containing:
-  //        • Customer name (e.g. "Rosa Fernández")
-  //        • Customer phone number (e.g. "+1 404-555-0181")
-  //        • Service requested (e.g. "Lawn mowing")
-  //        • Business name and a link to their dashboard
-  //      The business owner receives this info in their inbox/WhatsApp and can call or
-  //      message the customer directly — but this data is NOT written to dashboard.html's
-  //      inquiries pane. The dashboard only shows: service category + area + timestamp.
-  //   3. Decrement the business's monthly request counter (plan limit check already done above).
+  // SB7: 폼 문의 수신 — 업체에 이메일 (고객 이름·연락처 포함)
+  if (bizEmail) sendEmail('SB7', bizEmail, { biz_name: bizName, customer_name: name.value.trim(), customer_phone: phone.value.trim(), service: serviceLabel }, bizId);
   trackContact('quote_request_fallback', serviceLabel);
 
   document.getElementById('fallback-success').classList.add('show');

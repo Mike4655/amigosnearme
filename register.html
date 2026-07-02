@@ -1114,6 +1114,7 @@ async function goSuccess() {
       if (cs) {
         var bizTypeEl = document.getElementById('biz-type-select');
         var insuredEl = document.getElementById('f-insured');
+        var isWorkerReg = isStaffingSelected();
         await createBusiness({ businessName: bizName, tradeName: tradeNameEl ? tradeNameEl.value.trim() : '',
           plan: selectedPlan || 'free', publicEmail: publicEmailEl ? publicEmailEl.value.trim() : '',
           phone: normalizedPhone, description: descEl ? descEl.value.trim() : '',
@@ -1122,12 +1123,23 @@ async function goSuccess() {
           categories: categories, serviceArea: serviceArea,
           languages: languages, paymentMethods: paymentMethods, hours: hoursData,
           businessType: bizTypeEl ? bizTypeEl.value : '',
-          insured: insuredEl ? insuredEl.checked : false
+          insured: insuredEl ? insuredEl.checked : false,
+          isWorker: isWorkerReg
         });
         console.log('✅ Business record created in DB');
-        // Save verification documents to queue if submitted in Step 3
-        var biz = await getMyBusiness();
-        if (biz && biz.id) await saveVerificationQueue(biz.id);
+        // SB1 / W1: 가입 완료 환영 이메일
+        var scenario = isWorkerReg ? 'W1' : 'SB1';
+        var ownerName = bizName || email.split('@')[0];
+        sendEmail(scenario, email, { owner_name: ownerName, worker_name: ownerName, biz_name: bizName });
+        // Verified Badge 신청 서류는 Business 전용 (Worker는 Badge 신청 없음)
+        if (!isWorkerReg) {
+          var biz = await getMyBusiness();
+          if (biz && biz.id) {
+            await saveVerificationQueue(biz.id);
+            // AD1: Verified Badge 신청 접수 — 관리자에게 알림
+            sendEmail('AD1', null, { biz_name: bizName }, biz.id);
+          }
+        }
       }
     } catch(dbErr) { console.error('Business record error:', dbErr); }
   } catch(err) {

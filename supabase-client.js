@@ -19,6 +19,7 @@ function getSupabase() {
 // =============================================
 // AUTH — 회원가입
 // =============================================
+// user_type 허용값: 'business' | 'worker' | 'customer' | 'employer'
 async function signUp({ email, password, userType, businessName, tradeName, phone, publicEmail, description, plan, categories, serviceArea, languages, paymentMethods, hours }) {
   const sb = getSupabase();
   const { data, error } = await sb.auth.signUp({
@@ -110,7 +111,7 @@ async function getMyBusiness() {
 // =============================================
 // DB — 업체 프로필 생성
 // =============================================
-async function createBusiness({ businessName, tradeName, plan = 'free', publicEmail, phone, description, descriptionEs, descriptionEn, categories, serviceArea, languages, paymentMethods, hours, businessType, insured }) {
+async function createBusiness({ businessName, tradeName, plan = 'free', publicEmail, phone, description, descriptionEs, descriptionEn, categories, serviceArea, languages, paymentMethods, hours, businessType, insured, isWorker = false }) {
   const sb = getSupabase();
   const user = await getCurrentUser();
   if (!user) throw new Error('Not authenticated');
@@ -138,7 +139,11 @@ async function createBusiness({ businessName, tradeName, plan = 'free', publicEm
     description_es: descriptionEs || description || null,
     description_en: descriptionEn || null,
     business_type: businessType || null,
-    insured: !!insured
+    insured: !!insured,
+    is_worker: !!(isWorker),
+    account_status: 'active',
+    contacts_used_month: 0,
+    contacts_month_reset: new Date().toISOString().slice(0, 10)
   };
 
   let data, error;
@@ -190,11 +195,13 @@ async function updateBusiness(updates) {
 // =============================================
 // DB — 비즈니스 목록 (검색용, 공개)
 // =============================================
-async function searchBusinesses({ category, query, limit = 20 } = {}) {
+async function searchBusinesses({ category, query, isWorker = false, limit = 20 } = {}) {
   const sb = getSupabase();
   let q = sb
     .from('businesses')
     .select('*')
+    .eq('account_status', 'active')   // 정지·삭제 업체 제외
+    .eq('is_worker', isWorker)         // Business와 Worker 분리
     .limit(limit);
 
   if (category) q = q.contains('categories', [category]);
@@ -203,6 +210,21 @@ async function searchBusinesses({ category, query, limit = 20 } = {}) {
   const { data, error } = await q;
   if (error) throw error;
   return data;
+}
+
+// =============================================
+// EMAIL — Edge Function 호출 헬퍼
+// =============================================
+async function sendEmail(scenario, to, data, refId) {
+  try {
+    const sb = getSupabase();
+    const body = { scenario, to, data };
+    if (refId) body.ref_id = refId;
+    const { error } = await sb.functions.invoke('send-email', { body });
+    if (error) console.warn('[sendEmail] scenario:', scenario, error);
+  } catch (e) {
+    console.warn('[sendEmail] scenario:', scenario, e);
+  }
 }
 
 // =============================================

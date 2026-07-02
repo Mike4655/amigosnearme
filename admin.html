@@ -675,7 +675,8 @@ function buildBizRow(biz, idx) {
   var pvClass = priorityVal === 0 ? 'zero' : priorityVal <= 7 ? 'low' : priorityVal <= 13 ? 'mid' : 'high';
   var autoTag = plan === 'premium' ? '<span class="auto-tag">auto +10</span>' : '';
 
-  return '<tr data-plan="'+plan+'" data-verify="'+(biz.verified?'verified':'basic-tier')+'" data-name="'+name.toLowerCase()+'" data-status="active" data-bizid="'+biz.id+'">'
+  var bizEmailVal = biz.public_email || '';
+  return '<tr data-plan="'+plan+'" data-verify="'+(biz.verified?'verified':'basic-tier')+'" data-name="'+name.toLowerCase()+'" data-status="active" data-bizid="'+biz.id+'" data-email="'+escHtml(bizEmailVal)+'" data-bizname="'+escHtml(name)+'">'
     + '<td><div class="biz-cell"><div class="biz-avatar '+bizAvatarClass(idx)+'">'+getAvatarInitialsAdmin(name)+'</div>'
     + '<div><div class="biz-name">'+escHtml(name)+'</div><div class="biz-cat">'+escHtml(catLabel)+' · '+escHtml(area)+', GA</div></div></div></td>'
     + '<td><span class="'+planClass+'">'+planLabel+'</span></td>'
@@ -699,7 +700,8 @@ function buildVerifCard(biz, idx) {
   var d = biz.created_at ? new Date(biz.created_at) : null;
   var submittedStr = d ? 'Submitted ' + Math.floor((Date.now()-d)/86400000) + ' days ago' : '';
 
-  return '<div class="queue-card" data-vstatus="pending" data-bizid="'+biz.id+'">'
+  var bizEmailVal = biz.public_email || '';
+  return '<div class="queue-card" data-vstatus="pending" data-bizid="'+biz.id+'" data-email="'+escHtml(bizEmailVal)+'" data-bizname="'+escHtml(name)+'">'
     + '<div class="queue-main"><div class="biz-cell">'
     + '<div class="biz-avatar '+bizAvatarClass(idx)+'">'+getAvatarInitialsAdmin(name)+'</div>'
     + '<div><div class="biz-name">'+escHtml(name)+'</div>'
@@ -930,6 +932,7 @@ async function reviewVerification(btn, decision) {
   var bizId = card.getAttribute('data-bizid');
   var bizName = card.querySelector('.biz-name') ? card.querySelector('.biz-name').textContent : bizId;
 
+  var bizEmail = card.getAttribute('data-email') || null;
   if (decision === 'approved' && bizId) {
     btn.disabled = true;
     btn.textContent = '…';
@@ -937,6 +940,8 @@ async function reviewVerification(btn, decision) {
       var sb = getSupabase();
       var { error } = await sb.from('businesses').update({ verified: true }).eq('id', bizId);
       if (error) throw error;
+      // SB3: Verified Badge 승인 — 업체에 이메일
+      if (bizEmail) sendEmail('SB3', bizEmail, { biz_name: bizName }, bizId);
       showAdminToast('✅ ' + bizName + ' approved — Verified badge is now live');
     } catch(e) {
       console.error('[Admin] approve error:', e);
@@ -947,6 +952,7 @@ async function reviewVerification(btn, decision) {
     }
   } else if (decision === 'rejected' && bizId) {
     // rejected businesses remain verified=false; no DB change needed
+    // SB4 is sent via confirmReject() which captures the rejection reason
     showAdminToast('✗ ' + bizName + ' rejected — owner will be notified');
   }
 
@@ -1075,6 +1081,9 @@ function confirmReject() {
     if (bizId) {
       try { localStorage.removeItem('anm-verified-' + bizId); } catch(e) {}
       var bizName = rejectContext.card.querySelector('.biz-name') ? rejectContext.card.querySelector('.biz-name').textContent : bizId;
+      // SB4: Verified Badge 반려 — 업체에 거절 사유 이메일
+      var bizEmail = rejectContext.card.getAttribute('data-email') || null;
+      if (bizEmail) sendEmail('SB4', bizEmail, { biz_name: bizName, reason: ta.value.trim() }, bizId);
       showAdminToast('✗ ' + bizName + ' rejected — owner will be notified');
       var pendingEl = document.querySelector('#pane-verification .stat-card .stat-val[style*="accent"]');
       if (pendingEl) {
@@ -1083,9 +1092,6 @@ function confirmReject() {
       }
     }
   }
-
-  // In production: this reason is written to the business/review record and triggers
-  // an in-app notification (and email, if configured) to the recipient.
   document.getElementById('reject-modal-overlay').classList.remove('show');
   dismissCard(rejectContext.card, rejectContext.listId, rejectContext.emptyId);
   rejectContext = null;
@@ -1096,6 +1102,9 @@ function toggleBusinessStatus(btn) {
   var actionTd = btn.closest('td');
   var statusCell = actionTd.previousElementSibling.querySelector('span');
   var isSuspended = row.dataset.status === 'suspended';
+  var bizEmail = row.dataset.email || null;
+  var bizName  = row.dataset.bizname || (row.querySelector('.biz-name') ? row.querySelector('.biz-name').textContent : '');
+  var bizId    = row.dataset.bizid || null;
 
   if (isSuspended) {
     row.dataset.status = 'active';
@@ -1113,6 +1122,8 @@ function toggleBusinessStatus(btn) {
     btn.textContent = 'Reactivate';
     btn.style.background = 'var(--c-green-light)';
     btn.style.color = 'var(--c-green)';
+    // SB10: 계정 정지 알림 — 업체에 이메일
+    if (bizEmail) sendEmail('SB10', bizEmail, { biz_name: bizName }, bizId);
   }
 }
 

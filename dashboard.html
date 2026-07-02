@@ -1215,6 +1215,17 @@ function submitCancelRequest() {
     }));
   } catch(e) {}
 
+  // AD4: 취소 요청 수신 — 관리자에게 이메일
+  getMyBusiness().then(function(biz) {
+    var bizName = biz ? (biz.trade_name || biz.business_name || '') : '';
+    var bizId   = biz ? biz.id : null;
+    sendEmail('AD4', null, {
+      biz_name: bizName,
+      reason: select.value,
+      notes: document.getElementById('cancel-notes').value
+    }, bizId);
+  }).catch(function() {});
+
   closeCancelModal();
   document.getElementById('cancel-confirm-modal').classList.add('open');
 }
