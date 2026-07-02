@@ -1,0 +1,89 @@
+name: B7 — 7-Day Upgrade Nudge Email
+
+on:
+  schedule:
+    - cron: '0 14 * * *'   # 매일 14:00 UTC (09:00 ET) 실행
+  workflow_dispatch:         # 수동 실행 가능
+
+jobs:
+  send-upgrade-nudge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send B7 upgrade nudge to eligible businesses
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          # 가입 후 정확히 7일 된 free 플랜 업체 조회 → send-email Edge Function 호출
+          python3 - <<'EOF'
+          import urllib.request, urllib.error, json, os, datetime
+
+          SUPABASE_URL = os.environ['SUPABASE_URL']
+          SERVICE_KEY  = os.environ['SUPABASE_SERVICE_ROLE_KEY']
+
+          # 7일 전 날짜 범위 (UTC 기준 하루)
+          today = datetime.datetime.utcnow().date()
+          target_date = today - datetime.timedelta(days=7)
+          date_from = target_date.isoformat() + 'T00:00:00Z'
+          date_to   = target_date.isoformat() + 'T23:59:59Z'
+
+          # free 플랜이고 7일 전 가입한 업체 조회
+          query = (
+            f"{SUPABASE_URL}/rest/v1/businesses"
+            f"?select=id,business_name,public_email"
+            f"&plan=eq.free"
+            f"&account_status=eq.active"
+            f"&is_worker=eq.false"
+            f"&created_at=gte.{date_from}"
+            f"&created_at=lte.{date_to}"
+          )
+
+          req = urllib.request.Request(
+            query,
+            headers={
+              'apikey': SERVICE_KEY,
+              'Authorization': f'Bearer {SERVICE_KEY}',
+              'Content-Type': 'application/json'
+            }
+          )
+
+          try:
+            with urllib.request.urlopen(req) as res:
+              businesses = json.loads(res.read())
+          except Exception as e:
+            print(f'Query error: {e}')
+            businesses = []
+
+          print(f'Found {len(businesses)} businesses eligible for B7 nudge')
+
+          # 각 업체에 B7 이메일 발송
+          for biz in businesses:
+            email = biz.get('public_email')
+            if not email:
+              print(f"Skip {biz['id']} — no email")
+              continue
+
+            payload = json.dumps({
+              'scenario': 'B7',
+              'to': email,
+              'data': { 'biz_name': biz.get('business_name', '') },
+              'ref_id': biz['id']
+            }).encode()
+
+            fn_req = urllib.request.Request(
+              f"{SUPABASE_URL}/functions/v1/send-email",
+              data=payload,
+              headers={
+                'Authorization': f'Bearer {SERVICE_KEY}',
+                'Content-Type': 'application/json'
+              },
+              method='POST'
+            )
+
+            try:
+              with urllib.request.urlopen(fn_req) as fn_res:
+                print(f"B7 sent to {email} ({biz['id']}): {fn_res.status}")
+            except urllib.error.HTTPError as e:
+              print(f"B7 failed for {email}: {e.code} {e.read().decode()}")
+
+          EOF

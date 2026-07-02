@@ -1647,10 +1647,59 @@ function submitFallback() {
     service.value = '';
   }, 3500);
 }
-function submitReview() {
+async function submitReview() {
+  var starEl  = document.getElementById('star-pick');
+  var textEl  = document.getElementById('review-text');
+  var rating  = starEl ? (starEl.textContent.match(/★/g) || []).length : 0;
+  var text    = textEl ? textEl.value.trim() : '';
+
+  if (rating === 0) {
+    alert(document.body.classList.contains('en') ? 'Please select a star rating.' : 'Por favor selecciona una calificación.');
+    return;
+  }
+
+  var bizId = (window.currentBusiness && window.currentBusiness.id) ? window.currentBusiness.id : null;
+  var bizName = (window.currentBusiness && window.currentBusiness.business_name) ? window.currentBusiness.business_name : '';
+
+  try {
+    var session = await getSession();
+    if (!session) {
+      window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
+      return;
+    }
+
+    var sb = getSupabase();
+    var { error } = await sb.from('reviews').upsert({
+      biz_id:      bizId,
+      reviewer_id: session.user.id,
+      rating:      rating,
+      review_text: text
+    }, { onConflict: 'biz_id,reviewer_id' });
+
+    if (error) throw error;
+
+    // AD2: 1점 리뷰 → 관리자 알림
+    if (rating === 1) {
+      sendEmail('AD2', null, { biz_name: bizName, rating: rating, review_text: text }, bizId);
+    }
+
+    // AD3: 스팸 감지 (URL, 전화번호, 이메일 포함 여부)
+    var spamPattern = /https?:\/\/|www\.|[\+\d][\d\s\-\(\)]{7,}|\b[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}/;
+    if (text && spamPattern.test(text)) {
+      sendEmail('AD3', null, { biz_name: bizName, rating: rating, review_text: text }, bizId);
+    }
+
+  } catch(e) {
+    console.error('[submitReview] error:', e);
+  }
+
   var msgs = document.querySelectorAll('#review-success');
   msgs.forEach(function(m){ m.style.display = 'block'; });
-  setTimeout(function(){ msgs.forEach(function(m){ m.style.display = 'none'; }); }, 3000);
+  setTimeout(function(){
+    msgs.forEach(function(m){ m.style.display = 'none'; });
+    if (textEl) textEl.value = '';
+    if (starEl) starEl.textContent = '☆☆☆☆☆';
+  }, 3000);
 }
 function pickStar(e) {
   var stars = document.getElementById('star-pick');
