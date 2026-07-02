@@ -251,8 +251,8 @@
         <div class="stat-val" style="color:var(--c-accent)" id="stat-biz-pending">—</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Admin-Adjusted Priority</div>
-        <div class="stat-val" style="color:var(--c-blue)" id="stat-biz-adjusted">—</div>
+        <div class="stat-label">Verified Businesses</div>
+        <div class="stat-val" style="color:var(--c-green)" id="stat-biz-verified">—</div>
       </div>
     </div>
 
@@ -732,13 +732,13 @@ async function initAdminPage() {
       var total    = businesses.length;
       var premium  = businesses.filter(function(b){ return b.plan==='premium'; }).length;
       var pending  = businesses.filter(function(b){ return !b.verified; }).length;
-      var adjusted = businesses.filter(function(b){ return b.priority_score && b.priority_score > 0; }).length;
+      var verified = businesses.filter(function(b){ return b.verified; }).length;
 
       var el;
       el = document.getElementById('stat-biz-total');    if (el) el.textContent = total;
       el = document.getElementById('stat-biz-premium');  if (el) el.textContent = premium;
       el = document.getElementById('stat-biz-pending');  if (el) el.textContent = pending;
-      el = document.getElementById('stat-biz-adjusted'); if (el) el.textContent = adjusted;
+      el = document.getElementById('stat-biz-verified'); if (el) el.textContent = verified;
     } else {
       tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--c-muted);padding:20px">No businesses registered yet.</td></tr>';
       ['stat-biz-total','stat-biz-premium','stat-biz-pending','stat-biz-adjusted'].forEach(function(id){
