@@ -748,20 +748,32 @@ async function initAdminPage() {
       });
     }
 
-    // ── verification queue (unverified businesses) ────────────
-    var unverified = (businesses || []).filter(function(b){ return !b.verified; });
+    // ── verification queue (businesses with submitted docs, status=pending) ──
+    var { data: vqRows } = await sb
+      .from('verification_queue')
+      .select('id, business_id, document_type, document_url, status')
+      .eq('status', 'pending');
+
+    var bizMap = {};
+    (businesses || []).forEach(function(b){ bizMap[b.id] = b; });
+
+    var verifItems = (vqRows || []).map(function(vq){
+      var biz = bizMap[vq.business_id] || {};
+      return Object.assign({}, biz, { vq_id: vq.id, vq_doc_type: vq.document_type, vq_doc_url: vq.document_url });
+    }).filter(function(item){ return item.id; });
+
     var queue = document.getElementById('verification-queue');
     var emptyEl = document.getElementById('verification-empty');
     if (queue) {
-      if (unverified.length) {
-        queue.innerHTML = unverified.map(buildVerifCard).join('');
+      if (verifItems.length) {
+        queue.innerHTML = verifItems.map(buildVerifCard).join('');
         if (emptyEl) emptyEl.style.display = 'none';
       } else {
         queue.innerHTML = '<div style="padding:20px;color:var(--c-muted);text-align:center">No pending verification requests.</div>';
         if (emptyEl) emptyEl.style.display = 'none';
       }
       var vEl = document.getElementById('stat-verif-pending');
-      if (vEl) vEl.textContent = unverified.length;
+      if (vEl) vEl.textContent = verifItems.length;
     }
 
   } catch(e) {
