@@ -1296,7 +1296,7 @@ function submitQuote() {
   }
 
   // SB6: WhatsApp 문의 수신 — 업체에 이메일
-  if (bizEmail) sendEmail('SB6', bizEmail, { biz_name: bizName, service: serviceLabel }, bizId);
+  if (bizEmail) sendEmail('SB6', bizEmail, { biz_name: bizName, service: serviceLabel });
   trackContact('quote_request', serviceLabel);
 
   // Mark this customer as having contacted this business — unlocks review eligibility.
@@ -1635,7 +1635,7 @@ function submitFallback() {
   var serviceLabel = isEn ? parts[1] : parts[0];
 
   // SB7: 폼 문의 수신 — 업체에 이메일 (고객 이름·연락처 포함)
-  if (bizEmail) sendEmail('SB7', bizEmail, { biz_name: bizName, customer_name: name.value.trim(), customer_phone: phone.value.trim(), service: serviceLabel }, bizId);
+  if (bizEmail) sendEmail('SB7', bizEmail, { biz_name: bizName, customer_name: name.value.trim(), customer_phone: phone.value.trim(), service: serviceLabel });
   trackContact('quote_request_fallback', serviceLabel);
 
   document.getElementById('fallback-success').classList.add('show');
