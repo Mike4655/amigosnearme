@@ -332,7 +332,9 @@ serve(async (req: Request) => {
       ref_id?: string;
     };
 
-    if (!scenario || !to) {
+    const isAdminScenario = ['AD1','AD2','AD3','AD4'].includes(scenario);
+
+    if (!scenario || (!to && !isAdminScenario)) {
       return new Response(JSON.stringify({ error: 'scenario and to are required' }), { status: 400 });
     }
 
@@ -342,7 +344,7 @@ serve(async (req: Request) => {
     }
 
     // Admin 알림은 수신자를 ADMIN_EMAIL로 고정
-    const recipient = ['AD1','AD2','AD3','AD4'].includes(scenario) ? ADMIN_EMAIL : to;
+    const recipient = isAdminScenario ? ADMIN_EMAIL : to;
 
     const tmpl = templates(scenario, data);
     if (!tmpl) {
