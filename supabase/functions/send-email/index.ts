@@ -313,15 +313,24 @@ ${d.reason ? `<p><strong>Reason:</strong> ${d.reason}</p>` : ''}`,
   }
 }
 
+// ── CORS 헤더 (모든 응답에 적용) ──────────────────────────────
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+};
+
+function jsonResponse(body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+  });
+}
+
 // ── 메인 핸들러 ────────────────────────────────────────────────
 serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-      },
-    });
+    return new Response(null, { headers: CORS_HEADERS });
   }
 
   try {
@@ -335,12 +344,12 @@ serve(async (req: Request) => {
     const isAdminScenario = ['AD1','AD2','AD3','AD4'].includes(scenario);
 
     if (!scenario || (!to && !isAdminScenario)) {
-      return new Response(JSON.stringify({ error: 'scenario and to are required' }), { status: 400 });
+      return jsonResponse({ error: 'scenario and to are required' }, 400);
     }
 
     // 중복 발송 방지 (ref_id 있을 때만)
     if (ref_id && await alreadySent(scenario, ref_id)) {
-      return new Response(JSON.stringify({ skipped: true, reason: 'already_sent' }), { status: 200 });
+      return jsonResponse({ skipped: true, reason: 'already_sent' });
     }
 
     // Admin 알림은 수신자를 ADMIN_EMAIL로 고정
@@ -348,19 +357,16 @@ serve(async (req: Request) => {
 
     const tmpl = templates(scenario, data);
     if (!tmpl) {
-      return new Response(JSON.stringify({ error: `Unknown scenario: ${scenario}` }), { status: 400 });
+      return jsonResponse({ error: `Unknown scenario: ${scenario}` }, 400);
     }
 
     await sendEmail(recipient, tmpl.subject, tmpl.html);
     if (ref_id) await logEmail(scenario, recipient, ref_id);
 
-    return new Response(JSON.stringify({ ok: true, scenario, to: recipient }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return jsonResponse({ ok: true, scenario, to: recipient });
 
   } catch (err) {
     console.error('send-email error:', err);
-    return new Response(JSON.stringify({ error: String(err) }), { status: 500 });
+    return jsonResponse({ error: String(err) }, 500);
   }
 });
