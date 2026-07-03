@@ -91,7 +91,7 @@ function templates(scenario: string, d: Record<string, string>): { subject: stri
     case 'SB6':
       return {
         subject: `📲 A customer tried to reach you on WhatsApp — ${d.biz_name}`,
-        html: `<p>Hi ${d.owner_name},</p>
+        html: `<p>Hi there,</p>
 <p>A customer found your listing on AmigosNearMe and opened WhatsApp to contact you.</p>
 <p>Make sure to respond quickly — fast replies lead to more jobs.</p>
 <p><a href="https://amigosnearme.com/dashboard.html">View your dashboard →</a></p>`,
@@ -100,7 +100,7 @@ function templates(scenario: string, d: Record<string, string>): { subject: stri
     case 'SB7':
       return {
         subject: `📋 New inquiry for ${d.biz_name} — AmigosNearMe`,
-        html: `<p>Hi ${d.owner_name},</p>
+        html: `<p>Hi there,</p>
 <p>You have a new inquiry:</p>
 <ul>
   <li><strong>Name:</strong> ${d.customer_name}</li>

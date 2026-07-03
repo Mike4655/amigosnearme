@@ -279,13 +279,14 @@
             <th>Plan</th>
             <th>Verification</th>
             <th>Rating</th>
+            <th>Contacts</th>
             <th>Priority Score</th>
             <th>Status</th>
             <th></th>
           </tr>
         </thead>
         <tbody id="biz-table-body">
-          <tr><td colspan="7" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>
+          <tr><td colspan="8" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>
         </tbody>
       </table>
     </div>
@@ -682,6 +683,7 @@ function buildBizRow(biz, idx) {
     + '<td><span class="'+planClass+'">'+planLabel+'</span></td>'
     + '<td>'+verBadge+'</td>'
     + '<td>—</td>'
+    + '<td style="text-align:center">'+(biz.contacts_used_month != null ? biz.contacts_used_month : 0)+'</td>'
     + '<td><div class="priority-cell"><input type="range" class="priority-slider" min="0" max="20" value="'+priorityVal+'" oninput="updatePriority(this)">'
     + '<span class="priority-val '+pvClass+'">'+priorityVal+'</span>'+autoTag+'</div></td>'
     + '<td><span class="verified-badge">Active</span></td>'
@@ -742,7 +744,7 @@ async function initAdminPage() {
       el = document.getElementById('stat-biz-pending');  if (el) el.textContent = pending;
       el = document.getElementById('stat-biz-verified'); if (el) el.textContent = verified;
     } else {
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--c-muted);padding:20px">No businesses registered yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--c-muted);padding:20px">No businesses registered yet.</td></tr>';
       ['stat-biz-total','stat-biz-premium','stat-biz-pending','stat-biz-adjusted'].forEach(function(id){
         var el = document.getElementById(id); if (el) el.textContent = '0';
       });
@@ -1257,7 +1259,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   // Pre-clear hardcoded placeholder rows; real data loads from Supabase
   var tbody = document.getElementById('biz-table-body');
-  if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>';
+  if (tbody) tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>';
   var queue = document.getElementById('verification-queue');
   if (queue) queue.innerHTML = '<div style="padding:20px;color:var(--c-muted);text-align:center">Loading…</div>';
 

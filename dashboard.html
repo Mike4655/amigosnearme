@@ -1255,6 +1255,15 @@ function openWA(phone){
   window.open('https://wa.me/'+phone.replace(/\D/g,'')+'?text='+encodeURIComponent(msg),'_blank');
 }
 
+function loadOverviewStats(biz) {
+  var contactsEl = document.getElementById('stat-whatsapp');
+  var contactsSubEl = document.getElementById('stat-whatsapp-sub');
+  if (contactsEl) contactsEl.textContent = biz.contacts_used_month != null ? biz.contacts_used_month : '0';
+  if (contactsSubEl) contactsSubEl.textContent = '';
+}
+function loadRecentInquiries() {}
+function loadReviews() {}
+
 document.addEventListener('DOMContentLoaded', async function(){
   var saved=''; try{saved=localStorage.getItem('anm-lang');}catch(e){}
   var browser=(navigator.language||'es').toLowerCase();
@@ -1323,7 +1332,7 @@ document.addEventListener('DOMContentLoaded', async function(){
 
       renderProfileCompleteness(biz);
       refreshPlanUI();
-      loadOverviewStats();
+      loadOverviewStats(biz);
       loadRecentInquiries();
       loadReviews();
 

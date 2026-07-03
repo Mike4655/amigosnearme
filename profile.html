@@ -1577,12 +1577,13 @@ function showLimitReachedMessage() {
   document.body.appendChild(overlay);
 }
 function trackContact(type, serviceLabel) {
-  // In production: this fires a request to the backend to log a contact event
-  // (type: 'general_inquiry' or 'quote_request', plus service category and timestamp).
-  // Server-side dedup: same customer/session + same business within 24h = counted once.
-  // This is the event that powers dashboard.html's plan usage counter ("8/10 requests")
-  // and Premium's full analytics breakdown by service category.
-  console.log('[AmigosNearMe tracking] contact event:', type, serviceLabel || '');
+  var bizId = (window.currentBusiness && window.currentBusiness.id) ? window.currentBusiness.id : null;
+  if (!bizId) return;
+  try {
+    getSupabase().rpc('increment_contact_count', { biz_id: bizId }).then(function(res) {
+      if (res.error) console.warn('[trackContact] RPC error:', res.error.message);
+    });
+  } catch(e) { console.warn('[trackContact] error:', e); }
 }
 function toggleFallback() {
   var f = document.getElementById('fallback-form');
