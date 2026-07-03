@@ -953,6 +953,8 @@ async function reviewVerification(btn, decision) {
       var { data: updated, error } = await sb.from('businesses').update({ verified: true }).eq('id', bizId).select('id,verified');
       if (error) throw error;
       if (!updated || updated.length === 0) throw new Error('RLS blocked update — re-login as admin and retry');
+      // verification_queue status → approved
+      await sb.from('verification_queue').update({ status: 'approved', reviewed_at: new Date().toISOString() }).eq('business_id', bizId);
       // SB3: Verified Badge 승인 — 업체에 이메일
       if (bizEmail) sendEmail('SB3', bizEmail, { biz_name: bizName }, bizId);
       showAdminToast('✅ ' + bizName + ' approved — Verified badge is now live');
@@ -1097,6 +1099,8 @@ function confirmReject() {
       // SB4: Verified Badge 반려 — 업체에 거절 사유 이메일
       var bizEmail = rejectContext.card.getAttribute('data-email') || null;
       if (bizEmail) sendEmail('SB4', bizEmail, { biz_name: bizName, reason: ta.value.trim() }, bizId);
+      var sb = getSupabase();
+      sb.from('verification_queue').update({ status: 'rejected', admin_note: ta.value.trim(), reviewed_at: new Date().toISOString() }).eq('business_id', bizId).then(function(){});
       showAdminToast('✗ ' + bizName + ' rejected — owner will be notified');
       var pendingEl = document.querySelector('#pane-verification .stat-card .stat-val[style*="accent"]');
       if (pendingEl) {
