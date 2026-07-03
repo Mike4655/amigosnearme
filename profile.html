@@ -920,7 +920,9 @@ function buildBizObject(biz, reviews) {
     location: location,
     mapQuery: location.replace(/\s/g, '+'),
     phone: biz.whatsapp_phone || '',
-    phoneDisplay: biz.whatsapp_phone || ''
+    phoneDisplay: biz.whatsapp_phone || '',
+    public_email: biz.public_email || '',
+    business_name: biz.business_name || ''
   };
 }
 
