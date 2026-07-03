@@ -1135,9 +1135,14 @@ async function goSuccess() {
         if (!isWorkerReg) {
           var biz = await getMyBusiness();
           if (biz && biz.id) {
-            await saveVerificationQueue(biz.id);
-            // AD1: Verified Badge 신청 접수 — 관리자에게 알림
-            sendEmail('AD1', null, { biz_name: bizName }, biz.id);
+            var saved = await saveVerificationQueue(biz.id);
+            // saveVerificationQueue 는 서류가 있을 때만 저장 (_pendingVerification 체크)
+            if (window._pendingVerification && (window._pendingVerification.ein || (window._pendingVerification.docs && window._pendingVerification.docs.length > 0))) {
+              // SB2: 업체에 Badge 신청 접수 확인 이메일
+              sendEmail('SB2', email, { owner_name: ownerName, biz_name: bizName }, biz.id);
+              // AD1: 관리자에게 Badge 신청 알림
+              sendEmail('AD1', null, { biz_name: bizName, owner_email: email, submitted_at: new Date().toLocaleString('en-US', {timeZone:'America/New_York'}) }, biz.id);
+            }
           }
         }
       }
