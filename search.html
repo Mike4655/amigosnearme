@@ -816,8 +816,10 @@ function renderPage(filtered) {
     var rating = biz.rating || '';
     var ratingHtml = rating ? '<span style="color:var(--c-amber)">★</span> ' + parseFloat(rating).toFixed(1) : '';
     var verifiedHtml = biz.verified ? '<span style="background:var(--c-green-light);color:var(--c-green);font-size:11px;padding:2px 8px;border-radius:99px;font-weight:500">✓ Verified</span>' : '';
+    var insuredHtml = biz.insured ? '<span style="background:#EEF6FF;color:#2563EB;font-size:11px;padding:2px 8px;border-radius:99px;font-weight:500">🛡️ ' + (isEn ? 'Insured' : 'Asegurado') + '</span>' : '';
     var phone = (biz.whatsapp_phone || '').replace(/\D/g,'');
     var waMsg = isEn ? 'Hi! I found you on AmigosNearMe.' : 'Hola! Te encontré en AmigosNearMe.';
+    var waSB6Click = biz.public_email ? 'sendEmail(\'SB6\',\'' + biz.public_email + '\',{biz_name:\'' + (biz.business_name||'').replace(/'/g,"\\'") + '\'});' : '';
 
     return '<div class="biz-card" data-id="' + biz.id + '" data-cat="' + cat + '" data-area="' + areaShort + '" data-rating="' + (rating||0) + '" data-verified="' + !!biz.verified + '" onclick="goToProfile(\'' + biz.id + '\')">' +
       '<div class="biz-card-top">' +
@@ -825,12 +827,12 @@ function renderPage(filtered) {
       '<div style="flex:1;min-width:0">' +
       '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px">' +
       '<div class="biz-name" style="font-size:15px;font-weight:600">' + (biz.business_name || '') + '</div>' +
-      verifiedHtml + '</div>' +
+      verifiedHtml + insuredHtml + '</div>' +
       '<div class="biz-category" style="font-size:12px;color:var(--c-muted)">' + catLabel + (areaShort ? ' · ' + areaShort : '') + '</div>' +
       (rating ? '<div style="font-size:12px;color:var(--c-muted);margin-top:2px">' + ratingHtml + '</div>' : '') +
       '</div></div>' +
       '<div class="biz-card-bottom">' +
-      (phone ? '<a href="https://wa.me/' + phone + '?text=' + encodeURIComponent(waMsg) + '" onclick="event.stopPropagation()" class="btn-wa" style="font-size:12px;padding:7px 14px;border-radius:var(--radius-sm);background:var(--c-green-light);color:var(--c-green);border:0.5px solid rgba(29,158,117,0.3);text-decoration:none;font-weight:500">💬 WhatsApp</a>' : '') +
+      (phone ? '<a href="https://wa.me/' + phone + '?text=' + encodeURIComponent(waMsg) + '" onclick="event.stopPropagation();' + waSB6Click + '" class="btn-wa" style="font-size:12px;padding:7px 14px;border-radius:var(--radius-sm);background:var(--c-green-light);color:var(--c-green);border:0.5px solid rgba(29,158,117,0.3);text-decoration:none;font-weight:500">💬 WhatsApp</a>' : '') +
       (biz.public_email ? '<a href="mailto:' + biz.public_email + '" onclick="event.stopPropagation()" class="btn-quote" style="font-size:12px;padding:7px 14px;border-radius:var(--radius-sm);background:var(--c-bg);color:var(--c-muted);border:0.5px solid var(--c-border);text-decoration:none">' + (isEn ? 'Email' : 'Email') + '</a>' : '') +
       '</div></div>';
   }).join('');
