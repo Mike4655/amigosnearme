@@ -938,8 +938,9 @@ async function reviewVerification(btn, decision) {
     btn.textContent = '…';
     try {
       var sb = getSupabase();
-      var { error } = await sb.from('businesses').update({ verified: true }).eq('id', bizId);
+      var { data: updated, error } = await sb.from('businesses').update({ verified: true }).eq('id', bizId).select('id,verified');
       if (error) throw error;
+      if (!updated || updated.length === 0) throw new Error('RLS blocked update — re-login as admin and retry');
       // SB3: Verified Badge 승인 — 업체에 이메일
       if (bizEmail) sendEmail('SB3', bizEmail, { biz_name: bizName }, bizId);
       showAdminToast('✅ ' + bizName + ' approved — Verified badge is now live');
