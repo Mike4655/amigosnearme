@@ -76,8 +76,11 @@ async function getSession() {
 
 async function getCurrentUser() {
   const sb = getSupabase();
-  const { data: { user } } = await sb.auth.getUser();
-  return user;
+  const { data: { user }, error } = await sb.auth.getUser();
+  if (user) return user;
+  // getUser() 서버 요청 실패 시 로컬 세션으로 fallback
+  const { data: { session } } = await sb.auth.getSession();
+  return session?.user || null;
 }
 
 // =============================================
@@ -111,7 +114,7 @@ async function getMyBusiness() {
 // =============================================
 // DB — 업체 프로필 생성
 // =============================================
-async function createBusiness({ businessName, tradeName, plan = 'free', publicEmail, phone, description, descriptionEs, descriptionEn, categories, serviceArea, languages, paymentMethods, hours, businessType, insured, isWorker = false }) {
+async function createBusiness({ businessName, tradeName, plan = 'free', publicEmail, phone, description, descriptionEs, descriptionEn, categories, serviceArea, languages, paymentMethods, hours, businessType, insured, isWorker = false, staffingTypes = [], staffingAvailability = [] }) {
   const sb = getSupabase();
   const user = await getCurrentUser();
   if (!user) throw new Error('Not authenticated');
@@ -141,6 +144,8 @@ async function createBusiness({ businessName, tradeName, plan = 'free', publicEm
     business_type: businessType || null,
     insured: !!insured,
     is_worker: !!(isWorker),
+    staffing_types: staffingTypes || [],
+    staffing_availability: staffingAvailability || [],
     account_status: 'active',
     contacts_used_month: 0,
     contacts_month_reset: new Date().toISOString().slice(0, 10)
@@ -215,11 +220,12 @@ async function searchBusinesses({ category, query, isWorker = false, limit = 20 
 // =============================================
 // EMAIL — Edge Function 호출 헬퍼
 // =============================================
-async function sendEmail(scenario, to, data, refId) {
+async function sendEmail(scenario, to, data, refId, lang) {
   try {
     const sb = getSupabase();
     const body = { scenario, to, data };
     if (refId) body.ref_id = refId;
+    if (lang)  body.lang   = lang;
     const { error } = await sb.functions.invoke('send-email', { body });
     if (error) console.warn('[sendEmail] scenario:', scenario, error);
   } catch (e) {
@@ -252,8 +258,10 @@ async function redirectIfLoggedIn(redirectTo = 'dashboard.html') {
   const session = await getSession();
   if (session) {
     const userType = await getUserType();
-    if (userType === 'business') {
+    if (userType === 'business' || userType === 'worker') {
       window.location.href = 'dashboard.html';
+    } else if (userType === 'employer') {
+      window.location.href = 'employer-dashboard.html';
     } else {
       window.location.href = redirectTo;
     }

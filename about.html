@@ -93,10 +93,12 @@
     <div class="nav-links">
       <a href="search.html" data-es>Buscar Negocios</a><a href="search.html" data-en>Find Businesses</a>
     </div>
-    <a href="login.html" class="btn-nav" style="font-size:13px;color:var(--c-muted)" data-es>Iniciar sesión</a>
-    <a href="login.html" class="btn-nav" style="font-size:13px;color:var(--c-muted)" data-en>Log in</a>
-    <a href="register-type.html" class="btn-nav primary" data-es>Registrar Negocio</a>
-    <a href="register-type.html" class="btn-nav primary" data-en>List Your Business</a>
+    <span id="nav-auth-area">
+      <a href="login.html" class="btn-nav" style="font-size:13px;color:var(--c-muted)" data-es>Iniciar sesión</a>
+      <a href="login.html" class="btn-nav" style="font-size:13px;color:var(--c-muted)" data-en>Log in</a>
+      <a href="register-type.html" class="btn-nav primary" data-es>Registrar Negocio</a>
+      <a href="register-type.html" class="btn-nav primary" data-en>List Your Business</a>
+    </span>
   </div>
 </nav>
 
@@ -185,6 +187,8 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase-client.js"></script>
 <script>
 function setLang(lang) {
   document.body.classList.toggle('en', lang === 'en');
@@ -192,11 +196,37 @@ function setLang(lang) {
   document.getElementById('btn-en').classList.toggle('active', lang === 'en');
   try { localStorage.setItem('anm-lang', lang); } catch(e) {}
 }
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
   var saved = ''; try { saved = localStorage.getItem('anm-lang'); } catch(e) {}
   var browser = (navigator.language || 'es').toLowerCase();
   setLang(saved || (browser.startsWith('en') ? 'en' : 'es'));
+
+  try {
+    var sb = getSupabase();
+    var { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      var isEn = document.body.classList.contains('en');
+      var authArea = document.getElementById('nav-auth-area');
+      if (!authArea) return;
+      var userType = session.user.user_metadata && session.user.user_metadata.user_type || 'customer';
+      var dashHref = userType === 'employer' ? 'employer-dashboard.html'
+                   : userType === 'business' ? 'dashboard.html'
+                   : userType === 'worker'   ? '#'
+                   : 'login.html';
+      if (userType === 'worker') {
+        try { var wb = await getMyBusiness(); if (wb && wb.id) dashHref = 'worker-profile.html?id=' + wb.id; } catch(e) {}
+      }
+      authArea.innerHTML =
+        '<a href="' + dashHref + '" class="btn-nav" style="font-size:13px;color:var(--c-muted)">' + (isEn ? 'My Account' : 'Mi Cuenta') + '</a>' +
+        '<button onclick="doSignOut()" class="btn-nav" style="font-size:13px;color:var(--c-muted);background:none;border:none;cursor:pointer;">' + (isEn ? 'Log out' : 'Cerrar sesión') + '</button>';
+    }
+  } catch(e) {}
 });
+
+async function doSignOut() {
+  try { await getSupabase().auth.signOut(); } catch(e) {}
+  window.location.href = 'index.html';
+}
 </script>
 
 </body>

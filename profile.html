@@ -334,10 +334,12 @@
     <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
     <a href="search.html" class="nav-back" data-es>← Resultados</a>
     <a href="search.html" class="nav-back" data-en>← Back to results</a>
-    <a href="login.html" class="btn-nav" style="font-size:13px;color:var(--c-muted)" data-es>Iniciar sesión</a>
-    <a href="login.html" class="btn-nav" style="font-size:13px;color:var(--c-muted)" data-en>Log in</a>
-    <a href="register-type.html" class="btn-nav primary" data-es>Registro</a>
-    <a href="register-type.html" class="btn-nav primary" data-en>Sign up</a>
+    <span id="nav-auth-area" style="display:flex;align-items:center;gap:4px">
+      <a href="login.html" class="btn-nav" id="nav-login-es" style="font-size:13px;color:var(--c-muted)" data-es>Iniciar sesión</a>
+      <a href="login.html" class="btn-nav" id="nav-login-en" style="font-size:13px;color:var(--c-muted)" data-en>Log in</a>
+      <a href="register-type.html" class="btn-nav primary" id="nav-signup-es" data-es>Registro</a>
+      <a href="register-type.html" class="btn-nav primary" id="nav-signup-en" data-en>Sign up</a>
+    </span>
   </div>
 </nav>
 
@@ -676,97 +678,32 @@
 <div class="modal-overlay" id="login-required-modal" onclick="if(event.target===this) closeContactModals()">
   <div class="modal-card">
     <div class="modal-icon">🔒</div>
-    <div class="modal-title"><span data-es>Inicia sesión para contactar</span><span data-en>Log in to contact</span></div>
-    <p class="modal-desc"><span data-es>Contactar a personal individual requiere una cuenta de negocio, para que puedas dar seguimiento a tus solicitudes.</span><span data-en>Contacting individual workers requires a business account, so you can keep track of your requests.</span></p>
-    <a href="login.html" class="modal-btn-primary"><span data-es>Iniciar sesión / Crear cuenta →</span><span data-en>Log in / Create account →</span></a>
+    <div class="modal-title"><span data-es>Se requiere cuenta de empleador</span><span data-en>Employer account required</span></div>
+    <p class="modal-desc"><span data-es>Contactar a trabajadores individuales requiere una cuenta de empleador en AmigosNearMe.</span><span data-en>Contacting individual workers requires an employer account on AmigosNearMe.</span></p>
+    <a id="login-required-link" href="login.html?type=employer" class="modal-btn-primary"><span data-es>Iniciar sesión / Crear cuenta →</span><span data-en>Log in / Create account →</span></a>
     <button class="modal-btn-ghost" onclick="closeContactModals()"><span data-es>Cancelar</span><span data-en>Cancel</span></button>
   </div>
 </div>
 
-<!-- STAFFING CONTACT — BUY CONTACT PACKAGE MODAL -->
-<!-- Frontend simulation only. In production: powered by Braintree.
-     Supported: Card, Venmo, ACH, PayPal. Zelle is handled manually.
-     On successful payment, backend credits 5 contacts to this business account. -->
+<!-- NOT EMPLOYER — logged in but no employer account -->
+<div class="modal-overlay" id="not-employer-modal" onclick="if(event.target===this) closeContactModals()">
+  <div class="modal-card">
+    <div class="modal-icon">👔</div>
+    <div class="modal-title"><span data-es>Necesitas una cuenta de empleador</span><span data-en>You need an employer account</span></div>
+    <p class="modal-desc"><span data-es>Tu cuenta actual no es de empleador. Crea una cuenta de empleador para contactar trabajadores y gestionar tus créditos.</span><span data-en>Your current account is not an employer account. Create an employer account to contact workers and manage your credits.</span></p>
+    <a href="login.html?type=employer" class="modal-btn-primary"><span data-es>Crear cuenta de empleador →</span><span data-en>Create employer account →</span></a>
+    <button class="modal-btn-ghost" onclick="closeContactModals()"><span data-es>Cancelar</span><span data-en>Cancel</span></button>
+  </div>
+</div>
+
+<!-- STAFFING CONTACT — NO CREDITS MODAL -->
 <div class="modal-overlay" id="buy-contacts-modal" onclick="if(event.target===this) closeContactModals()">
   <div class="modal-card">
-    <div class="modal-icon">👷</div>
-    <div class="modal-title"><span data-es>Ya usaste tus contactos</span><span data-en>You're out of contacts</span></div>
-    <p class="modal-desc"><span data-es>Compra un paquete para seguir contactando personal disponible en AmigosNearMe.</span><span data-en>Buy a package to keep contacting workers available on AmigosNearMe.</span></p>
-
-    <div class="package-card">
-      <div class="package-price">$10</div>
-      <div class="package-detail"><span data-es>5 contactos · sin vencimiento · pago único</span><span data-en>5 contacts · no expiration · one-time purchase</span></div>
-    </div>
-
-    <!-- Payment method tabs -->
-    <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap">
-      <button class="pay-tab pkg-tab selected" onclick="switchPkgTab('card',this)" data-es>💳 Tarjeta</button>
-      <button class="pay-tab pkg-tab selected" onclick="switchPkgTab('card',this)" data-en>💳 Card</button>
-      <button class="pay-tab pkg-tab" onclick="switchPkgTab('venmo',this)">Venmo</button>
-      <button class="pay-tab pkg-tab" onclick="switchPkgTab('ach',this)">ACH</button>
-      <button class="pay-tab pkg-tab" onclick="switchPkgTab('zelle',this)">Zelle</button>
-    </div>
-
-    <!-- Card -->
-    <div id="pkg-panel-card">
-      <div class="modal-field" style="margin-bottom:10px">
-        <label class="modal-label"><span data-es>Número de tarjeta</span><span data-en>Card number</span></label>
-        <input class="modal-input" type="text" placeholder="4242 4242 4242 4242">
-      </div>
-      <div class="modal-row" style="margin-bottom:10px">
-        <div class="modal-field">
-          <label class="modal-label"><span data-es>Vencimiento</span><span data-en>Expiry</span></label>
-          <input class="modal-input" type="text" placeholder="MM/YY">
-        </div>
-        <div class="modal-field">
-          <label class="modal-label">CVC</label>
-          <input class="modal-input" type="text" placeholder="123">
-        </div>
-      </div>
-    </div>
-
-    <!-- Venmo -->
-    <div id="pkg-panel-venmo" style="display:none;text-align:center;padding:8px 0 12px">
-      <div style="font-size:28px;margin-bottom:6px">💜</div>
-      <p class="modal-desc" data-es>Serás redirigido a Venmo para completar el pago de $10 a través de Braintree.</p>
-      <p class="modal-desc" data-en>You'll be redirected to Venmo to complete the $10 payment through Braintree.</p>
-    </div>
-
-    <!-- ACH -->
-    <div id="pkg-panel-ach" style="display:none">
-      <div class="modal-field" style="margin-bottom:10px">
-        <label class="modal-label"><span data-es>Número de cuenta</span><span data-en>Account number</span></label>
-        <input class="modal-input" type="text" placeholder="000123456789">
-      </div>
-      <div class="modal-field" style="margin-bottom:10px">
-        <label class="modal-label"><span data-es>Número de ruta</span><span data-en>Routing number</span></label>
-        <input class="modal-input" type="text" placeholder="021000021">
-      </div>
-    </div>
-
-    <!-- Zelle manual -->
-    <div id="pkg-panel-zelle" style="display:none">
-      <div style="background:var(--c-amber-light);border-radius:var(--radius-md);padding:14px;margin-bottom:10px;border:0.5px solid rgba(186,117,23,0.2)">
-        <div style="font-size:13px;font-weight:600;margin-bottom:6px" data-es>📲 Pagar $10 con Zelle</div>
-        <div style="font-size:13px;font-weight:600;margin-bottom:6px" data-en>📲 Pay $10 with Zelle</div>
-        <ol style="font-size:12.5px;color:var(--c-text);line-height:1.8;padding-left:16px" data-es>
-          <li>Envía <strong>$10</strong> a <strong>pagos@amigosnearme.com</strong></li>
-          <li>Memo: <strong>Staffing 5 contactos</strong></li>
-          <li>Captura y envía a <strong>hola@amigosnearme.com</strong></li>
-        </ol>
-        <ol style="font-size:12.5px;color:var(--c-text);line-height:1.8;padding-left:16px" data-en>
-          <li>Send <strong>$10</strong> to <strong>pagos@amigosnearme.com</strong></li>
-          <li>Memo: <strong>Staffing 5 contacts</strong></li>
-          <li>Screenshot and email to <strong>hola@amigosnearme.com</strong></li>
-        </ol>
-      </div>
-      <p style="font-size:12px;color:var(--c-muted)" data-es>⏱ Tus 5 contactos serán activados en 24 horas hábiles.</p>
-      <p style="font-size:12px;color:var(--c-muted)" data-en>⏱ Your 5 contacts will be activated within 24 business hours.</p>
-    </div>
-
-    <button class="modal-btn-primary" id="pkg-pay-btn" onclick="simulatePurchaseAndContact()"><span data-es>Comprar y contactar →</span><span data-en>Buy & contact →</span></button>
+    <div class="modal-icon">🚫</div>
+    <div class="modal-title"><span data-es>Sin créditos disponibles</span><span data-en>No credits available</span></div>
+    <p class="modal-desc"><span data-es>Necesitas créditos para contactar trabajadores. Compra un paquete desde tu panel de empleador.</span><span data-en>You need credits to contact workers. Purchase a package from your employer dashboard.</span></p>
+    <a href="employer-dashboard.html" class="modal-btn-primary"><span data-es>Ir a comprar créditos →</span><span data-en>Go buy credits →</span></a>
     <button class="modal-btn-ghost" onclick="closeContactModals()"><span data-es>Cancelar</span><span data-en>Cancel</span></button>
-    <div class="modal-note"><span data-es>Tarjeta, Venmo y ACH: Braintree. Zelle: activación manual en 24h.</span><span data-en>Card, Venmo & ACH: Braintree. Zelle: manual activation within 24h.</span></div>
   </div>
 </div>
 
@@ -922,7 +859,10 @@ function buildBizObject(biz, reviews) {
     phone: biz.whatsapp_phone || '',
     phoneDisplay: biz.whatsapp_phone || '',
     public_email: biz.public_email || '',
-    business_name: biz.business_name || ''
+    business_name: biz.business_name || '',
+    plan: biz.plan || 'free',
+    contacts_used_month: biz.contacts_used_month || 0,
+    isWorker: !!biz.is_worker
   };
 }
 
@@ -982,6 +922,14 @@ async function loadBusiness() {
     b = buildBizObject(bizRes.data, reviewsRes.data || []);
     b.id = id;
     window.currentBusiness = b;
+    // page_views 기록 (§5.2 — fire-and-forget)
+    getSession().then(function(sess) {
+      var viewerId = (sess && sess.user) ? sess.user.id : null;
+      getSupabase().from('page_views').insert({ biz_id: id, viewer_id: viewerId })
+        .then(function(vRes) {
+          if (vRes.error) console.warn('[page_views] insert error:', vRes.error.message);
+        });
+    });
   } catch(e) {
     console.error('[AmigosNearMe] loadBusiness error:', e);
     showNotFound();
@@ -1211,25 +1159,23 @@ function toggleQuote() {
   var f = document.getElementById('quote-form');
   f.classList.toggle('open');
 }
-/* ===== REVIEW ELIGIBILITY — CONTACT-GATED =====
-   FRONTEND-ONLY SIMULATION. In production this check is server-side:
-   the backend verifies that a contact_log row exists for this
-   (session/user, business_id) pair before allowing a review submission.
-   localStorage here stands in for that DB lookup. */
-function recordContactForReview(bizId) {
-  // Called whenever a customer successfully sends a WhatsApp message or
-  // submits the fallback form. Records eligibility to review this business.
-  try {
-    var key = 'anm-contacted-' + bizId;
-    localStorage.setItem(key, '1');
-  } catch(e) {}
-}
-function hasContactedBusiness(bizId) {
-  try { return localStorage.getItem('anm-contacted-' + bizId) === '1'; }
-  catch(e) { return false; }
+/* ===== REVIEW ELIGIBILITY — CONTACT-GATED ===== */
+function logContact(bizId, channel, limitHit) {
+  if (!bizId) return;
+  getSession().then(function(sess) {
+    var customerId = (sess && sess.user) ? sess.user.id : null;
+    getSupabase().from('contact_log').insert({
+      biz_id:    bizId,
+      customer_id:  customerId,
+      channel:   channel,
+      limit_hit: !!limitHit
+    }).then(function(res) {
+      if (res.error) console.warn('[logContact] error:', res.error.message);
+    });
+  });
 }
 
-function toggleReviewForm() {
+async function toggleReviewForm() {
   var bizId = (window.currentBusiness && window.currentBusiness.id) ? window.currentBusiness.id : 'unknown';
   var form  = document.getElementById('review-form');
   var gate  = document.getElementById('review-gate');
@@ -1241,13 +1187,23 @@ function toggleReviewForm() {
     return;
   }
 
-  if (hasContactedBusiness(bizId)) {
-    // Eligible — customer has previously contacted this business
+  var sess = await getSession();
+  var eligible = false;
+  if (sess && sess.user && bizId !== 'unknown') {
+    var eligRes = await getSupabase()
+      .from('contact_log')
+      .select('id', { count: 'exact', head: true })
+      .eq('biz_id', bizId)
+      .eq('customer_id', sess.user.id)
+      .eq('limit_hit', false);
+    eligible = !eligRes.error && (eligRes.count || 0) > 0;
+  }
+
+  if (eligible) {
     gate.style.display = 'none';
     form.style.display = 'block';
     form.scrollIntoView({ behavior: 'smooth', block: 'center' });
   } else {
-    // Not eligible — show the gate message instead
     form.style.display = 'none';
     gate.style.display = 'block';
     gate.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1268,72 +1224,64 @@ function submitQuote() {
   var parts = value.split('|');
   var serviceLabel = isEn ? parts[1] : parts[0];
 
-  // Track the click with explicit intent + service category BEFORE leaving the platform.
-  // This is what dashboard.html's "quote requests" counter and analytics are based on —
-  // not every WhatsApp click, only ones where the customer explicitly chose "Request a quote"
-  // and selected a service.
+  var bizId    = window.currentBusiness ? window.currentBusiness.id : null;
+  var bizEmail = window.currentBusiness ? window.currentBusiness.public_email : null;
+  var bizName  = window.currentBusiness ? window.currentBusiness.business_name : '';
+  var plan     = window.currentBusiness ? (window.currentBusiness.plan || 'free') : 'free';
+  var planName = plan.charAt(0).toUpperCase() + plan.slice(1);
+  var used     = window.currentBusiness ? (window.currentBusiness.contacts_used_month || 0) : 0;
+  var PLAN_LIMITS = { free: 3, basic: 10, premium: Infinity };
+  var limit = PLAN_LIMITS[plan.toLowerCase()] !== undefined ? PLAN_LIMITS[plan.toLowerCase()] : Infinity;
 
-  // Check monthly request limit for this business.
-  var bizId = (window.currentBusiness && window.currentBusiness.id) ? window.currentBusiness.id : 'unknown';
-  var bizEmail = (window.currentBusiness && window.currentBusiness.public_email) ? window.currentBusiness.public_email : null;
-  var bizName  = (window.currentBusiness && window.currentBusiness.business_name) ? window.currentBusiness.business_name : '';
-  if (!checkRequestLimit(bizId)) {
-    // SB12: 한도 초과로 차단됨 — 업체에 알림
+  // [1] 한도 확인 (DB 기반 — window.currentBusiness는 페이지 로드 시 DB에서 가져온 값)
+  if (used >= limit) {
     if (bizEmail) sendEmail('SB12', bizEmail, { biz_name: bizName }, bizId);
-    // SB13: 차단된 고객에게 알림 (로그인 사용자에게만)
     getSession().then(function(sess) {
+      var customerId = (sess && sess.user) ? sess.user.id : null;
       if (sess && sess.user && sess.user.email) {
         sendEmail('SB13', sess.user.email, { biz_name: bizName });
+      }
+      if (bizId) {
+        getSupabase().from('contact_log').insert({ biz_id: bizId, customer_id: customerId, channel: 'whatsapp', limit_hit: true })
+          .then(function(r){ if (r.error) console.warn('[contact_log whatsapp limit] error:', r.error.message); });
       }
     });
     showLimitReachedMessage();
     return;
   }
-  incrementRequestCount(bizId);
 
-  // SB8/SB9: 한도 임박·소진 알림 — 업체에 이메일
-  var limitNotif = checkLimitNotification(bizId);
-  if (limitNotif && bizEmail) {
-    sendEmail(limitNotif, bizEmail, { biz_name: bizName }, bizId);
-  }
-
-  // SB6: WhatsApp 문의 수신 — 업체에 이메일
-  if (bizEmail) sendEmail('SB6', bizEmail, { biz_name: bizName, service: serviceLabel });
-  trackContact('quote_request', serviceLabel);
-
-  // Mark this customer as having contacted this business — unlocks review eligibility.
-  recordContactForReview(bizId);
-
+  // [2] WhatsApp 창 열기 — 카운트 기준 시점 (사용자 제스처 직전, §4.2)
+  var phone = (window.currentBusiness && window.currentBusiness.phone) ? window.currentBusiness.phone.replace(/\D/g, '') : '';
   var msgEs = 'Hola, vi su perfil en AmigosNearMe y quisiera un presupuesto para: ' + parts[0] + '.';
   var msgEn = 'Hi, I saw your profile on AmigosNearMe and would like a quote for: ' + parts[1] + '.';
-  var msg = isEn ? msgEn : msgEs;
-  var phone = (window.currentBusiness && window.currentBusiness.phone) ? window.currentBusiness.phone.replace('+', '') : '17865550192';
-  var waUrl = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg);
+  var waUrl = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(isEn ? msgEn : msgEs);
   window.open(waUrl, '_blank');
+
+  // [3] DB 카운트 증가 (창 열린 후, fire-and-forget)
+  if (bizId) {
+    getSupabase().rpc('increment_contact_count', { p_biz_id: bizId }).then(function(res) {
+      if (res.error) console.warn('[submitQuote] increment error:', res.error.message);
+    });
+  }
+
+  // 세션 내 재요청 방지용 메모리 업데이트
+  if (window.currentBusiness) window.currentBusiness.contacts_used_month = used + 1;
+  var remaining = isFinite(limit) ? limit - (used + 1) : Infinity;
+
+  // [4] SB8/SB9: 한도 근접·소진 알림 (업체에)
+  if (bizEmail) {
+    if (remaining === 0) sendEmail('SB9', bizEmail, { biz_name: bizName, plan: planName }, bizId);
+    else if (remaining === 1) sendEmail('SB8', bizEmail, { biz_name: bizName, plan: planName, remaining: '1' }, bizId);
+  }
+
+  // [5] SB6: WhatsApp 문의 수신 알림 (업체에)
+  if (bizEmail) sendEmail('SB6', bizEmail, { biz_name: bizName, service: serviceLabel });
+
+  logContact(bizId, 'whatsapp', false);
 }
 // Worker profiles skip service selection entirely — a worker usually offers one type of
 // labor already described on their profile, so asking "which service?" is redundant friction.
 // One click opens WhatsApp with a simple "I saw your profile and want to hire you" message.
-/* ===== STAFFING CONTACT PAYMENT SIMULATION =====
-   FRONTEND-ONLY SIMULATION. No real authentication or payment happens here.
-   Backend spec (see project notes): charge fires when a business clicks "Contact"
-   on an individual worker's profile. Package = $10 for 5 contacts, one-time
-   purchase (not a subscription), no expiration. Browsing and viewing profiles
-   stays free and login-free; login is only required at the contact step.
-   localStorage below stands in for: (1) a real auth/session check, and
-   (2) a real per-account contact-balance column in the database. */
-function isSimulatedLoggedIn() {
-  try { return localStorage.getItem('anm-sim-logged-in') === '1'; } catch(e) { return false; }
-}
-function getSimulatedContactBalance() {
-  try {
-    var v = localStorage.getItem('anm-sim-contact-balance');
-    return v === null ? 0 : parseInt(v, 10);
-  } catch(e) { return 0; }
-}
-function setSimulatedContactBalance(n) {
-  try { localStorage.setItem('anm-sim-contact-balance', String(n)); } catch(e) {}
-}
 function showToast(msg) {
   var t = document.getElementById('contact-toast');
   if (!t) return;
@@ -1341,21 +1289,6 @@ function showToast(msg) {
   t.classList.add('show');
   setTimeout(function() { t.classList.remove('show'); }, 2600);
 }
-function switchPkgTab(method, btn) {
-  document.querySelectorAll('.pkg-tab').forEach(function(t){ t.classList.remove('selected'); });
-  document.querySelectorAll('.pkg-tab').forEach(function(t){
-    if (t.getAttribute('onclick') && t.getAttribute('onclick').includes("'" + method + "'")) {
-      t.classList.add('selected');
-    }
-  });
-  ['card','venmo','ach','zelle'].forEach(function(m){
-    var p = document.getElementById('pkg-panel-' + m);
-    if (p) p.style.display = m === method ? 'block' : 'none';
-  });
-  var payBtn = document.getElementById('pkg-pay-btn');
-  if (payBtn) payBtn.style.display = method === 'zelle' ? 'none' : 'block';
-}
-
 // ── SAVE BUSINESS ───────────────────────────────────────────
 function getSavedBusinesses() {
   try { return JSON.parse(localStorage.getItem('anm-saved-businesses') || '[]'); } catch(e) { return []; }
@@ -1405,11 +1338,12 @@ function toggleSaveBusiness() {
 
   if (idx === -1) {
     // Save it
+    var isEn2 = document.body.classList.contains('en');
     saved.push({
       id: b.id,
-      name: b.tradeName || b.legalName || b.id,
-      category: b.category || '',
-      area: (b.area && b.area[0]) || '',
+      name: b.name || b.legalName || b.id,
+      category: isEn2 ? (b.catEn || '') : (b.catEs || ''),
+      area: '',
       phone: b.phone || '',
       savedAt: Date.now()
     });
@@ -1447,55 +1381,76 @@ function openContactModal(id) {
   if (m) m.classList.add('open');
 }
 function closeContactModals() {
-  document.getElementById('login-required-modal').classList.remove('open');
-  document.getElementById('buy-contacts-modal').classList.remove('open');
+  ['login-required-modal','not-employer-modal','buy-contacts-modal'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.classList.remove('open');
+  });
 }
 
-function submitWorkerContact() {
-  // Step 1: must be logged in (as a business account) to contact individual workers.
-  if (!isSimulatedLoggedIn()) {
-    // Remember which profile they were trying to contact, so login.html can send
-    // them straight back here instead of dropping them on a generic dashboard.
-    // Also set a flag so profile.html knows to auto-trigger the contact flow on return.
+async function submitWorkerContact() {
+  var isEn = document.body.classList.contains('en');
+
+  // [1] Real session check
+  var sess = await getSession();
+  if (!sess || !sess.user) {
     try {
       sessionStorage.setItem('anm-contact-redirect', window.location.href);
       sessionStorage.setItem('anm-contact-intent', '1');
     } catch(e) {}
+    // Pre-set return URL on the login link
+    var link = document.getElementById('login-required-link');
+    if (link) link.href = 'login.html?type=employer&redirect=' + encodeURIComponent(window.location.href);
     openContactModal('login-required-modal');
     return;
   }
-  // Step 2: must have at least 1 contact remaining in the current package.
-  if (getSimulatedContactBalance() <= 0) {
+
+  // [2] Employer account check
+  var sb = getSupabase();
+  var epRes = await sb.from('employer_profiles')
+    .select('credit_balance')
+    .eq('owner_id', sess.user.id)
+    .maybeSingle();
+  if (epRes.error || !epRes.data) {
+    openContactModal('not-employer-modal');
+    return;
+  }
+
+  var credits = epRes.data.credit_balance;
+
+  // [3] Credits check
+  if (credits <= 0) {
     openContactModal('buy-contacts-modal');
     return;
   }
-  // Step 3: spend 1 contact and proceed.
-  setSimulatedContactBalance(getSimulatedContactBalance() - 1);
-  var isEn = document.body.classList.contains('en');
-  showToast(isEn
-    ? '1 contact used · ' + getSimulatedContactBalance() + ' remaining'
-    : '1 contacto usado · ' + getSimulatedContactBalance() + ' restantes');
-  openWorkerWhatsApp();
-}
 
-function simulatePurchaseAndContact() {
-  // FRONTEND SIMULATION: in production this calls the payment gateway with a real
-  // $10 charge, and only credits the 5 contacts after the charge succeeds.
-  setSimulatedContactBalance(getSimulatedContactBalance() + 5);
-  closeContactModals();
-  setSimulatedContactBalance(getSimulatedContactBalance() - 1); // spend 1 immediately to complete this contact
-  var isEn = document.body.classList.contains('en');
+  // [4] Deduct 1 credit (atomic RPC)
+  var deductRes = await sb.rpc('decrement_employer_credit', { p_employer_id: sess.user.id });
+  if (deductRes.error) {
+    showToast(isEn ? '❌ Error processing credit. Please try again.' : '❌ Error al procesar crédito. Intenta de nuevo.');
+    return;
+  }
+
+  // [5] Log contact
+  var bizId = window.currentBusiness ? window.currentBusiness.id : null;
+  if (bizId) {
+    sb.from('contact_log').insert({
+      biz_id:   bizId,
+      customer_id: sess.user.id,
+      channel:  'whatsapp',
+      limit_hit: false
+    }).then(function(r) { if (r.error) console.warn('[contact_log worker]', r.error.message); });
+  }
+
+  // [6] Open WhatsApp
+  var remaining = credits - 1;
   showToast(isEn
-    ? '✓ Package purchased · ' + getSimulatedContactBalance() + ' contacts remaining'
-    : '✓ Paquete comprado · ' + getSimulatedContactBalance() + ' contactos restantes');
+    ? '✅ 1 credit used · ' + remaining + ' remaining'
+    : '✅ 1 crédito usado · ' + remaining + ' restantes');
   openWorkerWhatsApp();
 }
 
 function openWorkerWhatsApp() {
   trackContact('worker_contact', '');
-  // Record contact so this customer could leave feedback in the future.
-  var bizId = (window.currentBusiness && window.currentBusiness.id) ? window.currentBusiness.id : 'unknown';
-  recordContactForReview(bizId);
   var isEn = document.body.classList.contains('en');
   var name = (window.currentBusiness && window.currentBusiness.name) ? window.currentBusiness.name : '';
   var msgEs = 'Hola ' + name + ', vi tu perfil en AmigosNearMe y me gustaría contratarte. ¿Estás disponible?';
@@ -1510,57 +1465,13 @@ function openWorkerWhatsApp() {
    - Limits enforced server-side: Free=3 requests/month, Basic=10/month, Premium=unlimited.
    - Counter resets on the 1st of each month (cron job or DB-level date comparison).
    - When a business hits their limit, the "Request a quote" button is disabled on their
-     profile, and the business owner receives an email/WhatsApp notification.
-   - localStorage below stands in for a real per-business monthly request counter in the DB.
-   - The business's plan is read from the same 'anm-sim-plan' key used by dashboard.html,
-     so switching plans in the dashboard is immediately reflected here too. */
-// null = unlimited
-// notify_remaining: 이 수치 이하로 남으면 SB8 알림 트리거
-var REQUEST_LIMITS = {
-  free:    { limit: 3,    notify_remaining: 1 },
-  basic:   { limit: 10,   notify_remaining: 3 },
-  premium: { limit: null, notify_remaining: null }
-};
-
-function getRequestKey(bizId) {
-  var month = new Date().toISOString().slice(0, 7);
-  return 'anm-sim-req-' + bizId + '-' + month;
-}
-function getRequestCount(bizId) {
-  try { var v = localStorage.getItem(getRequestKey(bizId)); return v ? parseInt(v, 10) : 0; }
-  catch(e) { return 0; }
-}
-function incrementRequestCount(bizId) {
-  try { localStorage.setItem(getRequestKey(bizId), String(getRequestCount(bizId) + 1)); }
-  catch(e) {}
-}
-function getBizPlan() {
-  try { return localStorage.getItem('anm-sim-plan') || 'free'; }
-  catch(e) { return 'free'; }
-}
-function checkRequestLimit(bizId) {
-  var cfg = REQUEST_LIMITS[getBizPlan()];
-  if (!cfg || cfg.limit === null) return true;
-  return getRequestCount(bizId) < cfg.limit;
-}
-// SB8/SB9 판별: 연락 1건 추가 후 호출 — 알림 필요 여부 반환
-// 반환값: 'sb8' | 'sb9' | null
-function checkLimitNotification(bizId) {
-  var plan = getBizPlan();
-  var cfg = REQUEST_LIMITS[plan];
-  if (!cfg || cfg.limit === null) return null;
-  var used = getRequestCount(bizId);
-  var remaining = cfg.limit - used;
-  if (remaining === 0) return 'sb9';                        // 한도 100% 소진
-  if (remaining === cfg.notify_remaining) return 'sb8';    // Free:1개 남음 / Basic:3개 남음
-  return null;
-}
+     profile, and the business owner receives an email/WhatsApp notification. */
 function showLimitReachedMessage() {
   var isEn = document.body.classList.contains('en');
-  var plan = getBizPlan();
+  var plan = window.currentBusiness ? (window.currentBusiness.plan || 'free') : 'free';
   var planName = plan.charAt(0).toUpperCase() + plan.slice(1);
   var limits = { free: 3, basic: 10 };
-  var limit = limits[plan] || 0;
+  var limit = limits[plan.toLowerCase()] || 0;
   var msg = isEn
     ? 'This business has reached its ' + limit + ' request limit for this month (' + planName + ' plan). They may upgrade to receive more.'
     : 'Este negocio alcanzó su límite de ' + limit + ' solicitudes del mes (plan ' + planName + '). Puede actualizar su plan para recibir más.';
@@ -1580,7 +1491,7 @@ function trackContact(type, serviceLabel) {
   var bizId = (window.currentBusiness && window.currentBusiness.id) ? window.currentBusiness.id : null;
   if (!bizId) return;
   try {
-    getSupabase().rpc('increment_contact_count', { biz_id: bizId }).then(function(res) {
+    getSupabase().rpc('increment_contact_count', { p_biz_id: bizId }).then(function(res) {
       if (res.error) console.warn('[trackContact] RPC error:', res.error.message);
     });
   } catch(e) { console.warn('[trackContact] error:', e); }
@@ -1608,38 +1519,57 @@ function submitFallback() {
   }
   document.getElementById('err-fallback').classList.remove('show');
 
-  // Check monthly request limit for this business before accepting the fallback form submission.
-  var bizId   = (window.currentBusiness && window.currentBusiness.id)           ? window.currentBusiness.id           : 'unknown';
-  var bizEmail = (window.currentBusiness && window.currentBusiness.public_email) ? window.currentBusiness.public_email : null;
-  var bizName  = (window.currentBusiness && window.currentBusiness.business_name)? window.currentBusiness.business_name: '';
-  if (!checkRequestLimit(bizId)) {
+  var bizId    = window.currentBusiness ? window.currentBusiness.id : null;
+  var bizEmail = window.currentBusiness ? window.currentBusiness.public_email : null;
+  var bizName  = window.currentBusiness ? window.currentBusiness.business_name : '';
+  var plan     = window.currentBusiness ? (window.currentBusiness.plan || 'free') : 'free';
+  var planName = plan.charAt(0).toUpperCase() + plan.slice(1);
+  var used     = window.currentBusiness ? (window.currentBusiness.contacts_used_month || 0) : 0;
+  var PLAN_LIMITS = { free: 3, basic: 10, premium: Infinity };
+  var limit = PLAN_LIMITS[plan.toLowerCase()] !== undefined ? PLAN_LIMITS[plan.toLowerCase()] : Infinity;
+
+  // [1] 한도 확인 (DB 기반)
+  if (used >= limit) {
     if (bizEmail) sendEmail('SB12', bizEmail, { biz_name: bizName }, bizId);
     getSession().then(function(sess) {
+      var customerId = (sess && sess.user) ? sess.user.id : null;
       if (sess && sess.user && sess.user.email) {
         sendEmail('SB13', sess.user.email, { biz_name: bizName });
+      }
+      if (bizId) {
+        getSupabase().from('contact_log').insert({ biz_id: bizId, customer_id: customerId, channel: 'form', limit_hit: true })
+          .then(function(r){ if (r.error) console.warn('[contact_log form limit] error:', r.error.message); });
       }
     });
     showLimitReachedMessage();
     return;
   }
-  incrementRequestCount(bizId);
-
-  // SB8/SB9: 한도 임박·소진 알림 — 업체에 이메일
-  var limitNotif = checkLimitNotification(bizId);
-  if (limitNotif && bizEmail) {
-    sendEmail(limitNotif, bizEmail, { biz_name: bizName }, bizId);
-  }
-
-  // Mark this customer as having contacted this business — unlocks review eligibility.
-  recordContactForReview(bizId);
 
   var isEn = document.body.classList.contains('en');
   var parts = service.value.split('|');
   var serviceLabel = isEn ? parts[1] : parts[0];
 
-  // SB7: 폼 문의 수신 — 업체에 이메일 (고객 이름·연락처 포함)
+  // [2] SB7: 폼 문의 수신 알림 (업체에) — 폼 제출이 카운트 기준 시점
   if (bizEmail) sendEmail('SB7', bizEmail, { biz_name: bizName, customer_name: name.value.trim(), customer_phone: phone.value.trim(), service: serviceLabel });
-  trackContact('quote_request_fallback', serviceLabel);
+
+  // [3] DB 카운트 증가 (폼 제출 후, fire-and-forget)
+  if (bizId) {
+    getSupabase().rpc('increment_contact_count', { p_biz_id: bizId }).then(function(res) {
+      if (res.error) console.warn('[submitFallback] increment error:', res.error.message);
+    });
+  }
+
+  // 세션 내 재요청 방지용 메모리 업데이트
+  if (window.currentBusiness) window.currentBusiness.contacts_used_month = used + 1;
+  var remaining = isFinite(limit) ? limit - (used + 1) : Infinity;
+
+  // [4] SB8/SB9: 한도 근접·소진 알림 (업체에)
+  if (bizEmail) {
+    if (remaining === 0) sendEmail('SB9', bizEmail, { biz_name: bizName, plan: planName }, bizId);
+    else if (remaining === 1) sendEmail('SB8', bizEmail, { biz_name: bizName, plan: planName, remaining: '1' }, bizId);
+  }
+
+  logContact(bizId, 'form', false);
 
   document.getElementById('fallback-success').classList.add('show');
   setTimeout(function() {
@@ -1672,6 +1602,19 @@ async function submitReview() {
     }
 
     var sb = getSupabase();
+    // contact_log 자격 확인 (§5.3) — 실제로 연락한 고객만 리뷰 가능
+    var eligRes = await sb.from('contact_log')
+      .select('id', { count: 'exact', head: true })
+      .eq('biz_id', bizId)
+      .eq('customer_id', session.user.id)
+      .eq('limit_hit', false);
+    if (eligRes.error || (eligRes.count || 0) === 0) {
+      alert(document.body.classList.contains('en')
+        ? 'You can only review businesses you have contacted.'
+        : 'Solo puedes reseñar negocios con los que te has contactado.');
+      return;
+    }
+
     var { error } = await sb.from('reviews').upsert({
       biz_id:      bizId,
       reviewer_id: session.user.id,
@@ -1736,6 +1679,27 @@ document.addEventListener('DOMContentLoaded', function() {
     // Small delay to let loadBusiness() finish rendering before triggering the modal
     setTimeout(function() { submitWorkerContact(); }, 400);
   }
+
+  // 로그인 상태에 따라 nav 교체
+  getSession().then(async function(sess) {
+    var authArea = document.getElementById('nav-auth-area');
+    if (!authArea || !sess || !sess.user) return;
+    var isEn = document.body.classList.contains('en');
+    var utype = (sess.user.user_metadata && sess.user.user_metadata.user_type) || '';
+    var dashHref = utype === 'employer' ? 'employer-dashboard.html'
+                 : utype === 'business' ? 'dashboard.html'
+                 : 'index.html';
+    if (utype === 'worker') {
+      try { var wb = await getMyBusiness(); if (wb && wb.id) dashHref = 'worker-profile.html?id=' + wb.id; } catch(e) {}
+    }
+    authArea.innerHTML =
+      '<a href="' + dashHref + '" class="btn-nav" style="font-size:13px;color:var(--c-muted)">' +
+        (isEn ? 'My Account' : 'Mi Cuenta') +
+      '</a>' +
+      '<button onclick="(async function(){try{await signOut();}catch(e){}window.location.href=\'index.html\';})()" class="btn-nav" style="font-size:13px;color:var(--c-muted);background:none;border:none;cursor:pointer">' +
+        (isEn ? 'Log out' : 'Cerrar sesión') +
+      '</button>';
+  });
 });
 </script>
 </body>

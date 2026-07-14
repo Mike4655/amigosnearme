@@ -254,6 +254,13 @@
     <div class="sb-section" style="margin-top:8px" data-en>Account</div>
     <a class="sb-link" onclick="showPane('plan')"><span class="icon">💳</span> <span data-es>Mi plan</span><span data-en>My plan</span></a>
     <a class="sb-link" onclick="showPane('settings')"><span class="icon">⚙️</span> <span data-es>Configuración</span><span data-en>Settings</span></a>
+
+    <!-- B안: Business 계정일 때만 JS로 표시 -->
+    <div id="hire-workers-section" style="display:none">
+      <div class="sb-section" style="margin-top:8px" data-es>Empleador</div>
+      <div class="sb-section" style="margin-top:8px" data-en>Employer</div>
+      <a class="sb-link" href="employer-dashboard.html"><span class="icon">🏗️</span> <span data-es>Contratar trabajadores</span><span data-en>Hire Workers</span></a>
+    </div>
   </nav>
   <div class="sb-footer">
     <a href="profile.html" data-es>👁 Ver mi perfil público</a>
@@ -299,13 +306,9 @@
 
       <!-- Metrics -->
       <div class="metrics">
-        <div class="metric" onclick="showPane('analytics')">
-          <div class="metric-label">👁 <span data-es>Vistas al perfil</span><span data-en>Profile views</span></div>
-          <div class="metric-val" id="stat-views">—</div>
-          <div class="metric-delta" style="color:var(--c-muted)" id="stat-views-sub">—</div>
-        </div>
+
         <div class="metric" onclick="showPane('inquiries')">
-          <div class="metric-label">💬 <span data-es>Solicitudes</span><span data-en>Inquiries</span></div>
+          <div class="metric-label">💬 <span data-es>Solicitudes (Form)</span><span data-en>Form inquiries</span></div>
           <div class="metric-val" id="stat-contacts">—</div>
           <div class="metric-delta" style="color:var(--c-muted)" id="stat-contacts-sub">—</div>
         </div>
@@ -321,27 +324,6 @@
         </div>
       </div>
 
-      <!-- Views sparkline + Inquiries -->
-      <div class="grid-3">
-        <div class="card">
-          <div class="card-title">
-            <span data-es>Vistas — últimos 7 días</span><span data-en>Views — last 7 days</span>
-          </div>
-          <div style="text-align:center;padding:20px;color:var(--c-hint);font-size:13px" id="sparkline">
-            <span data-es>Sin datos aún. Las vistas se registrarán cuando clientes vean tu perfil.</span>
-            <span data-en>No data yet. Views will be tracked when customers see your profile.</span>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">
-            <span data-es>Fuente de visitas</span><span data-en>Traffic source</span>
-          </div>
-          <div style="text-align:center;padding:20px;color:var(--c-hint);font-size:13px">
-            <span data-es>Disponible próximamente</span><span data-en>Coming soon</span>
-          </div>
-        </div>
-      </div>
 
       <!-- Inquiries + Profile completeness -->
       <div class="grid-2">
@@ -454,15 +436,51 @@
 
     <!-- ══ ANALYTICS PANE ══ -->
     <div id="pane-analytics" style="display:none">
-      <div class="card">
-        <div style="text-align:center;padding:40px 24px;color:var(--c-hint)">
-          <div style="font-size:40px;margin-bottom:14px">📈</div>
-          <div style="font-size:15px;font-weight:500;color:var(--c-text);margin-bottom:8px" data-es>Analytics próximamente</div>
-          <div style="font-size:15px;font-weight:500;color:var(--c-text);margin-bottom:8px" data-en>Analytics coming soon</div>
-          <div style="font-size:13px" data-es>Las estadísticas detalladas estarán disponibles en una próxima actualización.</div>
-          <div style="font-size:13px" data-en>Detailed analytics will be available in an upcoming update.</div>
+
+      <!-- 이번 달 요약 -->
+      <div class="card" style="margin-bottom:16px">
+        <div style="font-size:12px;font-weight:600;color:var(--c-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:14px">
+          <span data-es>Este mes</span><span data-en>This month</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+          <div style="text-align:center;padding:14px 8px;background:var(--c-bg);border-radius:var(--radius-sm)">
+            <div style="font-size:22px;font-weight:700;color:var(--c-text)" id="anl-wa-month">—</div>
+            <div style="font-size:11px;color:var(--c-muted);margin-top:3px">📱 WhatsApp</div>
+          </div>
+          <div style="text-align:center;padding:14px 8px;background:var(--c-bg);border-radius:var(--radius-sm)">
+            <div style="font-size:22px;font-weight:700;color:var(--c-text)" id="anl-fm-month">—</div>
+            <div style="font-size:11px;color:var(--c-muted);margin-top:3px">
+              <span data-es>📋 Formulario</span><span data-en>📋 Form Inquiry</span>
+            </div>
+          </div>
+          <div style="text-align:center;padding:14px 8px;background:var(--c-bg);border-radius:var(--radius-sm)">
+            <div style="font-size:22px;font-weight:700;color:var(--c-text)" id="anl-total-month">—</div>
+            <div style="font-size:11px;color:var(--c-muted);margin-top:3px">
+              <span data-es>📊 Total</span><span data-en>📊 Total</span>
+            </div>
+          </div>
+        </div>
+        <!-- Plan 한도 프로그레스 바 -->
+        <div style="margin-top:16px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--c-muted);margin-bottom:6px">
+            <span data-es>Uso del plan</span><span data-en>Plan usage</span>
+            <span id="anl-plan-label">—</span>
+          </div>
+          <div style="background:var(--c-border);border-radius:99px;height:6px;overflow:hidden">
+            <div id="anl-plan-bar" style="height:100%;border-radius:99px;background:var(--c-accent);width:0%;transition:width .4s"></div>
+          </div>
         </div>
       </div>
+
+      <!-- 최근 6개월 월별 추이 -->
+      <div class="card">
+        <div style="font-size:12px;font-weight:600;color:var(--c-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:14px">
+          <span data-es>Últimos 6 meses</span><span data-en>Last 6 months</span>
+        </div>
+        <div id="anl-chart" style="display:flex;align-items:flex-end;gap:8px;height:120px;padding-bottom:20px;position:relative"></div>
+        <div id="anl-chart-labels" style="display:flex;gap:8px;margin-top:4px"></div>
+      </div>
+
     </div>
 
     <!-- ══ PLAN PANE ══ -->
@@ -470,26 +488,64 @@
       <div class="card" style="margin-bottom:16px;background:var(--c-green-light);border-color:rgba(29,158,117,0.2)">
         <div style="font-size:13px;color:var(--c-green)" id="current-plan-summary-es" data-es>✅ Plan actual: <strong>Free $0/mes</strong></div>
         <div style="font-size:13px;color:var(--c-green)" id="current-plan-summary-en" data-en>✅ Current plan: <strong>Free $0/mo</strong></div>
+        <div id="pending-downgrade-notice" style="display:none;margin-top:10px;font-size:12px;color:var(--c-muted);padding:8px 10px;background:rgba(245,158,11,0.08);border-radius:8px;border:1px solid rgba(245,158,11,0.25)"></div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px" id="plan-cards-grid">
-        <div style="border:0.5px solid var(--c-border);border-radius:var(--radius-lg);padding:20px;background:var(--c-surface)" id="plan-card-free">
+
+        <!-- Free -->
+        <div style="border:0.5px solid var(--c-border);border-radius:var(--radius-lg);padding:20px;background:var(--c-surface);display:flex;flex-direction:column" id="plan-card-free">
           <div style="font-size:13px;font-weight:600;color:var(--c-muted);margin-bottom:4px">Free</div>
           <div style="font-size:24px;font-weight:500;margin-bottom:12px">$0<span style="font-size:13px;color:var(--c-muted)" data-es>/mes</span><span style="font-size:13px;color:var(--c-muted)" data-en>/mo</span></div>
           <button class="btn-sm" style="width:100%" onclick="switchToPlan('free')" id="plan-btn-free-es" data-es>Cambiar a Free</button>
           <button class="btn-sm" style="width:100%" onclick="switchToPlan('free')" id="plan-btn-free-en" data-en>Switch to Free</button>
+          <ul style="margin:14px 0 0;padding:0;list-style:none;font-size:12px;color:var(--c-muted);display:flex;flex-direction:column;gap:6px">
+            <li data-es>✓ 3 contactos de clientes/mes</li>
+            <li data-en>✓ 3 customer contacts/mo</li>
+            <li data-es>✓ Perfil público</li>
+            <li data-en>✓ Public profile</li>
+            <li data-es>✓ Reseñas de clientes</li>
+            <li data-en>✓ Customer reviews</li>
+            <li data-es style="color:var(--c-border)">✗ Sin insignia de plan</li>
+            <li data-en style="color:var(--c-border)">✗ No plan badge</li>
+          </ul>
         </div>
-        <div style="border:0.5px solid var(--c-border);border-radius:var(--radius-lg);padding:20px;background:var(--c-surface)" id="plan-card-basic">
+
+        <!-- Basic -->
+        <div style="border:0.5px solid var(--c-border);border-radius:var(--radius-lg);padding:20px;background:var(--c-surface);display:flex;flex-direction:column" id="plan-card-basic">
           <div style="font-size:13px;font-weight:600;color:var(--c-muted);margin-bottom:4px">Basic</div>
           <div style="font-size:24px;font-weight:500;margin-bottom:12px">$29<span style="font-size:13px;color:var(--c-muted)" data-es>/mes</span><span style="font-size:13px;color:var(--c-muted)" data-en>/mo</span></div>
           <button class="btn-sm primary" style="width:100%" onclick="switchToPlan('basic')" id="plan-btn-basic-es" data-es>Actualizar →</button>
           <button class="btn-sm primary" style="width:100%" onclick="switchToPlan('basic')" id="plan-btn-basic-en" data-en>Upgrade →</button>
+          <ul style="margin:14px 0 0;padding:0;list-style:none;font-size:12px;color:var(--c-muted);display:flex;flex-direction:column;gap:6px">
+            <li data-es>✓ 10 contactos de clientes/mes</li>
+            <li data-en>✓ 10 customer contacts/mo</li>
+            <li data-es>✓ Insignia ⭐ Basic en tu perfil</li>
+            <li data-en>✓ ⭐ Basic badge on your profile</li>
+            <li data-es>✓ Perfil público</li>
+            <li data-en>✓ Public profile</li>
+            <li data-es>✓ Reseñas de clientes</li>
+            <li data-en>✓ Customer reviews</li>
+          </ul>
         </div>
-        <div style="border:0.5px solid var(--c-border);border-radius:var(--radius-lg);padding:20px;background:var(--c-surface)" id="plan-card-premium">
+
+        <!-- Premium -->
+        <div style="border:0.5px solid var(--c-border);border-radius:var(--radius-lg);padding:20px;background:var(--c-surface);display:flex;flex-direction:column" id="plan-card-premium">
           <div style="font-size:13px;font-weight:600;color:var(--c-muted);margin-bottom:4px">Premium</div>
           <div style="font-size:24px;font-weight:500;margin-bottom:12px">$79<span style="font-size:13px;color:var(--c-muted)" data-es>/mes</span><span style="font-size:13px;color:var(--c-muted)" data-en>/mo</span></div>
           <button class="btn-sm primary" style="width:100%" onclick="switchToPlan('premium')" id="plan-btn-premium-es" data-es>Actualizar →</button>
           <button class="btn-sm primary" style="width:100%" onclick="switchToPlan('premium')" id="plan-btn-premium-en" data-en>Upgrade →</button>
+          <ul style="margin:14px 0 0;padding:0;list-style:none;font-size:12px;color:var(--c-muted);display:flex;flex-direction:column;gap:6px">
+            <li data-es>✓ Contactos de clientes <strong>ilimitados</strong></li>
+            <li data-en>✓ <strong>Unlimited</strong> customer contacts</li>
+            <li data-es>✓ Insignia 🌟 Premium en tu perfil</li>
+            <li data-en>✓ 🌟 Premium badge on your profile</li>
+            <li data-es>✓ Perfil público</li>
+            <li data-en>✓ Public profile</li>
+            <li data-es>✓ Reseñas de clientes</li>
+            <li data-en>✓ Customer reviews</li>
+          </ul>
         </div>
+
       </div>
     </div>
 
@@ -766,6 +822,9 @@
   </div><!-- /content -->
 </div><!-- /main -->
 
+<!-- Braintree Drop-in UI -->
+<script src="https://js.braintreegateway.com/web/dropin/1.43.0/js/dropin.min.js"></script>
+
 <!-- Supabase JS v2 -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-client.js"></script>
@@ -983,6 +1042,8 @@ function showPane(id){
   });
   // Build hours table on demand
   if (id === 'hours') buildHoursTable();
+  // Analytics: 탭 진입 시마다 최신 데이터 로드
+  if (id === 'analytics') loadAnalytics();
   document.querySelectorAll('.sb-link').forEach(function(l){ l.classList.remove('active'); });
   document.querySelectorAll('.sb-link').forEach(function(l){
     if(l.getAttribute('onclick')&&l.getAttribute('onclick').includes("'"+id+"'")) l.classList.add('active');
@@ -1005,10 +1066,12 @@ var PLAN_INFO = {
   premium: { name: 'Premium', priceEs: '$79/mes', priceEn: '$79/mo', limit: null } // null = unlimited
 };
 function getCurrentPlan() {
-  try { return localStorage.getItem('anm-sim-plan') || 'free'; } catch(e) { return 'free'; }
+  return window._bizPlan || 'free';
 }
 function setCurrentPlan(plan) {
-  try { localStorage.setItem('anm-sim-plan', plan); } catch(e) {}
+  window._bizPlan = plan;
+  var pb = document.getElementById('sb-plan-badge');
+  if (pb) { var pl = { free: 'Free', basic: '⭐ Basic', premium: '🌟 Premium' }; pb.textContent = pl[plan] || 'Free'; }
 }
 function showPlanToast(msg) {
   var t = document.getElementById('plan-toast');
@@ -1020,6 +1083,8 @@ function showPlanToast(msg) {
 function renderOverviewBanner() {
   var banner = document.getElementById('overview-banner');
   if (!banner) return;
+  // Worker는 플랜·연락한도 시스템 미적용 — 배너 숨김 (§8.5)
+  if (window._isWorker) { banner.innerHTML = ''; return; }
 
   var plan = getCurrentPlan();
   var isEn = document.body.classList.contains('en');
@@ -1033,12 +1098,7 @@ function renderOverviewBanner() {
     return;
   }
 
-  // Simulate reading this month's request count from the same key profile.html writes to.
-  // In production this comes from the DB; here we use a fixed biz ID "garcia" as a stand-in
-  // since dashboard.html doesn't yet have per-business auth context.
-  var month = new Date().toISOString().slice(0, 7);
-  var used = 0;
-  try { var v = localStorage.getItem('anm-sim-req-garcia-' + month); used = v ? parseInt(v, 10) : 0; } catch(e) {}
+  var used = window._bizContactsUsed !== undefined ? window._bizContactsUsed : 0;
   var limit = info.limit;
   var remaining = Math.max(0, limit - used);
 
@@ -1077,17 +1137,44 @@ function renderOverviewBanner() {
 }
 
 
+var PLAN_RANK = { free: 0, basic: 1, premium: 2 };
+
 function renderPlanPane() {
-  var plan = getCurrentPlan();
-  var info = PLAN_INFO[plan];
+  var plan    = getCurrentPlan();
+  var pending = window._bizPendingPlan || null;
+  var info    = PLAN_INFO[plan];
 
   document.getElementById('current-plan-summary-es').innerHTML = '✅ Plan actual: <strong>' + info.name + ' ' + info.priceEs + '</strong>';
   document.getElementById('current-plan-summary-en').innerHTML = '✅ Current plan: <strong>' + info.name + ' ' + info.priceEn + '</strong>';
 
+  // Pending downgrade notice
+  var noticeEl = document.getElementById('pending-downgrade-notice');
+  if (noticeEl) {
+    if (pending) {
+      var pendInfo = PLAN_INFO[pending];
+      var isEnNow  = document.body.classList.contains('en');
+      var nextFirst = (function() {
+        var d = new Date(); d.setMonth(d.getMonth() + 1); d.setDate(1);
+        return d.toLocaleDateString(isEnNow ? 'en-US' : 'es-US', { month: 'long', day: 'numeric' });
+      })();
+      var btnStyle = 'background:none;border:none;color:var(--c-accent);cursor:pointer;padding:0;font-size:12px;text-decoration:underline;margin-left:4px';
+      noticeEl.innerHTML = isEnNow
+        ? '⏳ Your plan will change to <strong>' + pendInfo.name + '</strong> on ' + nextFirst + '. <button onclick="cancelScheduledDowngrade()" style="' + btnStyle + '">Cancel change</button>'
+        : '⏳ Tu plan cambiará a <strong>' + pendInfo.name + '</strong> el ' + nextFirst + '. <button onclick="cancelScheduledDowngrade()" style="' + btnStyle + '">Cancelar cambio</button>';
+      noticeEl.style.display = 'block';
+    } else {
+      noticeEl.style.display = 'none';
+      noticeEl.innerHTML = '';
+    }
+  }
+
   ['free', 'basic', 'premium'].forEach(function(p) {
-    var card = document.getElementById('plan-card-' + p);
+    var card  = document.getElementById('plan-card-' + p);
     var btnEs = document.getElementById('plan-btn-' + p + '-es');
     var btnEn = document.getElementById('plan-btn-' + p + '-en');
+    if (!card || !btnEs || !btnEn) return;
+
+    var isPending = (p === pending);
     if (p === plan) {
       card.style.border = '2px solid var(--c-green)';
       card.style.background = 'var(--c-green-light)';
@@ -1097,33 +1184,163 @@ function renderPlanPane() {
       btnEs.style.background = 'var(--c-green)'; btnEn.style.background = 'var(--c-green)';
       btnEs.style.color = '#fff'; btnEn.style.color = '#fff';
       btnEs.onclick = null; btnEn.onclick = null;
+    } else if (isPending) {
+      card.style.border = '2px dashed var(--c-warning, #f59e0b)';
+      card.style.background = 'var(--c-surface)';
+      btnEs.textContent = '⏳ Programado';
+      btnEn.textContent = '⏳ Scheduled';
+      btnEs.disabled = true; btnEn.disabled = true;
+      btnEs.style.background = '#f59e0b'; btnEn.style.background = '#f59e0b';
+      btnEs.style.color = '#fff'; btnEn.style.color = '#fff';
+      btnEs.onclick = null; btnEn.onclick = null;
     } else {
       card.style.border = '0.5px solid var(--c-border)';
       card.style.background = 'var(--c-surface)';
-      var label = p === 'free' ? 'Cambiar a Free' : 'Actualizar →';
-      var labelEn = p === 'free' ? 'Switch to Free' : 'Upgrade →';
-      btnEs.textContent = label;
-      btnEn.textContent = labelEn;
-      btnEs.disabled = false; btnEn.disabled = false;
+      var isDowngrade = PLAN_RANK[p] < PLAN_RANK[plan];
+      var label   = isDowngrade ? (p === 'free' ? 'Cambiar a Free' : 'Reducir plan') : 'Actualizar →';
+      var labelEn = isDowngrade ? (p === 'free' ? 'Switch to Free' : 'Downgrade')    : 'Upgrade →';
+      btnEs.textContent = label;   btnEn.textContent = labelEn;
+      btnEs.disabled = false;      btnEn.disabled = false;
       btnEs.style.background = ''; btnEn.style.background = '';
-      btnEs.style.color = ''; btnEn.style.color = '';
+      btnEs.style.color = '';      btnEn.style.color = '';
       btnEs.onclick = function() { switchToPlan(p); };
       btnEn.onclick = function() { switchToPlan(p); };
     }
   });
 }
-function switchToPlan(plan) {
+
+function renderProfileCompleteness(biz) {
+  var pctEl = document.getElementById('profile-pct');
+  var barEl = document.getElementById('profile-pct-bar');
+  var rowsEl = document.getElementById('profile-completeness-rows');
+  if (!pctEl || !rowsEl) return;
+
+  var isEn = document.body.classList.contains('en');
+  var checks = [
+    { key: 'business_name',   es: 'Nombre del negocio',   en: 'Business name',    done: !!(biz.business_name) },
+    { key: 'whatsapp_phone',  es: 'Teléfono WhatsApp',    en: 'WhatsApp phone',   done: !!(biz.whatsapp_phone) },
+    { key: 'categories',      es: 'Categorías',            en: 'Categories',       done: !!(biz.categories && biz.categories.length > 0) },
+    { key: 'description',     es: 'Descripción',           en: 'Description',      done: !!(biz.description) },
+    { key: 'service_area',    es: 'Área de servicio',      en: 'Service area',     done: !!(biz.service_area) },
+    { key: 'public_email',    es: 'Correo público',        en: 'Public email',     done: !!(biz.public_email) },
+    { key: 'hours',           es: 'Horario',               en: 'Business hours',   done: !!(biz.hours && biz.hours.length > 0) },
+    { key: 'payment_methods', es: 'Métodos de pago',       en: 'Payment methods',  done: !!(biz.payment_methods && biz.payment_methods.length > 0) },
+  ];
+  var completed = checks.filter(function(c){ return c.done; }).length;
+  var pct = Math.round((completed / checks.length) * 100);
+
+  pctEl.textContent = pct + '%';
+  if (barEl) barEl.style.width = pct + '%';
+
+  rowsEl.innerHTML = checks.map(function(c) {
+    return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:12px;border-bottom:0.5px solid var(--c-border)">'
+      + '<span style="color:' + (c.done ? 'var(--c-green)' : 'var(--c-hint)') + '">' + (c.done ? '✓' : '○') + '</span>'
+      + '<span style="color:' + (c.done ? 'var(--c-text)' : 'var(--c-muted)') + '">' + (isEn ? c.en : c.es) + '</span>'
+      + '</div>';
+  }).join('');
+}
+
+function refreshPlanUI() {
+  renderOverviewBanner();
+  renderPlanPane();
+}
+
+function switchToPlan(targetPlan) {
   var current = getCurrentPlan();
-  if (plan === current) return;
-  if (plan === 'free') {
-    // Downgrading to Free needs no payment — applies immediately.
-    setCurrentPlan('free');
-    renderPlanPane();
-    renderOverviewBanner();
-    var isEn = document.body.classList.contains('en');
-    showPlanToast(isEn ? '✓ Switched to Free plan' : '✓ Cambiaste al plan Free');
+  if (targetPlan === current) return;
+  var isDowngrade = PLAN_RANK[targetPlan] < PLAN_RANK[current];
+  if (isDowngrade) {
+    openDowngradeModal(targetPlan);
   } else {
-    openUpgradeModal(plan);
+    openUpgradeModal(targetPlan);
+  }
+}
+
+// ── 다운그레이드 예약 ────────────────────────────────────────────
+function openDowngradeModal(targetPlan) {
+  var info  = PLAN_INFO[targetPlan];
+  var isEn  = document.body.classList.contains('en');
+  var nextFirst = (function() {
+    var d = new Date(); d.setMonth(d.getMonth() + 1); d.setDate(1);
+    return d.toLocaleDateString(isEn ? 'en-US' : 'es-US', { month: 'long', day: 'numeric' });
+  })();
+  document.getElementById('dwn-title').textContent = isEn ? 'Downgrade your plan?' : '¿Reducir tu plan?';
+  document.getElementById('dwn-body').innerHTML = isEn
+    ? 'Your plan will change to <strong>' + info.name + '</strong> on <strong>' + nextFirst + '</strong>. Until then, you keep all your current plan benefits.'
+    : 'Tu plan cambiará a <strong>' + info.name + '</strong> el <strong>' + nextFirst + '</strong>. Hasta entonces, mantienes todos los beneficios de tu plan actual.';
+  document.getElementById('dwn-cancel-btn').textContent  = isEn ? 'Cancel'  : 'Cancelar';
+  document.getElementById('dwn-confirm-btn').textContent = isEn ? 'Confirm' : 'Confirmar';
+  document.getElementById('downgrade-modal').setAttribute('data-target-plan', targetPlan);
+  document.getElementById('downgrade-modal').classList.add('open');
+}
+function closeDowngradeModal() {
+  document.getElementById('downgrade-modal').classList.remove('open');
+}
+
+async function confirmScheduledDowngrade() {
+  var targetPlan = document.getElementById('downgrade-modal').getAttribute('data-target-plan');
+  var isEn = document.body.classList.contains('en');
+  var btn  = document.getElementById('dwn-confirm-btn');
+  if (btn) { btn.disabled = true; btn.textContent = isEn ? 'Saving…' : 'Guardando…'; }
+
+  try {
+    var user = await getCurrentUser();
+    if (!user) throw new Error('Not authenticated');
+    var { error: updErr } = await getSupabase()
+      .from('businesses')
+      .update({ pending_plan: targetPlan })
+      .eq('owner_id', user.id);
+    if (updErr) throw updErr;
+
+    window._bizPendingPlan = targetPlan;
+    closeDowngradeModal();
+    renderPlanPane();
+
+    var nextFirst = (function() {
+      var d = new Date(); d.setMonth(d.getMonth() + 1); d.setDate(1);
+      return d.toLocaleDateString(isEn ? 'en-US' : 'es-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    })();
+
+    showPlanToast(isEn
+      ? '⏳ Downgrade scheduled for ' + nextFirst
+      : '⏳ Cambio programado para el ' + nextFirst);
+
+    // SB14 이메일 — 비차단 (실패해도 사용자에게 오류 노출 안 함)
+    Promise.all([getSession(), getMyBusiness()]).then(function(results) {
+      var sess = results[0]; var biz = results[1];
+      if (!sess || !sess.user) return;
+      var lang = isEn ? 'en' : 'es';
+      sendEmail('SB14', sess.user.email, {
+        owner_name:     biz ? (biz.trade_name || biz.business_name || '') : '',
+        biz_name:       biz ? (biz.trade_name || biz.business_name || '') : '',
+        plan:           PLAN_INFO[targetPlan].name,
+        effective_date: nextFirst,
+      }, window._bizId, lang);
+    }).catch(function(e) { console.warn('[SB14 email]', e); });
+  } catch(e) {
+    console.error('[downgrade] error:', e);
+    alert(isEn ? 'Error saving. Please try again.' : 'Error al guardar. Intenta de nuevo.');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = isEn ? 'Confirm' : 'Confirmar'; }
+  }
+}
+
+async function cancelScheduledDowngrade() {
+  var isEn = document.body.classList.contains('en');
+  try {
+    var user = await getCurrentUser();
+    if (!user) throw new Error('Not authenticated');
+    var { error: cancelErr } = await getSupabase()
+      .from('businesses')
+      .update({ pending_plan: null })
+      .eq('owner_id', user.id);
+    if (cancelErr) throw cancelErr;
+    window._bizPendingPlan = null;
+    renderPlanPane();
+    showPlanToast(isEn ? '✓ Plan change cancelled' : '✓ Cambio de plan cancelado');
+  } catch(e) {
+    console.error('[cancel-downgrade] error:', e);
+    alert(isEn ? 'Error cancelling. Please try again.' : 'Error al cancelar. Intenta de nuevo.');
   }
 }
 function switchUpgTab(method, btn) {
@@ -1141,6 +1358,23 @@ function switchUpgTab(method, btn) {
   if (payBtn) payBtn.style.display = method === 'zelle' ? 'none' : 'block';
 }
 
+// Braintree tokenization key (client-side publishable key)
+var BT_TOKENIZATION_KEY = 'sandbox_wswbqjvj_qch7682mvs2m4ym5';
+var _btDropin = null;
+
+function initBraintreeDropin() {
+  var container = document.getElementById('bt-dropin-container');
+  if (!container || _btDropin) return;
+  container.innerHTML = '';
+  braintree.dropin.create({
+    authorization: BT_TOKENIZATION_KEY,
+    container: '#bt-dropin-container',
+  }, function(err, instance) {
+    if (err) { console.error('[Braintree] Drop-in init error:', err); return; }
+    _btDropin = instance;
+  });
+}
+
 function openUpgradeModal(plan) {
   var info = PLAN_INFO[plan];
   var isEn = document.body.classList.contains('en');
@@ -1153,26 +1387,70 @@ function openUpgradeModal(plan) {
   document.getElementById('upgrade-payment-modal').setAttribute('data-target-plan', plan);
   switchUpgTab('card', null);
   document.getElementById('upgrade-payment-modal').classList.add('open');
+  setTimeout(initBraintreeDropin, 80);
 }
 function closeUpgradeModal() {
   document.getElementById('upgrade-payment-modal').classList.remove('open');
 }
 function confirmUpgradePayment() {
-  // FRONTEND SIMULATION: in production this charges the card via the payment gateway
-  // and only updates the plan once the charge succeeds. No real charge happens here.
   var plan = document.getElementById('upgrade-payment-modal').getAttribute('data-target-plan');
-  setCurrentPlan(plan);
-  closeUpgradeModal();
-  renderPlanPane();
-  renderOverviewBanner();
-  var info = PLAN_INFO[plan];
   var isEn = document.body.classList.contains('en');
-  showPlanToast(isEn ? '✓ Upgraded to ' + info.name : '✓ Actualizado a ' + info.name);
+  var payBtn = document.getElementById('upg-pay-btn');
+
+  if (!_btDropin) {
+    alert(isEn ? 'Payment form not ready. Please wait a moment.' : 'El formulario de pago aún no está listo. Espera un momento.');
+    return;
+  }
+
+  if (payBtn) { payBtn.disabled = true; payBtn.textContent = isEn ? 'Processing…' : 'Procesando…'; }
+
+  _btDropin.requestPaymentMethod(function(err, payload) {
+    if (err) {
+      if (payBtn) { payBtn.disabled = false; payBtn.innerHTML = '<span data-es>Pagar y cambiar plan →</span><span data-en>Pay & switch plan →</span>'; applyLang(); }
+      alert(isEn ? 'Please enter valid card details.' : 'Por favor ingresa los datos de la tarjeta.');
+      return;
+    }
+    getMyBusiness().then(function(biz) {
+      return getSession().then(function(sess) {
+        return getSupabase().functions.invoke('process-payment', {
+          body: {
+            action:      'checkout',
+            nonce:       payload.nonce,
+            plan:        plan,
+            biz_id:      window._bizId || (biz && biz.id),
+            owner_email: sess && sess.user ? sess.user.email : null,
+            owner_name:  biz ? (biz.trade_name || biz.business_name || '') : '',
+            biz_name:    biz ? (biz.trade_name || biz.business_name || '') : '',
+          },
+        });
+      });
+    }).then(function(res) {
+      var errMsg = (res.data && res.data.error) || (res.error && res.error.message);
+      if (errMsg) {
+        console.error('[upgrade] payment error:', errMsg);
+        alert(isEn ? 'Payment failed: ' + errMsg : 'Pago fallido: ' + errMsg);
+        if (payBtn) { payBtn.disabled = false; payBtn.innerHTML = '<span data-es>Pagar y cambiar plan →</span><span data-en>Pay & switch plan →</span>'; applyLang(); }
+        return;
+      }
+      setCurrentPlan(plan);
+      window._bizPlan = plan;
+      closeUpgradeModal();
+      renderPlanPane();
+      renderOverviewBanner();
+      var planName = PLAN_INFO[plan].name;
+      showPlanToast(isEn ? '✅ Upgraded to ' + planName + ' plan!' : '✅ ¡Plan ' + planName + ' activado!');
+      if (payBtn) { payBtn.disabled = false; payBtn.innerHTML = '<span data-es>Pagar y cambiar plan →</span><span data-en>Pay & switch plan →</span>'; applyLang(); }
+    }).catch(function(e) {
+      console.error('[upgrade] unexpected error:', e);
+      alert(isEn ? 'An error occurred. Please try again.' : 'Ocurrió un error. Intenta de nuevo.');
+      if (payBtn) { payBtn.disabled = false; payBtn.innerHTML = '<span data-es>Pagar y cambiar plan →</span><span data-en>Pay & switch plan →</span>'; applyLang(); }
+    });
+  });
 }
 
 async function doLogout() {
   try { await signOut(); } catch(e) {}
-  window.location.href = 'login.html';
+  window.location.href = 'index.html';
 }
 
 function openCancelRequestModal() {
@@ -1206,24 +1484,27 @@ function submitCancelRequest() {
   //   schedules account deactivation at end of billing period
   // → Risky reviews are retained as anonymous ("Former business") after account closes
 
-  // Simulate: store cancellation request flag
-  try {
-    localStorage.setItem('anm-cancel-requested', JSON.stringify({
-      reason: select.value,
-      notes: document.getElementById('cancel-notes').value,
-      requestedAt: new Date().toISOString()
-    }));
-  } catch(e) {}
-
-  // AD4: 취소 요청 수신 — 관리자에게 이메일
-  getMyBusiness().then(function(biz) {
-    var bizName = biz ? (biz.trade_name || biz.business_name || '') : '';
-    var bizId   = biz ? biz.id : null;
-    sendEmail('AD4', null, {
-      biz_name: bizName,
-      reason: select.value,
-      notes: document.getElementById('cancel-notes').value
-    }, bizId);
+  // DB INSERT + AD4 이메일
+  getSession().then(function(sess) {
+    if (!sess || !sess.user) return;
+    var uid = sess.user.id;
+    var meta = sess.user.user_metadata || {};
+    var userType = meta.user_type || 'business';
+    var reasonText = select.value + (document.getElementById('cancel-notes').value ? ' — ' + document.getElementById('cancel-notes').value : '');
+    getSupabase().from('cancellation_requests').insert({
+      user_id:   uid,
+      user_type: userType,
+      reason:    reasonText
+    }).then(function(res) {
+      if (res.error) console.warn('[cancelRequest] insert error:', res.error.message);
+    });
+    // AD4: 관리자 알림 (biz_name + reason)
+    getMyBusiness().then(function(biz) {
+      var bizName = biz ? (biz.trade_name || biz.business_name || '') : (sess.user.email || '');
+      sendEmail('AD4', null, { biz_name: bizName, reason: reasonText }, uid);
+    }).catch(function() {
+      sendEmail('AD4', null, { biz_name: sess.user.email || '', reason: reasonText }, uid);
+    });
   }).catch(function() {});
 
   closeCancelModal();
@@ -1255,16 +1536,239 @@ function openWA(phone){
   window.open('https://wa.me/'+phone.replace(/\D/g,'')+'?text='+encodeURIComponent(msg),'_blank');
 }
 
-function loadOverviewStats(biz) {
-  var contactsEl = document.getElementById('stat-whatsapp');
-  var contactsSubEl = document.getElementById('stat-whatsapp-sub');
-  if (contactsEl) contactsEl.textContent = biz.contacts_used_month != null ? biz.contacts_used_month : '0';
-  if (contactsSubEl) contactsSubEl.textContent = '';
+async function loadOverviewStats(biz) {
+  var whatsappEl = document.getElementById('stat-whatsapp');
+  var contactsEl = document.getElementById('stat-contacts');
+  var bizId = window._bizId;
+
+  // Worker: form 문의 타일 숨김 (§8.5)
+  if (window._isWorker) {
+    var contactsTile = contactsEl ? contactsEl.closest('.metric') : null;
+    if (contactsTile) contactsTile.style.display = 'none';
+  }
+
+  if (!bizId) {
+    if (whatsappEl) whatsappEl.textContent = biz.contacts_used_month != null ? biz.contacts_used_month : '0';
+    return;
+  }
+
+  var now = new Date();
+  var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+  var sb = getSupabase();
+
+  var waRes = await sb.from('contact_log')
+    .select('id', { count: 'exact', head: true })
+    .eq('biz_id', bizId).eq('channel', 'whatsapp').eq('limit_hit', false).gte('created_at', monthStart);
+
+  var fmRes = await sb.from('contact_log')
+    .select('id', { count: 'exact', head: true })
+    .eq('biz_id', bizId).eq('channel', 'form').eq('limit_hit', false).gte('created_at', monthStart);
+
+  if (whatsappEl) whatsappEl.textContent = waRes.error ? '0' : (waRes.count || 0);
+  if (contactsEl)  contactsEl.textContent  = fmRes.error ? '0' : (fmRes.count  || 0);
 }
-function loadRecentInquiries() {}
-function loadReviews() {}
+
+async function loadRecentInquiries() {
+  var listEl = document.getElementById('inq-list');
+  if (!listEl || !window._bizId) return;
+
+  var sb = getSupabase();
+  var res = await sb.from('contact_log')
+    .select('id, channel, created_at')
+    .eq('biz_id', window._bizId).eq('limit_hit', false)
+    .order('created_at', { ascending: false }).limit(20);
+
+  if (res.error || !res.data || res.data.length === 0) return;
+
+  var isEn = document.body.classList.contains('en');
+  var rowsHtml = res.data.map(function(row) {
+    var d = new Date(row.created_at);
+    var dateStr = d.toLocaleDateString(isEn ? 'en-US' : 'es-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    var timeStr = d.toLocaleTimeString(isEn ? 'en-US' : 'es-US', { hour: '2-digit', minute: '2-digit' });
+    var ch = row.channel === 'whatsapp' ? '📱 WhatsApp' : (isEn ? '📋 Form' : '📋 Formulario');
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:0.5px solid var(--c-border)">'
+      + '<span style="font-size:13px">' + ch + '</span>'
+      + '<span style="font-size:12px;color:var(--c-muted)">' + dateStr + ' · ' + timeStr + '</span>'
+      + '</div>';
+  }).join('');
+
+  // Inquiries 탭 전체 목록
+  listEl.innerHTML = rowsHtml;
+
+  // Overview 최근 3건 미리보기
+  var overviewEl = document.getElementById('overview-recent-inq');
+  if (overviewEl) {
+    var previewHtml = res.data.slice(0, 3).map(function(row) {
+      var d = new Date(row.created_at);
+      var dateStr = d.toLocaleDateString(isEn ? 'en-US' : 'es-US', { month: 'short', day: 'numeric' });
+      var timeStr = d.toLocaleTimeString(isEn ? 'en-US' : 'es-US', { hour: '2-digit', minute: '2-digit' });
+      var ch = row.channel === 'whatsapp' ? '📱 WhatsApp' : (isEn ? '📋 Form' : '📋 Formulario');
+      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--c-border)">'
+        + '<span style="font-size:13px">' + ch + '</span>'
+        + '<span style="font-size:12px;color:var(--c-muted)">' + dateStr + ' · ' + timeStr + '</span>'
+        + '</div>';
+    }).join('');
+    overviewEl.innerHTML = previewHtml;
+  }
+}
+
+async function loadReviews() {
+  var listEl = document.getElementById('reviews-list');
+  var summaryEl = document.getElementById('reviews-summary');
+  if (!listEl || !window._bizId) return;
+
+  var sb = getSupabase();
+  var res = await sb.from('reviews')
+    .select('rating, review_text, created_at')
+    .eq('biz_id', window._bizId)
+    .order('created_at', { ascending: false });
+
+  if (res.error || !res.data || res.data.length === 0) return;
+
+  var isEn = document.body.classList.contains('en');
+  var total = res.data.length;
+  var avg = res.data.reduce(function(s, r) { return s + r.rating; }, 0) / total;
+
+  // Overview stat tile 업데이트
+  var statRevEl = document.getElementById('stat-reviews');
+  var statRevSubEl = document.getElementById('stat-reviews-sub');
+  if (statRevEl) statRevEl.textContent = avg.toFixed(1) + ' ★';
+  if (statRevSubEl) statRevSubEl.textContent = total + (document.body.classList.contains('en') ? ' review' + (total !== 1 ? 's' : '') : ' reseña' + (total !== 1 ? 's' : ''));
+
+  if (summaryEl) {
+    summaryEl.style.display = 'block';
+    var avgEl = document.getElementById('rev-avg');
+    var starsEl = document.getElementById('rev-stars');
+    var countEl = document.getElementById('rev-count');
+    if (avgEl) avgEl.textContent = avg.toFixed(1);
+    if (starsEl) starsEl.textContent = '★'.repeat(Math.round(avg)) + '☆'.repeat(5 - Math.round(avg));
+    if (countEl) countEl.textContent = total;
+  }
+
+  listEl.innerHTML = res.data.map(function(row) {
+    var d = new Date(row.created_at);
+    var dateStr = d.toLocaleDateString(isEn ? 'en-US' : 'es-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    var stars = '★'.repeat(row.rating) + '☆'.repeat(5 - row.rating);
+    var txt = row.review_text ? '<div style="font-size:13px;margin-top:4px">' + row.review_text.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>' : '';
+    return '<div style="padding:12px 0;border-bottom:0.5px solid var(--c-border)">'
+      + '<div style="display:flex;justify-content:space-between;align-items:center">'
+      + '<span style="color:var(--c-amber);font-size:14px">' + stars + '</span>'
+      + '<span style="font-size:12px;color:var(--c-muted)">' + dateStr + '</span>'
+      + '</div>' + txt + '</div>';
+  }).join('');
+}
+
+async function loadAnalytics() {
+  var bizId = window._bizId;
+  if (!bizId) return;
+
+  var sb = getSupabase();
+  var isEn = document.body.classList.contains('en');
+  var now = new Date();
+  var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+
+  // ── 이번 달 채널별 카운트 ──
+  var thisMonthRes = await sb.from('contact_log')
+    .select('channel')
+    .eq('biz_id', bizId).eq('limit_hit', false).gte('created_at', monthStart);
+
+  if (!thisMonthRes.error && thisMonthRes.data) {
+    var waCount = thisMonthRes.data.filter(function(r){ return r.channel === 'whatsapp'; }).length;
+    var fmCount = thisMonthRes.data.filter(function(r){ return r.channel === 'form'; }).length;
+    var total   = thisMonthRes.data.length;
+    var waEl = document.getElementById('anl-wa-month');
+    var fmEl = document.getElementById('anl-fm-month');
+    var totEl = document.getElementById('anl-total-month');
+    if (waEl)  waEl.textContent  = waCount;
+    if (fmEl)  fmEl.textContent  = fmCount;
+    if (totEl) totEl.textContent = total;
+
+    // Plan 한도 프로그레스 바
+    var planLimits = { free: 3, basic: 10, premium: 999 };
+    var plan = window._bizPlan || 'free';
+    var limit = planLimits[plan] || 3;
+    var pct = limit >= 999 ? 100 : Math.min(100, Math.round((total / limit) * 100));
+    var barEl = document.getElementById('anl-plan-bar');
+    var labelEl = document.getElementById('anl-plan-label');
+    if (barEl) {
+      barEl.style.width = pct + '%';
+      barEl.style.background = pct >= 90 ? 'var(--c-accent)' : pct >= 60 ? 'var(--c-amber)' : 'var(--c-green)';
+    }
+    if (labelEl) {
+      labelEl.textContent = limit >= 999
+        ? (isEn ? 'Unlimited' : 'Ilimitado')
+        : total + ' / ' + limit;
+    }
+  }
+
+  // ── 최근 6개월 월별 추이 ──
+  var sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1).toISOString();
+  var histRes = await sb.from('contact_log')
+    .select('channel, created_at')
+    .eq('biz_id', bizId).eq('limit_hit', false).gte('created_at', sixMonthsAgo);
+
+  if (!histRes.error && histRes.data) {
+    // 월별 집계
+    var months = [];
+    for (var i = 5; i >= 0; i--) {
+      var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push({ key: d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'), label: d.toLocaleDateString(isEn ? 'en-US' : 'es-US', { month: 'short' }), wa: 0, fm: 0 });
+    }
+    histRes.data.forEach(function(row) {
+      var key = row.created_at.slice(0, 7);
+      var m = months.find(function(x){ return x.key === key; });
+      if (!m) return;
+      if (row.channel === 'whatsapp') m.wa++;
+      else if (row.channel === 'form') m.fm++;
+    });
+
+    var maxVal = Math.max(1, Math.max.apply(null, months.map(function(m){ return Math.max(m.wa, m.fm); })));
+    var chartEl = document.getElementById('anl-chart');
+    var labelsEl = document.getElementById('anl-chart-labels');
+    var CHART_H = 100; // px
+    if (chartEl) {
+      chartEl.style.height = CHART_H + 'px';
+      chartEl.innerHTML = months.map(function(m) {
+        var waH = m.wa > 0 ? Math.max(4, Math.round((m.wa / maxVal) * CHART_H)) : 0;
+        var fmH = m.fm > 0 ? Math.max(4, Math.round((m.fm / maxVal) * CHART_H)) : 0;
+        var isEmpty = m.wa === 0 && m.fm === 0;
+        return '<div style="flex:1;display:flex;flex-direction:row;align-items:flex-end;justify-content:center;gap:3px">'
+          + (isEmpty
+            ? '<div style="width:8px;height:4px;background:var(--c-border);border-radius:3px"></div>'
+            : (
+                '<div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end">'
+                  + (waH > 0 ? '<div style="height:' + waH + 'px;background:var(--c-green);border-radius:3px 3px 0 0" title="WhatsApp: ' + m.wa + '"></div>' : '<div style="height:4px;background:var(--c-border);border-radius:3px 3px 0 0"></div>')
+                + '</div>'
+                + '<div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end">'
+                  + (fmH > 0 ? '<div style="height:' + fmH + 'px;background:var(--c-blue);border-radius:3px 3px 0 0" title="Form: ' + m.fm + '"></div>' : '<div style="height:4px;background:var(--c-border);border-radius:3px 3px 0 0"></div>')
+                + '</div>'
+              )
+          )
+          + '</div>';
+      }).join('');
+    }
+    if (labelsEl) {
+      labelsEl.style.cssText = 'display:flex;gap:8px;margin-top:6px';
+      labelsEl.innerHTML = months.map(function(m) {
+        return '<div style="flex:1;text-align:center;font-size:11px;color:var(--c-muted)">' + m.label + '</div>';
+      }).join('');
+    }
+
+    // 범례
+    if (chartEl && !document.getElementById('anl-legend')) {
+      var legend = document.createElement('div');
+      legend.id = 'anl-legend';
+      legend.style.cssText = 'display:flex;gap:14px;margin-top:12px;font-size:11px;color:var(--c-muted)';
+      legend.innerHTML = '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:var(--c-green);display:inline-block"></span>WhatsApp</span>'
+        + '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:var(--c-blue);display:inline-block"></span>' + (isEn ? 'Form Inquiry' : 'Formulario') + '</span>';
+      chartEl.parentElement.appendChild(legend);
+    }
+  }
+}
 
 document.addEventListener('DOMContentLoaded', async function(){
+  // anm-sim-plan은 구형 시뮬레이션 잔재 — DB 값이 항상 우선이므로 제거
+  try { localStorage.removeItem('anm-sim-plan'); } catch(e) {}
   var saved=''; try{saved=localStorage.getItem('anm-lang');}catch(e){}
   var browser=(navigator.language||'es').toLowerCase();
   setLang(saved||(browser.startsWith('en')?'en':'es'));
@@ -1273,11 +1777,22 @@ document.addEventListener('DOMContentLoaded', async function(){
     const session = await getSession();
     if (!session) { window.location.href = 'login.html'; return; }
     const user = session.user;
-    if ((user.user_metadata?.user_type || 'customer') !== 'business') { window.location.href = 'login.html'; return; }
+    const userType = user.user_metadata?.user_type || 'customer';
+    if (userType === 'worker') {
+      try {
+        const wBiz = await getMyBusiness();
+        if (wBiz && wBiz.id) { window.location.href = 'worker-profile.html?id=' + wBiz.id; return; }
+      } catch(e) {}
+      window.location.href = 'login.html'; return;
+    }
+    if (userType !== 'business') { window.location.href = 'login.html'; return; }
 
     const biz = await getMyBusiness();
     if (biz) {
       window._bizPlan = biz.plan || 'free';
+      window._bizPendingPlan = biz.pending_plan || null;
+      window._bizContactsUsed = biz.contacts_used_month || 0;
+      window._isWorker = !!biz.is_worker;
       window._bizId = biz.id;
       const meta = user.user_metadata || {};
       var needsUpdate = {};
@@ -1290,6 +1805,13 @@ document.addEventListener('DOMContentLoaded', async function(){
       if ((!biz.languages || biz.languages.length <= 1) && meta.languages && meta.languages.length > 1) needsUpdate.languages = meta.languages;
       if ((!biz.hours || biz.hours.length === 0) && meta.hours && meta.hours.length > 0) needsUpdate.hours = meta.hours;
       if (Object.keys(needsUpdate).length > 0) { try { await updateBusiness(needsUpdate); Object.assign(biz, needsUpdate); } catch(e) {} }
+
+      // B안: Business 계정 → Hire Workers 사이드바 섹션 표시
+      var hireSection = document.getElementById('hire-workers-section');
+      if (hireSection) hireSection.style.display = 'block';
+
+      // View public profile 링크에 biz.id 주입
+      document.querySelectorAll('a[href="profile.html"]').forEach(function(el){ el.href = 'profile.html?id=' + biz.id; });
 
       document.querySelectorAll('.biz-display-name').forEach(function(el){ el.textContent = biz.business_name || ''; });
       var f = function(id, val){ var el = document.getElementById(id); if(el && val !== undefined && val !== null) el.value = val; };
@@ -1339,7 +1861,7 @@ document.addEventListener('DOMContentLoaded', async function(){
     } else {
       const meta = user.user_metadata || {};
       const newBiz = await createBusiness({ businessName: meta.business_name || user.email.split('@')[0], tradeName: meta.trade_name || '', plan: meta.plan || 'free', publicEmail: meta.public_email || '', phone: meta.phone || '', description: meta.description || '', categories: meta.categories || [], serviceArea: meta.service_area || '', languages: meta.languages || ['es'], paymentMethods: meta.payment_methods || [], hours: meta.hours || [] });
-      window._bizPlan = newBiz.plan || 'free'; window._bizId = newBiz.id;
+      window._bizPlan = newBiz.plan || 'free'; window._bizContactsUsed = newBiz.contacts_used_month || 0; window._bizId = newBiz.id;
       var f2 = function(id, val){ var el = document.getElementById(id); if(el && val) el.value = val; };
       f2('ep-legal-name', meta.business_name); f2('ep-trade-name', meta.trade_name);
       f2('ep-phone', meta.phone); f2('ep-email', meta.public_email);
@@ -1366,10 +1888,7 @@ document.addEventListener('DOMContentLoaded', async function(){
 });
 </script>
 
-<!-- PLAN UPGRADE PAYMENT MODAL -->
-<!-- Frontend simulation only — no real charge happens here. In production this would call
-     a real payment gateway, set up/modify recurring monthly billing, and only update the
-     account's plan once the charge succeeds. -->
+<!-- PLAN UPGRADE PAYMENT MODAL (Braintree Drop-in UI + process-payment Edge Function) -->
 <div class="modal-overlay" id="upgrade-payment-modal" onclick="if(event.target===this) closeUpgradeModal()">
   <div class="modal-card">
     <div class="modal-title"><span data-es>Elige cómo pagar</span><span data-en>Choose how to pay</span></div>
@@ -1391,23 +1910,10 @@ document.addEventListener('DOMContentLoaded', async function(){
       <button class="pay-tab upg-tab" onclick="switchUpgTab('zelle',this)">Zelle</button>
     </div>
 
-    <!-- Card -->
+    <!-- Card (Braintree Drop-in UI) -->
     <div id="upg-panel-card">
-      <div class="modal-field">
-        <label class="modal-label"><span data-es>Número de tarjeta</span><span data-en>Card number</span></label>
-        <input class="modal-input" type="text" placeholder="4242 4242 4242 4242">
-      </div>
-      <div class="modal-row">
-        <div class="modal-field">
-          <label class="modal-label"><span data-es>Vencimiento</span><span data-en>Expiry</span></label>
-          <input class="modal-input" type="text" placeholder="MM/YY">
-        </div>
-        <div class="modal-field">
-          <label class="modal-label">CVC</label>
-          <input class="modal-input" type="text" placeholder="123">
-        </div>
-      </div>
-      <p class="modal-desc" style="font-size:12px;margin-top:4px"><span data-es>Procesado por Braintree. También puedes usar una tarjeta prepagada.</span><span data-en>Processed by Braintree. Prepaid debit cards also accepted.</span></p>
+      <div id="bt-dropin-container" style="min-height:64px"></div>
+      <p class="modal-desc" style="font-size:12px;margin-top:8px"><span data-es>Procesado por Braintree. También puedes usar una tarjeta prepagada.</span><span data-en>Processed by Braintree. Prepaid debit cards also accepted.</span></p>
     </div>
 
     <!-- Venmo -->
@@ -1523,6 +2029,21 @@ document.addEventListener('DOMContentLoaded', async function(){
 </div>
 
 <div class="toast" id="plan-toast"></div>
+
+<!-- ── 다운그레이드 확인 모달 ───────────────────────────────── -->
+<div class="modal-overlay" id="downgrade-modal" onclick="if(event.target===this) closeDowngradeModal()">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+      <div class="modal-title" style="margin-bottom:0" id="dwn-title">¿Reducir tu plan?</div>
+      <button onclick="closeDowngradeModal()" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--c-muted);line-height:1;padding:0 0 0 12px">✕</button>
+    </div>
+    <p id="dwn-body" style="font-size:14px;color:var(--c-text);line-height:1.55;margin:0 0 20px"></p>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button id="dwn-cancel-btn" onclick="closeDowngradeModal()" style="padding:9px 18px;border-radius:8px;border:1px solid var(--c-border);background:var(--c-surface);color:var(--c-text);font-size:14px;cursor:pointer">Cancelar</button>
+      <button id="dwn-confirm-btn" onclick="confirmScheduledDowngrade()" style="padding:9px 18px;border-radius:8px;border:none;background:var(--c-accent);color:#fff;font-size:14px;cursor:pointer;font-weight:600">Confirmar</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
