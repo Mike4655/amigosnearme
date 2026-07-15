@@ -949,7 +949,7 @@ async function loadBusiness() {
     avatarEl.innerHTML = '';
     var avatarImg = document.createElement('img');
     avatarImg.src = firstPhoto;
-    avatarImg.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md)';
+    avatarImg.style.cssText = 'width:100%;height:100%;object-fit:contain;background:var(--c-bg);border-radius:var(--radius-md)';
     avatarEl.appendChild(avatarImg);
   } else {
     avatarEl.textContent = b.avatar;
@@ -1075,7 +1075,7 @@ async function loadBusiness() {
         img.src = url;
         img.alt = '';
         img.className = 'photo-thumb' + (i === 0 ? ' main' : '');
-        img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:6px;display:block';
+        img.style.cssText = 'width:100%;height:100%;object-fit:contain;background:var(--c-bg);border-radius:6px;display:block';
         photoGrid.appendChild(img);
       });
       var seeAllEs = document.getElementById('photos-see-all-es');

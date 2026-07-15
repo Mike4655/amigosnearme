@@ -987,7 +987,7 @@ function renderSavedPhotos(photos) {
     wrap.style.cssText = 'position:relative;display:inline-block';
     var img = document.createElement('img');
     img.src = url;
-    img.style.cssText = 'width:100px;height:80px;object-fit:cover;border-radius:6px;border:0.5px solid var(--c-border);display:block';
+    img.style.cssText = 'width:100px;height:100px;object-fit:contain;background:var(--c-bg);border-radius:6px;border:0.5px solid var(--c-border);display:block';
     var del = document.createElement('button');
     del.textContent = '×';
     del.style.cssText = 'position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,0.55);color:#fff;border:none;cursor:pointer;font-size:13px;line-height:1;padding:0';
@@ -1061,7 +1061,7 @@ async function uploadPhotos(input) {
       avatarEl.innerHTML = '';
       var thumbImg = document.createElement('img');
       thumbImg.src = updated[0];
-      thumbImg.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm)';
+      thumbImg.style.cssText = 'width:100%;height:100%;object-fit:contain;background:var(--c-bg);border-radius:var(--radius-sm)';
       avatarEl.appendChild(thumbImg);
     }
   }
@@ -1989,7 +1989,7 @@ document.addEventListener('DOMContentLoaded', async function(){
           avatarEl.innerHTML = '';
           var thumbImg = document.createElement('img');
           thumbImg.src = thumbUrl;
-          thumbImg.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm)';
+          thumbImg.style.cssText = 'width:100%;height:100%;object-fit:contain;background:var(--c-bg);border-radius:var(--radius-sm)';
           avatarEl.appendChild(thumbImg);
         } else {
           var nameForInit = biz.trade_name || biz.business_name || '';

@@ -820,7 +820,7 @@ function buildBizRow(biz, idx) {
   var bizStatus = biz.account_status === 'suspended' ? 'suspended' : 'active';
   var firstPhoto = Array.isArray(biz.photos) && biz.photos.length > 0 ? biz.photos[0] : null;
   var avatarHtml = firstPhoto
-    ? '<div class="biz-avatar '+bizAvatarClass(idx)+'" style="overflow:hidden"><img src="'+escHtml(firstPhoto)+'" style="width:100%;height:100%;object-fit:cover;border-radius:8px"></div>'
+    ? '<div class="biz-avatar '+bizAvatarClass(idx)+'" style="overflow:hidden"><img src="'+escHtml(firstPhoto)+'" style="width:100%;height:100%;object-fit:contain;background:var(--c-bg);border-radius:8px"></div>'
     : '<div class="biz-avatar '+bizAvatarClass(idx)+'">'+getAvatarInitialsAdmin(name)+'</div>';
   var statusBadge = bizStatus === 'suspended'
     ? '<span class="basic-badge" style="background:var(--c-accent-light);color:var(--c-accent)">Suspended</span>'
