@@ -918,7 +918,7 @@ async function loadBusiness() {
     var sb = getSupabase();
     var bizRes = await sb.from('businesses').select('*').eq('id', id).single();
     if (bizRes.error || !bizRes.data) { showNotFound(); return; }
-    var reviewsRes = await sb.from('reviews').select('*').eq('business_id', id).order('created_at', { ascending: false }).limit(10);
+    var reviewsRes = await sb.from('reviews').select('*').eq('biz_id', id).eq('removed', false).order('created_at', { ascending: false }).limit(10);
     b = buildBizObject(bizRes.data, reviewsRes.data || []);
     b.id = id;
     window.currentBusiness = b;
@@ -1048,7 +1048,26 @@ async function loadBusiness() {
   } else {
     document.getElementById('reviews').style.display = 'block';
     document.getElementById('jobs-completed-section').style.display = 'none';
-    // photos-section shown only when actual photos exist (Supabase Storage not yet wired)
+    // Photos: render from DB photos array (Supabase Storage)
+    var photos = (bizRes.data && bizRes.data.photos) ? bizRes.data.photos : [];
+    var photoSection = document.getElementById('photos-section');
+    var photoGrid = document.getElementById('photo-grid');
+    if (photos.length > 0 && photoSection && photoGrid) {
+      photoGrid.innerHTML = '';
+      photos.slice(0, 5).forEach(function(url, i) {
+        var img = document.createElement('img');
+        img.src = url;
+        img.alt = '';
+        img.className = 'photo-thumb' + (i === 0 ? ' main' : '');
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:6px;display:block';
+        photoGrid.appendChild(img);
+      });
+      var seeAllEs = document.getElementById('photos-see-all-es');
+      var seeAllEn = document.getElementById('photos-see-all-en');
+      if (seeAllEs) seeAllEs.textContent = 'Ver todas (' + photos.length + ')';
+      if (seeAllEn) seeAllEn.textContent = 'See all (' + photos.length + ')';
+      photoSection.style.display = 'block';
+    }
     document.getElementById('hours-sidebar-card').style.display = 'block';
 
     document.getElementById('quote-btn-text-es').textContent = 'Solicitar presupuesto por WhatsApp';
@@ -1233,13 +1252,17 @@ function submitQuote() {
   var PLAN_LIMITS = { free: 3, basic: 10, premium: Infinity };
   var limit = PLAN_LIMITS[plan.toLowerCase()] !== undefined ? PLAN_LIMITS[plan.toLowerCase()] : Infinity;
 
+  // 월 단위 dedup용 ref suffix (SB8/SB9/SB12/SB13)
+  var monthKey = bizId ? bizId + '_' + new Date().toISOString().slice(0, 7) : bizId;
+
   // [1] 한도 확인 (DB 기반 — window.currentBusiness는 페이지 로드 시 DB에서 가져온 값)
   if (used >= limit) {
-    if (bizEmail) sendEmail('SB12', bizEmail, { biz_name: bizName }, bizId);
+    if (bizEmail) sendEmail('SB12', bizEmail, { biz_name: bizName }, monthKey);
     getSession().then(function(sess) {
       var customerId = (sess && sess.user) ? sess.user.id : null;
       if (sess && sess.user && sess.user.email) {
-        sendEmail('SB13', sess.user.email, { biz_name: bizName });
+        var customerMonthKey = sess.user.id + '_' + bizId + '_' + new Date().toISOString().slice(0, 7);
+        sendEmail('SB13', sess.user.email, { biz_name: bizName }, customerMonthKey);
       }
       if (bizId) {
         getSupabase().from('contact_log').insert({ biz_id: bizId, customer_id: customerId, channel: 'whatsapp', limit_hit: true })
@@ -1268,10 +1291,10 @@ function submitQuote() {
   if (window.currentBusiness) window.currentBusiness.contacts_used_month = used + 1;
   var remaining = isFinite(limit) ? limit - (used + 1) : Infinity;
 
-  // [4] SB8/SB9: 한도 근접·소진 알림 (업체에)
+  // [4] SB8/SB9: 한도 근접·소진 알림 (업체에, 월 단위 dedup)
   if (bizEmail) {
-    if (remaining === 0) sendEmail('SB9', bizEmail, { biz_name: bizName, plan: planName }, bizId);
-    else if (remaining === 1) sendEmail('SB8', bizEmail, { biz_name: bizName, plan: planName, remaining: '1' }, bizId);
+    if (remaining === 0) sendEmail('SB9', bizEmail, { biz_name: bizName, plan: planName }, monthKey);
+    else if (remaining === 1) sendEmail('SB8', bizEmail, { biz_name: bizName, plan: planName, remaining: '1' }, monthKey);
   }
 
   // [5] SB6: WhatsApp 문의 수신 알림 (업체에)
@@ -1528,13 +1551,17 @@ function submitFallback() {
   var PLAN_LIMITS = { free: 3, basic: 10, premium: Infinity };
   var limit = PLAN_LIMITS[plan.toLowerCase()] !== undefined ? PLAN_LIMITS[plan.toLowerCase()] : Infinity;
 
+  // 월 단위 dedup용 ref suffix (SB8/SB9/SB12/SB13)
+  var monthKey = bizId ? bizId + '_' + new Date().toISOString().slice(0, 7) : bizId;
+
   // [1] 한도 확인 (DB 기반)
   if (used >= limit) {
-    if (bizEmail) sendEmail('SB12', bizEmail, { biz_name: bizName }, bizId);
+    if (bizEmail) sendEmail('SB12', bizEmail, { biz_name: bizName }, monthKey);
     getSession().then(function(sess) {
       var customerId = (sess && sess.user) ? sess.user.id : null;
       if (sess && sess.user && sess.user.email) {
-        sendEmail('SB13', sess.user.email, { biz_name: bizName });
+        var customerMonthKey = sess.user.id + '_' + bizId + '_' + new Date().toISOString().slice(0, 7);
+        sendEmail('SB13', sess.user.email, { biz_name: bizName }, customerMonthKey);
       }
       if (bizId) {
         getSupabase().from('contact_log').insert({ biz_id: bizId, customer_id: customerId, channel: 'form', limit_hit: true })
@@ -1563,10 +1590,10 @@ function submitFallback() {
   if (window.currentBusiness) window.currentBusiness.contacts_used_month = used + 1;
   var remaining = isFinite(limit) ? limit - (used + 1) : Infinity;
 
-  // [4] SB8/SB9: 한도 근접·소진 알림 (업체에)
+  // [4] SB8/SB9: 한도 근접·소진 알림 (업체에, 월 단위 dedup)
   if (bizEmail) {
-    if (remaining === 0) sendEmail('SB9', bizEmail, { biz_name: bizName, plan: planName }, bizId);
-    else if (remaining === 1) sendEmail('SB8', bizEmail, { biz_name: bizName, plan: planName, remaining: '1' }, bizId);
+    if (remaining === 0) sendEmail('SB9', bizEmail, { biz_name: bizName, plan: planName }, monthKey);
+    else if (remaining === 1) sendEmail('SB8', bizEmail, { biz_name: bizName, plan: planName, remaining: '1' }, monthKey);
   }
 
   logContact(bizId, 'form', false);
