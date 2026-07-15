@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Worker Profile — AmigosNearMe</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
+  :root {
+    --c-bg:#FAFAF7;--c-surface:#FFFFFF;--c-border:rgba(0,0,0,0.09);
+    --c-text:#1A1A18;--c-muted:#6B6B66;--c-hint:#A8A8A2;
+    --c-accent:#C94F2B;--c-accent-light:#FAF0EC;
+    --c-green:#1D9E75;--c-green-light:#EBF8F3;
+    --c-amber:#BA7517;--c-amber-light:#FEF6E4;
+    --c-blue:#185FA5;--c-blue-light:#EEF4FB;
+    --radius-sm:8px;--radius-md:12px;--radius-lg:18px;--radius-xl:22px;
+    --shadow:0 1px 3px rgba(0,0,0,0.07),0 4px 12px rgba(0,0,0,0.05);
+    --font-display:'DM Serif Display',Georgia,serif;
+    --font-body:'DM Sans',system-ui,sans-serif;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  nav{position:sticky;top:0;z-index:100;background:rgba(250,250,247,0.92);backdrop-filter:blur(12px);border-bottom:0.5px solid var(--c-border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+  .nav-logo{font-family:var(--font-display);font-size:22px;color:var(--c-text);text-decoration:none}
+  .nav-logo span{color:var(--c-accent)}
+  .lang-btn{padding:3px 8px;border-radius:99px;font-size:12px;cursor:pointer;border:0.5px solid var(--c-border);background:transparent;color:var(--c-muted);font-family:var(--font-body)}
+  .lang-btn.active{background:var(--c-accent-light);color:var(--c-accent);border-color:var(--c-accent)}
+  .btn-nav{font-size:13px;font-weight:500;padding:7px 16px;border-radius:var(--radius-sm);text-decoration:none;cursor:pointer;border:0.5px solid var(--c-border);background:var(--c-surface);color:var(--c-text);font-family:var(--font-body)}
+  .page-wrap{max-width:820px;margin:0 auto;padding:32px 24px}
+  .card{background:var(--c-surface);border:0.5px solid var(--c-border);border-radius:var(--radius-xl);padding:28px;margin-bottom:20px;box-shadow:var(--shadow)}
+  .badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:2px 8px;border-radius:99px;font-weight:500}
+  .badge-verified{background:var(--c-green-light);color:var(--c-green)}
+  .badge-insured{background:#EEF6FF;color:var(--c-blue)}
+  .section-title{font-size:13px;font-weight:600;color:var(--c-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:12px}
+  .info-row{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--c-muted);margin-bottom:8px}
+  .info-row strong{color:var(--c-text)}
+  .btn-wa{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:var(--radius-md);background:var(--c-green);color:#fff;font-size:15px;font-weight:600;border:none;cursor:pointer;font-family:var(--font-body);transition:opacity 0.15s}
+  .btn-wa:hover{opacity:0.9}
+  .btn-wa:disabled{opacity:0.45;cursor:not-allowed}
+  .btn-login{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:var(--radius-md);background:var(--c-accent);color:#fff;font-size:15px;font-weight:600;border:none;cursor:pointer;font-family:var(--font-body)}
+  .wa-note{font-size:12px;color:var(--c-muted);text-align:center;margin-top:8px}
+  .credit-banner{padding:12px 16px;border-radius:var(--radius-md);font-size:13px;margin-bottom:16px;display:none}
+  .credit-ok{background:var(--c-green-light);color:var(--c-green);border:0.5px solid rgba(29,158,117,0.2)}
+  .credit-warn{background:var(--c-amber-light);color:var(--c-amber);border:0.5px solid rgba(186,117,23,0.2)}
+  .credit-empty{background:var(--c-accent-light);color:var(--c-accent);border:0.5px solid rgba(201,79,43,0.2)}
+  .review-form-wrap{margin-top:20px;padding-top:20px;border-top:0.5px solid var(--c-border)}
+  .star-pick{font-size:28px;cursor:pointer;letter-spacing:4px;user-select:none;color:var(--c-amber)}
+  textarea{width:100%;padding:10px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:14px;font-family:var(--font-body);resize:vertical;min-height:80px;outline:none;transition:border-color 0.12s}
+  textarea:focus{border-color:var(--c-accent)}
+  .btn-submit{padding:10px 22px;border-radius:var(--radius-sm);background:var(--c-accent);color:#fff;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:var(--font-body);margin-top:10px}
+  .review-item{padding:14px 0;border-bottom:0.5px solid var(--c-border)}
+  .review-item:last-child{border-bottom:none}
+  #page-loading{position:fixed;inset:0;background:rgba(250,250,247,0.85);z-index:999;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--c-muted)}
+  [data-en]{display:none}
+  body.en [data-es]{display:none}
+  body.en [data-en]{display:revert}
+  @media(max-width:600px){.page-wrap{padding:16px 12px}}
+</style>
+</head>
+<body>
+
+<div id="page-loading">
+  <span data-es>Cargando perfil...</span><span data-en>Loading profile...</span>
+</div>
+
+<nav>
+  <a href="index.html" class="nav-logo">Amigos<span>NearMe</span></a>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="lang-btn active" id="btn-es" onclick="setLang('es')">ES</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    <a href="worker-search.html" class="btn-nav" style="font-size:12px">
+      <span data-es>← Todos los trabajadores</span><span data-en>← All workers</span>
+    </a>
+    <span id="nav-auth-area"></span>
+  </div>
+</nav>
+
+<div class="page-wrap" id="profile-content" style="display:none">
+
+  <!-- HEADER CARD -->
+  <div class="card" id="card-header">
+    <div style="display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap">
+      <div id="worker-avatar" style="width:72px;height:72px;border-radius:var(--radius-md);background:var(--c-green-light);color:var(--c-green);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;flex-shrink:0"></div>
+      <div style="flex:1;min-width:0">
+        <h1 id="worker-name" style="font-family:var(--font-display);font-size:26px;font-weight:400;margin-bottom:6px"></h1>
+        <div id="worker-badges" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px"></div>
+        <div id="worker-cats" style="font-size:14px;color:var(--c-muted)"></div>
+        <div id="worker-area" style="font-size:13px;color:var(--c-hint);margin-top:4px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACT CARD -->
+  <div class="card">
+    <!-- Credit banner (Employer only) -->
+    <div class="credit-banner" id="credit-banner"></div>
+
+    <!-- Button area — rendered by JS based on user type -->
+    <div id="contact-area"></div>
+  </div>
+
+  <!-- ABOUT CARD -->
+  <div class="card" id="card-about" style="display:none">
+    <div class="section-title"><span data-es>Sobre el trabajador</span><span data-en>About</span></div>
+    <p id="worker-desc" style="font-size:14px;color:var(--c-muted);line-height:1.65"></p>
+  </div>
+
+  <!-- DETAILS CARD -->
+  <div class="card">
+    <div class="section-title"><span data-es>Detalles</span><span data-en>Details</span></div>
+    <div id="worker-details"></div>
+  </div>
+
+  <!-- REVIEWS CARD -->
+  <div class="card" id="card-reviews">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+      <div class="section-title" style="margin-bottom:0"><span data-es>Reseñas</span><span data-en>Reviews</span></div>
+      <div id="review-avg" style="font-size:13px;color:var(--c-muted)"></div>
+    </div>
+    <div id="reviews-list"></div>
+
+    <!-- Review toggle button (Employer only, after contacting) -->
+    <div id="review-section" style="display:none">
+      <button onclick="toggleReviewForm()" style="margin-top:16px;padding:8px 18px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);background:var(--c-bg);font-size:13px;cursor:pointer;font-family:var(--font-body)">
+        <span data-es>✏️ Escribir reseña</span><span data-en>✏️ Write a review</span>
+      </button>
+
+      <div id="review-gate" style="display:none;margin-top:12px;padding:12px;background:var(--c-bg);border-radius:var(--radius-sm);font-size:13px;color:var(--c-muted)">
+        <span data-es>Solo puedes reseñar a trabajadores con los que te has contactado.</span>
+        <span data-en>You can only review workers you have contacted.</span>
+      </div>
+
+      <div id="review-form" style="display:none;margin-top:12px">
+        <div class="star-pick" id="star-pick" onclick="pickStar(event)">☆☆☆☆☆</div>
+        <textarea id="review-text" placeholder="Share your experience..." style="margin-top:10px"></textarea>
+        <button class="btn-submit" onclick="submitReview()">
+          <span data-es>Enviar reseña</span><span data-en>Submit review</span>
+        </button>
+        <div id="review-success" style="display:none;margin-top:8px;font-size:13px;color:var(--c-green)">
+          <span data-es>✅ Reseña enviada.</span><span data-en>✅ Review submitted.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /profile-content -->
+
+<div id="not-found" style="display:none;text-align:center;padding:80px 24px">
+  <div style="font-size:40px;margin-bottom:16px">😕</div>
+  <h2 style="font-family:var(--font-display);font-size:24px;margin-bottom:8px">
+    <span data-es>Trabajador no encontrado</span><span data-en>Worker not found</span>
+  </h2>
+  <a href="worker-search.html" style="color:var(--c-accent);font-size:14px">
+    <span data-es>← Ver todos los trabajadores</span><span data-en>← Browse all workers</span>
+  </a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
+<script>
+var CAT_LABELS_ES = { staffing:'👷 Personal / Mano de Obra',landscaping:'🌿 Landscaping', cleaning:'🧹 Limpieza', construction:'🏗️ Construcción', painting:'🪟 Pintura', moving:'📦 Mudanzas', plumbing:'🔧 Plomería', electrical:'⚡ Electricidad', tree_removal:'🌳 Árboles', food:'🍽️ Comida', auto:'🚗 Autos', translation:'🗣️ Traducción', real_estate:'🏠 Bienes Raíces' };
+var CAT_LABELS_EN = { staffing:'👷 Staffing', landscaping:'🌿 Landscaping', cleaning:'🧹 Cleaning', construction:'🏗️ Construction', painting:'🪟 Painting', moving:'📦 Moving', plumbing:'🔧 Plumbing', electrical:'⚡ Electrical', tree_removal:'🌳 Tree Removal', food:'🍽️ Food & Catering', auto:'🚗 Auto Repair', translation:'🗣️ Translation', real_estate:'🏠 Real Estate' };
+
+var currentWorker = null;
+var currentSession = null;
+var currentUserType = null;
+var _lastContactArgs = null; // {type, credits}
+
+function setLang(lang) {
+  var en = lang === 'en';
+  document.body.classList.toggle('en', en);
+  document.getElementById('btn-es').classList.toggle('active', !en);
+  document.getElementById('btn-en').classList.toggle('active', en);
+  try { localStorage.setItem('anm-lang', lang); } catch(e) {}
+  // 언어 전환 시 동적 렌더 영역 재갱신
+  if (currentWorker) {
+    renderWorker(currentWorker);
+    if (_lastContactArgs) renderContactArea(_lastContactArgs.type, _lastContactArgs.credits, currentWorker);
+  }
+}
+
+function getWorkerId() {
+  return new URLSearchParams(window.location.search).get('id');
+}
+
+function showNotFound() {
+  document.getElementById('page-loading').style.display = 'none';
+  document.getElementById('not-found').style.display = 'block';
+}
+
+async function loadWorker() {
+  var id = getWorkerId();
+  if (!id) { showNotFound(); return; }
+
+  document.getElementById('page-loading').style.display = 'flex';
+
+  try {
+    var sb = getSupabase();
+    var res = await sb.from('businesses').select('*').eq('id', id).eq('is_worker', true).single();
+    if (res.error || !res.data) { showNotFound(); return; }
+    var w = res.data;
+
+    // account_status 체크 (§12.3)
+    if (w.account_status !== 'active') { showNotFound(); return; }
+
+    currentWorker = w;
+
+    // page_views 기록 (§5.1 — fire-and-forget)
+    getSession().then(function(sess) {
+      var viewerId = (sess && sess.user) ? sess.user.id : null;
+      sb.from('page_views').insert({ biz_id: id, viewer_id: viewerId })
+        .then(function(r){ if (r.error) console.warn('[page_views]', r.error.message); });
+    });
+
+    // 세션 + 유저 타입 조회
+    currentSession = await getSession();
+    currentUserType = currentSession && currentSession.user
+      ? (currentSession.user.user_metadata && currentSession.user.user_metadata.user_type) || 'customer'
+      : null;
+
+    renderWorker(w);
+
+    // 리뷰 로드
+    var revRes = await sb.from('reviews').select('rating, review_text, created_at').eq('biz_id', id).order('created_at', { ascending: false });
+    renderReviews(revRes.data || []);
+
+    // 본인 프로필 여부 확인
+    var isOwner = currentSession && currentSession.user && w.owner_id === currentSession.user.id;
+
+    if (isOwner) {
+      // 본인 프로필: edit 배너 표시
+      renderContactArea('owner', 0, w);
+    } else if ((currentUserType === 'employer' || currentUserType === 'business') && currentSession) {
+      // Employer 또는 Business 계정: employer_profiles 조회 후 contact 허용 (B안)
+      var epRes = await sb.from('employer_profiles').select('credit_balance').eq('owner_id', currentSession.user.id).single();
+      if (epRes.error || !epRes.data) {
+        renderContactArea('employer', 0, w);
+      } else {
+        var credits = epRes.data.credit_balance || 0;
+        renderContactArea('employer', credits, w);
+      }
+      checkReviewEligibility(id, currentSession.user.id);
+    } else if (!currentSession) {
+      renderContactArea('anon', 0, w);
+    } else {
+      // Customer / Worker 타계정 → Employer 가입 유도
+      renderContactArea('blocked', 0, w);
+    }
+
+  } catch(e) {
+    console.error('[worker-profile] load error:', e);
+    showNotFound();
+    return;
+  }
+
+  document.getElementById('page-loading').style.display = 'none';
+  document.getElementById('profile-content').style.display = 'block';
+}
+
+function renderWorker(w) {
+  var isEn = document.body.classList.contains('en');
+  var catLabels = isEn ? CAT_LABELS_EN : CAT_LABELS_ES;
+
+  // Avatar: photo if available, otherwise initials
+  var avatarEl = document.getElementById('worker-avatar');
+  var firstPhoto = Array.isArray(w.photos) && w.photos.length > 0 ? w.photos[0] : null;
+  if (firstPhoto) {
+    avatarEl.innerHTML = '';
+    var avatarImg = document.createElement('img');
+    avatarImg.src = firstPhoto;
+    avatarImg.style.cssText = 'width:100%;height:100%;object-fit:contain;background:var(--c-bg);border-radius:var(--radius-md)';
+    avatarEl.appendChild(avatarImg);
+  } else {
+    var initials = (w.business_name || '').split(' ').slice(0,2).map(function(p){ return p[0]||''; }).join('').toUpperCase() || '??';
+    avatarEl.textContent = initials;
+  }
+
+  // Name
+  document.getElementById('worker-name').textContent = w.business_name || w.trade_name || '';
+  document.title = (w.business_name || 'Worker') + ' — AmigosNearMe';
+
+  // Badges
+  var badgeHtml = '';
+  if (w.verified) badgeHtml += '<span class="badge badge-verified">✓ Verified</span>';
+  if (w.insured) badgeHtml += '<span class="badge badge-insured">🛡️ '+(isEn?'Insured':'Asegurado')+'</span>';
+  document.getElementById('worker-badges').innerHTML = badgeHtml;
+
+  // Categories
+  var catLabel = (w.categories || []).map(function(c){ return catLabels[c] || c; }).join(' · ');
+  document.getElementById('worker-cats').textContent = catLabel;
+
+  // Area
+  var area = w.service_area || '';
+  document.getElementById('worker-area').textContent = area ? '📍 ' + area : '';
+
+  // Description (언어별)
+  var desc = isEn ? (w.description_en || w.description_es || w.description) : (w.description_es || w.description);
+  if (desc) {
+    document.getElementById('card-about').style.display = 'block';
+    document.getElementById('worker-desc').textContent = desc;
+  } else {
+    document.getElementById('card-about').style.display = 'none';
+  }
+
+  // Details
+  var STAFFING_TYPE_LABELS_EN = {
+    kitchen_restaurant: '🍳 Kitchen / Restaurant', moving_loading: '📦 Moving / Loading',
+    construction_day_labor: '🏗️ Construction', production_warehouse: '🏭 Production / Warehouse',
+    commercial_cleaning_crews: '🧹 Commercial Cleaning', agricultural_work: '🌾 Agricultural',
+    events_valet_parking: '🅿️ Events / Valet', other_general_labor: '🔧 General Labor'
+  };
+  var STAFFING_TYPE_LABELS_ES = {
+    kitchen_restaurant: '🍳 Cocina / Restaurante', moving_loading: '📦 Mudanzas / Carga',
+    construction_day_labor: '🏗️ Construcción', production_warehouse: '🏭 Producción / Almacén',
+    commercial_cleaning_crews: '🧹 Limpieza comercial', agricultural_work: '🌾 Trabajo agrícola',
+    events_valet_parking: '🅿️ Eventos / Estacionamiento', other_general_labor: '🔧 Trabajo general'
+  };
+  var AVAIL_LABELS_EN = { by_the_day: 'By the day', by_the_week: 'By the week', permanent_placement: 'Permanent placement' };
+  var AVAIL_LABELS_ES = { by_the_day: 'Por día', by_the_week: 'Por semana', permanent_placement: 'Contrato permanente' };
+  var LANG_LABELS = { es: 'Español', en: 'English', pt: 'Português' };
+  var PAY_LABELS = { cash: 'Cash', zelle: 'Zelle', venmo: 'Venmo', check: 'Check', credit_card: 'Credit Card', paypal: 'PayPal' };
+  var typeLabels = isEn ? STAFFING_TYPE_LABELS_EN : STAFFING_TYPE_LABELS_ES;
+  var availLabels = isEn ? AVAIL_LABELS_EN : AVAIL_LABELS_ES;
+
+  var detHtml = '';
+  if ((w.staffing_types || []).length > 0) {
+    var tLabels = w.staffing_types.map(function(t) { return typeLabels[t] || t; }).join(' · ');
+    detHtml += '<div class="info-row">👷 <strong>'+(isEn?'Worker types':'Tipos de trabajo')+':</strong> '+tLabels+'</div>';
+  }
+  if ((w.staffing_availability || []).length > 0) {
+    var aLabels = w.staffing_availability.map(function(a) { return availLabels[a] || a; }).join(' · ');
+    detHtml += '<div class="info-row">📅 <strong>'+(isEn?'Availability':'Disponibilidad')+':</strong> '+aLabels+'</div>';
+  }
+  if ((w.languages || []).length > 0) {
+    var lLabels = w.languages.map(function(l) { return LANG_LABELS[l] || l; }).join(', ');
+    detHtml += '<div class="info-row">🗣️ <strong>'+(isEn?'Languages':'Idiomas')+':</strong> '+lLabels+'</div>';
+  }
+  if ((w.payment_methods || []).length > 0) {
+    var pLabels = w.payment_methods.map(function(p) { return PAY_LABELS[p] || p; }).join(', ');
+    detHtml += '<div class="info-row">💳 <strong>'+(isEn?'Payment':'Pago')+':</strong> '+pLabels+'</div>';
+  }
+  document.getElementById('worker-details').innerHTML = detHtml || '<div style="font-size:13px;color:var(--c-hint)">'+(isEn?'No additional details.':'Sin detalles adicionales.')+'</div>';
+}
+
+function renderContactArea(type, credits, w) {
+  _lastContactArgs = { type: type, credits: credits };
+  var isEn = document.body.classList.contains('en');
+  var area = document.getElementById('contact-area');
+  var banner = document.getElementById('credit-banner');
+  banner.style.display = 'none';
+
+  if (type === 'anon') {
+    var returnTo = encodeURIComponent('worker-profile.html?id=' + (w.id || ''));
+    area.innerHTML =
+      '<div style="padding:16px;border-radius:var(--radius-md);background:var(--c-bg);border:0.5px solid var(--c-border);text-align:center;line-height:1.7">' +
+        '<div style="font-size:14px;font-weight:600;color:var(--c-text);margin-bottom:6px">' +
+          (isEn ? '💼 Contact this worker' : '💼 Contactar a este trabajador') +
+        '</div>' +
+        '<div style="font-size:13px;color:var(--c-muted);margin-bottom:14px">' +
+          (isEn
+            ? 'You need an <strong>Employer account</strong> to view contact info and hire workers.'
+            : 'Necesitas una <strong>cuenta de Empleador</strong> para ver la información de contacto y contratar trabajadores.') +
+        '</div>' +
+        '<a href="login.html?type=employer&returnTo=' + returnTo + '" style="display:inline-block;padding:9px 20px;background:var(--c-accent);color:#fff;border-radius:var(--radius-sm);font-size:13px;font-weight:600;text-decoration:none;margin-bottom:8px">' +
+          (isEn ? '🚀 Create Employer account' : '🚀 Crear cuenta de Empleador') +
+        '</a>' +
+        '<div style="font-size:12px;color:var(--c-muted)">' +
+          (isEn ? 'Already have an account? ' : '¿Ya tienes cuenta? ') +
+          '<a href="login.html?type=employer&mode=login&returnTo=' + returnTo + '" style="color:var(--c-accent);font-weight:600;text-decoration:none">' +
+            (isEn ? 'Log in →' : 'Inicia sesión →') +
+          '</a>' +
+        '</div>' +
+      '</div>';
+    return;
+  }
+
+  if (type === 'blocked') {
+    area.innerHTML = '<div style="padding:14px;border-radius:var(--radius-md);background:var(--c-bg);border:0.5px solid var(--c-border);font-size:13px;color:var(--c-muted);text-align:center;line-height:1.6">' +
+      (isEn
+        ? '🔒 Contacting workers requires an Employer account.<br><a href="login.html?type=employer" style="color:var(--c-accent);font-weight:600;text-decoration:none">Create an Employer account →</a>'
+        : '🔒 Para contactar trabajadores necesitas una cuenta de Empleador.<br><a href="login.html?type=employer" style="color:var(--c-accent);font-weight:600;text-decoration:none">Crear cuenta de Empleador →</a>') +
+      '</div>';
+    return;
+  }
+
+  if (type === 'owner') {
+    area.innerHTML = '<div style="padding:14px;border-radius:var(--radius-md);background:var(--c-bg);border:0.5px solid var(--c-border);text-align:center;line-height:1.6">' +
+      '<div style="font-size:13px;color:var(--c-muted);margin-bottom:10px">' +
+      (isEn ? '👤 This is your public worker profile.' : '👤 Este es tu perfil público de trabajador.') +
+      '</div>' +
+      '<a href="register.html?type=staffing&edit=' + (w.id || '') + '" style="display:inline-block;padding:9px 20px;background:var(--c-accent);color:#fff;border-radius:var(--radius-sm);font-size:13px;font-weight:600;text-decoration:none">' +
+      (isEn ? '✏️ Edit my profile' : '✏️ Editar mi perfil') +
+      '</a></div>';
+    return;
+  }
+
+  // Employer
+  if (credits <= 0) {
+    banner.className = 'credit-banner credit-empty';
+    banner.style.display = 'block';
+    banner.textContent = isEn ? '🚫 You have 0 credits remaining. Purchase credits to contact workers.' : '🚫 No tienes créditos disponibles. Compra créditos para contactar trabajadores.';
+    area.innerHTML = '<button class="btn-wa" disabled>💬 WhatsApp</button>' +
+      '<div class="wa-note">' + (isEn ? 'Visit your dashboard to purchase credits.' : 'Visita tu panel para comprar créditos.') + '</div>';
+    return;
+  }
+
+  if (credits === 1) {
+    banner.className = 'credit-banner credit-warn';
+    banner.style.display = 'block';
+    banner.textContent = isEn ? '⚠️ Only 1 contact credit remaining.' : '⚠️ Solo queda 1 crédito de contacto.';
+  } else {
+    banner.className = 'credit-banner credit-ok';
+    banner.style.display = 'block';
+    banner.textContent = isEn ? ('✅ ' + credits + ' credits remaining.') : ('✅ ' + credits + ' créditos disponibles.');
+  }
+
+  var phone = (w.whatsapp_phone || '').replace(/\D/g, '');
+  var name = w.business_name || '';
+  var msgEs = 'Hola ' + name + ', vi tu perfil en AmigosNearMe y me gustaría contratarte. ¿Estás disponible?';
+  var msgEn = 'Hi ' + name + ', I saw your profile on AmigosNearMe and would like to hire you. Are you available?';
+  var msg = isEn ? msgEn : msgEs;
+  var waUrl = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg);
+
+  area.innerHTML = '<button class="btn-wa" id="btn-wa-worker" onclick="contactWorker(\'' + waUrl + '\')">' +
+    '💬 ' + (isEn ? 'Open WhatsApp' : 'Abrir WhatsApp') + '</button>' +
+    '<div class="wa-note">' + (isEn ? '1 credit will be used.' : 'Se usará 1 crédito.') + '</div>';
+}
+
+async function contactWorker(waUrl) {
+  if (!currentSession || !currentWorker) return;
+  var isEn = document.body.classList.contains('en');
+
+  // [1] Re-fetch credit balance (fresh check antes de abrir)
+  var sb = getSupabase();
+  var epRes = await sb.from('employer_profiles').select('credit_balance, id').eq('owner_id', currentSession.user.id).single();
+  if (epRes.error || !epRes.data || epRes.data.credit_balance <= 0) {
+    // EM6: créditos agotados al intentar contactar
+    sendEmail('EM6', currentSession.user.email, { worker_name: currentWorker.business_name || '' });
+    renderContactArea('employer', 0, currentWorker);
+    return;
+  }
+
+  var credits = epRes.data.credit_balance;
+  var workerId = currentWorker.id;
+  var workerEmail = currentWorker.public_email || null;
+  var workerName = currentWorker.business_name || '';
+  var empId = currentSession.user.id;
+  var empEmail = currentSession.user.email;
+
+  // [2] WhatsApp 창 열기 (§4.4 순서)
+  window.open(waUrl, '_blank');
+
+  // [3] 크레딧 차감 (RPC — atomic, fire-and-forget)
+  sb.rpc('decrement_employer_credit', { p_employer_id: empId })
+    .then(function(r){ if (r.error) console.warn('[credit deduct]', r.error.message); });
+
+  // [4] contact_log INSERT
+  sb.from('contact_log').insert({
+    biz_id:    workerId,
+    customer_id:  empId,
+    channel:   'whatsapp',
+    limit_hit: false
+  }).then(function(r){ if (r.error) console.warn('[contact_log]', r.error.message); });
+
+  // [5] W2: Worker 알림 이메일
+  if (workerEmail) sendEmail('W2', workerEmail, { worker_name: workerName });
+
+  // [6] EM3/EM4: 잔여 크레딧 경고 (dedup: empId를 ref_id로 사용 — is_voided로 사이클 초기화)
+  var remaining = credits - 1;
+  if (remaining === 0) {
+    sendEmail('EM4', empEmail, { credits: '0', name: '' }, empId);
+  } else if (remaining === 1) {
+    sendEmail('EM3', empEmail, { credits: '1', worker_name: workerName, name: '' }, empId);
+  }
+
+  // UI 업데이트 (메모리 내)
+  renderContactArea('employer', remaining, currentWorker);
+  // review 버튼 표시 (연락 직후 자격 생김)
+  document.getElementById('review-section').style.display = 'block';
+}
+
+function redirectLogin() {
+  window.location.href = 'login.html?type=employer&redirect=' + encodeURIComponent(window.location.href);
+}
+
+function renderReviews(reviews) {
+  var isEn = document.body.classList.contains('en');
+  var list = document.getElementById('reviews-list');
+  var avgEl = document.getElementById('review-avg');
+
+  if (!reviews || reviews.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--c-hint);font-size:13px">' +
+      (isEn ? '⭐ No reviews yet.' : '⭐ Sin reseñas aún.') + '</div>';
+    return;
+  }
+
+  var avg = reviews.reduce(function(s, r){ return s + r.rating; }, 0) / reviews.length;
+  avgEl.textContent = '★ ' + avg.toFixed(1) + ' (' + reviews.length + ')';
+
+  list.innerHTML = reviews.map(function(r) {
+    var d = new Date(r.created_at);
+    var dateStr = d.toLocaleDateString(isEn ? 'en-US' : 'es-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    var stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+    return '<div class="review-item">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">' +
+      '<span style="color:var(--c-amber)">' + stars + '</span>' +
+      '<span style="font-size:12px;color:var(--c-hint)">' + dateStr + '</span>' +
+      '</div>' +
+      (r.review_text ? '<div style="font-size:13px;color:var(--c-muted)">' + r.review_text.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>' : '') +
+      '</div>';
+  }).join('');
+}
+
+async function checkReviewEligibility(workerId, userId) {
+  var sb = getSupabase();
+  var res = await sb.from('contact_log')
+    .select('id', { count: 'exact', head: true })
+    .eq('biz_id', workerId)
+    .eq('customer_id', userId)
+    .eq('limit_hit', false);
+  if (!res.error && (res.count || 0) > 0) {
+    document.getElementById('review-section').style.display = 'block';
+  }
+}
+
+async function toggleReviewForm() {
+  var form = document.getElementById('review-form');
+  var gate = document.getElementById('review-gate');
+
+  if (form.style.display !== 'none') {
+    form.style.display = 'none';
+    gate.style.display = 'none';
+    return;
+  }
+
+  if (!currentSession || !currentWorker) { gate.style.display = 'block'; return; }
+
+  var sb = getSupabase();
+  var res = await sb.from('contact_log')
+    .select('id', { count: 'exact', head: true })
+    .eq('biz_id', currentWorker.id)
+    .eq('customer_id', currentSession.user.id)
+    .eq('limit_hit', false);
+  var eligible = !res.error && (res.count || 0) > 0;
+
+  if (eligible) {
+    gate.style.display = 'none';
+    form.style.display = 'block';
+    form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } else {
+    form.style.display = 'none';
+    gate.style.display = 'block';
+  }
+}
+
+async function submitReview() {
+  var starEl = document.getElementById('star-pick');
+  var textEl = document.getElementById('review-text');
+  var rating = starEl ? (starEl.textContent.match(/★/g) || []).length : 0;
+  var text = textEl ? textEl.value.trim() : '';
+  var isEn = document.body.classList.contains('en');
+
+  if (rating === 0) {
+    alert(isEn ? 'Please select a star rating.' : 'Por favor selecciona una calificación.');
+    return;
+  }
+  if (!currentSession || !currentWorker) return;
+
+  var sb = getSupabase();
+  var workerId = currentWorker.id;
+  var workerName = currentWorker.business_name || '';
+
+  // contact_log 자격 확인
+  var eligRes = await sb.from('contact_log')
+    .select('id', { count: 'exact', head: true })
+    .eq('biz_id', workerId)
+    .eq('customer_id', currentSession.user.id)
+    .eq('limit_hit', false);
+  if (eligRes.error || (eligRes.count || 0) === 0) {
+    alert(isEn ? 'You can only review workers you have contacted.' : 'Solo puedes reseñar trabajadores con los que te has contactado.');
+    return;
+  }
+
+  try {
+    var { error } = await sb.from('reviews').upsert({
+      biz_id:      workerId,
+      reviewer_id: currentSession.user.id,
+      rating:      rating,
+      review_text: text
+    }, { onConflict: 'biz_id,reviewer_id' });
+    if (error) throw error;
+
+    // AD2: 1점 리뷰 관리자 알림
+    if (rating === 1) sendEmail('AD2', null, { biz_name: workerName, rating: rating, review_text: text }, workerId);
+
+    // AD3: 스팸 감지
+    var spamPattern = /https?:\/\/|www\.|[\+\d][\d\s\-\(\)]{7,}|\b[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}/;
+    if (text && spamPattern.test(text)) sendEmail('AD3', null, { biz_name: workerName, rating: rating, review_text: text }, workerId);
+
+    document.getElementById('review-success').style.display = 'block';
+    setTimeout(function() {
+      document.getElementById('review-success').style.display = 'none';
+      document.getElementById('review-form').style.display = 'none';
+      if (textEl) textEl.value = '';
+      if (starEl) starEl.textContent = '☆☆☆☆☆';
+      // Reload reviews
+      sb.from('reviews').select('rating, review_text, created_at').eq('biz_id', workerId).order('created_at', { ascending: false })
+        .then(function(r){ renderReviews(r.data || []); });
+    }, 2500);
+  } catch(e) {
+    console.error('[submitReview]', e);
+  }
+}
+
+function pickStar(e) {
+  var stars = document.getElementById('star-pick');
+  var rect = stars.getBoundingClientRect();
+  var x = e.clientX - rect.left;
+  var n = Math.min(5, Math.max(1, Math.ceil((x / rect.width) * 5)));
+  stars.textContent = '★'.repeat(n) + '☆'.repeat(5 - n);
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+  var saved = ''; try { saved = localStorage.getItem('anm-lang'); } catch(e) {}
+  var browser = (navigator.language || 'es').toLowerCase();
+  setLang(saved || (browser.startsWith('en') ? 'en' : 'es'));
+  loadWorker();
+
+  try {
+    var sess = await getSession();
+    var authArea = document.getElementById('nav-auth-area');
+    if (sess && sess.user && authArea) {
+      var isEn = document.body.classList.contains('en');
+      var utype = (sess.user.user_metadata && sess.user.user_metadata.user_type) || '';
+      var dashHref = utype === 'employer' ? 'employer-dashboard.html'
+                   : utype === 'business' ? 'dashboard.html'
+                   : 'index.html';
+      if (utype === 'worker') {
+        try { var wb = await getMyBusiness(); if (wb && wb.id) dashHref = 'worker-profile.html?id=' + wb.id; } catch(e) {}
+      }
+      authArea.innerHTML =
+        '<a href="' + dashHref + '" class="btn-nav" style="font-size:12px;color:var(--c-muted)">' +
+          (isEn ? 'My Account' : 'Mi Cuenta') +
+        '</a>' +
+        '<button onclick="(async function(){try{await signOut();}catch(e){}window.location.href=\'index.html\';})()" class="btn-nav" style="font-size:12px;color:var(--c-muted);background:none;border:none;cursor:pointer">' +
+          (isEn ? 'Log out' : 'Cerrar sesión') +
+        '</button>';
+    }
+  } catch(e) {}
+});
+</script>
+</body>
+</html>
