@@ -709,18 +709,19 @@
     <div id="pane-photos" style="display:none">
       <div class="card">
         <div class="card-title"><span data-es>Fotos del negocio</span><span data-en>Business photos</span></div>
-        <p style="font-size:13px;color:var(--c-muted);margin-bottom:16px" data-es>Sube fotos de tu trabajo para atraer más clientes. Plan Basic: hasta 5 fotos. Plan Premium: hasta 30.</p>
-        <p style="font-size:13px;color:var(--c-muted);margin-bottom:16px" data-en>Upload photos of your work to attract more customers. Basic plan: up to 5 photos. Premium: up to 30.</p>
-        <div style="border:2px dashed var(--c-border);border-radius:var(--radius-md);padding:40px;text-align:center;cursor:pointer;background:var(--c-bg)" onclick="document.getElementById('photo-upload-input').click()">
+        <p style="font-size:13px;color:var(--c-muted);margin-bottom:4px" data-es>Sube fotos de tu trabajo para atraer más clientes. Plan Basic: hasta 5 fotos. Plan Premium: hasta 30.</p>
+        <p style="font-size:13px;color:var(--c-muted);margin-bottom:4px" data-en>Upload photos of your work to attract more customers. Basic plan: up to 5 photos. Premium: up to 30.</p>
+        <p id="photo-count-label" style="font-size:12px;color:var(--c-muted);margin-bottom:16px"></p>
+        <div id="photo-upload-area" style="border:2px dashed var(--c-border);border-radius:var(--radius-md);padding:40px;text-align:center;cursor:pointer;background:var(--c-bg)" onclick="document.getElementById('photo-upload-input').click()">
           <div style="font-size:32px;margin-bottom:8px">📸</div>
           <div style="font-size:14px;font-weight:500" data-es>Haz clic para subir fotos</div>
           <div style="font-size:14px;font-weight:500" data-en>Click to upload photos</div>
           <div style="font-size:12px;color:var(--c-hint);margin-top:4px">JPG, PNG · máx 5MB cada una</div>
-          <input type="file" id="photo-upload-input" accept="image/*" multiple style="display:none" onchange="previewPhotos(this)">
+          <input type="file" id="photo-upload-input" accept="image/*" multiple style="display:none" onchange="uploadPhotos(this)">
         </div>
-        <div id="photo-preview-grid" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:14px"></div>
-        <div style="margin-top:14px;font-size:12px;color:var(--c-hint)" data-es>⚠️ Las fotos se guardarán cuando el backend esté conectado.</div>
-        <div style="margin-top:14px;font-size:12px;color:var(--c-hint)" data-en>⚠️ Photos will be saved once the backend is connected.</div>
+        <div class="photo-uploading-msg" style="display:none;margin-top:12px;font-size:13px;color:var(--c-muted)" data-es>Subiendo...</div>
+        <div class="photo-uploading-msg" style="display:none;margin-top:12px;font-size:13px;color:var(--c-muted)" data-en>Uploading...</div>
+        <div id="photo-saved-grid" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:14px"></div>
       </div>
     </div>
 
@@ -774,25 +775,32 @@
         </div>
       </div>
       <div class="card" style="margin-bottom:14px">
-        <div class="card-title"><span data-es>Cambiar contraseña</span><span data-en>Change password</span></div>
+        <div class="card-title"><span data-es>Cuenta</span><span data-en>Account</span></div>
+        <div style="display:flex;flex-direction:column;gap:6px;max-width:360px;margin-bottom:20px">
+          <label class="modal-label" data-es>Correo electrónico (no modificable)</label>
+          <label class="modal-label" data-en>Email address (cannot be changed)</label>
+          <input class="modal-input" type="email" id="settings-email-display" disabled style="background:var(--c-bg);color:var(--c-muted);cursor:not-allowed">
+        </div>
+        <div class="card-title" style="font-size:13px"><span data-es>Cambiar contraseña</span><span data-en>Change password</span></div>
         <div style="display:flex;flex-direction:column;gap:10px;max-width:360px">
           <div>
             <label class="modal-label" data-es>Contraseña actual</label>
             <label class="modal-label" data-en>Current password</label>
-            <input class="modal-input" type="password" placeholder="••••••••">
+            <input class="modal-input" type="password" id="pw-current" placeholder="••••••••" autocomplete="current-password">
           </div>
           <div>
             <label class="modal-label" data-es>Nueva contraseña</label>
             <label class="modal-label" data-en>New password</label>
-            <input class="modal-input" type="password" placeholder="••••••••">
+            <input class="modal-input" type="password" id="pw-new" placeholder="••••••••" autocomplete="new-password">
           </div>
           <div>
             <label class="modal-label" data-es>Confirmar nueva contraseña</label>
             <label class="modal-label" data-en>Confirm new password</label>
-            <input class="modal-input" type="password" placeholder="••••••••">
+            <input class="modal-input" type="password" id="pw-confirm" placeholder="••••••••" autocomplete="new-password">
           </div>
-          <button class="modal-btn-primary" style="margin:0;width:auto;padding:10px 20px" data-es>Actualizar contraseña</button>
-          <button class="modal-btn-primary" style="margin:0;width:auto;padding:10px 20px" data-en>Update password</button>
+          <div id="pw-msg" style="font-size:12px;display:none"></div>
+          <button class="modal-btn-primary" id="pw-save-btn" style="margin:0;width:auto;padding:10px 20px" onclick="changePassword()" data-es>Actualizar contraseña</button>
+          <button class="modal-btn-primary" style="margin:0;width:auto;padding:10px 20px" onclick="changePassword()" data-en>Update password</button>
         </div>
       </div>
       <div class="card">
@@ -969,19 +977,173 @@ async function saveProfileChanges() {
 }
 
 // ── PHOTOS ─────────────────────────────────────────────────
-function previewPhotos(input) {
-  var grid = document.getElementById('photo-preview-grid');
+var PHOTO_LIMIT = { free: 0, basic: 5, premium: 30 };
+
+function renderSavedPhotos(photos) {
+  var grid = document.getElementById('photo-saved-grid');
   if (!grid) return;
-  Array.from(input.files).forEach(function(file) {
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      var img = document.createElement('img');
-      img.src = e.target.result;
-      img.style.cssText = 'width:100px;height:80px;object-fit:cover;border-radius:6px;border:0.5px solid var(--c-border)';
-      grid.appendChild(img);
-    };
-    reader.readAsDataURL(file);
+  grid.innerHTML = '';
+  (photos || []).forEach(function(url, idx) {
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'position:relative;display:inline-block';
+    var img = document.createElement('img');
+    img.src = url;
+    img.style.cssText = 'width:100px;height:80px;object-fit:cover;border-radius:6px;border:0.5px solid var(--c-border);display:block';
+    var del = document.createElement('button');
+    del.textContent = '×';
+    del.style.cssText = 'position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,0.55);color:#fff;border:none;cursor:pointer;font-size:13px;line-height:1;padding:0';
+    del.onclick = function() { deletePhoto(idx); };
+    wrap.appendChild(img);
+    wrap.appendChild(del);
+    grid.appendChild(wrap);
   });
+  // count label
+  var plan = window._bizPlan || 'free';
+  var limit = PHOTO_LIMIT[plan] || 0;
+  var lbl = document.getElementById('photo-count-label');
+  var isEn = document.body.classList.contains('en');
+  if (lbl) lbl.textContent = isEn
+    ? ((photos||[]).length + ' / ' + limit + ' photos')
+    : ((photos||[]).length + ' / ' + limit + ' fotos');
+  // upload area: hide if at limit or free plan
+  var area = document.getElementById('photo-upload-area');
+  if (area) area.style.display = (limit === 0 || (photos||[]).length >= limit) ? 'none' : 'block';
+}
+
+async function uploadPhotos(input) {
+  var isEn = document.body.classList.contains('en');
+  var plan = window._bizPlan || 'free';
+  var limit = PHOTO_LIMIT[plan] || 0;
+  if (limit === 0) {
+    alert(isEn ? 'Photo upload requires Basic or Premium plan.' : 'La subida de fotos requiere plan Basic o Premium.');
+    input.value = ''; return;
+  }
+  var sb = getSupabase();
+  var bizId = window._bizId;
+  if (!bizId) return;
+
+  // 현재 저장된 사진 수 확인
+  var { data: current } = await sb.from('businesses').select('photos').eq('id', bizId).single();
+  var existing = (current && current.photos) ? current.photos : [];
+
+  var files = Array.from(input.files);
+  var remaining = limit - existing.length;
+  if (remaining <= 0) {
+    alert(isEn ? 'Photo limit reached for your plan.' : 'Has alcanzado el límite de fotos de tu plan.');
+    input.value = ''; return;
+  }
+  files = files.slice(0, remaining);
+
+  var uploadingEls = document.querySelectorAll('.photo-uploading-msg');
+  uploadingEls.forEach(function(el) { el.style.display = 'block'; });
+
+  var newUrls = [];
+  for (var i = 0; i < files.length; i++) {
+    var file = files[i];
+    if (file.size > 5 * 1024 * 1024) {
+      alert((isEn ? 'File too large (max 5MB): ' : 'Archivo muy grande (máx 5MB): ') + file.name);
+      continue;
+    }
+    var ext = file.name.split('.').pop().toLowerCase();
+    var path = bizId + '/' + Date.now() + '_' + i + '.' + ext;
+    var { error: upErr } = await sb.storage.from('business-photos').upload(path, file, { upsert: false });
+    if (upErr) { console.warn('[photo upload]', upErr); continue; }
+    var { data: urlData } = sb.storage.from('business-photos').getPublicUrl(path);
+    if (urlData && urlData.publicUrl) newUrls.push(urlData.publicUrl);
+  }
+
+  if (newUrls.length > 0) {
+    var updated = existing.concat(newUrls);
+    await sb.from('businesses').update({ photos: updated }).eq('id', bizId);
+    renderSavedPhotos(updated);
+    // 업로드 후 사이드바 아바타 갱신
+    var avatarEl = document.getElementById('sb-avatar');
+    if (avatarEl && updated.length > 0) {
+      avatarEl.innerHTML = '';
+      var thumbImg = document.createElement('img');
+      thumbImg.src = updated[0];
+      thumbImg.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm)';
+      avatarEl.appendChild(thumbImg);
+    }
+  }
+  uploadingEls.forEach(function(el) { el.style.display = 'none'; });
+  input.value = '';
+}
+
+async function deletePhoto(idx) {
+  var isEn = document.body.classList.contains('en');
+  var sb = getSupabase();
+  var bizId = window._bizId;
+  if (!bizId) return;
+  var { data: current } = await sb.from('businesses').select('photos').eq('id', bizId).single();
+  var photos = (current && current.photos) ? current.photos.slice() : [];
+  var url = photos[idx];
+  // Storage에서도 삭제
+  try {
+    var path = url.split('/business-photos/')[1];
+    if (path) await sb.storage.from('business-photos').remove([path]);
+  } catch(e) { console.warn('[photo delete storage]', e); }
+  photos.splice(idx, 1);
+  await sb.from('businesses').update({ photos: photos }).eq('id', bizId);
+  renderSavedPhotos(photos);
+}
+
+// ── SETTINGS — 비밀번호 변경 ───────────────────────────────
+async function changePassword() {
+  var isEn = document.body.classList.contains('en');
+  var currentPw = (document.getElementById('pw-current') || {}).value || '';
+  var newPw     = (document.getElementById('pw-new') || {}).value || '';
+  var confirmPw = (document.getElementById('pw-confirm') || {}).value || '';
+  var msg       = document.getElementById('pw-msg');
+  var btn       = document.getElementById('pw-save-btn');
+
+  function showMsg(text, ok) {
+    if (!msg) return;
+    msg.textContent = text;
+    msg.style.color = ok ? 'var(--c-green)' : 'var(--c-accent)';
+    msg.style.display = 'block';
+  }
+
+  if (!currentPw || !newPw || !confirmPw) {
+    showMsg(isEn ? 'Please fill in all fields.' : 'Por favor completa todos los campos.', false); return;
+  }
+  if (newPw.length < 8) {
+    showMsg(isEn ? 'New password must be at least 8 characters.' : 'La nueva contraseña debe tener al menos 8 caracteres.', false); return;
+  }
+  if (newPw !== confirmPw) {
+    showMsg(isEn ? 'Passwords do not match.' : 'Las contraseñas no coinciden.', false); return;
+  }
+
+  if (btn) { btn.disabled = true; btn.textContent = isEn ? 'Saving…' : 'Guardando…'; }
+  try {
+    var sb = getSupabase();
+    var user = await getCurrentUser();
+    if (!user) throw new Error('Not authenticated');
+
+    // 현재 비밀번호 확인 (재인증)
+    var { error: signInErr } = await sb.auth.signInWithPassword({ email: user.email, password: currentPw });
+    if (signInErr) {
+      showMsg(isEn ? 'Current password is incorrect.' : 'La contraseña actual es incorrecta.', false);
+      return;
+    }
+
+    // 비밀번호 변경
+    var { error: updateErr } = await sb.auth.updateUser({ password: newPw });
+    if (updateErr) throw updateErr;
+
+    // SEC1: 변경 완료 보안 알림
+    sendEmail('SEC1', user.email, { changed_at: new Date().toUTCString() });
+
+    showMsg(isEn ? '✓ Password updated successfully.' : '✓ Contraseña actualizada correctamente.', true);
+    document.getElementById('pw-current').value = '';
+    document.getElementById('pw-new').value = '';
+    document.getElementById('pw-confirm').value = '';
+  } catch(e) {
+    console.error('[changePassword]', e);
+    showMsg(isEn ? 'Error updating password. Please try again.' : 'Error al actualizar la contraseña. Intenta de nuevo.', false);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = isEn ? 'Update password' : 'Actualizar contraseña'; }
+  }
 }
 
 // ── HOURS ──────────────────────────────────────────────────
@@ -1788,6 +1950,12 @@ document.addEventListener('DOMContentLoaded', async function(){
     if (userType !== 'business') { window.location.href = 'login.html'; return; }
 
     const biz = await getMyBusiness();
+    if (biz && biz.account_status === 'deleted') {
+      // 삭제된 계정 — 대시보드 진입 차단, 로그아웃 후 안내 페이지로
+      await getSupabase().auth.signOut();
+      window.location.href = 'login.html?reason=deleted';
+      return;
+    }
     if (biz) {
       window._bizPlan = biz.plan || 'free';
       window._bizPendingPlan = biz.pending_plan || null;
@@ -1814,6 +1982,25 @@ document.addEventListener('DOMContentLoaded', async function(){
       document.querySelectorAll('a[href="profile.html"]').forEach(function(el){ el.href = 'profile.html?id=' + biz.id; });
 
       document.querySelectorAll('.biz-display-name').forEach(function(el){ el.textContent = biz.business_name || ''; });
+      // Sidebar avatar: thumbnail or initials from trade_name (nickname)
+      var avatarEl = document.getElementById('sb-avatar');
+      if (avatarEl) {
+        var thumbUrl = biz.photos && biz.photos.length > 0 ? biz.photos[0] : null;
+        if (thumbUrl) {
+          avatarEl.innerHTML = '';
+          var thumbImg = document.createElement('img');
+          thumbImg.src = thumbUrl;
+          thumbImg.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm)';
+          avatarEl.appendChild(thumbImg);
+        } else {
+          var nameForInit = biz.trade_name || biz.business_name || '';
+          var initParts = nameForInit.trim().split(/\s+/);
+          var initials = initParts.length >= 2
+            ? (initParts[0][0] + initParts[1][0]).toUpperCase()
+            : nameForInit.slice(0, 2).toUpperCase();
+          avatarEl.textContent = initials || '?';
+        }
+      }
       var f = function(id, val){ var el = document.getElementById(id); if(el && val !== undefined && val !== null) el.value = val; };
       f('ep-legal-name', biz.business_name); f('ep-trade-name', biz.trade_name);
       f('ep-phone', biz.whatsapp_phone); f('ep-email', biz.public_email);
@@ -1857,6 +2044,9 @@ document.addEventListener('DOMContentLoaded', async function(){
       loadOverviewStats(biz);
       loadRecentInquiries();
       loadReviews();
+      renderSavedPhotos(biz.photos || []);
+      var emailDisplay = document.getElementById('settings-email-display');
+      if (emailDisplay && user.email) emailDisplay.value = user.email;
 
     } else {
       const meta = user.user_metadata || {};
