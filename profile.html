@@ -1244,7 +1244,7 @@ async function toggleReviewForm() {
     gate.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 }
-function submitQuote() {
+async function submitQuote() {
   var select = document.getElementById('quote-service');
   var value = select.value;
   if (!value) {
@@ -1264,9 +1264,17 @@ function submitQuote() {
   var bizName  = window.currentBusiness ? window.currentBusiness.business_name : '';
   var plan     = window.currentBusiness ? (window.currentBusiness.plan || 'free') : 'free';
   var planName = plan.charAt(0).toUpperCase() + plan.slice(1);
-  var used     = window.currentBusiness ? (window.currentBusiness.contacts_used_month || 0) : 0;
   var PLAN_LIMITS = { free: 3, basic: 10, premium: Infinity };
   var limit = PLAN_LIMITS[plan.toLowerCase()] !== undefined ? PLAN_LIMITS[plan.toLowerCase()] : Infinity;
+
+  // 실시간 DB 조회로 최신 contacts_used_month 확인 (캐시된 값 대신)
+  var used = window.currentBusiness ? (window.currentBusiness.contacts_used_month || 0) : 0;
+  if (bizId && isFinite(limit)) {
+    try {
+      var { data: freshBiz } = await getSupabase().from('businesses').select('contacts_used_month').eq('id', bizId).single();
+      if (freshBiz) used = freshBiz.contacts_used_month || 0;
+    } catch(e) {}
+  }
 
   // 월 단위 dedup용 ref suffix (SB8/SB9/SB12/SB13)
   var monthKey = bizId ? bizId + '_' + new Date().toISOString().slice(0, 7) : bizId;

@@ -430,6 +430,43 @@ function goToProfile(bizId) {
   if (bizId) window.location.href = 'profile.html?id=' + encodeURIComponent(bizId);
 }
 
+async function openBizWhatsApp(bizId, phone, msg, bizEmail, bizName, plan, usedCached) {
+  var PLAN_LIMITS = { free: 3, basic: 10, premium: Infinity };
+  var limit = PLAN_LIMITS[plan] !== undefined ? PLAN_LIMITS[plan] : Infinity;
+
+  // 실시간 DB 조회로 최신 contacts_used_month 확인
+  var used = usedCached;
+  try {
+    var sb = getSupabase();
+    var { data } = await sb.from('businesses').select('contacts_used_month').eq('id', bizId).single();
+    if (data) used = data.contacts_used_month || 0;
+  } catch(e) {}
+
+  if (used >= limit) {
+    var isEn = document.body.classList.contains('en');
+    var planName = plan.charAt(0).toUpperCase() + plan.slice(1);
+    var limitNum = isFinite(limit) ? limit : '∞';
+    alert(isEn
+      ? 'This business has reached its ' + limitNum + ' request limit for this month (' + planName + ' plan).'
+      : 'Este negocio alcanzó su límite de ' + limitNum + ' solicitudes del mes (plan ' + planName + ').');
+    return;
+  }
+
+  window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(msg), '_blank');
+
+  var sb2 = getSupabase();
+  if (bizId) {
+    sb2.rpc('increment_contact_count', { p_biz_id: bizId }).then(function(){});
+    sb2.auth.getSession().then(function(r) {
+      var uid = r && r.data && r.data.session ? r.data.session.user.id : null;
+      sb2.from('contact_log').insert({ biz_id: bizId, customer_id: uid, channel: 'whatsapp', limit_hit: false }).then(function(){});
+    });
+    if (bizEmail) {
+      try { sendEmail('SB6', bizEmail, { biz_name: bizName }); } catch(e) {}
+    }
+  }
+}
+
 // ── SAVE BUSINESS (search page) ────────────────────────────
 function getSavedBusinesses() {
   try { return JSON.parse(localStorage.getItem('anm-saved-businesses') || '[]'); } catch(e) { return []; }
@@ -840,8 +877,7 @@ function renderPage(filtered) {
       (rating ? '<div style="font-size:12px;color:var(--c-muted);margin-top:2px">' + ratingHtml + '</div>' : '') +
       '</div></div>' +
       '<div class="biz-card-bottom">' +
-      (phone ? '<a href="https://wa.me/' + phone + '?text=' + encodeURIComponent(waMsg) + '" onclick="event.stopPropagation();' + waSB6Click + '" class="btn-wa" style="font-size:12px;padding:7px 14px;border-radius:var(--radius-sm);background:var(--c-green-light);color:var(--c-green);border:0.5px solid rgba(29,158,117,0.3);text-decoration:none;font-weight:500">💬 WhatsApp</a>' : '') +
-      (biz.public_email ? '<a href="mailto:' + biz.public_email + '" onclick="event.stopPropagation()" class="btn-quote" style="font-size:12px;padding:7px 14px;border-radius:var(--radius-sm);background:var(--c-bg);color:var(--c-muted);border:0.5px solid var(--c-border);text-decoration:none">' + (isEn ? 'Email' : 'Email') + '</a>' : '') +
+      (phone ? '<button onclick="event.stopPropagation();openBizWhatsApp(\'' + biz.id + '\',\'' + phone + '\',' + JSON.stringify(waMsg) + ',' + JSON.stringify(biz.public_email||'') + ',' + JSON.stringify(biz.business_name||'') + ',\'' + (biz.plan||'free') + '\',' + (biz.contacts_used_month||0) + ')" class="btn-wa" style="font-size:12px;padding:7px 14px;border-radius:var(--radius-sm);background:var(--c-green-light);color:var(--c-green);border:0.5px solid rgba(29,158,117,0.3);cursor:pointer;font-weight:500;font-family:var(--font-body)">💬 WhatsApp</button>' : '') +
       '</div></div>';
   }).join('');
 
