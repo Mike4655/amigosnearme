@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Find Workers — AmigosNearMe</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display:ital@0;1&display=swap');
+  :root {
+    --c-bg:#FAFAF7;--c-surface:#FFFFFF;--c-border:rgba(0,0,0,0.09);
+    --c-text:#1A1A18;--c-muted:#6B6B66;--c-hint:#A8A8A2;
+    --c-accent:#C94F2B;--c-accent-light:#FAF0EC;--c-accent-dark:#9C3A1E;
+    --c-green:#1D9E75;--c-green-light:#EBF8F3;
+    --c-amber:#BA7517;--c-amber-light:#FEF6E4;
+    --c-blue:#185FA5;--c-blue-light:#EEF4FB;
+    --radius-sm:8px;--radius-md:12px;--radius-lg:18px;
+    --shadow:0 1px 3px rgba(0,0,0,0.07),0 4px 12px rgba(0,0,0,0.05);
+    --font-display:'DM Serif Display',Georgia,serif;
+    --font-body:'DM Sans',system-ui,sans-serif;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  nav{position:sticky;top:0;z-index:100;background:rgba(250,250,247,0.92);backdrop-filter:blur(12px);border-bottom:0.5px solid var(--c-border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+  .nav-logo{font-family:var(--font-display);font-size:22px;color:var(--c-text);text-decoration:none}
+  .nav-logo span{color:var(--c-accent)}
+  .lang-btn{padding:3px 8px;border-radius:99px;font-size:12px;cursor:pointer;border:0.5px solid var(--c-border);background:transparent;color:var(--c-muted);font-family:var(--font-body)}
+  .lang-btn.active{background:var(--c-accent-light);color:var(--c-accent);border-color:var(--c-accent)}
+  .btn-nav{font-size:13px;font-weight:500;padding:7px 16px;border-radius:var(--radius-sm);text-decoration:none;cursor:pointer;border:0.5px solid var(--c-border);background:var(--c-surface);color:var(--c-text);font-family:var(--font-body)}
+  .btn-nav.primary{background:var(--c-accent);color:#fff;border-color:var(--c-accent)}
+  .search-bar-section{background:var(--c-surface);border-bottom:0.5px solid var(--c-border);padding:16px 24px}
+  .search-bar-inner{max-width:1100px;margin:0 auto;display:flex;gap:10px;align-items:center}
+  .search-input-wrap{flex:1;position:relative}
+  .search-input-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--c-hint);pointer-events:none}
+  .search-input{width:100%;padding:10px 14px 10px 36px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);background:var(--c-bg);font-size:14px;color:var(--c-text);font-family:var(--font-body);outline:none;transition:border-color 0.15s}
+  .search-input:focus{border-color:var(--c-accent)}
+  .search-go{padding:10px 20px;border-radius:var(--radius-sm);background:var(--c-accent);color:#fff;border:none;font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font-body);white-space:nowrap}
+  .page-body{max-width:1100px;margin:0 auto;padding:24px;display:grid;grid-template-columns:240px 1fr;gap:24px}
+  .filters{position:sticky;top:84px;align-self:start}
+  .filter-card{background:var(--c-surface);border:0.5px solid var(--c-border);border-radius:var(--radius-lg);padding:20px;margin-bottom:12px}
+  .filter-title{font-size:13px;font-weight:600;color:var(--c-text);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+  .filter-clear{font-size:12px;font-weight:400;color:var(--c-accent);cursor:pointer}
+  .filter-group{display:flex;flex-direction:column;gap:8px}
+  .filter-option{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--c-muted);cursor:pointer;padding:5px 8px;border-radius:var(--radius-sm);transition:background 0.12s}
+  .filter-option:hover{background:var(--c-bg)}
+  .filter-option input{width:15px;height:15px;accent-color:var(--c-accent);cursor:pointer;flex-shrink:0}
+  .filter-count{font-size:11px;color:var(--c-hint)}
+  .acc-header{display:flex;align-items:center;justify-content:space-between;padding:7px 8px;border-radius:var(--radius-sm);font-size:12px;font-weight:600;color:var(--c-text);cursor:pointer;margin:3px 0;background:var(--c-bg);user-select:none}
+  .acc-arrow{font-size:10px;color:var(--c-hint);transition:transform 0.2s}
+  .acc-arrow.open{transform:rotate(90deg)}
+  .acc-body{display:none;padding-left:4px}
+  .acc-body.open{display:block}
+  .results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+  .results-count{font-size:14px;color:var(--c-muted)}
+  .results-count strong{color:var(--c-text)}
+  .sort-select{font-size:13px;padding:7px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);background:var(--c-surface);color:var(--c-text);font-family:var(--font-body);cursor:pointer;outline:none}
+  .active-filters{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px}
+  .active-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;font-size:12px;background:var(--c-accent-light);color:var(--c-accent);border:0.5px solid rgba(201,79,43,0.2)}
+  .active-chip button{background:none;border:none;cursor:pointer;color:var(--c-accent);font-size:14px;line-height:1;padding:0}
+  .biz-list{display:flex;flex-direction:column;gap:12px}
+  .biz-card{background:var(--c-surface);border:0.5px solid var(--c-border);border-radius:var(--radius-lg);padding:20px;cursor:pointer;transition:border-color 0.15s,box-shadow 0.15s;display:block}
+  .biz-card:hover{border-color:rgba(201,79,43,0.3);box-shadow:var(--shadow)}
+  .biz-avatar{width:52px;height:52px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;flex-shrink:0}
+  .av-coral{background:#FAF0EC;color:var(--c-accent)}
+  .av-teal{background:var(--c-green-light);color:var(--c-green)}
+  .av-blue{background:var(--c-blue-light);color:var(--c-blue)}
+  .av-amber{background:var(--c-amber-light);color:var(--c-amber)}
+  .av-gray{background:#F1EFE8;color:#5F5E5A}
+  .btn-view{display:inline-flex;align-items:center;gap:5px;padding:7px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;background:var(--c-accent);color:#fff;border:none;cursor:pointer;font-family:var(--font-body);white-space:nowrap;text-decoration:none}
+  .no-results{text-align:center;padding:60px 20px;color:var(--c-muted)}
+  .no-results-icon{font-size:40px;margin-bottom:14px}
+  [data-en]{display:none}
+  body.en [data-es]{display:none}
+  body.en [data-en]{display:revert}
+  @media(max-width:768px){
+    .page-body{grid-template-columns:1fr;padding:12px 14px;gap:0}
+    .filters{position:static;margin-bottom:14px}
+    .filters-inner{display:none}
+    .filters-inner.open{display:block}
+    .filter-toggle-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:11px 14px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);background:var(--c-surface);font-size:13px;font-weight:500;color:var(--c-text);cursor:pointer;font-family:var(--font-body);margin-bottom:8px}
+    nav{padding:0 16px}
+  }
+  .filter-toggle-btn{display:none}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Amigos<span>NearMe</span></a>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="lang-btn active" id="btn-es" onclick="setLang('es')">ES</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    <a href="login.html" class="btn-nav" id="nav-login">
+      <span data-es>Iniciar sesión</span><span data-en>Log in</span>
+    </a>
+    <a href="login.html?type=employer" class="btn-nav primary" id="nav-employer-btn">
+      <span data-es>Soy Empleador</span><span data-en>I'm an Employer</span>
+    </a>
+  </div>
+</nav>
+
+<div class="search-bar-section">
+  <div class="search-bar-inner">
+    <div class="search-input-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input class="search-input" id="main-search" type="text"
+        placeholder="Landscaping, cleaning, construction..."
+        onkeydown="if(event.key==='Enter') applySearch()">
+    </div>
+    <button class="search-go" onclick="applySearch()" id="btn-search">
+      <span data-es>Buscar</span><span data-en>Search</span>
+    </button>
+  </div>
+</div>
+
+<div class="page-body">
+
+  <aside class="filters">
+    <button class="filter-toggle-btn" onclick="toggleFilters()" id="filter-toggle-btn">
+      <span data-es>🔍 Filtros</span><span data-en>🔍 Filters</span>
+      <span id="filter-toggle-arrow">▼</span>
+    </button>
+    <div class="filters-inner" id="filters-inner">
+
+    <div class="filter-card">
+      <div class="filter-title">
+        <span data-es>Categoría</span><span data-en>Category</span>
+        <span class="filter-clear" onclick="clearFilter('cat')">
+          <span data-es>Limpiar</span><span data-en>Clear</span>
+        </span>
+      </div>
+      <div class="filter-group" id="filter-cat">
+        <label class="filter-option"><input type="checkbox" value="staffing" onchange="filterChange()"> <span data-es-text="👷 Personal y Mano de Obra" data-en-text="👷 Staffing & Labor">👷 Personal y Mano de Obra</span> <span class="filter-count"></span></label>
+        <label class="filter-option"><input type="checkbox" value="landscaping" onchange="filterChange()"> <span data-es-text="🌿 Landscaping" data-en-text="🌿 Landscaping">🌿 Landscaping</span> <span class="filter-count"></span></label>
+        <label class="filter-option"><input type="checkbox" value="cleaning" onchange="filterChange()"> <span data-es-text="🧹 Limpieza" data-en-text="🧹 Cleaning">🧹 Limpieza</span> <span class="filter-count"></span></label>
+        <label class="filter-option"><input type="checkbox" value="construction" onchange="filterChange()"> <span data-es-text="🏗️ Construcción" data-en-text="🏗️ Construction">🏗️ Construcción</span> <span class="filter-count"></span></label>
+        <label class="filter-option"><input type="checkbox" value="painting" onchange="filterChange()"> <span data-es-text="🪟 Pintura" data-en-text="🪟 Painting">🪟 Pintura</span> <span class="filter-count"></span></label>
+        <label class="filter-option"><input type="checkbox" value="moving" onchange="filterChange()"> <span data-es-text="📦 Mudanzas" data-en-text="📦 Moving">📦 Mudanzas</span> <span class="filter-count"></span></label>
+        <label class="filter-option"><input type="checkbox" value="plumbing" onchange="filterChange()"> <span data-es-text="🔧 Plomería" data-en-text="🔧 Plumbing">🔧 Plomería</span> <span class="filter-count"></span></label>
+        <label class="filter-option"><input type="checkbox" value="electrical" onchange="filterChange()"> <span data-es-text="⚡ Electricidad" data-en-text="⚡ Electrical">⚡ Electricidad</span> <span class="filter-count"></span></label>
+      </div>
+    </div>
+
+    <div class="filter-card">
+      <div class="filter-title">
+        <span data-es>Área</span><span data-en>Area</span>
+        <span class="filter-clear" onclick="clearFilter('area')">
+          <span data-es>Limpiar</span><span data-en>Clear</span>
+        </span>
+      </div>
+      <div class="filter-group" id="filter-area">
+        <div class="acc-header" onclick="toggleAcc('acc-fulton')"><span>Atlanta (Fulton)</span><span class="acc-arrow" id="arr-fulton">▸</span></div>
+        <div class="acc-body" id="acc-fulton">
+          <label class="filter-option"><input type="checkbox" value="atlanta" onchange="filterChange()"> <span>Atlanta</span></label>
+          <label class="filter-option"><input type="checkbox" value="alpharetta" onchange="filterChange()"> <span>Alpharetta</span></label>
+          <label class="filter-option"><input type="checkbox" value="roswell" onchange="filterChange()"> <span>Roswell</span></label>
+          <label class="filter-option"><input type="checkbox" value="sandy_springs" onchange="filterChange()"> <span>Sandy Springs</span></label>
+        </div>
+        <div class="acc-header" onclick="toggleAcc('acc-gwinnett')"><span>Gwinnett</span><span class="acc-arrow" id="arr-gwinnett">▸</span></div>
+        <div class="acc-body" id="acc-gwinnett">
+          <label class="filter-option"><input type="checkbox" value="duluth" onchange="filterChange()"> <span>Duluth</span></label>
+          <label class="filter-option"><input type="checkbox" value="norcross" onchange="filterChange()"> <span>Norcross</span></label>
+          <label class="filter-option"><input type="checkbox" value="lawrenceville" onchange="filterChange()"> <span>Lawrenceville</span></label>
+          <label class="filter-option"><input type="checkbox" value="buford" onchange="filterChange()"> <span>Buford</span></label>
+        </div>
+        <div class="acc-header" onclick="toggleAcc('acc-cobb')"><span>Cobb</span><span class="acc-arrow" id="arr-cobb">▸</span></div>
+        <div class="acc-body" id="acc-cobb">
+          <label class="filter-option"><input type="checkbox" value="marietta" onchange="filterChange()"> <span>Marietta</span></label>
+          <label class="filter-option"><input type="checkbox" value="smyrna" onchange="filterChange()"> <span>Smyrna</span></label>
+          <label class="filter-option"><input type="checkbox" value="kennesaw" onchange="filterChange()"> <span>Kennesaw</span></label>
+        </div>
+        <div class="acc-header" onclick="toggleAcc('acc-dekalb')"><span>DeKalb</span><span class="acc-arrow" id="arr-dekalb">▸</span></div>
+        <div class="acc-body" id="acc-dekalb">
+          <label class="filter-option"><input type="checkbox" value="tucker" onchange="filterChange()"> <span>Tucker</span></label>
+          <label class="filter-option"><input type="checkbox" value="chamblee" onchange="filterChange()"> <span>Chamblee</span></label>
+          <label class="filter-option"><input type="checkbox" value="decatur" onchange="filterChange()"> <span>Decatur</span></label>
+          <label class="filter-option"><input type="checkbox" value="doraville" onchange="filterChange()"> <span>Doraville</span></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-card">
+      <div class="filter-title"><span data-es>Calificación</span><span data-en>Rating</span></div>
+      <div class="filter-group">
+        <label class="filter-option"><input type="radio" name="rating" value="4.5" onchange="filterChange()"> <span>★★★★★ 4.5+</span></label>
+        <label class="filter-option"><input type="radio" name="rating" value="4" onchange="filterChange()"> <span>★★★★ 4.0+</span></label>
+        <label class="filter-option"><input type="radio" name="rating" value="3" onchange="filterChange()"> <span>★★★ 3.0+</span></label>
+        <label class="filter-option"><input type="radio" name="rating" value="" onchange="filterChange()"> <span data-es>Todos</span><span data-en>All</span></label>
+      </div>
+    </div>
+
+    <div class="filter-card">
+      <div class="filter-title"><span data-es>Verificación</span><span data-en>Verification</span></div>
+      <div class="filter-group">
+        <label class="filter-option"><input type="checkbox" id="f-verified" onchange="filterChange()"> <span data-es>✅ Solo verificados</span><span data-en>✅ Verified only</span></label>
+      </div>
+    </div>
+
+    </div><!-- /filters-inner -->
+  </aside>
+
+  <main>
+    <div class="results-header">
+      <div class="results-count" id="results-count">
+        <span data-es>Mostrando </span><span data-en>Showing </span>
+        <strong id="count-num">0</strong>
+        <span data-es> trabajadores en Georgia</span><span data-en> workers in Georgia</span>
+      </div>
+      <select class="sort-select" onchange="sortChange(this.value)">
+        <option value="recommended"><span data-es>Recomendados</span><span data-en>Recommended</span></option>
+        <option value="rating">★ Rating</option>
+        <option value="newest"><span data-es>Más nuevos</span><span data-en>Newest</span></option>
+      </select>
+    </div>
+
+    <div class="active-filters" id="active-filters"></div>
+
+    <div class="biz-list" id="biz-list">
+      <div style="text-align:center;padding:40px;color:var(--c-hint);font-size:14px" id="loading-msg">
+        <span data-es>Cargando trabajadores...</span><span data-en>Loading workers...</span>
+      </div>
+    </div>
+
+    <div class="pagination" id="pagination" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:28px"></div>
+  </main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
+<script>
+var allResults = [];
+var filteredRef = [];
+var currentPage = 1;
+var pageSize = 10;
+var currentSort = 'recommended';
+
+var CAT_LABELS_ES = { staffing:'👷 Personal', landscaping:'🌿 Landscaping', cleaning:'🧹 Limpieza', construction:'🏗️ Construcción', painting:'🪟 Pintura', moving:'📦 Mudanzas', plumbing:'🔧 Plomería', electrical:'⚡ Electricidad', tree_removal:'🌳 Árboles', food:'🍽️ Comida', auto:'🚗 Autos', translation:'🗣️ Traducción', real_estate:'🏠 Bienes Raíces' };
+var CAT_LABELS_EN = { staffing:'👷 Staffing', landscaping:'🌿 Landscaping', cleaning:'🧹 Cleaning', construction:'🏗️ Construction', painting:'🪟 Painting', moving:'📦 Moving', plumbing:'🔧 Plumbing', electrical:'⚡ Electrical', tree_removal:'🌳 Tree Removal', food:'🍽️ Food & Catering', auto:'🚗 Auto Repair', translation:'🗣️ Translation', real_estate:'🏠 Real Estate' };
+var COLORS = ['av-coral','av-teal','av-amber','av-blue','av-gray'];
+
+function setLang(lang) {
+  var en = lang === 'en';
+  document.body.classList.toggle('en', en);
+  document.getElementById('btn-es').classList.toggle('active', !en);
+  document.getElementById('btn-en').classList.toggle('active', en);
+  document.querySelectorAll('[data-es-text]').forEach(function(el) {
+    el.textContent = en ? el.getAttribute('data-en-text') : el.getAttribute('data-es-text');
+  });
+  try { localStorage.setItem('anm-lang', lang); } catch(e) {}
+  if (allResults.length) renderPage(filteredRef);
+}
+
+function toggleFilters() {
+  var inner = document.getElementById('filters-inner');
+  var arrow = document.getElementById('filter-toggle-arrow');
+  var open = inner.classList.toggle('open');
+  if (arrow) arrow.textContent = open ? '▲' : '▼';
+}
+
+function toggleAcc(id) {
+  var body = document.getElementById(id);
+  var key = id.replace('acc-','');
+  var arrow = document.getElementById('arr-' + key);
+  if (!body) return;
+  body.classList.toggle('open');
+  if (arrow) arrow.classList.toggle('open');
+}
+
+function clearFilter(type) {
+  document.querySelectorAll('#filter-' + type + ' input').forEach(function(i){ i.checked = false; });
+  filterChange();
+}
+
+function getActiveCats() { return Array.from(document.querySelectorAll('#filter-cat input:checked')).map(function(i){ return i.value; }); }
+function getActiveAreas() { return Array.from(document.querySelectorAll('#filter-area input:checked')).map(function(i){ return i.value; }); }
+function getMinRating() { var r = document.querySelector('input[name="rating"]:checked'); return r ? parseFloat(r.value) || 0 : 0; }
+function getVerifiedOnly() { var el = document.getElementById('f-verified'); return el ? el.checked : false; }
+
+function filterChange() { applyFiltersAndRender(); }
+function sortChange(val) { currentSort = val; applyFiltersAndRender(); }
+
+function sortResults(arr) {
+  var s = arr.slice();
+  if (currentSort === 'rating') s.sort(function(a,b){ return (parseFloat(b.rating)||0)-(parseFloat(a.rating)||0); });
+  else if (currentSort === 'newest') s.sort(function(a,b){ return new Date(b.created_at||0)-new Date(a.created_at||0); });
+  else s.sort(function(a,b){
+    var scoreA = (a.priority_score || 0) + (a.plan === 'premium' ? 10 : 0);
+    var scoreB = (b.priority_score || 0) + (b.plan === 'premium' ? 10 : 0);
+    if (scoreB !== scoreA) return scoreB - scoreA;
+    if (b.verified !== a.verified) return b.verified ? 1 : -1;
+    return (a.business_name||'').localeCompare(b.business_name||'');
+  });
+  return s;
+}
+
+function applySearch() {
+  var q = document.getElementById('main-search').value.trim().toLowerCase();
+  applyFiltersAndRender(q);
+}
+
+function applyFiltersAndRender(forceQ) {
+  var cats = getActiveCats();
+  var areas = getActiveAreas();
+  var minRating = getMinRating();
+  var verifiedOnly = getVerifiedOnly();
+  var q = forceQ !== undefined ? forceQ : (document.getElementById('main-search').value || '').toLowerCase().trim();
+
+  var filtered = allResults.filter(function(w) {
+    if (verifiedOnly && !w.verified) return false;
+    if (cats.length > 0) {
+      var wCats = w.categories || [];
+      if (!cats.some(function(c){ return wCats.some(function(wc){ return wc===c || wc.replace(/_/g,'')===c.replace(/_/g,''); }); })) return false;
+    }
+    if (areas.length > 0) {
+      var wArea = (w.service_area || '').toLowerCase();
+      if (!areas.some(function(a){ return wArea.includes(a) || wArea.includes(a.replace(/_/g,' ')); })) return false;
+    }
+    if (minRating) { if ((parseFloat(w.rating)||0) < minRating) return false; }
+    if (q) {
+      var searchable = ((w.business_name||'')+' '+(w.trade_name||'')+' '+(w.description||'')+' '+(w.service_area||'')).toLowerCase();
+      if (!searchable.includes(q)) return false;
+    }
+    return true;
+  });
+
+  filtered = sortResults(filtered);
+  filteredRef = filtered;
+
+  var numEl = document.getElementById('count-num');
+  if (numEl) numEl.textContent = filtered.length;
+
+  updateActiveChips(cats, areas, minRating, verifiedOnly);
+  currentPage = 1;
+  renderPage(filtered);
+}
+
+function updateActiveChips(cats, areas, minRating, verifiedOnly) {
+  var wrap = document.getElementById('active-filters');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  var isEn = document.body.classList.contains('en');
+  function chip(label, rm) {
+    var el = document.createElement('span');
+    el.className = 'active-chip';
+    var btn = document.createElement('button');
+    btn.textContent = '×';
+    btn.onclick = rm;
+    el.textContent = label + ' ';
+    el.appendChild(btn);
+    wrap.appendChild(el);
+  }
+  cats.forEach(function(c){ chip(c, function(){ clearCatFilter(c); }); });
+  areas.forEach(function(a){ chip(a, function(){ clearAreaFilter(a); }); });
+  if (minRating) chip('★ '+minRating+'+', clearRating);
+  if (verifiedOnly) chip(isEn ? 'Verified only' : 'Solo verificados', clearVerified);
+}
+function clearCatFilter(v){ var cb=document.querySelector('#filter-cat input[value="'+v+'"]'); if(cb){cb.checked=false;filterChange();} }
+function clearAreaFilter(v){ var cb=document.querySelector('#filter-area input[value="'+v+'"]'); if(cb){cb.checked=false;filterChange();} }
+function clearRating(){ var r=document.querySelector('input[name="rating"][value=""]'); if(r){r.checked=true;filterChange();} }
+function clearVerified(){ var el=document.getElementById('f-verified'); if(el){el.checked=false;filterChange();} }
+
+function renderPage(filtered) {
+  var list = document.getElementById('biz-list');
+  if (!list) return;
+  var isEn = document.body.classList.contains('en');
+  var catLabels = isEn ? CAT_LABELS_EN : CAT_LABELS_ES;
+
+  var start = (currentPage - 1) * pageSize;
+  var page = filtered.slice(start, start + pageSize);
+
+  if (page.length === 0) {
+    list.innerHTML = '<div class="no-results"><div class="no-results-icon">🔍</div>' +
+      (isEn ? 'No workers found. Try different filters.' : 'No se encontraron trabajadores. Intenta otros filtros.') + '</div>';
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+
+  list.innerHTML = page.map(function(w, idx) {
+    var initials = (w.business_name || '').split(' ').slice(0,2).map(function(w){ return w[0]||''; }).join('').toUpperCase() || '??';
+    var color = COLORS[(start + idx) % COLORS.length];
+    var catLabel = (w.categories || []).map(function(c){ return catLabels[c] || c; }).join(' · ') || '';
+    var area = (w.service_area || '').split(',').slice(0,2).join(',').trim();
+    var rating = w.rating ? parseFloat(w.rating).toFixed(1) : '';
+    var verBadge = w.verified ? '<span style="background:var(--c-green-light);color:var(--c-green);font-size:11px;padding:2px 8px;border-radius:99px;font-weight:500">✓ Verified</span>' : '';
+    var insBadge = w.insured ? '<span style="background:#EEF6FF;color:#2563EB;font-size:11px;padding:2px 8px;border-radius:99px;font-weight:500">🛡️ '+(isEn?'Insured':'Asegurado')+'</span>' : '';
+    var viewLabel = isEn ? 'View Profile →' : 'Ver perfil →';
+
+    var thumbUrl = (w.photos && w.photos.length > 0) ? w.photos[0] : null;
+    var avatarHtml = thumbUrl
+      ? '<img src="' + thumbUrl + '" style="width:52px;height:52px;border-radius:50%;object-fit:contain;background:var(--c-bg);flex-shrink:0" alt="">'
+      : '<div class="biz-avatar ' + color + '">' + initials + '</div>';
+
+    return '<div class="biz-card" onclick="goToWorker(\'' + w.id + '\')">' +
+      '<div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:10px">' +
+      avatarHtml +
+      '<div style="flex:1;min-width:0">' +
+      '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px">' +
+      '<div style="font-size:15px;font-weight:600">' + (w.business_name || '') + '</div>' +
+      verBadge + insBadge + '</div>' +
+      '<div style="font-size:12px;color:var(--c-muted)">' + catLabel + (area ? ' · ' + area : '') + '</div>' +
+      (rating ? '<div style="font-size:12px;color:var(--c-muted);margin-top:2px"><span style="color:var(--c-amber)">★</span> ' + rating + '</div>' : '') +
+      '</div></div>' +
+      '<div style="display:flex;justify-content:flex-end">' +
+      '<button class="btn-view" onclick="event.stopPropagation();goToWorker(\'' + w.id + '\')">' + viewLabel + '</button>' +
+      '</div></div>';
+  }).join('');
+
+  // Pagination
+  var totalPages = Math.ceil(filtered.length / pageSize);
+  var pagEl = document.getElementById('pagination');
+  if (pagEl) {
+    if (totalPages <= 1) { pagEl.innerHTML = ''; return; }
+    var html = '<button style="width:36px;height:36px;border-radius:8px;border:0.5px solid var(--c-border);background:var(--c-surface);font-size:13px;cursor:pointer" onclick="changePage(' + (currentPage-1) + ')" ' + (currentPage===1?'disabled':'') + '>‹</button>';
+    for (var p = 1; p <= Math.min(totalPages, 7); p++) {
+      var active = p === currentPage ? 'background:var(--c-accent);color:#fff;border-color:var(--c-accent)' : 'background:var(--c-surface)';
+      html += '<button style="width:36px;height:36px;border-radius:8px;border:0.5px solid var(--c-border);font-size:13px;cursor:pointer;' + active + '" onclick="changePage(' + p + ')">' + p + '</button>';
+    }
+    html += '<button style="width:36px;height:36px;border-radius:8px;border:0.5px solid var(--c-border);background:var(--c-surface);font-size:13px;cursor:pointer" onclick="changePage(' + (currentPage+1) + ')" ' + (currentPage===totalPages?'disabled':'') + '>›</button>';
+    pagEl.innerHTML = html;
+  }
+}
+
+function goToWorker(id) {
+  window.location.href = 'worker-profile.html?id=' + encodeURIComponent(id);
+}
+
+function changePage(p) {
+  currentPage = p;
+  renderPage(filteredRef);
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function updateCategoryCounts() {
+  ['staffing','landscaping','cleaning','construction','painting','moving','plumbing','electrical'].forEach(function(val) {
+    var count = allResults.filter(function(w){ return (w.categories||[]).some(function(c){ return c===val||c.replace(/_/g,'')===val; }); }).length;
+    document.querySelectorAll('#filter-cat input[value="'+val+'"]').forEach(function(inp) {
+      var countEl = inp.closest('label') ? inp.closest('label').querySelector('.filter-count') : null;
+      if (countEl) countEl.textContent = count || '';
+    });
+  });
+}
+
+async function loadWorkers() {
+  var loadingMsg = document.getElementById('loading-msg');
+  var isEn = document.body.classList.contains('en');
+  try {
+    var data = await searchBusinesses({ isWorker: true, limit: 200 });
+    allResults = data || [];
+    updateCategoryCounts();
+    applyFiltersAndRender();
+  } catch(e) {
+    console.error('[worker-search] load error:', e);
+    if (loadingMsg) loadingMsg.innerHTML = isEn ? 'Error loading. Please refresh.' : 'Error al cargar. Recarga la página.';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var saved = ''; try { saved = localStorage.getItem('anm-lang'); } catch(e) {}
+  var browser = (navigator.language || 'es').toLowerCase();
+  setLang(saved || (browser.startsWith('en') ? 'en' : 'es'));
+  loadWorkers();
+
+  // Update nav based on session
+  getSession().then(async function(sess) {
+    var loginEl = document.getElementById('nav-login');
+    var empBtn  = document.getElementById('nav-employer-btn');
+    var isEn = document.body.classList.contains('en');
+    if (sess && sess.user && loginEl) {
+      var type = (sess.user.user_metadata && sess.user.user_metadata.user_type) || '';
+      if (empBtn) empBtn.style.display = 'none';
+
+      var dashHref = type === 'employer' ? 'employer-dashboard.html'
+                   : type === 'business' ? 'dashboard.html'
+                   : 'index.html';
+      if (type === 'worker') {
+        try { var wb = await getMyBusiness(); if (wb && wb.id) dashHref = 'worker-profile.html?id=' + wb.id; } catch(e) {}
+      }
+
+      loginEl.href = dashHref;
+      loginEl.textContent = isEn ? 'My Account' : 'Mi Cuenta';
+
+      // 로그아웃 버튼 추가
+      var logoutBtn = document.createElement('button');
+      logoutBtn.textContent = isEn ? 'Log out' : 'Cerrar sesión';
+      logoutBtn.className = 'btn-nav';
+      logoutBtn.style.cssText = 'font-size:13px;color:var(--c-muted);background:none;border:none;cursor:pointer';
+      logoutBtn.onclick = async function() { try { await signOut(); } catch(e) {} window.location.href = 'index.html'; };
+      loginEl.parentNode.insertBefore(logoutBtn, loginEl.nextSibling);
+    }
+  });
+});
+</script>
+</body>
+</html>

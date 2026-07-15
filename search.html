@@ -652,8 +652,11 @@ function sortResults(results) {
   } else if (currentSort === 'newest') {
     sorted.sort(function(a,b){ return new Date(b.created_at||0) - new Date(a.created_at||0); });
   } else {
-    // recommended: verified first, then by name
+    // recommended: effective_score (priority_score + premium bonus) desc, then verified, then name
     sorted.sort(function(a,b){
+      var scoreA = (a.priority_score || 0) + (a.plan === 'premium' ? 10 : 0);
+      var scoreB = (b.priority_score || 0) + (b.plan === 'premium' ? 10 : 0);
+      if (scoreB !== scoreA) return scoreB - scoreA;
       if (b.verified !== a.verified) return b.verified ? 1 : -1;
       return (a.business_name||'').localeCompare(b.business_name||'');
     });
@@ -821,9 +824,14 @@ function renderPage(filtered) {
     var waMsg = isEn ? 'Hi! I found you on AmigosNearMe.' : 'Hola! Te encontré en AmigosNearMe.';
     var waSB6Click = biz.public_email ? 'sendEmail(\'SB6\',\'' + biz.public_email + '\',{biz_name:\'' + (biz.business_name||'').replace(/'/g,"\\'") + '\'});' : '';
 
+    var thumbUrl = (biz.photos && biz.photos.length > 0) ? biz.photos[0] : null;
+    var avatarHtml = thumbUrl
+      ? '<img src="' + thumbUrl + '" style="width:52px;height:52px;border-radius:var(--radius-md);object-fit:contain;background:var(--c-bg);flex-shrink:0" alt="">'
+      : '<div class="biz-avatar ' + color + '">' + initials + '</div>';
+
     return '<div class="biz-card" data-id="' + biz.id + '" data-cat="' + cat + '" data-area="' + areaShort + '" data-rating="' + (rating||0) + '" data-verified="' + !!biz.verified + '" onclick="goToProfile(\'' + biz.id + '\')">' +
       '<div class="biz-card-top">' +
-      '<div class="biz-avatar ' + color + '">' + initials + '</div>' +
+      avatarHtml +
       '<div style="flex:1;min-width:0">' +
       '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px">' +
       '<div class="biz-name" style="font-size:15px;font-weight:600">' + (biz.business_name || '') + '</div>' +
@@ -877,6 +885,33 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   // Inject save buttons on all business cards
   injectSaveButtons();
+
+  // 로그인 상태에 따라 nav 버튼 교체
+  try {
+    var sess = await getSession();
+    var isEn = document.body.classList.contains('en');
+    var loginEl = document.getElementById('nav-login');
+    var ctaEl   = document.getElementById('nav-cta');
+    if (sess && sess.user && loginEl) {
+      var utype = (sess.user.user_metadata && sess.user.user_metadata.user_type) || '';
+      var dashHref = utype === 'employer' ? 'employer-dashboard.html'
+                   : utype === 'business' ? 'dashboard.html'
+                   : 'index.html';
+      if (utype === 'worker') {
+        try { var wb = await getMyBusiness(); if (wb && wb.id) dashHref = 'worker-profile.html?id=' + wb.id; } catch(e) {}
+      }
+      loginEl.href = dashHref;
+      loginEl.textContent = isEn ? 'My Account' : 'Mi Cuenta';
+      if (ctaEl) ctaEl.style.display = 'none';
+
+      var logoutBtn = document.createElement('button');
+      logoutBtn.textContent = isEn ? 'Log out' : 'Cerrar sesión';
+      logoutBtn.className = 'btn-nav';
+      logoutBtn.style.cssText = 'font-size:13px;color:var(--c-muted);background:none;border:none;cursor:pointer;padding:8px 12px';
+      logoutBtn.onclick = async function() { try { await signOut(); } catch(e) {} window.location.href = 'index.html'; };
+      loginEl.parentNode.insertBefore(logoutBtn, loginEl.nextSibling);
+    }
+  } catch(e) {}
 });
 </script>
 </body>
