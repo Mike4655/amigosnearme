@@ -284,9 +284,10 @@ function sortResults(arr) {
   if (currentSort === 'rating') s.sort(function(a,b){ return (parseFloat(b.rating)||0)-(parseFloat(a.rating)||0); });
   else if (currentSort === 'newest') s.sort(function(a,b){ return new Date(b.created_at||0)-new Date(a.created_at||0); });
   else s.sort(function(a,b){
-    var scoreA = (a.priority_score || 0) + (a.plan === 'premium' ? 10 : 0);
-    var scoreB = (b.priority_score || 0) + (b.plan === 'premium' ? 10 : 0);
-    if (scoreB !== scoreA) return scoreB - scoreA;
+    // Worker 추천 정렬: 경험(contact_count) 많은 순 → verified 먼저 → 이름순
+    var expA = a.contact_count || 0;
+    var expB = b.contact_count || 0;
+    if (expB !== expA) return expB - expA;
     if (b.verified !== a.verified) return b.verified ? 1 : -1;
     return (a.business_name||'').localeCompare(b.business_name||'');
   });
