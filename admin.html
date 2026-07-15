@@ -1808,7 +1808,7 @@ async function loadEmployers() {
   try {
     // Join employer_profiles with auth.users email via a view or fetch users separately
     var epRes = await sb.from('employer_profiles')
-      .select('id, owner_id, credit_balance, account_status, created_at');
+      .select('id, owner_id, credit_balance, account_status, created_at, display_name');
     var eps = epRes.data || [];
 
     // Fetch auth user emails via admin.listUsers not available client-side;
@@ -1863,7 +1863,7 @@ async function loadEmployers() {
         : 'background:var(--c-green-light);color:var(--c-green)';
       var credColor = ep.credit_balance === 0 ? 'var(--c-accent)' : ep.credit_balance <= 2 ? 'var(--c-amber)' : 'var(--c-green)';
       var shortId = ep.owner_id ? ep.owner_id.slice(0,8) + '…' : '—';
-      return '<tr data-empid="'+escHtml(ep.id)+'" data-ownerid="'+escHtml(ep.owner_id)+'" data-empstatus="'+escHtml(status)+'">'
+      return '<tr data-empid="'+escHtml(ep.id)+'" data-ownerid="'+escHtml(ep.owner_id)+'" data-empstatus="'+escHtml(status)+'" data-empname="'+escHtml(ep.display_name||'')+'">'
         + '<td style="font-family:var(--font-mono);font-size:12px;color:var(--c-muted)">'+shortId+'</td>'
         + '<td style="font-weight:600;color:'+credColor+'">'+ep.credit_balance+'</td>'
         + '<td style="text-align:center">'+contacts+'</td>'
@@ -1909,7 +1909,7 @@ async function toggleEmployerStatus(btn) {
       btn.style.background = 'var(--c-green-light)';
       btn.style.color = 'var(--c-green)';
       // EM5: Employer 계정 정지 알림 (edge fn이 ownerId로 이메일 조회)
-      sendEmail('EM5', null, { action: 'suspended', name: '' }, ownerId);
+      sendEmail('EM5', null, { action: 'suspended', name: row.dataset.empname || '' }, ownerId);
     }
 
     // Update stats
