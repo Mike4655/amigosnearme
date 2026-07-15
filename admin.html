@@ -208,6 +208,8 @@
     <a class="sb-link" id="nav-verification" onclick="showAdminPane('verification')"><span>✅</span> Verification Queue</a>
     <a class="sb-link" id="nav-reviews" onclick="showAdminPane('reviews')"><span>💬</span> Reviews Moderation</a>
     <a class="sb-link" id="nav-cancellations" onclick="showAdminPane('cancellations')"><span>🚪</span> Cancellation Requests</a>
+    <a class="sb-link" id="nav-employers" onclick="showAdminPane('employers')"><span>🏗️</span> Employers</a>
+    <a class="sb-link" id="nav-workers" onclick="showAdminPane('workers')"><span>👷</span> Workers</a>
     <a class="sb-link" id="nav-analytics" onclick="showAdminPane('analytics')"><span>📊</span> Platform Analytics</a>
     <a class="sb-link" id="nav-settings" onclick="showAdminPane('settings')"><span>⚙️</span> Settings</a>
   </nav>
@@ -280,6 +282,7 @@
             <th>Verification</th>
             <th>Rating</th>
             <th>Contacts</th>
+            <th>Remaining</th>
             <th>Priority Score</th>
             <th>Status</th>
             <th></th>
@@ -297,45 +300,38 @@
   <!-- ===== CUSTOMERS PANE ===== -->
   <div id="pane-customers" style="display:none">
 
-    <!-- Admin-only notice -->
     <div class="info-banner" style="background:var(--c-amber-light);border-color:rgba(186,117,23,0.2)">
       <span>🔒</span>
       <div>
-        <strong>Admin only — not stored in the business owner's dashboard.</strong>
-        When a customer submits the fallback contact form, their name and phone number are
-        <strong>relayed to the business owner via email and WhatsApp notification</strong>
-        so the owner can contact them directly. This record is stored here for abuse-prevention
-        purposes only, is never shown in the business's dashboard inquiry history, and is
-        automatically purged after 90 days.
+        <strong>Admin only.</strong> Customer accounts registered on AmigosNearMe. Suspend blocks review submissions and future contact actions.
       </div>
     </div>
 
     <div class="stats-row">
       <div class="stat-card">
-        <div class="stat-label">Fallback submissions this month</div>
-        <div class="stat-val">—</div>
+        <div class="stat-label">Total Customers</div>
+        <div class="stat-val" id="stat-cust-total">—</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">WhatsApp contact events</div>
-        <div class="stat-val" style="color:var(--c-green)">—</div>
+        <div class="stat-label">Active</div>
+        <div class="stat-val" style="color:var(--c-green)" id="stat-cust-active">—</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Staffing contact events</div>
-        <div class="stat-val" style="color:var(--c-blue)">—</div>
+        <div class="stat-label">Suspended</div>
+        <div class="stat-val" style="color:var(--c-accent)" id="stat-cust-suspended">—</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Pending purge (&gt;90 days)</div>
-        <div class="stat-val" style="color:var(--c-accent)">—</div>
+        <div class="stat-label">Contacts This Month</div>
+        <div class="stat-val" id="stat-cust-contacts">—</div>
       </div>
     </div>
 
     <div class="toolbar">
-      <input class="search-input" type="text" placeholder="Search by business or service..." onkeyup="filterCustomerTable()" id="customer-search-box">
+      <input class="search-input" type="text" placeholder="Search by email..." onkeyup="filterCustomerTable()" id="customer-search-box">
       <select class="filter-select" id="customer-status-filter" onchange="filterCustomerTable()">
-        <option value="">All businesses</option>
-        <option value="landscaping">Landscaping</option>
-        <option value="cleaning">Cleaning</option>
-        <option value="plumbing">Plumbing</option>
+        <option value="">All Statuses</option>
+        <option value="active">Active</option>
+        <option value="suspended">Suspended</option>
       </select>
     </div>
 
@@ -343,23 +339,18 @@
       <table>
         <thead>
           <tr>
-            <th>Customer name <span style="font-weight:400;color:var(--c-accent);font-size:11px">(admin only)</span></th>
-            <th>Phone <span style="font-weight:400;color:var(--c-accent);font-size:11px">(admin only)</span></th>
-            <th>Business contacted</th>
-            <th>Service requested</th>
-            <th>Submitted</th>
-            <th>Purge date</th>
+            <th>Email</th>
+            <th>Contacts (month)</th>
+            <th>Contacts (total)</th>
+            <th>Reviews</th>
+            <th>Status</th>
+            <th></th>
           </tr>
         </thead>
         <tbody id="customer-table-body">
-          <tr><td colspan="6" style="text-align:center;color:var(--c-muted);padding:20px">No data yet — fallback contact form coming soon.</td></tr>
+          <tr><td colspan="6" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>
         </tbody>
       </table>
-    </div>
-
-    <div style="margin-top:12px;font-size:12px;color:var(--c-hint);text-align:center">
-      ⚠️ Rows marked in red are past the 90-day retention window and will be purged at next scheduled cleanup.
-      Data shown here is never transmitted to business owners. See Privacy Policy §3.
     </div>
 
   </div>
@@ -467,18 +458,18 @@
         <div class="stat-val" style="color:var(--c-accent)" id="cancel-pending-count">—</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Processed this month</div>
-        <div class="stat-val">—</div>
+        <div class="stat-label">Resolved</div>
+        <div class="stat-val" style="color:var(--c-green)" id="cancel-resolved-count">—</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Most common reason</div>
-        <div class="stat-val" style="font-size:13px;margin-top:4px">—</div>
+        <div class="stat-label">Total requests</div>
+        <div class="stat-val" id="cancel-total-count">—</div>
       </div>
     </div>
 
-    <div id="cancellation-queue"></div>
+    <div id="cancellation-queue" class="queue-list"></div>
 
-    <div id="cancellation-empty" style="text-align:center;padding:48px;color:var(--c-hint)">
+    <div id="cancellation-empty" style="text-align:center;padding:48px;color:var(--c-hint);display:none">
       ✅ No pending cancellation requests.
     </div>
 
@@ -487,22 +478,47 @@
 
   <div id="pane-analytics" style="display:none">
 
-    <div class="stats-row">
+    <!-- Row 1: MRR / Revenue -->
+    <div class="stats-row" style="grid-template-columns:repeat(4,1fr);margin-bottom:12px">
+      <div class="stat-card">
+        <div class="stat-label">Est. MRR</div>
+        <div class="stat-val" id="an-mrr" style="color:var(--c-green)">—</div>
+        <div class="stat-delta" id="an-mrr-sub" style="font-size:11px;color:var(--c-muted);margin-top:4px"></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Basic Revenue</div>
+        <div class="stat-val" id="an-basic-rev" style="color:var(--c-blue)">—</div>
+        <div class="stat-delta" id="an-basic-count" style="font-size:11px;color:var(--c-muted);margin-top:4px"></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Premium Revenue</div>
+        <div class="stat-val" id="an-prem-rev" style="color:var(--c-amber)">—</div>
+        <div class="stat-delta" id="an-prem-count" style="font-size:11px;color:var(--c-muted);margin-top:4px"></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Credit Revenue (all-time)</div>
+        <div class="stat-val" id="an-credit-rev">—</div>
+        <div class="stat-delta" id="an-credit-sub" style="font-size:11px;color:var(--c-muted);margin-top:4px"></div>
+      </div>
+    </div>
+
+    <!-- Row 2: Activity -->
+    <div class="stats-row" style="margin-bottom:20px">
       <div class="stat-card">
         <div class="stat-label">Total Businesses</div>
         <div class="stat-val" id="an-total-biz">—</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Total Customers</div>
-        <div class="stat-val" style="color:var(--c-muted);font-size:13px" id="an-total-cust">Coming soon</div>
+        <div class="stat-label">Total Workers</div>
+        <div class="stat-val" id="an-total-workers">—</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Quote Requests (30d)</div>
-        <div class="stat-val" style="color:var(--c-muted);font-size:13px">Coming soon</div>
+        <div class="stat-label">Total Employers</div>
+        <div class="stat-val" id="an-total-employers">—</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">MRR (Basic + Premium)</div>
-        <div class="stat-val" style="color:var(--c-muted);font-size:13px">Coming soon</div>
+        <div class="stat-label">Contacts This Month</div>
+        <div class="stat-val" id="an-contacts-month" style="color:var(--c-accent)">—</div>
       </div>
     </div>
 
@@ -540,6 +556,130 @@
 
   </div>
   <!-- ===== END PLATFORM ANALYTICS PANE ===== -->
+
+  <!-- ===== EMPLOYERS PANE ===== -->
+  <div id="pane-employers" style="display:none">
+
+    <div class="info-banner">
+      <span>ℹ️</span>
+      <div>
+        <strong>Employers</strong> pay credits to contact Workers via WhatsApp. Suspending an Employer immediately blocks further contacts and triggers <strong>EM5</strong> (suspension notification email). Restoring re-activates the account.
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total Employers</div>
+        <div class="stat-val" id="stat-emp-total">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Active</div>
+        <div class="stat-val" style="color:var(--c-green)" id="stat-emp-active">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Suspended</div>
+        <div class="stat-val" style="color:var(--c-accent)" id="stat-emp-suspended">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Credits in Circulation</div>
+        <div class="stat-val" id="stat-emp-credits">—</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <input class="search-input" type="text" placeholder="Search by email..." onkeyup="filterEmployerTable()" id="emp-search-box">
+      <select class="filter-select" id="emp-status-filter" onchange="filterEmployerTable()">
+        <option value="">All Statuses</option>
+        <option value="active">Active</option>
+        <option value="suspended">Suspended</option>
+      </select>
+    </div>
+
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Credits</th>
+            <th>Contacts (month)</th>
+            <th>Total Purchased</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="emp-table-body">
+          <tr><td colspan="6" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+  <!-- ===== END EMPLOYERS PANE ===== -->
+
+  <!-- ===== WORKERS PANE ===== -->
+  <div id="pane-workers" style="display:none">
+
+    <div class="info-banner">
+      <span>ℹ️</span>
+      <div>
+        <strong>Workers</strong> are service providers hired by Employers. This view shows only <code>is_worker=true</code> businesses. Suspending a Worker hides their profile from <strong>worker-search.html</strong> and <strong>worker-profile.html</strong>. No plan or contact-limit columns apply here.
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total Workers</div>
+        <div class="stat-val" id="stat-wkr-total">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Verified</div>
+        <div class="stat-val" style="color:var(--c-green)" id="stat-wkr-verified">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pending Verification</div>
+        <div class="stat-val" style="color:var(--c-accent)" id="stat-wkr-pending">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Avg Priority Score</div>
+        <div class="stat-val" id="stat-wkr-priority">—</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <input class="search-input" type="text" placeholder="Search by name..." onkeyup="filterWorkerTable()" id="wkr-search-box">
+      <select class="filter-select" id="wkr-verify-filter" onchange="filterWorkerTable()">
+        <option value="">All Verification</option>
+        <option value="verified">Verified</option>
+        <option value="unverified">Unverified</option>
+      </select>
+      <select class="filter-select" id="wkr-status-filter" onchange="filterWorkerTable()">
+        <option value="">All Statuses</option>
+        <option value="active">Active</option>
+        <option value="suspended">Suspended</option>
+      </select>
+    </div>
+
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Worker</th>
+            <th>Categories</th>
+            <th>Verification</th>
+            <th>Rating</th>
+            <th>Priority Score</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="wkr-table-body">
+          <tr><td colspan="7" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+  <!-- ===== END WORKERS PANE ===== -->
 
   <!-- ===== SETTINGS PANE ===== -->
   <div id="pane-settings" style="display:none">
@@ -677,18 +817,37 @@ function buildBizRow(biz, idx) {
   var autoTag = plan === 'premium' ? '<span class="auto-tag">auto +10</span>' : '';
 
   var bizEmailVal = biz.public_email || '';
-  return '<tr data-plan="'+plan+'" data-verify="'+(biz.verified?'verified':'basic-tier')+'" data-name="'+name.toLowerCase()+'" data-status="active" data-bizid="'+biz.id+'" data-email="'+escHtml(bizEmailVal)+'" data-bizname="'+escHtml(name)+'">'
-    + '<td><div class="biz-cell"><div class="biz-avatar '+bizAvatarClass(idx)+'">'+getAvatarInitialsAdmin(name)+'</div>'
+  var bizStatus = biz.account_status === 'suspended' ? 'suspended' : 'active';
+  var firstPhoto = Array.isArray(biz.photos) && biz.photos.length > 0 ? biz.photos[0] : null;
+  var avatarHtml = firstPhoto
+    ? '<div class="biz-avatar '+bizAvatarClass(idx)+'" style="overflow:hidden"><img src="'+escHtml(firstPhoto)+'" style="width:100%;height:100%;object-fit:cover;border-radius:8px"></div>'
+    : '<div class="biz-avatar '+bizAvatarClass(idx)+'">'+getAvatarInitialsAdmin(name)+'</div>';
+  var statusBadge = bizStatus === 'suspended'
+    ? '<span class="basic-badge" style="background:var(--c-accent-light);color:var(--c-accent)">Suspended</span>'
+    : '<span class="verified-badge">Active</span>';
+  var suspendBtn = bizStatus === 'suspended'
+    ? '<button class="btn-suspend" style="background:var(--c-green-light);color:var(--c-green)" onclick="toggleBusinessStatus(this)">Reactivate</button>'
+    : '<button class="btn-suspend" style="background:var(--c-accent-light);color:var(--c-accent)" onclick="toggleBusinessStatus(this)">Suspend</button>';
+  return '<tr data-plan="'+plan+'" data-verify="'+(biz.verified?'verified':'basic-tier')+'" data-name="'+name.toLowerCase()+'" data-status="'+bizStatus+'" data-bizid="'+biz.id+'" data-email="'+escHtml(bizEmailVal)+'" data-bizname="'+escHtml(name)+'">'
+    + '<td><div class="biz-cell">'+avatarHtml
     + '<div><div class="biz-name">'+escHtml(name)+'</div><div class="biz-cat">'+escHtml(catLabel)+' · '+escHtml(area)+', GA</div></div></div></td>'
     + '<td><span class="'+planClass+'">'+planLabel+'</span></td>'
     + '<td>'+verBadge+'</td>'
     + '<td>—</td>'
     + '<td style="text-align:center">'+(biz.contacts_used_month != null ? biz.contacts_used_month : 0)+'</td>'
+    + (function(){
+        var used = biz.contacts_used_month != null ? biz.contacts_used_month : 0;
+        var lim = plan === 'premium' ? Infinity : plan === 'basic' ? 10 : 3;
+        if (!isFinite(lim)) return '<td style="text-align:center;color:var(--c-green)">∞</td>';
+        var rem = Math.max(0, lim - used);
+        var color = rem === 0 ? 'var(--c-accent)' : rem === 1 ? '#E8A020' : 'var(--c-green)';
+        return '<td style="text-align:center;color:'+color+';font-weight:500">'+rem+'</td>';
+      })()
     + '<td><div class="priority-cell"><input type="range" class="priority-slider" min="0" max="20" value="'+priorityVal+'" oninput="updatePriority(this)">'
     + '<span class="priority-val '+pvClass+'">'+priorityVal+'</span>'+autoTag+'</div></td>'
-    + '<td><span class="verified-badge">Active</span></td>'
+    + '<td>'+statusBadge+'</td>'
     + '<td><div class="action-cell">'
-    + '<button class="btn-suspend" style="background:var(--c-accent-light);color:var(--c-accent)" onclick="toggleBusinessStatus(this)">Suspend</button>'
+    + suspendBtn
     + '<button class="btn-save" onclick="savePriorityDB(this)">Save</button>'
     + '</div></td>'
     + '</tr>';
@@ -812,7 +971,7 @@ function markInvalid(el) { if (el) el.classList.add('input-error'); }
 function clearInvalid(el) { if (el) el.classList.remove('input-error'); }
 
 function showAdminPane(pane) {
-  var panes = ['businesses','customers','verification','reviews','cancellations','analytics','settings'];
+  var panes = ['businesses','customers','verification','reviews','cancellations','employers','workers','analytics','settings'];
   panes.forEach(function(p) {
     var el = document.getElementById('pane-' + p);
     if (el) el.style.display = (p === pane) ? 'block' : 'none';
@@ -821,18 +980,25 @@ function showAdminPane(pane) {
   });
 
   var titles = {
-    businesses: ['Businesses', 'Manage listings, verification, and search priority'],
-    customers: ['Customers', 'Manage customer accounts, activity, and access'],
+    businesses:   ['Businesses', 'Manage listings, verification, and search priority'],
+    customers:    ['Customers', 'Manage customer accounts, activity, and access'],
     verification: ['Verification Queue', 'Review submitted documents and grant the Verified badge'],
-    reviews: ['Reviews Moderation', 'Review flagged content before it stays public'],
-    analytics: ['Platform Analytics', 'Growth, plan mix, and category trends across AmigosNearMe'],
-    cancellations: ['Cancellation Requests', 'Review and process account cancellation requests'],
-    settings: ['Settings', 'Platform-wide defaults and admin team access']
+    reviews:      ['Reviews Moderation', 'Review flagged content before it stays public'],
+    cancellations:['Cancellation Requests', 'Review and process account cancellation requests'],
+    employers:    ['Employers', 'Manage employer accounts, credits, and suspension'],
+    workers:      ['Workers', 'Manage worker profiles, verification, and priority'],
+    analytics:    ['Platform Analytics', 'Growth, plan mix, and category trends across AmigosNearMe'],
+    settings:     ['Settings', 'Platform-wide defaults and admin team access']
   };
   document.getElementById('top-bar-title').textContent = titles[pane][0];
   document.getElementById('top-bar-sub').textContent = titles[pane][1];
 
-  if (pane === 'analytics') loadAnalytics();
+  if (pane === 'analytics')     loadAnalytics();
+  if (pane === 'customers')     loadCustomers();
+  if (pane === 'employers')     loadEmployers();
+  if (pane === 'workers')       loadWorkers();
+  if (pane === 'cancellations') loadCancellations();
+  if (pane === 'reviews')       loadFlaggedReviews();
 }
 
 var _analyticsLoaded = false;
@@ -840,12 +1006,52 @@ async function loadAnalytics() {
   if (_analyticsLoaded) return;
   try {
     var sb = getSupabase();
-    var { data: businesses } = await sb.from('businesses').select('plan, categories, created_at');
-    if (!businesses) return;
 
-    var total = businesses.length;
-    var el = document.getElementById('an-total-biz');
-    if (el) el.textContent = total;
+    // Fetch all data in parallel
+    var now = new Date();
+    var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+
+    var results = await Promise.all([
+      sb.from('businesses').select('plan, categories, created_at, is_worker, account_status'),
+      sb.from('contact_log').select('id', { count: 'exact', head: true }).gte('created_at', monthStart),
+      sb.from('credit_transactions').select('amount_usd, credits_added'),
+      sb.from('employer_profiles').select('id', { count: 'exact', head: true })
+    ]);
+
+    var businesses  = results[0].data || [];
+    var contactsRes = results[1];
+    var txData      = results[2].data || [];
+    var empCount    = results[3].count || 0;
+
+    // Segment businesses vs workers
+    var bizOnly     = businesses.filter(function(b){ return !b.is_worker; });
+    var workerOnly  = businesses.filter(function(b){ return b.is_worker; });
+
+    var basicCount   = bizOnly.filter(function(b){ return b.plan === 'basic'; }).length;
+    var premiumCount = bizOnly.filter(function(b){ return b.plan === 'premium'; }).length;
+
+    var basicRev   = basicCount * 29;
+    var premiumRev = premiumCount * 79;
+    var creditRev  = txData.reduce(function(s, t){ return s + (parseFloat(t.amount_usd) || 0); }, 0);
+    var mrr        = basicRev + premiumRev;
+
+    // MRR row
+    var setEl = function(id, val) { var e = document.getElementById(id); if (e) e.textContent = val; };
+    setEl('an-mrr',        '$' + mrr.toLocaleString());
+    setEl('an-mrr-sub',    'Basic + Premium subscriptions');
+    setEl('an-basic-rev',  '$' + basicRev.toLocaleString());
+    setEl('an-basic-count', basicCount + ' businesses × $29');
+    setEl('an-prem-rev',   '$' + premiumRev.toLocaleString());
+    setEl('an-prem-count', premiumCount + ' businesses × $79');
+    setEl('an-credit-rev', '$' + creditRev.toFixed(2));
+    setEl('an-credit-sub', txData.length + ' transactions');
+
+    // Activity row
+    var total = bizOnly.length;
+    setEl('an-total-biz',       total);
+    setEl('an-total-workers',   workerOnly.length);
+    setEl('an-total-employers', empCount);
+    setEl('an-contacts-month',  contactsRes.error ? '—' : (contactsRes.count || 0));
 
     // Plan distribution
     var planCount = { free: 0, basic: 0, premium: 0 };
@@ -875,7 +1081,7 @@ async function loadAnalytics() {
       catEl.innerHTML = cats.length
         ? cats.map(function(c) {
             var w = Math.round((catCount[c] / maxCat) * 100);
-            return '<div class="dist-row"><span class="dist-label">' + esc(c) + '</span>'
+            return '<div class="dist-row"><span class="dist-label">' + escHtml(c) + '</span>'
               + '<div class="dist-bar"><div class="dist-fill" style="width:' + w + '%"></div></div>'
               + '<span class="dist-val">' + catCount[c] + '</span></div>';
           }).join('')
@@ -883,7 +1089,6 @@ async function loadAnalytics() {
     }
 
     // Monthly bar chart (last 6 months)
-    var now = new Date();
     var months = [];
     for (var i = 5; i >= 0; i--) {
       var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
@@ -912,33 +1117,133 @@ async function loadAnalytics() {
   }
 }
 
-function approveCancellation(btn) {
-  var card = btn.closest('.queue-card');
-  var bizName = card.querySelector('.biz-name') ? card.querySelector('.biz-name').textContent : 'Business';
-  var plan = card.querySelector('.biz-cat') ? card.querySelector('.biz-cat').textContent : '';
+/* ===== CANCELLATION REQUESTS TAB ===== */
+var _cancellationsLoaded = false;
 
-  // BACKEND SPEC (production):
-  // 1. If paid plan: cancel Braintree subscription at period end (NOT immediately)
-  // 2. Schedule account deactivation at billing period end date
-  // 3. Retain reviews as anonymous ("Former business") after closure
-  // 4. Send confirmation email to business owner
-  // 5. Log in audit trail
+async function loadCancellations() {
+  if (_cancellationsLoaded) return;
+  var sb = getSupabase();
+  var queue = document.getElementById('cancellation-queue');
+  var emptyEl = document.getElementById('cancellation-empty');
 
-  dismissCard(card, 'cancellation-queue', 'cancellation-empty');
+  try {
+    var res = await sb.rpc('get_cancellation_admin_data');
+    var rows = res.data || [];
 
-  // Update pending count
-  var countEl = document.getElementById('cancel-pending-count');
-  if (countEl) {
-    var n = parseInt(countEl.textContent, 10);
-    if (!isNaN(n) && n > 0) countEl.textContent = n - 1;
+    var pending  = rows.filter(function(r){ return !r.resolved; }).length;
+    var resolved = rows.filter(function(r){ return r.resolved; }).length;
+    document.getElementById('cancel-pending-count').textContent  = pending;
+    document.getElementById('cancel-resolved-count').textContent = resolved;
+    document.getElementById('cancel-total-count').textContent    = rows.length;
+
+    if (!rows.length) {
+      queue.innerHTML = '';
+      emptyEl.style.display = 'block';
+      _cancellationsLoaded = true;
+      return;
+    }
+
+    emptyEl.style.display = 'none';
+    queue.innerHTML = rows.map(function(r) {
+      var email    = r.email || r.user_id.slice(0,8) + '…';
+      var type     = r.user_type || '—';
+      var reason   = r.reason || 'Not provided';
+      var d        = new Date(r.created_at);
+      var dateStr  = d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+      var statusBadge = r.resolved
+        ? '<span class="verified-badge" style="font-size:11px">✅ Resolved</span>'
+        : '<span class="basic-badge" style="background:var(--c-accent-light);color:var(--c-accent);font-size:11px">⏳ Pending</span>';
+      var actionBtn = r.resolved ? '' :
+        '<button class="btn-approve" onclick="processCancellation(this)" '
+        + 'data-reqid="'+escHtml(r.id)+'" '
+        + 'data-userid="'+escHtml(r.user_id)+'" '
+        + 'data-usertype="'+escHtml(type)+'" '
+        + 'data-email="'+escHtml(r.email||'')+'">'
+        + '✓ Process (Delete account)</button>';
+
+      return '<div class="queue-card" data-reqid="'+escHtml(r.id)+'">'
+        + '<div class="queue-main">'
+        + '<div class="biz-cell">'
+        + '<div class="biz-avatar av-coral" style="font-size:10px;width:32px;height:32px">'+type.slice(0,2).toUpperCase()+'</div>'
+        + '<div>'
+        + '<div class="biz-name">'+escHtml(email)+'</div>'
+        + '<div class="biz-cat">'+escHtml(type)+' · '+dateStr+'</div>'
+        + '</div></div>'
+        + '<div style="margin-top:8px;margin-left:42px;font-size:12px;color:var(--c-muted)">'+escHtml(reason)+'</div>'
+        + '<div style="margin-top:6px;margin-left:42px">'+statusBadge+'</div>'
+        + '</div>'
+        + '<div class="queue-actions">'+actionBtn+'</div>'
+        + '</div>';
+    }).join('');
+
+    _cancellationsLoaded = true;
+  } catch(e) {
+    console.error('[Admin] loadCancellations error:', e);
+    queue.innerHTML = '<div style="padding:20px;text-align:center;color:var(--c-accent)">Error loading cancellation requests.</div>';
   }
-
-  showAdminToast('✓ Cancellation approved for ' + bizName + ' — scheduled for end of billing period');
 }
 
-function openCancelRejectModal(btn) {
-  // Reuse the existing reject modal for now
-  openRejectModal(btn, 'cancellation');
+async function processCancellation(btn) {
+  var reqId    = btn.dataset.reqid;
+  var userId   = btn.dataset.userid;
+  var userType = btn.dataset.usertype;
+  var email    = btn.dataset.email || null;
+
+  btn.disabled = true;
+  btn.textContent = '…';
+
+  try {
+    var sb = getSupabase();
+
+    // 1. Soft-delete: account_status = 'deleted'
+    if (userType === 'business' || userType === 'worker') {
+      await sb.from('businesses').update({ account_status: 'deleted' }).eq('owner_id', userId);
+    } else if (userType === 'employer') {
+      await sb.from('employer_profiles').update({ account_status: 'deleted' }).eq('owner_id', userId);
+    } else if (userType === 'customer') {
+      await sb.from('customer_profiles').update({ account_status: 'deleted' }).eq('owner_id', userId);
+    }
+
+    // 2. resolved = true
+    await sb.from('cancellation_requests').update({ resolved: true }).eq('id', reqId);
+
+    // 3. Deletion confirmation email (ref_id = userId so edge fn looks up email)
+    var scenario = userType === 'business' ? 'SB11'
+                 : userType === 'worker'   ? 'W4'
+                 : userType === 'employer' ? 'EM5'
+                 : 'CU4';
+    var emailData = userType === 'employer'
+      ? { action: 'deleted', name: '' }
+      : userType === 'customer'
+        ? { action: 'deleted', name: '' }
+        : userType === 'worker'
+          ? { worker_name: '' }
+          : { owner_name: '', biz_name: email || '' };
+    sendEmail(scenario, email, emailData, userId);
+
+    // UI update
+    var card = btn.closest('.queue-card');
+    var actionsEl = card.querySelector('.queue-actions');
+    if (actionsEl) actionsEl.innerHTML = '<span class="verified-badge" style="font-size:11px">✅ Resolved</span>';
+    var statusEl = card.querySelector('.basic-badge');
+    if (statusEl) {
+      statusEl.textContent = '✅ Resolved';
+      statusEl.className = 'verified-badge';
+      statusEl.style = '';
+    }
+
+    var pendingEl = document.getElementById('cancel-pending-count');
+    var resolvedEl = document.getElementById('cancel-resolved-count');
+    if (pendingEl)  pendingEl.textContent  = Math.max(0, parseInt(pendingEl.textContent,10)-1);
+    if (resolvedEl) resolvedEl.textContent = (parseInt(resolvedEl.textContent,10)||0)+1;
+
+    showAdminToast('✅ Account deleted — ' + (email || userId.slice(0,8)));
+  } catch(err) {
+    console.error('[Admin] processCancellation error:', err);
+    showAdminToast('⚠ Error processing cancellation');
+    btn.disabled = false;
+    btn.textContent = '✓ Process (Delete account)';
+  }
 }
 
 async function reviewVerification(btn, decision) {
@@ -998,10 +1303,88 @@ function showAdminToast(msg) {
   }, 3000);
 }
 
-function reviewModerate(btn, decision) {
+async function loadFlaggedReviews() {
+  var sb = getSupabase();
+  var queue = document.getElementById('reviews-queue');
+  var empty = document.getElementById('reviews-empty');
+  if (!queue) return;
+  queue.innerHTML = '<div style="padding:20px;color:var(--c-muted);font-size:13px">Loading…</div>';
+  if (empty) empty.style.display = 'none';
+
+  try {
+    // flagged=true, removed=false 리뷰 + businesses join
+    var { data: flagged, error } = await sb
+      .from('reviews')
+      .select('id, rating, review_text, flagged_at, created_at, biz_id, reviewer_id, businesses(business_name, trade_name)')
+      .eq('flagged', true)
+      .eq('removed', false)
+      .order('flagged_at', { ascending: false });
+    if (error) throw error;
+
+    // stats 업데이트
+    var statVals = document.querySelectorAll('#pane-reviews .stat-card .stat-val');
+    if (statVals[0]) statVals[0].textContent = flagged ? flagged.length : 0;
+
+    // 전체 리뷰 수
+    var { count: totalCount } = await sb.from('reviews').select('id', { count: 'exact', head: true }).eq('removed', false);
+    if (statVals[1]) statVals[1].textContent = totalCount || 0;
+
+    // 이번 달 삭제 수
+    var monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0,0,0,0);
+    var { count: removedCount } = await sb.from('reviews').select('id', { count: 'exact', head: true })
+      .eq('removed', true).gte('removed_at', monthStart.toISOString());
+    if (statVals[2]) statVals[2].textContent = removedCount || 0;
+
+    // 평균 별점
+    var { data: ratingData } = await sb.from('reviews').select('rating').eq('removed', false);
+    if (statVals[3] && ratingData && ratingData.length > 0) {
+      var avg = ratingData.reduce(function(s, r){ return s + r.rating; }, 0) / ratingData.length;
+      statVals[3].textContent = avg.toFixed(1) + ' ★';
+    }
+
+    queue.innerHTML = '';
+    if (!flagged || flagged.length === 0) {
+      if (empty) { empty.querySelector('.sub').textContent = 'All clear — no flagged reviews.'; empty.style.display = 'block'; }
+      return;
+    }
+
+    flagged.forEach(function(r) {
+      var biz = r.businesses || {};
+      var bizName = biz.trade_name || biz.business_name || r.biz_id;
+      var stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+      var flaggedDate = r.flagged_at ? new Date(r.flagged_at).toLocaleDateString() : '—';
+      var card = document.createElement('div');
+      card.className = 'queue-card';
+      card.setAttribute('data-review-id', r.id);
+      card.setAttribute('data-reviewer-id', r.reviewer_id);
+      card.setAttribute('data-biz-name', bizName);
+      card.innerHTML = `
+        <div class="biz-name" style="font-weight:600;margin-bottom:4px">${bizName}</div>
+        <div style="font-size:13px;color:var(--c-amber);margin-bottom:4px">${stars} (${r.rating}/5)</div>
+        <div style="font-size:13px;margin-bottom:8px;color:var(--c-text)">"${r.review_text || '(no text)'}"</div>
+        <div style="font-size:11px;color:var(--c-muted);margin-bottom:12px">Flagged: ${flaggedDate}</div>
+        <div class="card-actions">
+          <button class="action-btn approve-btn" onclick="reviewModerate(this, 'keep')">Keep</button>
+          <button class="action-btn reject-btn" onclick="openRejectModal(this, 'review')">Remove…</button>
+        </div>`;
+      queue.appendChild(card);
+    });
+  } catch(e) {
+    console.error('[loadFlaggedReviews]', e);
+    queue.innerHTML = '<div style="padding:20px;color:var(--c-accent);font-size:13px">Error loading reviews.</div>';
+  }
+}
+
+async function reviewModerate(btn, decision) {
   var card = btn.closest('.queue-card');
+  var reviewId = card.getAttribute('data-review-id');
+  var sb = getSupabase();
+  if (decision === 'keep') {
+    // 유지: flagged 해제
+    await sb.from('reviews').update({ flagged: false, flagged_at: null }).eq('id', reviewId);
+    showAdminToast('✓ Review kept — flag cleared');
+  }
   dismissCard(card, 'reviews-queue', 'reviews-empty');
-  // In production: decision === 'approved' (Keep) leaves the review visible, no notification needed.
 }
 
 function dismissCard(card, listId, emptyId) {
@@ -1111,12 +1494,25 @@ function confirmReject() {
       }
     }
   }
+  if (rejectContext.type === 'review') {
+    var reviewId = rejectContext.card.getAttribute('data-review-id');
+    var reviewerId = rejectContext.card.getAttribute('data-reviewer-id');
+    var bizName = rejectContext.card.getAttribute('data-biz-name') || '';
+    var note = ta.value.trim();
+    var sb = getSupabase();
+    // DB: removed=true, removed_note, removed_at
+    sb.from('reviews').update({ removed: true, removed_note: note, removed_at: new Date().toISOString(), flagged: false }).eq('id', reviewId).then(function(){});
+    // 리뷰어에게 이메일 (reviewer_id로 auth.users 이메일 조회는 Edge Function에서 처리)
+    sendEmail('CU4', null, { name: 'there', action: 'review removed', reason: note }, reviewerId);
+    showAdminToast('✗ Review removed — reviewer notified');
+  }
+
   document.getElementById('reject-modal-overlay').classList.remove('show');
   dismissCard(rejectContext.card, rejectContext.listId, rejectContext.emptyId);
   rejectContext = null;
 }
 
-function toggleBusinessStatus(btn) {
+async function toggleBusinessStatus(btn) {
   var row = btn.closest('tr');
   var actionTd = btn.closest('td');
   var statusCell = actionTd.previousElementSibling.querySelector('span');
@@ -1124,11 +1520,27 @@ function toggleBusinessStatus(btn) {
   var bizEmail = row.dataset.email || null;
   var bizName  = row.dataset.bizname || (row.querySelector('.biz-name') ? row.querySelector('.biz-name').textContent : '');
   var bizId    = row.dataset.bizid || null;
+  var newStatus = isSuspended ? 'active' : 'suspended';
+
+  btn.disabled = true;
+  btn.textContent = '…';
+  try {
+    var sb = getSupabase();
+    var { error } = await sb.from('businesses').update({ account_status: newStatus }).eq('id', bizId);
+    if (error) throw error;
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = isSuspended ? 'Reactivate' : 'Suspend';
+    showAdminToast('❌ Failed to update status: ' + e.message);
+    return;
+  }
 
   if (isSuspended) {
     row.dataset.status = 'active';
     statusCell.textContent = 'Active';
     statusCell.className = 'verified-badge';
+    statusCell.style.background = '';
+    statusCell.style.color = '';
     btn.textContent = 'Suspend';
     btn.style.background = 'var(--c-accent-light)';
     btn.style.color = 'var(--c-accent)';
@@ -1144,6 +1556,8 @@ function toggleBusinessStatus(btn) {
     // SB10: 계정 정지 알림 — 업체에 이메일
     if (bizEmail) sendEmail('SB10', bizEmail, { biz_name: bizName }, bizId);
   }
+  btn.disabled = false;
+  showAdminToast(isSuspended ? '✅ Business reactivated' : '⛔ Business suspended');
 }
 
 function toggleCustomerStatus(btn) {
@@ -1170,19 +1584,137 @@ function toggleCustomerStatus(btn) {
   }
 }
 
+/* ===== CUSTOMERS TAB ===== */
+var _customersLoaded = false;
+async function loadCustomers() {
+  if (_customersLoaded) return;
+  var sb = getSupabase();
+  var tbody = document.getElementById('customer-table-body');
+
+  try {
+    // get_customer_admin_data() returns id, owner_id, email, account_status, created_at
+    var custRes = await sb.rpc('get_customer_admin_data');
+    var customers = custRes.data || [];
+
+    var now = new Date();
+    var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+
+    // contact_log: count per actor_id (month + total)
+    var [clMonthRes, clTotalRes, revRes] = await Promise.all([
+      sb.from('contact_log').select('actor_id').gte('created_at', monthStart).eq('limit_hit', false),
+      sb.from('contact_log').select('actor_id'),
+      sb.from('reviews').select('reviewer_id')
+    ]);
+
+    var clMonth = {};
+    (clMonthRes.data || []).forEach(function(r){ clMonth[r.actor_id] = (clMonth[r.actor_id]||0)+1; });
+    var clTotal = {};
+    (clTotalRes.data || []).forEach(function(r){ clTotal[r.actor_id] = (clTotal[r.actor_id]||0)+1; });
+    var revCount = {};
+    (revRes.data || []).forEach(function(r){ revCount[r.reviewer_id] = (revCount[r.reviewer_id]||0)+1; });
+
+    var total     = customers.length;
+    var active    = customers.filter(function(c){ return c.account_status === 'active'; }).length;
+    var suspended = customers.filter(function(c){ return c.account_status === 'suspended'; }).length;
+    var totalContacts = Object.values(clMonth).reduce(function(s,v){ return s+v; }, 0);
+
+    document.getElementById('stat-cust-total').textContent     = total;
+    document.getElementById('stat-cust-active').textContent    = active;
+    document.getElementById('stat-cust-suspended').textContent = suspended;
+    document.getElementById('stat-cust-contacts').textContent  = totalContacts;
+
+    if (!customers.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--c-muted);padding:20px">No customers yet.</td></tr>';
+      _customersLoaded = true;
+      return;
+    }
+
+    tbody.innerHTML = customers.map(function(c) {
+      var email   = c.email || '—';
+      var status  = c.account_status || 'active';
+      var month   = clMonth[c.owner_id] || 0;
+      var total_c = clTotal[c.owner_id] || 0;
+      var reviews = revCount[c.owner_id] || 0;
+      var statusBadge = status === 'active'
+        ? '<span class="verified-badge">Active</span>'
+        : '<span class="basic-badge" style="background:var(--c-accent-light);color:var(--c-accent)">Suspended</span>';
+      var suspendLabel = status === 'active' ? 'Suspend' : 'Restore';
+      var suspendStyle = status === 'active'
+        ? 'background:var(--c-accent-light);color:var(--c-accent)'
+        : 'background:var(--c-green-light);color:var(--c-green)';
+      return '<tr data-custstatus="'+escHtml(status)+'" data-custemail="'+escHtml(email.toLowerCase())+'" data-ownerid="'+escHtml(c.owner_id)+'" data-custid="'+escHtml(c.id)+'">'
+        + '<td style="font-size:13px">'+escHtml(email)+'</td>'
+        + '<td style="text-align:center">'+month+'</td>'
+        + '<td style="text-align:center">'+total_c+'</td>'
+        + '<td style="text-align:center">'+reviews+'</td>'
+        + '<td>'+statusBadge+'</td>'
+        + '<td><div class="action-cell">'
+        + '<button class="btn-suspend" style="'+suspendStyle+'" onclick="toggleCustomerStatus(this)">'+suspendLabel+'</button>'
+        + '</div></td>'
+        + '</tr>';
+    }).join('');
+
+    _customersLoaded = true;
+  } catch(e) {
+    console.error('[Admin] loadCustomers error:', e);
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--c-accent);padding:20px">Error loading customers.</td></tr>';
+  }
+}
+
+async function toggleCustomerStatus(btn) {
+  var row = btn.closest('tr');
+  var custId  = row.dataset.custid;
+  var ownerId = row.dataset.ownerid;
+  var isSuspended = row.dataset.custstatus === 'suspended';
+  var newStatus = isSuspended ? 'active' : 'suspended';
+
+  btn.disabled = true;
+  btn.textContent = '…';
+  try {
+    var sb = getSupabase();
+    await sb.from('customer_profiles').update({ account_status: newStatus }).eq('id', custId);
+
+    row.dataset.custstatus = newStatus;
+    var statusCell = row.querySelector('td:nth-child(5)');
+    if (newStatus === 'active') {
+      statusCell.innerHTML = '<span class="verified-badge">Active</span>';
+      btn.textContent = 'Suspend';
+      btn.style.background = 'var(--c-accent-light)';
+      btn.style.color = 'var(--c-accent)';
+    } else {
+      statusCell.innerHTML = '<span class="basic-badge" style="background:var(--c-accent-light);color:var(--c-accent)">Suspended</span>';
+      btn.textContent = 'Restore';
+      btn.style.background = 'var(--c-green-light)';
+      btn.style.color = 'var(--c-green)';
+      // CU4: 고객 계정 정지 알림 — edge function이 ref_id(owner_id)로 이메일 자동 조회
+      sendEmail('CU4', null, { action: 'suspended', name: '' }, ownerId);
+    }
+
+    var activeEl = document.getElementById('stat-cust-active');
+    var suspEl   = document.getElementById('stat-cust-suspended');
+    if (activeEl && suspEl) {
+      var a = parseInt(activeEl.textContent,10)||0;
+      var s = parseInt(suspEl.textContent,10)||0;
+      if (newStatus === 'active') { activeEl.textContent=a+1; suspEl.textContent=Math.max(0,s-1); }
+      else { activeEl.textContent=Math.max(0,a-1); suspEl.textContent=s+1; }
+    }
+    showAdminToast((newStatus==='active'?'✅ Customer restored':'🚫 Customer suspended'));
+  } catch(err) {
+    console.error('[Admin] toggleCustomerStatus error:', err);
+    showAdminToast('⚠ Error updating customer status');
+  }
+  btn.disabled = false;
+}
+
 function filterCustomerTable() {
-  var q = document.getElementById('customer-search-box').value.toLowerCase();
+  var q      = (document.getElementById('customer-search-box').value || '').toLowerCase();
   var status = document.getElementById('customer-status-filter').value;
-  var activity = document.getElementById('customer-activity-filter').value;
-  var rows = document.querySelectorAll('#customer-table-body tr');
-  rows.forEach(function(row) {
-    var name = row.dataset.cname;
-    var rowStatus = row.dataset.status;
-    var rowActivity = row.dataset.activity;
-    var show = true;
-    if (q && name.indexOf(q) === -1) show = false;
-    if (status && rowStatus !== status) show = false;
-    if (activity && rowActivity.indexOf(activity) === -1) show = false;
+  document.querySelectorAll('#customer-table-body tr').forEach(function(row) {
+    var email = row.dataset.custemail || '';
+    var st    = row.dataset.custstatus || '';
+    var show  = true;
+    if (q && email.indexOf(q) === -1) show = false;
+    if (status && st !== status) show = false;
     row.style.display = show ? '' : 'none';
   });
 }
@@ -1265,6 +1797,272 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   initAdminPage();
 });
+
+/* ===== EMPLOYERS TAB ===== */
+var _employersLoaded = false;
+async function loadEmployers() {
+  if (_employersLoaded) return;
+  var sb = getSupabase();
+  var tbody = document.getElementById('emp-table-body');
+
+  try {
+    // Join employer_profiles with auth.users email via a view or fetch users separately
+    var epRes = await sb.from('employer_profiles')
+      .select('id, owner_id, credit_balance, account_status, created_at');
+    var eps = epRes.data || [];
+
+    // Fetch auth user emails via admin.listUsers not available client-side;
+    // use a profiles/metadata approach — fetch user emails from businesses or customer_profiles
+    // Fallback: show owner_id truncated if no email joinable
+    // For each employer, count contacts this month
+    var now = new Date();
+    var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+
+    // credit_transactions sum per employer
+    var txRes = await sb.from('credit_transactions').select('employer_id, credits_added');
+    var txMap = {};
+    (txRes.data || []).forEach(function(t) {
+      txMap[t.employer_id] = (txMap[t.employer_id] || 0) + (t.credits_added || 0);
+    });
+
+    // contacts this month per owner_id
+    var clRes = await sb.from('contact_log')
+      .select('actor_id')
+      .gte('created_at', monthStart);
+    var clMap = {};
+    (clRes.data || []).forEach(function(r) {
+      clMap[r.actor_id] = (clMap[r.actor_id] || 0) + 1;
+    });
+
+    var total = eps.length;
+    var active = eps.filter(function(e){ return e.account_status === 'active'; }).length;
+    var suspended = eps.filter(function(e){ return e.account_status === 'suspended'; }).length;
+    var totalCredits = eps.reduce(function(s,e){ return s + (e.credit_balance||0); }, 0);
+
+    document.getElementById('stat-emp-total').textContent = total;
+    document.getElementById('stat-emp-active').textContent = active;
+    document.getElementById('stat-emp-suspended').textContent = suspended;
+    document.getElementById('stat-emp-credits').textContent = totalCredits;
+
+    if (!eps.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--c-muted);padding:20px">No employers yet.</td></tr>';
+      _employersLoaded = true;
+      return;
+    }
+
+    tbody.innerHTML = eps.map(function(ep) {
+      var contacts = clMap[ep.owner_id] || 0;
+      var purchased = txMap[ep.id] || 0;
+      var status = ep.account_status || 'active';
+      var statusBadge = status === 'active'
+        ? '<span class="verified-badge">Active</span>'
+        : '<span class="basic-badge" style="background:var(--c-accent-light);color:var(--c-accent)">Suspended</span>';
+      var suspendLabel = status === 'active' ? 'Suspend' : 'Restore';
+      var suspendStyle = status === 'active'
+        ? 'background:var(--c-accent-light);color:var(--c-accent)'
+        : 'background:var(--c-green-light);color:var(--c-green)';
+      var credColor = ep.credit_balance === 0 ? 'var(--c-accent)' : ep.credit_balance <= 2 ? 'var(--c-amber)' : 'var(--c-green)';
+      var shortId = ep.owner_id ? ep.owner_id.slice(0,8) + '…' : '—';
+      return '<tr data-empid="'+escHtml(ep.id)+'" data-ownerid="'+escHtml(ep.owner_id)+'" data-empstatus="'+escHtml(status)+'">'
+        + '<td style="font-family:var(--font-mono);font-size:12px;color:var(--c-muted)">'+shortId+'</td>'
+        + '<td style="font-weight:600;color:'+credColor+'">'+ep.credit_balance+'</td>'
+        + '<td style="text-align:center">'+contacts+'</td>'
+        + '<td style="text-align:center">'+purchased+'</td>'
+        + '<td>'+statusBadge+'</td>'
+        + '<td><div class="action-cell">'
+        + '<button class="btn-suspend" style="'+suspendStyle+'" onclick="toggleEmployerStatus(this)">'+suspendLabel+'</button>'
+        + '</div></td>'
+        + '</tr>';
+    }).join('');
+
+    _employersLoaded = true;
+  } catch(e) {
+    console.error('[Admin] loadEmployers error:', e);
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--c-accent);padding:20px">Error loading employers.</td></tr>';
+  }
+}
+
+async function toggleEmployerStatus(btn) {
+  var row = btn.closest('tr');
+  var empId   = row.dataset.empid;
+  var ownerId = row.dataset.ownerid;
+  var isSuspended = row.dataset.empstatus === 'suspended';
+  var newStatus = isSuspended ? 'active' : 'suspended';
+
+  btn.disabled = true;
+  btn.textContent = '…';
+
+  try {
+    var sb = getSupabase();
+    await sb.from('employer_profiles').update({ account_status: newStatus }).eq('id', empId);
+
+    row.dataset.empstatus = newStatus;
+    var statusCell = row.querySelector('td:nth-child(5)');
+    if (newStatus === 'active') {
+      statusCell.innerHTML = '<span class="verified-badge">Active</span>';
+      btn.textContent = 'Suspend';
+      btn.style.background = 'var(--c-accent-light)';
+      btn.style.color = 'var(--c-accent)';
+    } else {
+      statusCell.innerHTML = '<span class="basic-badge" style="background:var(--c-accent-light);color:var(--c-accent)">Suspended</span>';
+      btn.textContent = 'Restore';
+      btn.style.background = 'var(--c-green-light)';
+      btn.style.color = 'var(--c-green)';
+      // EM5: Employer 계정 정지 알림 (edge fn이 ownerId로 이메일 조회)
+      sendEmail('EM5', null, { action: 'suspended', name: '' }, ownerId);
+    }
+
+    // Update stats
+    var activeEl = document.getElementById('stat-emp-active');
+    var suspEl   = document.getElementById('stat-emp-suspended');
+    if (activeEl && suspEl) {
+      var a = parseInt(activeEl.textContent,10)||0;
+      var s = parseInt(suspEl.textContent,10)||0;
+      if (newStatus === 'active') { activeEl.textContent = a+1; suspEl.textContent = Math.max(0,s-1); }
+      else { activeEl.textContent = Math.max(0,a-1); suspEl.textContent = s+1; }
+    }
+
+    showAdminToast((newStatus === 'active' ? '✅ Employer restored' : '🚫 Employer suspended') + ' — ' + ownerId.slice(0,8));
+  } catch(err) {
+    console.error('[Admin] toggleEmployerStatus error:', err);
+    showAdminToast('⚠ Error updating employer status');
+  }
+  btn.disabled = false;
+}
+
+function filterEmployerTable() {
+  var q      = (document.getElementById('emp-search-box').value || '').toLowerCase();
+  var status = document.getElementById('emp-status-filter').value;
+  document.querySelectorAll('#emp-table-body tr').forEach(function(row) {
+    var id  = (row.dataset.ownerid || '').toLowerCase();
+    var st  = row.dataset.empstatus || '';
+    var show = true;
+    if (q && id.indexOf(q) === -1) show = false;
+    if (status && st !== status) show = false;
+    row.style.display = show ? '' : 'none';
+  });
+}
+
+/* ===== WORKERS TAB ===== */
+var _workersLoaded = false;
+async function loadWorkers() {
+  if (_workersLoaded) return;
+  var sb = getSupabase();
+  var tbody = document.getElementById('wkr-table-body');
+
+  try {
+    var res = await sb.from('businesses')
+      .select('*')
+      .eq('is_worker', true)
+      .order('created_at', { ascending: false });
+    var workers = res.data || [];
+
+    var total    = workers.length;
+    var verified = workers.filter(function(w){ return w.verified; }).length;
+    var pending  = workers.filter(function(w){ return !w.verified; }).length;
+    var avgPrio  = total ? Math.round(workers.reduce(function(s,w){ return s+(w.priority_score||0); },0)/total) : 0;
+
+    document.getElementById('stat-wkr-total').textContent    = total;
+    document.getElementById('stat-wkr-verified').textContent = verified;
+    document.getElementById('stat-wkr-pending').textContent  = pending;
+    document.getElementById('stat-wkr-priority').textContent = avgPrio;
+
+    if (!workers.length) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--c-muted);padding:20px">No workers registered yet.</td></tr>';
+      _workersLoaded = true;
+      return;
+    }
+
+    tbody.innerHTML = workers.map(function(w, idx) {
+      var name = w.business_name || w.trade_name || '(unnamed)';
+      var cats = (w.categories || []).map(function(c){ return CAT_LABELS[c]||c; }).join(', ') || '—';
+      var verBadge = w.verified
+        ? '<span class="verified-badge">✅ Verified</span>'
+        : '<span class="basic-badge">⏳ Unverified</span>';
+      var status = w.account_status || 'active';
+      var statusBadge = status === 'active'
+        ? '<span class="verified-badge">Active</span>'
+        : '<span class="basic-badge" style="background:var(--c-accent-light);color:var(--c-accent)">Suspended</span>';
+      var prio = w.priority_score != null ? w.priority_score : 0;
+      var pvClass = prio===0?'zero':prio<=7?'low':prio<=13?'mid':'high';
+      var suspendLabel = status === 'active' ? 'Suspend' : 'Restore';
+      var suspendStyle = status === 'active'
+        ? 'background:var(--c-accent-light);color:var(--c-accent)'
+        : 'background:var(--c-green-light);color:var(--c-green)';
+      return '<tr data-wkrstatus="'+escHtml(status)+'" data-wkrverify="'+(w.verified?'verified':'unverified')+'" data-wkrname="'+escHtml(name.toLowerCase())+'" data-bizid="'+escHtml(w.id)+'" data-email="'+escHtml(w.public_email||'')+'" data-bizname="'+escHtml(name)+'">'
+        + '<td><div class="biz-cell"><div class="biz-avatar '+bizAvatarClass(idx)+'">'+getAvatarInitialsAdmin(name)+'</div>'
+        + '<div><div class="biz-name">'+escHtml(name)+'</div></div></div></td>'
+        + '<td style="font-size:12px;color:var(--c-muted)">'+escHtml(cats)+'</td>'
+        + '<td>'+verBadge+'</td>'
+        + '<td>—</td>'
+        + '<td><div class="priority-cell"><input type="range" class="priority-slider" min="0" max="20" value="'+prio+'" oninput="updatePriority(this)">'
+        + '<span class="priority-val '+pvClass+'">'+prio+'</span></div></td>'
+        + '<td>'+statusBadge+'</td>'
+        + '<td><div class="action-cell">'
+        + '<button class="btn-suspend" style="'+suspendStyle+'" onclick="toggleWorkerStatus(this)">'+suspendLabel+'</button>'
+        + '<button class="btn-save" onclick="savePriorityDB(this)">Save</button>'
+        + '</div></td>'
+        + '</tr>';
+    }).join('');
+
+    _workersLoaded = true;
+  } catch(e) {
+    console.error('[Admin] loadWorkers error:', e);
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--c-accent);padding:20px">Error loading workers.</td></tr>';
+  }
+}
+
+async function toggleWorkerStatus(btn) {
+  var row = btn.closest('tr');
+  var bizId    = row.dataset.bizid;
+  var bizName  = row.dataset.bizname || '';
+  var bizEmail = row.dataset.email || null;
+  var isSuspended = row.dataset.wkrstatus === 'suspended';
+  var newStatus = isSuspended ? 'active' : 'suspended';
+
+  btn.disabled = true;
+  btn.textContent = '…';
+  try {
+    var sb = getSupabase();
+    await sb.from('businesses').update({ account_status: newStatus }).eq('id', bizId);
+
+    row.dataset.wkrstatus = newStatus;
+    var statusCell = row.querySelector('td:nth-child(6)');
+    if (newStatus === 'active') {
+      statusCell.innerHTML = '<span class="verified-badge">Active</span>';
+      btn.textContent = 'Suspend';
+      btn.style.background = 'var(--c-accent-light)';
+      btn.style.color = 'var(--c-accent)';
+    } else {
+      statusCell.innerHTML = '<span class="basic-badge" style="background:var(--c-accent-light);color:var(--c-accent)">Suspended</span>';
+      btn.textContent = 'Restore';
+      btn.style.background = 'var(--c-green-light)';
+      btn.style.color = 'var(--c-green)';
+      if (bizEmail) sendEmail('W3', bizEmail, { biz_name: bizName }, bizId);
+    }
+    showAdminToast((newStatus==='active'?'✅ Worker restored':'🚫 Worker suspended') + ' — ' + bizName);
+  } catch(err) {
+    console.error('[Admin] toggleWorkerStatus error:', err);
+    showAdminToast('⚠ Error updating worker status');
+  }
+  btn.disabled = false;
+}
+
+function filterWorkerTable() {
+  var q      = (document.getElementById('wkr-search-box').value || '').toLowerCase();
+  var verify = document.getElementById('wkr-verify-filter').value;
+  var status = document.getElementById('wkr-status-filter').value;
+  document.querySelectorAll('#wkr-table-body tr').forEach(function(row) {
+    var name = row.dataset.wkrname || '';
+    var st   = row.dataset.wkrstatus || '';
+    var vf   = row.dataset.wkrverify || '';
+    var show = true;
+    if (q && name.indexOf(q) === -1) show = false;
+    if (verify && vf !== verify) show = false;
+    if (status && st !== status) show = false;
+    row.style.display = show ? '' : 'none';
+  });
+}
 
 async function adminSignOut() {
   try { await getSupabase().auth.signOut(); } catch(e) {}

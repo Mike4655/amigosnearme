@@ -719,8 +719,7 @@
           <div style="font-size:12px;color:var(--c-hint);margin-top:4px">JPG, PNG · máx 5MB cada una</div>
           <input type="file" id="photo-upload-input" accept="image/*" multiple style="display:none" onchange="uploadPhotos(this)">
         </div>
-        <div class="photo-uploading-msg" style="display:none;margin-top:12px;font-size:13px;color:var(--c-muted)" data-es>Subiendo...</div>
-        <div class="photo-uploading-msg" style="display:none;margin-top:12px;font-size:13px;color:var(--c-muted)" data-en>Uploading...</div>
+        <div id="photo-uploading-msg" style="display:none;margin-top:12px;font-size:13px;color:var(--c-muted)"><span data-es>Subiendo...</span><span data-en>Uploading...</span></div>
         <div id="photo-saved-grid" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:14px"></div>
       </div>
     </div>
@@ -1034,8 +1033,8 @@ async function uploadPhotos(input) {
   }
   files = files.slice(0, remaining);
 
-  var uploadingEls = document.querySelectorAll('.photo-uploading-msg');
-  uploadingEls.forEach(function(el) { el.style.display = 'block'; });
+  var uploadingMsg = document.getElementById('photo-uploading-msg');
+  if (uploadingMsg) uploadingMsg.style.display = 'block';
 
   var newUrls = [];
   for (var i = 0; i < files.length; i++) {
@@ -1066,7 +1065,7 @@ async function uploadPhotos(input) {
       avatarEl.appendChild(thumbImg);
     }
   }
-  uploadingEls.forEach(function(el) { el.style.display = 'none'; });
+  if (uploadingMsg) uploadingMsg.style.display = 'none';
   input.value = '';
 }
 
