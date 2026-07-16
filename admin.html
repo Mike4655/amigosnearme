@@ -34,6 +34,7 @@
   .sb-link{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:var(--radius-sm);font-size:13px;color:rgba(255,255,255,0.6);text-decoration:none;cursor:pointer;margin-bottom:2px;transition:background 0.12s}
   .sb-link:hover{background:rgba(255,255,255,0.06);color:#fff}
   .sb-link.active{background:rgba(201,79,43,0.18);color:#fff;font-weight:500}
+  .nav-badge{background:#e53e3e;color:#fff;border-radius:10px;font-size:10px;font-weight:700;padding:1px 6px;margin-left:auto;display:none}
   .sb-foot{padding:16px 20px;border-top:0.5px solid rgba(255,255,255,0.1);font-size:11px;color:rgba(255,255,255,0.35)}
 
   /* MAIN */
@@ -203,14 +204,14 @@
     <div class="sb-tag">Admin Console</div>
   </div>
   <nav class="sb-nav">
+    <a class="sb-link" id="nav-analytics" onclick="showAdminPane('analytics')"><span>📊</span> Platform Analytics</a>
     <a class="sb-link active" id="nav-businesses" onclick="showAdminPane('businesses')"><span>🏢</span> Businesses</a>
     <a class="sb-link" id="nav-customers" onclick="showAdminPane('customers')"><span>👥</span> Customers</a>
-    <a class="sb-link" id="nav-verification" onclick="showAdminPane('verification')"><span>✅</span> Verification Queue</a>
-    <a class="sb-link" id="nav-reviews" onclick="showAdminPane('reviews')"><span>💬</span> Reviews Moderation</a>
-    <a class="sb-link" id="nav-cancellations" onclick="showAdminPane('cancellations')"><span>🚪</span> Cancellation Requests</a>
     <a class="sb-link" id="nav-employers" onclick="showAdminPane('employers')"><span>🏗️</span> Employers</a>
     <a class="sb-link" id="nav-workers" onclick="showAdminPane('workers')"><span>👷</span> Workers</a>
-    <a class="sb-link" id="nav-analytics" onclick="showAdminPane('analytics')"><span>📊</span> Platform Analytics</a>
+    <a class="sb-link" id="nav-verification" onclick="showAdminPane('verification')"><span>✅</span> Verification Queue<span class="nav-badge" id="badge-verification"></span></a>
+    <a class="sb-link" id="nav-cancellations" onclick="showAdminPane('cancellations')"><span>🚪</span> Cancellation Requests<span class="nav-badge" id="badge-cancellations"></span></a>
+    <a class="sb-link" id="nav-reviews" onclick="showAdminPane('reviews')"><span>💬</span> Reviews Moderation</a>
     <a class="sb-link" id="nav-settings" onclick="showAdminPane('settings')"><span>⚙️</span> Settings</a>
   </nav>
   <div class="sb-foot">Logged in as <span id="sb-user-email">…</span><br><a href="#" onclick="adminSignOut();return false" style="color:rgba(255,255,255,0.45);text-decoration:none">Sign out →</a></div>
@@ -915,6 +916,7 @@ async function adminResetPassword(email) {
 }
 
 async function initAdminPage() {
+  loadNavBadges();
   try {
     var sb = getSupabase();
 
@@ -1035,8 +1037,29 @@ function showAdminPane(pane) {
   if (pane === 'customers')     loadCustomers();
   if (pane === 'employers')     loadEmployers();
   if (pane === 'workers')       loadWorkers();
-  if (pane === 'cancellations') loadCancellations();
+  if (pane === 'cancellations') { loadCancellations(); setNavBadge('badge-cancellations', 0); }
+  if (pane === 'verification')  { setNavBadge('badge-verification', 0); }
   if (pane === 'reviews')       loadFlaggedReviews();
+}
+
+function setNavBadge(id, count) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = count;
+  el.style.display = count > 0 ? 'inline-block' : 'none';
+}
+
+async function loadNavBadges() {
+  var sb = getSupabase();
+  try {
+    var { count } = await sb.from('verification_queue').select('id', { count: 'exact', head: true }).eq('status', 'pending');
+    setNavBadge('badge-verification', count || 0);
+  } catch(e) {}
+  try {
+    var { data } = await sb.rpc('get_cancellation_admin_data');
+    var pending = (data || []).filter(function(r){ return !r.resolved; }).length;
+    setNavBadge('badge-cancellations', pending);
+  } catch(e) {}
 }
 
 var _analyticsLoaded = false;
