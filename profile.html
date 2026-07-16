@@ -918,7 +918,7 @@ async function loadBusiness() {
   try {
     var sb = getSupabase();
     var bizRes = await sb.from('businesses').select('*').eq('id', id).single();
-    if (bizRes.error || !bizRes.data) { showNotFound(); return; }
+    if (bizRes.error || !bizRes.data || bizRes.data.account_status === 'suspended') { showNotFound(); return; }
     var reviewsRes = await sb.from('reviews').select('*').eq('biz_id', id).eq('removed', false).order('created_at', { ascending: false }).limit(10);
     b = buildBizObject(bizRes.data, reviewsRes.data || []);
     b.id = id;

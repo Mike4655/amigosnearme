@@ -746,6 +746,8 @@ async function loadBusinesses() {
     var { data, error } = await sb
       .from('businesses')
       .select('*')
+      .neq('account_status', 'suspended')
+      .eq('is_worker', false)
       .order('verified', { ascending: false })
       .order('business_name', { ascending: true });
 
