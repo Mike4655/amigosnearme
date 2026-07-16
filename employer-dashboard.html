@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employer Dashboard — AmigosNearMe</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
+  :root {
+    --c-bg:#FAFAF7;--c-surface:#FFFFFF;--c-border:rgba(0,0,0,0.09);
+    --c-text:#1A1A18;--c-muted:#6B6B66;--c-hint:#A8A8A2;
+    --c-accent:#C94F2B;--c-accent-light:#FAF0EC;
+    --c-green:#1D9E75;--c-green-light:#EBF8F3;
+    --c-amber:#BA7517;--c-amber-light:#FEF6E4;
+    --c-blue:#185FA5;--c-blue-light:#EEF4FB;
+    --radius-sm:8px;--radius-md:12px;--radius-lg:18px;--radius-xl:22px;
+    --shadow:0 1px 3px rgba(0,0,0,0.07),0 4px 12px rgba(0,0,0,0.05);
+    --font-display:'DM Serif Display',Georgia,serif;
+    --font-body:'DM Sans',system-ui,sans-serif;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  nav{position:sticky;top:0;z-index:100;background:rgba(250,250,247,0.92);backdrop-filter:blur(12px);border-bottom:0.5px solid var(--c-border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+  .nav-logo{font-family:var(--font-display);font-size:22px;color:var(--c-text);text-decoration:none}
+  .nav-logo span{color:var(--c-accent)}
+  .btn-nav{font-size:13px;font-weight:500;padding:7px 16px;border-radius:var(--radius-sm);text-decoration:none;cursor:pointer;border:0.5px solid var(--c-border);background:var(--c-surface);color:var(--c-text);font-family:var(--font-body)}
+  .lang-btn{padding:3px 8px;border-radius:99px;font-size:12px;cursor:pointer;border:0.5px solid var(--c-border);background:transparent;color:var(--c-muted);font-family:var(--font-body)}
+  .lang-btn.active{background:var(--c-accent-light);color:var(--c-accent);border-color:var(--c-accent)}
+  .page-wrap{max-width:900px;margin:0 auto;padding:32px 24px}
+  .page-title{font-family:var(--font-display);font-size:28px;font-weight:400;margin-bottom:4px}
+  .page-sub{font-size:13px;color:var(--c-muted);margin-bottom:28px}
+  .card{background:var(--c-surface);border:0.5px solid var(--c-border);border-radius:var(--radius-xl);padding:24px;margin-bottom:20px;box-shadow:var(--shadow)}
+  .section-title{font-size:12px;font-weight:600;color:var(--c-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px}
+  .metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:0}
+  .metric{background:var(--c-bg);border:0.5px solid var(--c-border);border-radius:var(--radius-md);padding:16px 18px}
+  .metric-val{font-family:var(--font-display);font-size:32px;font-weight:400;line-height:1;margin-bottom:4px}
+  .metric-label{font-size:12px;color:var(--c-muted)}
+  .credit-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:500}
+  .credit-ok{background:var(--c-green-light);color:var(--c-green)}
+  .credit-warn{background:var(--c-amber-light);color:var(--c-amber)}
+  .credit-empty{background:var(--c-accent-light);color:var(--c-accent)}
+  .tab-nav{display:flex;gap:4px;border-bottom:0.5px solid var(--c-border);margin-bottom:24px}
+  .tab{padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;color:var(--c-muted);font-family:var(--font-body);transition:color 0.12s}
+  .tab.active{color:var(--c-accent);border-bottom-color:var(--c-accent)}
+  .tab-panel{display:none}.tab-panel.active{display:block}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;padding:8px 10px;font-size:11px;font-weight:600;color:var(--c-muted);text-transform:uppercase;letter-spacing:.04em;border-bottom:0.5px solid var(--c-border)}
+  td{padding:10px 10px;border-bottom:0.5px solid var(--c-border);vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  .badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:2px 7px;border-radius:99px;font-weight:500}
+  .badge-wa{background:#E8F8F1;color:#12774A}
+  .badge-form{background:#EEF4FB;color:var(--c-blue)}
+  .empty-state{text-align:center;padding:40px;color:var(--c-hint);font-size:13px}
+  .btn-buy{padding:10px 22px;border-radius:var(--radius-sm);background:var(--c-accent);color:#fff;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:var(--font-body)}
+  .btn-buy:hover{opacity:0.88}
+  .alert-block{padding:14px 18px;border-radius:var(--radius-md);font-size:13px;margin-bottom:24px}
+  .alert-warn{background:var(--c-amber-light);color:var(--c-amber);border:0.5px solid rgba(186,117,23,0.2)}
+  .alert-empty{background:var(--c-accent-light);color:var(--c-accent);border:0.5px solid rgba(201,79,43,0.2)}
+  [data-en]{display:none}
+  body.en [data-es]{display:none}
+  body.en [data-en]{display:revert}
+  @media(max-width:600px){.page-wrap{padding:16px 12px}.metric-val{font-size:26px}}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1000;padding:16px}
+  .modal-card{background:var(--c-surface);border-radius:var(--radius-lg);padding:24px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.18)}
+  .modal-title{font-family:var(--font-display);font-size:18px;font-weight:700}
+  #anm-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:12px 24px;border-radius:999px;font-size:13px;font-weight:500;z-index:2000;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Amigos<span>NearMe</span></a>
+  <div style="display:flex;align-items:center;gap:8px">
+    <!-- B안: Business 계정일 때만 JS로 표시 -->
+    <a id="link-biz-dashboard" href="dashboard.html" style="display:none;font-size:13px;color:var(--c-muted);text-decoration:none;padding:6px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm)">
+      <span data-es>← Mi negocio</span><span data-en>← Business Dashboard</span>
+    </a>
+    <button class="lang-btn active" id="btn-es" onclick="setLang('es')">ES</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    <button class="btn-nav" onclick="signOut()">
+      <span data-es>Cerrar sesión</span><span data-en>Sign out</span>
+    </button>
+  </div>
+</nav>
+
+<div class="page-wrap">
+
+  <h1 class="page-title">
+    <span data-es>Mi panel de empleador</span>
+    <span data-en>Employer Dashboard</span>
+  </h1>
+  <p class="page-sub" id="emp-email"></p>
+
+  <!-- Suspended block -->
+  <div id="suspended-block" style="display:none" class="alert-block alert-warn">
+    <strong><span data-es>⚠️ Cuenta suspendida.</span><span data-en>⚠️ Account suspended.</span></strong>
+    <span data-es> Contacta a soporte para más información.</span>
+    <span data-en> Please contact support for details.</span>
+  </div>
+
+  <!-- Credit alert -->
+  <div id="credit-alert" style="display:none"></div>
+
+  <!-- OVERVIEW -->
+  <div class="card">
+    <div class="section-title"><span data-es>Resumen del mes</span><span data-en>This month overview</span></div>
+    <div class="metric-grid">
+      <div class="metric">
+        <div class="metric-val" id="m-credits">—</div>
+        <div class="metric-label">
+          <span data-es>Créditos disponibles</span><span data-en>Credits available</span>
+        </div>
+        <button onclick="showTab('financial')" style="margin-top:10px;padding:6px 14px;background:var(--c-accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-body)">
+          <span data-es>Comprar créditos</span><span data-en>Buy Credits</span>
+        </button>
+      </div>
+      <div class="metric">
+        <div class="metric-val" id="m-contacts">—</div>
+        <div class="metric-label">
+          <span data-es>Contactos este mes</span><span data-en>Contacts this month</span>
+        </div>
+      </div>
+      <div class="metric">
+        <div class="metric-val" id="m-credits-total">—</div>
+        <div class="metric-label">
+          <span data-es>Créditos comprados (total)</span><span data-en>Total credits purchased</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tab-nav">
+    <button class="tab active" onclick="showTab('activity')">
+      <span data-es>Actividad</span><span data-en>Activity</span>
+    </button>
+    <button class="tab" onclick="showTab('financial')">
+      <span data-es>Créditos</span><span data-en>Credits</span>
+    </button>
+    <button class="tab" onclick="showTab('settings')">
+      <span data-es>Configuración</span><span data-en>Settings</span>
+    </button>
+  </div>
+
+  <!-- Activity tab -->
+  <div class="tab-panel active" id="tab-activity">
+    <div class="card" style="padding:0;overflow:hidden">
+      <div style="padding:16px 20px;border-bottom:0.5px solid var(--c-border)">
+        <div class="section-title" style="margin-bottom:0">
+          <span data-es>Historial de contactos</span><span data-en>Contact history</span>
+        </div>
+      </div>
+      <div id="activity-table-wrap">
+        <div class="empty-state"><span data-es>Cargando...</span><span data-en>Loading...</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Financial tab -->
+  <div class="tab-panel" id="tab-financial">
+    <div class="card">
+      <div class="section-title"><span data-es>Balance de créditos</span><span data-en>Credit balance</span></div>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px">
+        <span id="fin-balance" style="font-family:var(--font-display);font-size:36px"></span>
+        <span id="fin-badge"></span>
+      </div>
+      <!-- Buy credits packages -->
+      <div class="section-title" style="margin-bottom:12px"><span data-es>Comprar créditos</span><span data-en>Buy credits</span></div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px">
+        <!-- Starter -->
+        <div class="card" style="flex:1;min-width:140px;padding:16px;text-align:center;border:1px solid var(--c-border)">
+          <div style="font-size:22px;font-weight:700;margin-bottom:4px">5</div>
+          <div style="font-size:12px;color:var(--c-muted);margin-bottom:8px"><span data-es>créditos</span><span data-en>credits</span></div>
+          <div style="font-size:18px;font-weight:600;margin-bottom:12px">$10</div>
+          <button class="btn" onclick="openCreditModal('starter')" style="width:100%;background:var(--c-accent);color:#fff;border:none;padding:8px 0;border-radius:var(--radius-sm);cursor:pointer;font-size:13px">
+            <span data-es>Comprar</span><span data-en>Buy</span>
+          </button>
+        </div>
+        <!-- Value -->
+        <div class="card" style="flex:1;min-width:140px;padding:16px;text-align:center;border:2px solid var(--c-accent);position:relative">
+          <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--c-accent);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap">
+            <span data-es>MÁS POPULAR</span><span data-en>MOST POPULAR</span>
+          </div>
+          <div style="font-size:22px;font-weight:700;margin-bottom:4px">15</div>
+          <div style="font-size:12px;color:var(--c-muted);margin-bottom:8px"><span data-es>créditos</span><span data-en>credits</span></div>
+          <div style="font-size:18px;font-weight:600;margin-bottom:2px">$20</div>
+          <div style="font-size:11px;color:var(--c-accent);margin-bottom:10px">25% off</div>
+          <button class="btn" onclick="openCreditModal('value')" style="width:100%;background:var(--c-accent);color:#fff;border:none;padding:8px 0;border-radius:var(--radius-sm);cursor:pointer;font-size:13px">
+            <span data-es>Comprar</span><span data-en>Buy</span>
+          </button>
+        </div>
+        <!-- Pro -->
+        <div class="card" style="flex:1;min-width:140px;padding:16px;text-align:center;border:1px solid var(--c-border)">
+          <div style="font-size:22px;font-weight:700;margin-bottom:4px">30</div>
+          <div style="font-size:12px;color:var(--c-muted);margin-bottom:8px"><span data-es>créditos</span><span data-en>credits</span></div>
+          <div style="font-size:18px;font-weight:600;margin-bottom:2px">$30</div>
+          <div style="font-size:11px;color:var(--c-accent);margin-bottom:10px">40% off</div>
+          <button class="btn" onclick="openCreditModal('pro')" style="width:100%;background:var(--c-accent);color:#fff;border:none;padding:8px 0;border-radius:var(--radius-sm);cursor:pointer;font-size:13px">
+            <span data-es>Comprar</span><span data-en>Buy</span>
+          </button>
+        </div>
+      </div>
+      <div class="section-title"><span data-es>Historial de transacciones</span><span data-en>Transaction history</span></div>
+      <div id="tx-table-wrap">
+        <div class="empty-state"><span data-es>Cargando...</span><span data-en>Loading...</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings tab -->
+  <div class="tab-panel" id="tab-settings">
+
+    <!-- Profile card -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="section-title"><span data-es>Perfil</span><span data-en>Profile</span></div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <!-- Name -->
+        <div>
+          <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:4px">
+            <span data-es>Nombre</span><span data-en>Name</span>
+          </label>
+          <input id="settings-name" type="text" style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:14px;font-family:var(--font-body);background:var(--c-bg);box-sizing:border-box" placeholder="Your name">
+        </div>
+        <!-- Email (read-only) -->
+        <div>
+          <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:4px">
+            <span data-es>Correo electrónico</span><span data-en>Email</span>
+          </label>
+          <input id="settings-email" type="email" readonly style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:14px;font-family:var(--font-body);background:#f5f5f3;color:var(--c-muted);box-sizing:border-box">
+          <div style="font-size:11px;color:var(--c-hint);margin-top:3px">
+            <span data-es>El correo no se puede cambiar.</span>
+            <span data-en>Email cannot be changed.</span>
+          </div>
+        </div>
+        <!-- Phone -->
+        <div>
+          <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:4px">
+            <span data-es>Teléfono</span><span data-en>Phone</span>
+          </label>
+          <input id="settings-phone" type="tel" readonly style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:14px;font-family:var(--font-body);background:var(--c-bg-2,#f5f5f5);color:var(--c-muted);cursor:not-allowed;box-sizing:border-box" placeholder="+1 (555) 000-0000">
+          <div style="font-size:11px;color:var(--c-muted);margin-top:3px">
+            <span data-es>El teléfono no se puede cambiar. <a href="mailto:support@amigosnearme.com" style="color:var(--c-green)">Contacta al soporte</a> para actualizarlo.</span>
+            <span data-en>Phone cannot be changed. <a href="mailto:support@amigosnearme.com" style="color:var(--c-green)">Contact support</a> to update it.</span>
+          </div>
+        </div>
+        <!-- Language preference -->
+        <div>
+          <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:4px">
+            <span data-es>Idioma preferido</span><span data-en>Preferred language</span>
+          </label>
+          <select id="settings-lang" style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:14px;font-family:var(--font-body);background:var(--c-bg);box-sizing:border-box">
+            <option value="es">Español</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+      </div>
+      <button onclick="saveProfileSettings()" id="settings-save-btn" style="margin-top:16px;padding:9px 20px;border-radius:var(--radius-sm);background:var(--c-text);color:#fff;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body)">
+        <span data-es>Guardar cambios</span><span data-en>Save changes</span>
+      </button>
+      <div id="settings-save-confirm" style="display:none;margin-top:8px;font-size:12px;color:green">
+        <span data-es>✅ Cambios guardados.</span><span data-en>✅ Changes saved.</span>
+      </div>
+      <div id="settings-save-err" style="display:none;margin-top:8px;font-size:12px;color:var(--c-accent)"></div>
+    </div>
+
+    <!-- Password card -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="section-title"><span data-es>Cambiar contraseña</span><span data-en>Change password</span></div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div>
+          <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:4px">
+            <span data-es>Nueva contraseña</span><span data-en>New password</span>
+          </label>
+          <input id="settings-pw-new" type="password" style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:14px;font-family:var(--font-body);background:var(--c-bg);box-sizing:border-box" placeholder="Min. 8 characters">
+        </div>
+        <div>
+          <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:4px">
+            <span data-es>Confirmar contraseña</span><span data-en>Confirm password</span>
+          </label>
+          <input id="settings-pw-confirm" type="password" style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:14px;font-family:var(--font-body);background:var(--c-bg);box-sizing:border-box" placeholder="Repeat new password">
+        </div>
+      </div>
+      <button onclick="savePasswordSettings()" style="margin-top:16px;padding:9px 20px;border-radius:var(--radius-sm);background:var(--c-text);color:#fff;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body)">
+        <span data-es>Actualizar contraseña</span><span data-en>Update password</span>
+      </button>
+      <div id="settings-pw-confirm-msg" style="display:none;margin-top:8px;font-size:12px;color:green">
+        <span data-es>✅ Contraseña actualizada.</span><span data-en>✅ Password updated.</span>
+      </div>
+      <div id="settings-pw-err" style="display:none;margin-top:8px;font-size:12px;color:var(--c-accent)"></div>
+    </div>
+
+    <div class="card" style="border-color:rgba(201,79,43,0.25)">
+      <div class="section-title" style="color:var(--c-accent)">
+        <span data-es>Zona de peligro</span><span data-en>Danger zone</span>
+      </div>
+      <p style="font-size:13px;color:var(--c-muted);margin-bottom:14px">
+        <span data-es>La cancelación no es inmediata. Nuestro equipo revisará tu solicitud en 3 días hábiles.</span>
+        <span data-en>Cancellation is not immediate. Our team will review your request within 3 business days.</span>
+      </p>
+      <div id="credits-cancel-note" style="display:none;padding:10px 14px;background:var(--c-amber-light);border-radius:var(--radius-sm);font-size:12px;color:var(--c-amber);margin-bottom:12px;border:0.5px solid rgba(186,117,23,0.2)">
+        <span data-es>⚠️ Tienes <strong id="cancel-credits-es">0</strong> créditos restantes. Los créditos no son reembolsables al cancelar.</span>
+        <span data-en>⚠️ You have <strong id="cancel-credits-en">0</strong> credits remaining. Credits are non-refundable upon cancellation.</span>
+      </div>
+      <button onclick="openEmpCancelModal()" style="padding:9px 18px;border-radius:var(--radius-sm);background:var(--c-accent-light);color:var(--c-accent);border:0.5px solid rgba(201,79,43,0.3);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body)">
+        <span data-es>Solicitar cancelación →</span><span data-en>Request cancellation →</span>
+      </button>
+    </div>
+  </div>
+
+</div><!-- /page-wrap -->
+
+<!-- Cancellation modal -->
+<div id="emp-cancel-overlay" style="display:none;position:fixed;inset:0;background:rgba(20,19,15,0.45);z-index:200;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)closeEmpCancelModal()">
+  <div style="background:#fff;border-radius:18px;padding:26px;max-width:420px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,0.18)">
+    <div style="font-size:17px;font-weight:600;margin-bottom:6px;color:var(--c-accent)">
+      <span data-es>Solicitar cancelación</span><span data-en>Request cancellation</span>
+    </div>
+    <p style="font-size:12px;color:var(--c-muted);margin-bottom:16px;line-height:1.5">
+      <span data-es>Procesaremos tu solicitud en 3 días hábiles. Los créditos no son reembolsables.</span>
+      <span data-en>We'll process your request within 3 business days. Credits are non-refundable.</span>
+    </p>
+    <select id="emp-cancel-reason" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--c-border);font-size:13px;font-family:var(--font-body);background:#fafaf7;margin-bottom:10px">
+      <option value=""><span data-es>Selecciona un motivo...</span><span data-en>Select a reason...</span></option>
+      <option value="No longer hiring">No longer hiring workers</option>
+      <option value="Too expensive">Too expensive</option>
+      <option value="Found workers elsewhere">Found workers elsewhere</option>
+      <option value="Technical issues">Technical issues</option>
+      <option value="Other">Other</option>
+    </select>
+    <textarea id="emp-cancel-notes" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--c-border);font-size:13px;font-family:var(--font-body);min-height:70px;resize:vertical;background:#fafaf7" placeholder="Additional notes (optional)..."></textarea>
+    <div id="emp-cancel-err" style="display:none;font-size:12px;color:var(--c-accent);margin-top:6px">
+      <span data-es>Por favor selecciona un motivo.</span><span data-en>Please select a reason.</span>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button onclick="closeEmpCancelModal()" style="flex:1;padding:10px;border-radius:8px;background:var(--c-bg);border:0.5px solid var(--c-border);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-body)">
+        <span data-es>Cancelar</span><span data-en>Cancel</span>
+      </button>
+      <button onclick="submitEmpCancelRequest()" style="flex:1;padding:10px;border-radius:8px;background:var(--c-accent);border:none;font-size:13px;font-weight:600;color:#fff;cursor:pointer;font-family:var(--font-body)">
+        <span data-es>Enviar solicitud</span><span data-en>Submit request</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation -->
+<div id="emp-cancel-confirm" style="display:none;position:fixed;inset:0;background:rgba(20,19,15,0.45);z-index:200;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:18px;padding:26px;max-width:380px;width:100%;text-align:center">
+    <div style="font-size:32px;margin-bottom:12px">✅</div>
+    <div style="font-size:17px;font-weight:600;margin-bottom:8px">
+      <span data-es>Solicitud enviada</span><span data-en>Request submitted</span>
+    </div>
+    <p style="font-size:13px;color:var(--c-muted);margin-bottom:20px">
+      <span data-es>Revisaremos tu solicitud y nos pondremos en contacto en 3 días hábiles.</span>
+      <span data-en>We'll review your request and contact you within 3 business days.</span>
+    </p>
+    <button onclick="document.getElementById('emp-cancel-confirm').style.display='none'" style="padding:10px 24px;border-radius:8px;background:var(--c-text);color:#fff;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body)">OK</button>
+  </div>
+</div>
+
+<div id="anm-toast"></div>
+
+<!-- Braintree Drop-in UI (credit purchase) -->
+<script src="https://js.braintreegateway.com/web/dropin/1.43.0/js/dropin.min.js"></script>
+
+<!-- Credit purchase modal -->
+<div class="modal-overlay" id="credit-modal" style="display:none" onclick="if(event.target===this) closeCreditModal()">
+  <div class="modal-card" style="max-width:420px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div class="modal-title" id="cr-title">Comprar créditos</div>
+      <button onclick="closeCreditModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--c-muted)">✕</button>
+    </div>
+    <div id="cr-summary" style="font-size:13px;color:var(--c-muted);margin-bottom:16px"></div>
+    <div id="cr-dropin-container"></div>
+    <div id="cr-error" style="color:#c0392b;font-size:13px;margin-top:10px;display:none"></div>
+    <button id="cr-pay-btn" onclick="submitCreditPayment()" style="width:100%;margin-top:16px;padding:12px;background:var(--c-accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer">
+      <span id="cr-pay-label">Pagar</span>
+    </button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
+<script>
+var _empUid = null;
+var _empProfile = null;
+
+function setLang(lang) {
+  var en = lang === 'en';
+  document.body.classList.toggle('en', en);
+  document.getElementById('btn-es').classList.toggle('active', !en);
+  document.getElementById('btn-en').classList.toggle('active', en);
+  try { localStorage.setItem('anm-lang', lang); } catch(e) {}
+}
+
+function showTab(name) {
+  var names = ['activity','financial','settings'];
+  document.querySelectorAll('.tab').forEach(function(t, i) {
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.tab-panel').forEach(function(p) {
+    p.classList.remove('active');
+  });
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+function openEmpCancelModal() {
+  document.getElementById('emp-cancel-overlay').style.display = 'flex';
+}
+function closeEmpCancelModal() {
+  document.getElementById('emp-cancel-overlay').style.display = 'none';
+  document.getElementById('emp-cancel-err').style.display = 'none';
+}
+
+async function submitEmpCancelRequest() {
+  var sel   = document.getElementById('emp-cancel-reason');
+  var notes = document.getElementById('emp-cancel-notes');
+  if (!sel.value) {
+    document.getElementById('emp-cancel-err').style.display = 'block';
+    return;
+  }
+  document.getElementById('emp-cancel-err').style.display = 'none';
+
+  if (!_empUid) return;
+  var reasonText = sel.value + (notes.value.trim() ? ' — ' + notes.value.trim() : '');
+  var sb = getSupabase();
+
+  var cancelUserType = (_empProfile && _empProfile._userType) || 'employer';
+  await sb.from('cancellation_requests').insert({
+    user_id:   _empUid,
+    user_type: cancelUserType,
+    reason:    reasonText
+  });
+
+  // AD4: 관리자 알림
+  sendEmail('AD4', null, {
+    biz_name: (document.getElementById('emp-email').textContent || ''),
+    reason:   reasonText
+  }, _empUid);
+
+  closeEmpCancelModal();
+  document.getElementById('emp-cancel-confirm').style.display = 'flex';
+}
+
+async function signOut() {
+  await getSupabase().auth.signOut();
+  window.location.href = 'index.html';
+}
+
+async function saveProfileSettings() {
+  var btn     = document.getElementById('settings-save-btn');
+  var confirm = document.getElementById('settings-save-confirm');
+  var errEl   = document.getElementById('settings-save-err');
+  var isEn    = document.body.classList.contains('en');
+  confirm.style.display = 'none';
+  errEl.style.display   = 'none';
+  btn.disabled = true;
+
+  try {
+    var name  = (document.getElementById('settings-name').value  || '').trim();
+    var lang  = document.getElementById('settings-lang').value;
+
+    var user = await getCurrentUser();
+    // Update display name in auth metadata
+    if (name) {
+      var { error: metaErr } = await getSupabase().auth.updateUser({ data: { full_name: name } });
+      if (metaErr) throw metaErr;
+    }
+    // Update employer_profiles
+    var { error: dbErr } = await getSupabase()
+      .from('employer_profiles')
+      .update({ display_name: name || null, preferred_lang: lang })
+      .eq('owner_id', user.id);
+    if (dbErr) throw dbErr;
+
+    confirm.style.display = 'block';
+  } catch (e) {
+    errEl.textContent = e.message || (isEn ? 'Save failed.' : 'Error al guardar.');
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function savePasswordSettings() {
+  var confirmEl = document.getElementById('settings-pw-confirm-msg');
+  var errEl     = document.getElementById('settings-pw-err');
+  var isEn      = document.body.classList.contains('en');
+  confirmEl.style.display = 'none';
+  errEl.style.display     = 'none';
+
+  var pw1 = document.getElementById('settings-pw-new').value;
+  var pw2 = document.getElementById('settings-pw-confirm').value;
+
+  if (!pw1 || pw1.length < 8) {
+    errEl.textContent = isEn ? 'Password must be at least 8 characters.' : 'La contraseña debe tener al menos 8 caracteres.';
+    errEl.style.display = 'block'; return;
+  }
+  if (pw1 !== pw2) {
+    errEl.textContent = isEn ? 'Passwords do not match.' : 'Las contraseñas no coinciden.';
+    errEl.style.display = 'block'; return;
+  }
+
+  try {
+    var { error } = await getSupabase().auth.updateUser({ password: pw1 });
+    if (error) throw error;
+    document.getElementById('settings-pw-new').value     = '';
+    document.getElementById('settings-pw-confirm').value = '';
+    confirmEl.style.display = 'block';
+  } catch (e) {
+    errEl.textContent = e.message || (isEn ? 'Password update failed.' : 'Error al actualizar.');
+    errEl.style.display = 'block';
+  }
+}
+
+async function loadDashboard() {
+  var sess = await getSession();
+  if (!sess || !sess.user) { window.location.href = 'login.html?type=employer'; return; }
+
+  var uid = sess.user.id;
+  var meta = sess.user.user_metadata || {};
+  _empUid = uid;
+
+  // B안: employer + business 계정 모두 허용
+  if (meta.user_type !== 'employer' && meta.user_type !== 'business') { window.location.href = 'index.html'; return; }
+
+  var userEmail = sess.user.email || '';
+  var userName  = sess.user.user_metadata?.full_name || '';
+  document.getElementById('emp-email').textContent = userEmail;
+
+  var sb = getSupabase();
+  var epRes = await sb.from('employer_profiles')
+    .select('id, credit_balance, account_status, display_name, phone, preferred_lang')
+    .eq('owner_id', uid)
+    .single();
+
+  if (epRes.error || !epRes.data) {
+    console.warn('[employer-dash] employer_profiles not found, backfilling...');
+    await sb.from('employer_profiles').insert({ owner_id: uid });
+    epRes = await sb.from('employer_profiles').select('id, credit_balance, account_status, display_name, phone, preferred_lang').eq('owner_id', uid).single();
+  }
+
+  // Populate Settings fields
+  var ep = epRes.data || {};
+  var emailEl = document.getElementById('settings-email');
+  var nameEl  = document.getElementById('settings-name');
+  var phoneEl = document.getElementById('settings-phone');
+  var langEl  = document.getElementById('settings-lang');
+  if (emailEl) emailEl.value = userEmail;
+  if (nameEl)  nameEl.value  = ep.display_name || userName;
+  if (phoneEl) phoneEl.value = ep.phone || '';
+  if (langEl)  langEl.value  = ep.preferred_lang || 'es';
+
+  _empProfile = epRes.data || { credit_balance: 0, account_status: 'active' };
+  _empProfile._userType = meta.user_type || 'employer';
+
+  // B안: Business 계정이면 "← Business Dashboard" 링크 표시
+  if (meta.user_type === 'business') {
+    var linkBiz = document.getElementById('link-biz-dashboard');
+    if (linkBiz) linkBiz.style.display = 'inline-flex';
+  }
+  var credits = _empProfile.credit_balance;
+  var status  = _empProfile.account_status;
+
+  if (status === 'deleted') { window.location.href = 'index.html'; return; }
+  if (status === 'suspended') document.getElementById('suspended-block').style.display = 'block';
+
+  // Credit alert
+  var alertEl = document.getElementById('credit-alert');
+  if (credits === 0) {
+    var isEn = document.body.classList.contains('en');
+    alertEl.style.display = 'block';
+    alertEl.className = 'alert-block alert-empty';
+    alertEl.textContent = isEn
+      ? '🚫 You have 0 credits. Purchase credits to contact workers.'
+      : '🚫 Tienes 0 créditos. Compra créditos para contactar trabajadores.';
+  } else if (credits === 1) {
+    var isEn = document.body.classList.contains('en');
+    alertEl.style.display = 'block';
+    alertEl.className = 'alert-block alert-warn';
+    alertEl.textContent = isEn
+      ? '⚠️ Only 1 credit remaining.'
+      : '⚠️ Solo queda 1 crédito.';
+  }
+
+  // Settings tab — credits cancel warning
+  if (credits > 0) {
+    var noteEl = document.getElementById('credits-cancel-note');
+    if (noteEl) {
+      noteEl.style.display = 'block';
+      var esEl = document.getElementById('cancel-credits-es');
+      var enEl = document.getElementById('cancel-credits-en');
+      if (esEl) esEl.textContent = credits;
+      if (enEl) enEl.textContent = credits;
+    }
+  }
+
+  // Metrics
+  document.getElementById('m-credits').textContent = credits;
+  var creditBadgeHtml = credits === 0
+    ? '<span class="credit-badge credit-empty">🚫 Empty</span>'
+    : credits === 1
+      ? '<span class="credit-badge credit-warn">⚠️ Low</span>'
+      : '<span class="credit-badge credit-ok">✅ OK</span>';
+  document.getElementById('fin-badge').innerHTML = creditBadgeHtml;
+  document.getElementById('fin-balance').textContent = credits;
+
+  // Contacts this month
+  var now = new Date();
+  var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+  var contactRes = await sb.from('contact_log')
+    .select('id', { count: 'exact', head: true })
+    .eq('customer_id', uid)
+    .gte('created_at', monthStart);
+  document.getElementById('m-contacts').textContent = contactRes.error ? '—' : (contactRes.count || 0);
+
+  // Total credits purchased (employer_transactions.employer_id = employer_profiles.id, not owner_id)
+  var empProfileId = _empProfile.id;
+  var txSumRes = empProfileId
+    ? await sb.from('credit_transactions').select('credits_added').eq('employer_id', empProfileId)
+    : { data: [], error: null };
+  var totalPurchased = txSumRes.error ? 0
+    : (txSumRes.data || []).reduce(function(s, r){ return s + (r.credits_added || 0); }, 0);
+  document.getElementById('m-credits-total').textContent = totalPurchased || '—';
+
+  loadActivityTable(uid);
+  loadTxTable(uid);
+}
+
+async function loadActivityTable(uid) {
+  var sb = getSupabase();
+  var isEn = document.body.classList.contains('en');
+  var wrap = document.getElementById('activity-table-wrap');
+
+  var res = await sb.from('contact_log')
+    .select('biz_id, channel, limit_hit, created_at, businesses(business_name)')
+    .eq('customer_id', uid)
+    .order('created_at', { ascending: false })
+    .limit(50);
+
+  if (res.error || !res.data || res.data.length === 0) {
+    wrap.innerHTML = '<div class="empty-state">' +
+      (isEn ? '📭 No contact history yet.' : '📭 Sin historial de contactos aún.') + '</div>';
+    return;
+  }
+
+  var rows = res.data.map(function(r) {
+    var name = (r.businesses && r.businesses.business_name) || r.biz_id.slice(0,8);
+    var d = new Date(r.created_at);
+    var dateStr = d.toLocaleDateString(isEn ? 'en-US' : 'es-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    var timeStr = d.toLocaleTimeString(isEn ? 'en-US' : 'es-US', { hour: '2-digit', minute: '2-digit' });
+    var channelBadge = r.channel === 'whatsapp'
+      ? '<span class="badge badge-wa">💬 WhatsApp</span>'
+      : '<span class="badge badge-form">📋 Form</span>';
+    var limitStr = r.limit_hit ? '<span style="color:var(--c-accent);font-size:11px">limit</span>' : '';
+    return '<tr>' +
+      '<td><a href="worker-profile.html?id=' + r.biz_id + '" style="color:var(--c-text);text-decoration:none;font-weight:500">' + name + '</a></td>' +
+      '<td>' + channelBadge + ' ' + limitStr + '</td>' +
+      '<td style="color:var(--c-muted)">' + dateStr + ' ' + timeStr + '</td>' +
+      '</tr>';
+  }).join('');
+
+  wrap.innerHTML = '<table>' +
+    '<thead><tr>' +
+    '<th>' + (isEn ? 'Worker' : 'Trabajador') + '</th>' +
+    '<th>' + (isEn ? 'Channel' : 'Canal') + '</th>' +
+    '<th>' + (isEn ? 'Date' : 'Fecha') + '</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+async function loadTxTable(uid) {
+  var sb = getSupabase();
+  var isEn = document.body.classList.contains('en');
+  var wrap = document.getElementById('tx-table-wrap');
+
+  // Use globally cached employer_profiles.id; fall back to DB fetch if needed
+  var empProfileId = _empProfile && _empProfile.id;
+  if (!empProfileId) {
+    var epRes = await sb.from('employer_profiles').select('id').eq('owner_id', uid).single();
+    if (epRes.error || !epRes.data) {
+      wrap.innerHTML = '<div class="empty-state">' + (isEn ? '📭 No transactions yet.' : '📭 Sin transacciones aún.') + '</div>';
+      return;
+    }
+    empProfileId = epRes.data.id;
+  }
+
+  var res = await sb.from('credit_transactions')
+    .select('credits_added, amount_usd, payment_ref, created_at')
+    .eq('employer_id', empProfileId)
+    .order('created_at', { ascending: false });
+
+  if (res.error || !res.data || res.data.length === 0) {
+    wrap.innerHTML = '<div class="empty-state">' + (isEn ? '📭 No transactions yet.' : '📭 Sin transacciones aún.') + '</div>';
+    return;
+  }
+
+  var rows = res.data.map(function(r) {
+    var d = new Date(r.created_at);
+    var dateStr = d.toLocaleDateString(isEn ? 'en-US' : 'es-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    var usd = r.amount_usd ? '$' + parseFloat(r.amount_usd).toFixed(2) : '—';
+    return '<tr>' +
+      '<td style="color:var(--c-green);font-weight:600">+' + r.credits_added + '</td>' +
+      '<td>' + usd + '</td>' +
+      '<td style="color:var(--c-muted);font-size:12px">' + (r.payment_ref || '—') + '</td>' +
+      '<td style="color:var(--c-muted)">' + dateStr + '</td>' +
+      '</tr>';
+  }).join('');
+
+  wrap.innerHTML = '<table>' +
+    '<thead><tr>' +
+    '<th>' + (isEn ? 'Credits' : 'Créditos') + '</th>' +
+    '<th>' + (isEn ? 'Amount' : 'Monto') + '</th>' +
+    '<th>Ref</th>' +
+    '<th>' + (isEn ? 'Date' : 'Fecha') + '</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var saved = ''; try { saved = localStorage.getItem('anm-lang'); } catch(e) {}
+  var browser = (navigator.language || 'es').toLowerCase();
+  setLang(saved || (browser.startsWith('en') ? 'en' : 'es'));
+  loadDashboard();
+});
+
+// ── Toast 메시지 ─────────────────────────────────────────────────────
+function showToast(msg, duration) {
+  var el = document.getElementById('anm-toast');
+  el.textContent = msg;
+  el.style.opacity = '1';
+  clearTimeout(el._t);
+  el._t = setTimeout(function() { el.style.opacity = '0'; }, duration || 3000);
+}
+
+// ── Credit purchase ──────────────────────────────────────────────────
+var BT_TOKENIZATION_KEY = 'sandbox_wswbqjvj_qch7682mvs2m4ym5';
+var _crDropin = null;
+var _crPackageId = null;
+
+var CR_PACKAGES = {
+  starter: { credits: 5,  amount: '$10' },
+  value:   { credits: 15, amount: '$20' },
+  pro:     { credits: 30, amount: '$30' },
+};
+
+function openCreditModal(packageId) {
+  _crPackageId = packageId;
+  var pkg = CR_PACKAGES[packageId];
+  var isEn = document.body.classList.contains('en');
+
+  document.getElementById('cr-title').textContent =
+    isEn ? 'Buy credits' : 'Comprar créditos';
+  document.getElementById('cr-summary').textContent =
+    isEn
+      ? pkg.credits + ' contact credits — ' + pkg.amount
+      : pkg.credits + ' créditos de contacto — ' + pkg.amount;
+  document.getElementById('cr-pay-label').textContent =
+    isEn ? 'Pay ' + pkg.amount : 'Pagar ' + pkg.amount;
+  document.getElementById('cr-error').style.display = 'none';
+  document.getElementById('credit-modal').style.display = 'flex';
+
+  // init Braintree drop-in
+  var container = document.getElementById('cr-dropin-container');
+  container.innerHTML = '';
+  if (_crDropin) { _crDropin.teardown(function(){}); _crDropin = null; }
+  braintree.dropin.create({
+    authorization: BT_TOKENIZATION_KEY,
+    container: '#cr-dropin-container',
+  }, function(err, instance) {
+    if (err) { console.error('[credit dropin]', err); return; }
+    _crDropin = instance;
+  });
+}
+
+function closeCreditModal() {
+  document.getElementById('credit-modal').style.display = 'none';
+  if (_crDropin) { _crDropin.teardown(function(){}); _crDropin = null; }
+}
+
+async function submitCreditPayment() {
+  if (!_crDropin) return;
+  var btn = document.getElementById('cr-pay-btn');
+  var errEl = document.getElementById('cr-error');
+  var isEn = document.body.classList.contains('en');
+  errEl.style.display = 'none';
+  btn.disabled = true;
+  document.getElementById('cr-pay-label').textContent = isEn ? 'Processing…' : 'Procesando…';
+
+  try {
+    var payload = await new Promise(function(resolve, reject) {
+      _crDropin.requestPaymentMethod(function(err, p) {
+        if (err) reject(err); else resolve(p);
+      });
+    });
+
+    var user = await getCurrentUser();
+    var sess = await getSession();
+
+    // fetch employer profile id
+    var { data: empRow } = await getSupabase()
+      .from('employer_profiles')
+      .select('id, preferred_lang')
+      .eq('owner_id', user.id)
+      .single();
+
+    // 신규 계정은 employer_profiles 행이 없을 수 있음 → 자동 생성
+    if (!empRow) {
+      await getSupabase().from('employer_profiles').insert({ owner_id: user.id });
+      var { data: empRow2 } = await getSupabase()
+        .from('employer_profiles').select('id, preferred_lang').eq('owner_id', user.id).single();
+      empRow = empRow2;
+    }
+    if (!empRow) throw new Error('employer_profiles row not found');
+
+    var { data: result, error: fnErr } = await getSupabase().functions.invoke('process-payment', {
+      body: {
+        action:      'buy-credits',
+        nonce:       payload.nonce,
+        package_id:  _crPackageId,
+        employer_id: empRow.id,
+        owner_email: sess.user.email,
+        owner_name:  user.user_metadata?.full_name || '',
+      },
+    });
+
+    if (fnErr || (result && result.error)) {
+      throw new Error((result && result.error) || fnErr.message);
+    }
+
+    var addedCredits = CR_PACKAGES[_crPackageId].credits;
+    closeCreditModal();
+    // refresh credit balance display (Overview + Credits tab)
+    var { data: refreshed } = await getSupabase()
+      .from('employer_profiles').select('credit_balance').eq('id', empRow.id).single();
+    if (refreshed) {
+      var newBal = refreshed.credit_balance;
+      document.getElementById('fin-balance').textContent = newBal;
+      document.getElementById('m-credits').textContent = newBal;
+      var creditBadgeHtml = newBal === 0
+        ? '<span class="credit-badge credit-empty">🚫 Empty</span>'
+        : newBal === 1
+          ? '<span class="credit-badge credit-warn">⚠️ Low</span>'
+          : '<span class="credit-badge credit-ok">✅ OK</span>';
+      document.getElementById('fin-badge').innerHTML = creditBadgeHtml;
+      if (newBal > 1) document.getElementById('credit-alert').style.display = 'none';
+    }
+    // refresh total credits purchased
+    var txRefresh = await getSupabase().from('credit_transactions').select('credits_added').eq('employer_id', empRow.id);
+    var newTotal = txRefresh.error ? '—'
+      : (txRefresh.data || []).reduce(function(s, r){ return s + (r.credits_added || 0); }, 0);
+    document.getElementById('m-credits-total').textContent = newTotal || '—';
+    loadTxTable(user.id);
+    showToast(isEn
+      ? '✅ ' + addedCredits + ' credits added to your account!'
+      : '✅ ' + addedCredits + ' créditos agregados a tu cuenta!');
+
+  } catch (e) {
+    console.error('[submitCreditPayment]', e);
+    errEl.textContent = isEn ? 'Payment failed: ' + e.message : 'Pago fallido: ' + e.message;
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    document.getElementById('cr-pay-label').textContent =
+      isEn ? 'Pay ' + CR_PACKAGES[_crPackageId].amount : 'Pagar ' + CR_PACKAGES[_crPackageId].amount;
+  }
+}
+</script>
+</body>
+</html>

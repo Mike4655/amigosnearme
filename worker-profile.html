@@ -143,6 +143,72 @@
     </div>
   </div>
 
+  <!-- EDIT PROFILE CARD (owner only) -->
+  <div class="card" id="card-edit-profile" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <div class="section-title" style="margin-bottom:0"><span data-es>Editar perfil</span><span data-en>Edit profile</span></div>
+      <button onclick="toggleEditProfile()" style="font-size:12px;color:var(--c-muted);background:none;border:none;cursor:pointer;text-decoration:underline">
+        <span data-es>Cerrar</span><span data-en>Close</span>
+      </button>
+    </div>
+
+    <!-- Full Name (readonly) -->
+    <div style="margin-bottom:12px">
+      <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:4px"><span data-es>Nombre completo *</span><span data-en>Full name *</span></label>
+      <input type="text" id="wp-legal-name" readonly style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:14px;font-family:var(--font-body);background:var(--c-bg-2,#f5f5f5);color:var(--c-muted);cursor:not-allowed;box-sizing:border-box">
+      <div style="font-size:11px;color:var(--c-muted);margin-top:3px">
+        <span data-es>No se puede cambiar. <a href="mailto:support@amigosnearme.com" style="color:var(--c-green)">Contacta al soporte</a> para actualizarlo.</span>
+        <span data-en>Cannot be changed. <a href="mailto:support@amigosnearme.com" style="color:var(--c-green)">Contact support</a> to update it.</span>
+      </div>
+    </div>
+
+    <!-- WhatsApp (readonly) -->
+    <div style="margin-bottom:12px">
+      <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:4px"><span data-es>Teléfono WhatsApp *</span><span data-en>WhatsApp phone *</span></label>
+      <input type="tel" id="wp-phone" readonly style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:14px;font-family:var(--font-body);background:var(--c-bg-2,#f5f5f5);color:var(--c-muted);cursor:not-allowed;box-sizing:border-box">
+      <div style="font-size:11px;color:var(--c-muted);margin-top:3px">
+        <span data-es>No se puede cambiar. <a href="mailto:support@amigosnearme.com" style="color:var(--c-green)">Contacta al soporte</a> para actualizarlo.</span>
+        <span data-en>Cannot be changed. <a href="mailto:support@amigosnearme.com" style="color:var(--c-green)">Contact support</a> to update it.</span>
+      </div>
+    </div>
+
+    <!-- Nickname -->
+    <div style="margin-bottom:12px">
+      <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:4px"><span data-es>Apodo / Nombre comercial</span><span data-en>Nickname / Trade name</span></label>
+      <input type="text" id="wp-trade-name" style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:14px;font-family:var(--font-body);background:var(--c-bg);box-sizing:border-box">
+    </div>
+
+    <!-- Description -->
+    <div style="margin-bottom:12px">
+      <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:4px"><span data-es>Descripción</span><span data-en>Description</span></label>
+      <textarea id="wp-desc" rows="3" style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:14px;font-family:var(--font-body);resize:vertical;box-sizing:border-box"></textarea>
+    </div>
+
+    <!-- Service Area -->
+    <div style="margin-bottom:12px">
+      <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:4px"><span data-es>Área de servicio</span><span data-en>Service area</span></label>
+      <input type="text" id="wp-area" placeholder="e.g. Atlanta, Duluth, Norcross" style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:14px;font-family:var(--font-body);background:var(--c-bg);box-sizing:border-box">
+    </div>
+
+    <!-- Languages -->
+    <div style="margin-bottom:12px">
+      <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:6px"><span data-es>Idiomas</span><span data-en>Languages</span></label>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="wp-lang-es" value="es" style="accent-color:var(--c-green)"> Español</label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="wp-lang-en" value="en" style="accent-color:var(--c-green)"> English</label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="wp-lang-pt" value="pt" style="accent-color:var(--c-green)"> Português</label>
+      </div>
+    </div>
+
+    <button onclick="saveWorkerProfile()" id="wp-save-btn" style="padding:10px 24px;border-radius:var(--radius-sm);background:var(--c-green);color:#fff;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:var(--font-body)">
+      <span data-es>Guardar cambios</span><span data-en>Save changes</span>
+    </button>
+    <div id="wp-save-msg" style="display:none;margin-top:8px;font-size:12px;color:var(--c-green)">
+      <span data-es>✅ Cambios guardados.</span><span data-en>✅ Changes saved.</span>
+    </div>
+    <div id="wp-save-err" style="display:none;margin-top:8px;font-size:12px;color:var(--c-accent)"></div>
+  </div>
+
 </div><!-- /profile-content -->
 
 <div id="not-found" style="display:none;text-align:center;padding:80px 24px">
@@ -388,9 +454,20 @@ function renderContactArea(type, credits, w) {
       '<div style="font-size:13px;color:var(--c-muted);margin-bottom:10px">' +
       (isEn ? '👤 This is your public worker profile.' : '👤 Este es tu perfil público de trabajador.') +
       '</div>' +
-      '<a href="register.html?type=staffing&edit=' + (w.id || '') + '" style="display:inline-block;padding:9px 20px;background:var(--c-accent);color:#fff;border-radius:var(--radius-sm);font-size:13px;font-weight:600;text-decoration:none">' +
+      '<button onclick="toggleEditProfile()" style="padding:9px 20px;background:var(--c-accent);color:#fff;border-radius:var(--radius-sm);font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:var(--font-body)">' +
       (isEn ? '✏️ Edit my profile' : '✏️ Editar mi perfil') +
-      '</a></div>';
+      '</button></div>';
+    // populate edit form fields
+    var f = function(id, val) { var el = document.getElementById(id); if (el && val != null) el.value = val; };
+    f('wp-legal-name', w.business_name);
+    f('wp-phone', w.whatsapp_phone);
+    f('wp-trade-name', w.trade_name);
+    f('wp-desc', w.description_es || w.description || '');
+    f('wp-area', w.service_area);
+    var langs = w.languages || ['es'];
+    document.getElementById('wp-lang-es').checked = langs.includes('es');
+    document.getElementById('wp-lang-en').checked = langs.includes('en');
+    document.getElementById('wp-lang-pt').checked = langs.includes('pt');
     return;
   }
 
@@ -648,6 +725,50 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   } catch(e) {}
 });
+
+function toggleEditProfile() {
+  var card = document.getElementById('card-edit-profile');
+  if (!card) return;
+  card.style.display = card.style.display === 'none' ? 'block' : 'none';
+  if (card.style.display === 'block') card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function saveWorkerProfile() {
+  var isEn = document.body.classList.contains('en');
+  var btn  = document.getElementById('wp-save-btn');
+  var msg  = document.getElementById('wp-save-msg');
+  var err  = document.getElementById('wp-save-err');
+  btn.disabled = true;
+  msg.style.display = 'none';
+  err.style.display = 'none';
+  try {
+    var langs = [];
+    if (document.getElementById('wp-lang-es').checked) langs.push('es');
+    if (document.getElementById('wp-lang-en').checked) langs.push('en');
+    if (document.getElementById('wp-lang-pt').checked) langs.push('pt');
+
+    var { error } = await getSupabase()
+      .from('businesses')
+      .update({
+        trade_name:   (document.getElementById('wp-trade-name').value || '').trim(),
+        description:  (document.getElementById('wp-desc').value || '').trim(),
+        service_area: (document.getElementById('wp-area').value || '').trim(),
+        languages:    langs
+      })
+      .eq('id', currentWorker.id);
+
+    if (error) throw error;
+    msg.style.display = 'block';
+    // refresh displayed name if trade_name changed
+    var newTrade = (document.getElementById('wp-trade-name').value || '').trim();
+    if (newTrade) document.getElementById('worker-name').textContent = currentWorker.business_name || newTrade;
+  } catch(e) {
+    err.textContent = isEn ? '❌ Could not save. Try again.' : '❌ No se pudo guardar. Intenta de nuevo.';
+    err.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+  }
+}
 </script>
 </body>
 </html>
