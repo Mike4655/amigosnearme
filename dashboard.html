@@ -989,7 +989,7 @@ async function saveProfileChanges() {
       var biz = window.currentBusiness;
       var bizName2 = biz?.trade_name || biz?.business_name || '';
       await getSupabase().functions.invoke('send-email', {
-        body: { scenario: 'SB15', lang: isEn ? 'en' : 'es', data: { biz_name: bizName2, new_email: newEmail, verify_url: verifyUrl } }
+        body: { scenario: 'SB15', to: newEmail, lang: isEn ? 'en' : 'es', data: { biz_name: bizName2, new_email: newEmail, verify_url: verifyUrl } }
       });
       document.getElementById('ep-email').value = window._originalEmail || '';
       document.getElementById('ep-email-pending').style.display = 'block';
