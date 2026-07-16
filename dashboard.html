@@ -983,11 +983,10 @@ async function saveProfileChanges() {
 
     if (emailChanged) {
       var token = crypto.randomUUID();
-      var bizId = window.currentBusiness?.id;
+      var bizId = window._bizId;
       var verifyUrl = window.location.origin + '/dashboard.html?verify_email=' + token + '&biz=' + bizId;
       await getSupabase().from('businesses').update({ pending_email: newEmail, pending_email_token: token }).eq('id', bizId);
-      var biz = window.currentBusiness;
-      var bizName2 = biz?.trade_name || biz?.business_name || '';
+      var bizName2 = document.getElementById('ep-trade-name')?.value.trim() || document.getElementById('ep-legal-name')?.value.trim() || '';
       await getSupabase().functions.invoke('send-email', {
         body: { scenario: 'SB15', to: newEmail, lang: isEn ? 'en' : 'es', data: { biz_name: bizName2, new_email: newEmail, verify_url: verifyUrl } }
       });
