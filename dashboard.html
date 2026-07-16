@@ -591,15 +591,6 @@
               <span data-en>Phone cannot be changed. <a href="mailto:support@amigosnearme.com" style="color:var(--c-green)">Contact support</a> to update it.</span>
             </div>
           </div>
-          <div>
-            <label class="modal-label" data-es>Correo público</label>
-            <label class="modal-label" data-en>Public email</label>
-            <input class="modal-input" type="email" id="ep-email" placeholder="info@misnegocio.com">
-            <div style="font-size:11px;color:var(--c-hint);margin-top:3px">
-              <span data-es>⚠️ Este correo es solo para recibir consultas de clientes. Distinto de tu correo de inicio de sesión.</span>
-              <span data-en>⚠️ This email is to receive customer inquiries only. Different from your login email.</span>
-            </div>
-          </div>
         </div>
         <div style="margin-bottom:12px">
           <label class="modal-label" data-es>Área de servicio <span style="font-size:11px;font-weight:400;color:var(--c-hint)">(selecciona todas las que apliquen)</span></label>
@@ -968,7 +959,6 @@ async function saveProfileChanges() {
 
     await updateBusiness({
       trade_name: document.getElementById('ep-trade-name')?.value.trim() || '',
-      public_email: document.getElementById('ep-email')?.value.trim() || '',
       service_area: serviceAreas.join(', '),
       description: document.getElementById('ep-desc')?.value.trim() || '',
       payment_methods: paymentMethods,
@@ -1393,7 +1383,6 @@ function renderProfileCompleteness(biz) {
     { key: 'categories',      es: 'Categorías',            en: 'Categories',       done: !!(biz.categories && biz.categories.length > 0) },
     { key: 'description',     es: 'Descripción',           en: 'Description',      done: !!(biz.description) },
     { key: 'service_area',    es: 'Área de servicio',      en: 'Service area',     done: !!(biz.service_area) },
-    { key: 'public_email',    es: 'Correo público',        en: 'Public email',     done: !!(biz.public_email) },
     { key: 'hours',           es: 'Horario',               en: 'Business hours',   done: !!(biz.hours && biz.hours.length > 0) },
     { key: 'payment_methods', es: 'Métodos de pago',       en: 'Payment methods',  done: !!(biz.payment_methods && biz.payment_methods.length > 0) },
   ];
@@ -1975,7 +1964,6 @@ document.addEventListener('DOMContentLoaded', async function(){
       const meta = user.user_metadata || {};
       var needsUpdate = {};
       if (!biz.whatsapp_phone && meta.phone) needsUpdate.whatsapp_phone = meta.phone;
-      if (!biz.public_email && meta.public_email) needsUpdate.public_email = meta.public_email;
       if (!biz.description && meta.description) needsUpdate.description = meta.description;
       if (!biz.service_area && meta.service_area) needsUpdate.service_area = meta.service_area;
       if ((!biz.categories || biz.categories.length === 0) && meta.categories && meta.categories.length > 0) needsUpdate.categories = meta.categories;
@@ -2013,7 +2001,7 @@ document.addEventListener('DOMContentLoaded', async function(){
       }
       var f = function(id, val){ var el = document.getElementById(id); if(el && val !== undefined && val !== null) el.value = val; };
       f('ep-legal-name', biz.business_name); f('ep-trade-name', biz.trade_name);
-      f('ep-phone', biz.whatsapp_phone); f('ep-email', biz.public_email);
+      f('ep-phone', biz.whatsapp_phone);
       f('ep-area', biz.service_area); f('ep-desc', biz.description);
 
       // Categories 체크박스 채우기
@@ -2060,11 +2048,11 @@ document.addEventListener('DOMContentLoaded', async function(){
 
     } else {
       const meta = user.user_metadata || {};
-      const newBiz = await createBusiness({ businessName: meta.business_name || user.email.split('@')[0], tradeName: meta.trade_name || '', plan: meta.plan || 'free', publicEmail: meta.public_email || '', phone: meta.phone || '', description: meta.description || '', categories: meta.categories || [], serviceArea: meta.service_area || '', languages: meta.languages || ['es'], paymentMethods: meta.payment_methods || [], hours: meta.hours || [] });
+      const newBiz = await createBusiness({ businessName: meta.business_name || user.email.split('@')[0], tradeName: meta.trade_name || '', plan: meta.plan || 'free', publicEmail: user.email, phone: meta.phone || '', description: meta.description || '', categories: meta.categories || [], serviceArea: meta.service_area || '', languages: meta.languages || ['es'], paymentMethods: meta.payment_methods || [], hours: meta.hours || [] });
       window._bizPlan = newBiz.plan || 'free'; window._bizContactsUsed = newBiz.contacts_used_month || 0; window._bizId = newBiz.id;
       var f2 = function(id, val){ var el = document.getElementById(id); if(el && val) el.value = val; };
       f2('ep-legal-name', meta.business_name); f2('ep-trade-name', meta.trade_name);
-      f2('ep-phone', meta.phone); f2('ep-email', meta.public_email);
+      f2('ep-phone', meta.phone);
       f2('ep-desc', meta.description); f2('ep-area', meta.service_area);
       var cats2 = meta.categories || [];
       document.querySelectorAll('#ep-categories input[type="checkbox"]').forEach(function(cb){ cb.checked = cats2.includes(cb.value); });

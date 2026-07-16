@@ -822,7 +822,6 @@ function buildBizRow(biz, idx, loginEmail) {
   var pvClass = priorityVal === 0 ? 'zero' : priorityVal <= 7 ? 'low' : priorityVal <= 13 ? 'mid' : 'high';
   var autoTag = plan === 'premium' ? '<span class="auto-tag">auto +10</span>' : '';
 
-  var bizEmailVal = biz.public_email || '';
   var bizStatus = biz.account_status === 'suspended' ? 'suspended' : 'active';
   var firstPhoto = Array.isArray(biz.photos) && biz.photos.length > 0 ? biz.photos[0] : null;
   var avatarHtml = firstPhoto
@@ -835,11 +834,10 @@ function buildBizRow(biz, idx, loginEmail) {
     ? '<button class="btn-suspend" style="background:var(--c-green-light);color:var(--c-green)" onclick="toggleBusinessStatus(this)">Reactivate</button>'
     : '<button class="btn-suspend" style="background:var(--c-accent-light);color:var(--c-accent)" onclick="toggleBusinessStatus(this)">Suspend</button>';
   var contactHtml = '<span style="font-size:11px;line-height:1.6">'
-    + (biz.whatsapp_phone ? '📱 '+escHtml(biz.whatsapp_phone)+'<br>' : '')
-    + (bizEmailVal ? '✉️ '+escHtml(bizEmailVal) : '')
+    + (biz.whatsapp_phone ? '📱 '+escHtml(biz.whatsapp_phone) : '—')
     + '</span>';
 
-  return '<tr data-plan="'+plan+'" data-verify="'+(biz.verified?'verified':'basic-tier')+'" data-name="'+name.toLowerCase()+'" data-status="'+bizStatus+'" data-bizid="'+biz.id+'" data-email="'+escHtml(bizEmailVal)+'" data-bizname="'+escHtml(name)+'" data-loginemail="'+escHtml(loginEmail)+'">'
+  return '<tr data-plan="'+plan+'" data-verify="'+(biz.verified?'verified':'basic-tier')+'" data-name="'+name.toLowerCase()+'" data-status="'+bizStatus+'" data-bizid="'+biz.id+'" data-bizname="'+escHtml(name)+'" data-loginemail="'+escHtml(loginEmail)+'">'
     + '<td><div class="biz-cell">'+avatarHtml
     + '<div><div class="biz-name">'+escHtml(name)+'</div><div class="biz-cat">'+escHtml(catLabel)+' · '+escHtml(area)+', GA</div></div></div></td>'
     + '<td style="font-size:12px;color:var(--c-muted)">'+escHtml(loginEmail)+'</td>'
@@ -875,8 +873,7 @@ function buildVerifCard(biz, idx) {
   var d = biz.created_at ? new Date(biz.created_at) : null;
   var submittedStr = d ? 'Submitted ' + Math.floor((Date.now()-d)/86400000) + ' days ago' : '';
 
-  var bizEmailVal = biz.public_email || '';
-  return '<div class="queue-card" data-vstatus="pending" data-bizid="'+biz.id+'" data-email="'+escHtml(bizEmailVal)+'" data-bizname="'+escHtml(name)+'">'
+  return '<div class="queue-card" data-vstatus="pending" data-bizid="'+biz.id+'" data-bizname="'+escHtml(name)+'">'
     + '<div class="queue-main"><div class="biz-cell">'
     + '<div class="biz-avatar '+bizAvatarClass(idx)+'">'+getAvatarInitialsAdmin(name)+'</div>'
     + '<div><div class="biz-name">'+escHtml(name)+'</div>'
@@ -2040,10 +2037,9 @@ async function loadWorkers() {
         ? 'background:var(--c-accent-light);color:var(--c-accent)'
         : 'background:var(--c-green-light);color:var(--c-green)';
       var contactHtml = '<span style="font-size:11px;line-height:1.6">'
-        + (w.whatsapp_phone ? '📱 '+escHtml(w.whatsapp_phone)+'<br>' : '')
-        + (w.public_email ? '✉️ '+escHtml(w.public_email) : '')
+        + (w.whatsapp_phone ? '📱 '+escHtml(w.whatsapp_phone) : '—')
         + '</span>';
-      return '<tr data-wkrstatus="'+escHtml(status)+'" data-wkrverify="'+(w.verified?'verified':'unverified')+'" data-wkrname="'+escHtml(name.toLowerCase())+'" data-bizid="'+escHtml(w.id)+'" data-email="'+escHtml(w.public_email||'')+'" data-bizname="'+escHtml(name)+'" data-loginemail="'+escHtml(loginEmail)+'">'
+      return '<tr data-wkrstatus="'+escHtml(status)+'" data-wkrverify="'+(w.verified?'verified':'unverified')+'" data-wkrname="'+escHtml(name.toLowerCase())+'" data-bizid="'+escHtml(w.id)+'" data-bizname="'+escHtml(name)+'" data-loginemail="'+escHtml(loginEmail)+'">'
         + '<td><div class="biz-cell"><div class="biz-avatar '+bizAvatarClass(idx)+'">'+getAvatarInitialsAdmin(name)+'</div>'
         + '<div><div class="biz-name">'+escHtml(name)+'</div></div></div></td>'
         + '<td style="font-size:12px;color:var(--c-muted)">'+escHtml(cats)+'</td>'
