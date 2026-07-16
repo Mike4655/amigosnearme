@@ -695,7 +695,7 @@ function sortResults(results) {
       var scoreB = (b.priority_score || 0) + (b.plan === 'premium' ? 10 : 0);
       if (scoreB !== scoreA) return scoreB - scoreA;
       if (b.verified !== a.verified) return b.verified ? 1 : -1;
-      return (a.business_name||'').localeCompare(b.business_name||'');
+      return (a.trade_name||a.business_name||'').localeCompare(b.trade_name||b.business_name||'');
     });
   }
   return sorted;
@@ -849,7 +849,8 @@ function renderPage(filtered) {
   var colors = ['av-coral','av-teal','av-amber','av-blue','av-green','av-purple'];
 
   list.innerHTML = page.map(function(biz, idx) {
-    var initials = (biz.business_name || '').split(' ').slice(0,2).map(function(w){ return w[0]||''; }).join('').toUpperCase() || '??';
+    var displayName = biz.trade_name || biz.business_name || '';
+    var initials = displayName.split(' ').slice(0,2).map(function(w){ return w[0]||''; }).join('').toUpperCase() || '??';
     var color = colors[idx % colors.length];
     var cat = (biz.categories || [])[0] || '';
     var catLabel = (biz.categories || []).map(function(c){ return catLabels[c] || c; }).join(' · ') || cat;
@@ -873,7 +874,7 @@ function renderPage(filtered) {
       avatarHtml +
       '<div style="flex:1;min-width:0">' +
       '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px">' +
-      '<div class="biz-name" style="font-size:15px;font-weight:600">' + (biz.business_name || '') + '</div>' +
+      '<div class="biz-name" style="font-size:15px;font-weight:600">' + displayName + '</div>' +
       verifiedHtml + insuredHtml + '</div>' +
       '<div class="biz-category" style="font-size:12px;color:var(--c-muted)">' + catLabel + (areaShort ? ' · ' + areaShort : '') + '</div>' +
       (rating ? '<div style="font-size:12px;color:var(--c-muted);margin-top:2px">' + ratingHtml + '</div>' : '') +
