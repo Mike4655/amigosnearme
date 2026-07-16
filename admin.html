@@ -211,7 +211,7 @@
     <a class="sb-link" id="nav-workers" onclick="showAdminPane('workers')"><span>👷</span> Workers</a>
     <a class="sb-link" id="nav-verification" onclick="showAdminPane('verification')"><span>✅</span> Verification Queue<span class="nav-badge" id="badge-verification"></span></a>
     <a class="sb-link" id="nav-cancellations" onclick="showAdminPane('cancellations')"><span>🚪</span> Cancellation Requests<span class="nav-badge" id="badge-cancellations"></span></a>
-    <a class="sb-link" id="nav-reviews" onclick="showAdminPane('reviews')"><span>💬</span> Reviews Moderation</a>
+    <a class="sb-link" id="nav-reviews" onclick="showAdminPane('reviews')"><span>💬</span> Reviews Moderation<span class="nav-badge" id="badge-reviews"></span></a>
     <a class="sb-link" id="nav-settings" onclick="showAdminPane('settings')"><span>⚙️</span> Settings</a>
   </nav>
   <div class="sb-foot">Logged in as <span id="sb-user-email">…</span><br><a href="#" onclick="adminSignOut();return false" style="color:rgba(255,255,255,0.45);text-decoration:none">Sign out →</a></div>
@@ -1039,7 +1039,7 @@ function showAdminPane(pane) {
   if (pane === 'workers')       loadWorkers();
   if (pane === 'cancellations') { loadCancellations(); setNavBadge('badge-cancellations', 0); }
   if (pane === 'verification')  { setNavBadge('badge-verification', 0); }
-  if (pane === 'reviews')       loadFlaggedReviews();
+  if (pane === 'reviews')       { loadFlaggedReviews(); setNavBadge('badge-reviews', 0); }
 }
 
 function setNavBadge(id, count) {
@@ -1059,6 +1059,10 @@ async function loadNavBadges() {
     var { data } = await sb.rpc('get_cancellation_admin_data');
     var pending = (data || []).filter(function(r){ return !r.resolved; }).length;
     setNavBadge('badge-cancellations', pending);
+  } catch(e) {}
+  try {
+    var { count: rCount } = await sb.from('reviews').select('id', { count: 'exact', head: true }).eq('flagged', true).eq('removed', false);
+    setNavBadge('badge-reviews', rCount || 0);
   } catch(e) {}
 }
 
