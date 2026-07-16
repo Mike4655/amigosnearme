@@ -278,6 +278,8 @@
         <thead>
           <tr>
             <th>Business</th>
+            <th>Login Email</th>
+            <th>Contact</th>
             <th>Plan</th>
             <th>Verification</th>
             <th>Rating</th>
@@ -289,7 +291,7 @@
           </tr>
         </thead>
         <tbody id="biz-table-body">
-          <tr><td colspan="8" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>
+          <tr><td colspan="11" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>
         </tbody>
       </table>
     </div>
@@ -339,7 +341,7 @@
       <table>
         <thead>
           <tr>
-            <th>Email</th>
+            <th>Login Email</th>
             <th>Contacts (month)</th>
             <th>Contacts (total)</th>
             <th>Reviews</th>
@@ -599,7 +601,8 @@
       <table>
         <thead>
           <tr>
-            <th>Email</th>
+            <th>Login Email</th>
+            <th>Phone</th>
             <th>Credits</th>
             <th>Contacts (month)</th>
             <th>Total Purchased</th>
@@ -608,7 +611,7 @@
           </tr>
         </thead>
         <tbody id="emp-table-body">
-          <tr><td colspan="6" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>
+          <tr><td colspan="7" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>
         </tbody>
       </table>
     </div>
@@ -664,6 +667,8 @@
         <thead>
           <tr>
             <th>Worker</th>
+            <th>Login Email</th>
+            <th>Contact</th>
             <th>Categories</th>
             <th>Verification</th>
             <th>Rating</th>
@@ -673,7 +678,7 @@
           </tr>
         </thead>
         <tbody id="wkr-table-body">
-          <tr><td colspan="7" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>
+          <tr><td colspan="9" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>
         </tbody>
       </table>
     </div>
@@ -800,7 +805,8 @@ function getAvatarInitialsAdmin(name) {
   return parts.length >= 2 ? (parts[0][0]+parts[1][0]).toUpperCase() : name.slice(0,2).toUpperCase();
 }
 
-function buildBizRow(biz, idx) {
+function buildBizRow(biz, idx, loginEmail) {
+  loginEmail = loginEmail || '—';
   var name  = biz.trade_name || biz.business_name || '(unnamed)';
   var cats  = Array.isArray(biz.categories) ? biz.categories : [];
   var catLabel = cats.map(function(c){ return CAT_LABELS[c]||c; }).join(', ') || '—';
@@ -828,9 +834,16 @@ function buildBizRow(biz, idx) {
   var suspendBtn = bizStatus === 'suspended'
     ? '<button class="btn-suspend" style="background:var(--c-green-light);color:var(--c-green)" onclick="toggleBusinessStatus(this)">Reactivate</button>'
     : '<button class="btn-suspend" style="background:var(--c-accent-light);color:var(--c-accent)" onclick="toggleBusinessStatus(this)">Suspend</button>';
-  return '<tr data-plan="'+plan+'" data-verify="'+(biz.verified?'verified':'basic-tier')+'" data-name="'+name.toLowerCase()+'" data-status="'+bizStatus+'" data-bizid="'+biz.id+'" data-email="'+escHtml(bizEmailVal)+'" data-bizname="'+escHtml(name)+'">'
+  var contactHtml = '<span style="font-size:11px;line-height:1.6">'
+    + (biz.whatsapp_phone ? '📱 '+escHtml(biz.whatsapp_phone)+'<br>' : '')
+    + (bizEmailVal ? '✉️ '+escHtml(bizEmailVal) : '')
+    + '</span>';
+
+  return '<tr data-plan="'+plan+'" data-verify="'+(biz.verified?'verified':'basic-tier')+'" data-name="'+name.toLowerCase()+'" data-status="'+bizStatus+'" data-bizid="'+biz.id+'" data-email="'+escHtml(bizEmailVal)+'" data-bizname="'+escHtml(name)+'" data-loginemail="'+escHtml(loginEmail)+'">'
     + '<td><div class="biz-cell">'+avatarHtml
     + '<div><div class="biz-name">'+escHtml(name)+'</div><div class="biz-cat">'+escHtml(catLabel)+' · '+escHtml(area)+', GA</div></div></div></td>'
+    + '<td style="font-size:12px;color:var(--c-muted)">'+escHtml(loginEmail)+'</td>'
+    + '<td>'+contactHtml+'</td>'
     + '<td><span class="'+planClass+'">'+planLabel+'</span></td>'
     + '<td>'+verBadge+'</td>'
     + '<td>—</td>'
@@ -849,6 +862,7 @@ function buildBizRow(biz, idx) {
     + '<td><div class="action-cell">'
     + suspendBtn
     + '<button class="btn-save" onclick="savePriorityDB(this)">Save</button>'
+    + '<button class="btn-save" style="background:var(--c-blue-light);color:var(--c-blue)" onclick="adminResetPassword(this.closest(\'tr\').dataset.loginemail)">Reset PW</button>'
     + '</div></td>'
     + '</tr>';
 }
@@ -878,6 +892,31 @@ function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+async function getAdminEmailMap(ownerIds) {
+  var ids = ownerIds.filter(Boolean);
+  if (!ids.length) return {};
+  try {
+    var { data } = await getSupabase().rpc('admin_get_user_emails', { p_user_ids: ids });
+    var map = {};
+    (data || []).forEach(function(r){ map[r.user_id] = r.email; });
+    return map;
+  } catch(e) { return {}; }
+}
+
+async function adminResetPassword(email) {
+  if (!email || email === '—') { showAdminToast('⚠ No login email available'); return; }
+  try {
+    var { error } = await getSupabase().auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + '/reset-password.html'
+    });
+    if (error) throw error;
+    showAdminToast('📧 Password reset email sent to ' + email);
+  } catch(e) {
+    showAdminToast('⚠ Failed to send reset email');
+    console.error('[Admin] resetPassword error:', e);
+  }
+}
+
 async function initAdminPage() {
   try {
     var sb = getSupabase();
@@ -890,7 +929,9 @@ async function initAdminPage() {
 
     var tbody = document.getElementById('biz-table-body');
     if (businesses && businesses.length) {
-      tbody.innerHTML = businesses.map(buildBizRow).join('');
+      var bizOwnerIds = businesses.map(function(b){ return b.owner_id; });
+      var bizEmailMap = await getAdminEmailMap(bizOwnerIds);
+      tbody.innerHTML = businesses.map(function(b, idx){ return buildBizRow(b, idx, bizEmailMap[b.owner_id] || '—'); }).join('');
 
       var total    = businesses.length;
       var premium  = businesses.filter(function(b){ return b.plan==='premium'; }).length;
@@ -1642,7 +1683,7 @@ async function loadCustomers() {
       var suspendStyle = status === 'active'
         ? 'background:var(--c-accent-light);color:var(--c-accent)'
         : 'background:var(--c-green-light);color:var(--c-green)';
-      return '<tr data-custstatus="'+escHtml(status)+'" data-custemail="'+escHtml(email.toLowerCase())+'" data-ownerid="'+escHtml(c.owner_id)+'" data-custid="'+escHtml(c.id)+'">'
+      return '<tr data-custstatus="'+escHtml(status)+'" data-custemail="'+escHtml(email.toLowerCase())+'" data-ownerid="'+escHtml(c.owner_id)+'" data-custid="'+escHtml(c.id)+'" data-loginemail="'+escHtml(email)+'">'
         + '<td style="font-size:13px">'+escHtml(email)+'</td>'
         + '<td style="text-align:center">'+month+'</td>'
         + '<td style="text-align:center">'+total_c+'</td>'
@@ -1650,6 +1691,7 @@ async function loadCustomers() {
         + '<td>'+statusBadge+'</td>'
         + '<td><div class="action-cell">'
         + '<button class="btn-suspend" style="'+suspendStyle+'" onclick="toggleCustomerStatus(this)">'+suspendLabel+'</button>'
+        + '<button class="btn-save" style="background:var(--c-blue-light);color:var(--c-blue)" onclick="adminResetPassword(this.closest(\'tr\').dataset.loginemail)">Reset PW</button>'
         + '</div></td>'
         + '</tr>';
     }).join('');
@@ -1808,8 +1850,10 @@ async function loadEmployers() {
   try {
     // Join employer_profiles with auth.users email via a view or fetch users separately
     var epRes = await sb.from('employer_profiles')
-      .select('id, owner_id, credit_balance, account_status, created_at, display_name');
+      .select('id, owner_id, credit_balance, account_status, created_at, display_name, phone');
     var eps = epRes.data || [];
+    var empOwnerIds = eps.map(function(e){ return e.owner_id; });
+    var empEmailMap = await getAdminEmailMap(empOwnerIds);
 
     // Fetch auth user emails via admin.listUsers not available client-side;
     // use a profiles/metadata approach — fetch user emails from businesses or customer_profiles
@@ -1854,6 +1898,7 @@ async function loadEmployers() {
       var contacts = clMap[ep.owner_id] || 0;
       var purchased = txMap[ep.id] || 0;
       var status = ep.account_status || 'active';
+      var loginEmail = empEmailMap[ep.owner_id] || '—';
       var statusBadge = status === 'active'
         ? '<span class="verified-badge">Active</span>'
         : '<span class="basic-badge" style="background:var(--c-accent-light);color:var(--c-accent)">Suspended</span>';
@@ -1862,15 +1907,16 @@ async function loadEmployers() {
         ? 'background:var(--c-accent-light);color:var(--c-accent)'
         : 'background:var(--c-green-light);color:var(--c-green)';
       var credColor = ep.credit_balance === 0 ? 'var(--c-accent)' : ep.credit_balance <= 2 ? 'var(--c-amber)' : 'var(--c-green)';
-      var shortId = ep.owner_id ? ep.owner_id.slice(0,8) + '…' : '—';
-      return '<tr data-empid="'+escHtml(ep.id)+'" data-ownerid="'+escHtml(ep.owner_id)+'" data-empstatus="'+escHtml(status)+'" data-empname="'+escHtml(ep.display_name||'')+'">'
-        + '<td style="font-family:var(--font-mono);font-size:12px;color:var(--c-muted)">'+shortId+'</td>'
+      return '<tr data-empid="'+escHtml(ep.id)+'" data-ownerid="'+escHtml(ep.owner_id)+'" data-empstatus="'+escHtml(status)+'" data-empname="'+escHtml(ep.display_name||'')+'" data-loginemail="'+escHtml(loginEmail)+'">'
+        + '<td style="font-size:12px;color:var(--c-muted)">'+escHtml(loginEmail)+'</td>'
+        + '<td style="font-size:12px;color:var(--c-muted)">'+escHtml(ep.phone||'—')+'</td>'
         + '<td style="font-weight:600;color:'+credColor+'">'+ep.credit_balance+'</td>'
         + '<td style="text-align:center">'+contacts+'</td>'
         + '<td style="text-align:center">'+purchased+'</td>'
         + '<td>'+statusBadge+'</td>'
         + '<td><div class="action-cell">'
         + '<button class="btn-suspend" style="'+suspendStyle+'" onclick="toggleEmployerStatus(this)">'+suspendLabel+'</button>'
+        + '<button class="btn-save" style="background:var(--c-blue-light);color:var(--c-blue)" onclick="adminResetPassword(this.closest(\'tr\').dataset.loginemail)">Reset PW</button>'
         + '</div></td>'
         + '</tr>';
     }).join('');
@@ -1968,14 +2014,18 @@ async function loadWorkers() {
     document.getElementById('stat-wkr-priority').textContent = avgPrio;
 
     if (!workers.length) {
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--c-muted);padding:20px">No workers registered yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--c-muted);padding:20px">No workers registered yet.</td></tr>';
       _workersLoaded = true;
       return;
     }
 
+    var wkrOwnerIds = workers.map(function(w){ return w.owner_id; });
+    var wkrEmailMap = await getAdminEmailMap(wkrOwnerIds);
+
     tbody.innerHTML = workers.map(function(w, idx) {
       var name = w.business_name || w.trade_name || '(unnamed)';
       var cats = (w.categories || []).map(function(c){ return CAT_LABELS[c]||c; }).join(', ') || '—';
+      var loginEmail = wkrEmailMap[w.owner_id] || '—';
       var verBadge = w.verified
         ? '<span class="verified-badge">✅ Verified</span>'
         : '<span class="basic-badge">⏳ Unverified</span>';
@@ -1989,18 +2039,24 @@ async function loadWorkers() {
       var suspendStyle = status === 'active'
         ? 'background:var(--c-accent-light);color:var(--c-accent)'
         : 'background:var(--c-green-light);color:var(--c-green)';
-      return '<tr data-wkrstatus="'+escHtml(status)+'" data-wkrverify="'+(w.verified?'verified':'unverified')+'" data-wkrname="'+escHtml(name.toLowerCase())+'" data-bizid="'+escHtml(w.id)+'" data-email="'+escHtml(w.public_email||'')+'" data-bizname="'+escHtml(name)+'">'
+      var contactHtml = '<span style="font-size:11px;line-height:1.6">'
+        + (w.whatsapp_phone ? '📱 '+escHtml(w.whatsapp_phone)+'<br>' : '')
+        + (w.public_email ? '✉️ '+escHtml(w.public_email) : '')
+        + '</span>';
+      return '<tr data-wkrstatus="'+escHtml(status)+'" data-wkrverify="'+(w.verified?'verified':'unverified')+'" data-wkrname="'+escHtml(name.toLowerCase())+'" data-bizid="'+escHtml(w.id)+'" data-email="'+escHtml(w.public_email||'')+'" data-bizname="'+escHtml(name)+'" data-loginemail="'+escHtml(loginEmail)+'">'
         + '<td><div class="biz-cell"><div class="biz-avatar '+bizAvatarClass(idx)+'">'+getAvatarInitialsAdmin(name)+'</div>'
         + '<div><div class="biz-name">'+escHtml(name)+'</div></div></div></td>'
         + '<td style="font-size:12px;color:var(--c-muted)">'+escHtml(cats)+'</td>'
+        + '<td style="font-size:12px;color:var(--c-muted)">'+escHtml(loginEmail)+'</td>'
+        + '<td>'+contactHtml+'</td>'
         + '<td>'+verBadge+'</td>'
-        + '<td>—</td>'
         + '<td><div class="priority-cell"><input type="range" class="priority-slider" min="0" max="20" value="'+prio+'" oninput="updatePriority(this)">'
         + '<span class="priority-val '+pvClass+'">'+prio+'</span></div></td>'
         + '<td>'+statusBadge+'</td>'
         + '<td><div class="action-cell">'
         + '<button class="btn-suspend" style="'+suspendStyle+'" onclick="toggleWorkerStatus(this)">'+suspendLabel+'</button>'
         + '<button class="btn-save" onclick="savePriorityDB(this)">Save</button>'
+        + '<button class="btn-save" style="background:var(--c-blue-light);color:var(--c-blue)" onclick="adminResetPassword(this.closest(\'tr\').dataset.loginemail)">Reset PW</button>'
         + '</div></td>'
         + '</tr>';
     }).join('');
@@ -2008,7 +2064,7 @@ async function loadWorkers() {
     _workersLoaded = true;
   } catch(e) {
     console.error('[Admin] loadWorkers error:', e);
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--c-accent);padding:20px">Error loading workers.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--c-accent);padding:20px">Error loading workers.</td></tr>';
   }
 }
 
