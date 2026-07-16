@@ -569,7 +569,11 @@
           <div>
             <label class="modal-label" data-es>Nombre legal *</label>
             <label class="modal-label" data-en>Legal name *</label>
-            <input class="modal-input" type="text" id="ep-legal-name" placeholder="Garcia Landscaping LLC">
+            <input class="modal-input" type="text" id="ep-legal-name" placeholder="Garcia Landscaping LLC" readonly style="background:var(--c-bg-2,#f5f5f5);color:var(--c-hint);cursor:not-allowed">
+            <div style="font-size:11px;color:var(--c-hint);margin-top:3px">
+              <span data-es>El nombre legal no se puede cambiar. <a href="mailto:support@amigosnearme.com" style="color:var(--c-green)">Contacta al soporte</a> para actualizarlo.</span>
+              <span data-en>Legal name cannot be changed. <a href="mailto:support@amigosnearme.com" style="color:var(--c-green)">Contact support</a> to update it.</span>
+            </div>
           </div>
           <div>
             <label class="modal-label" data-es>Nombre comercial</label>
@@ -587,6 +591,10 @@
             <label class="modal-label" data-es>Correo público</label>
             <label class="modal-label" data-en>Public email</label>
             <input class="modal-input" type="email" id="ep-email" placeholder="info@misnegocio.com">
+            <div id="ep-email-pending" style="display:none;font-size:11px;color:#b45309;margin-top:3px">
+              <span data-es>⏳ Verificación pendiente — revisa tu nuevo correo para confirmar el cambio.</span>
+              <span data-en>⏳ Verification pending — check your new inbox to confirm the change.</span>
+            </div>
           </div>
         </div>
         <div style="margin-bottom:12px">
@@ -954,21 +962,41 @@ async function saveProfileChanges() {
     var serviceAreas = [];
     document.querySelectorAll('#ep-area-grid input[type="checkbox"]:checked').forEach(function(cb){ if(cb.value) serviceAreas.push(cb.value); });
 
-    await updateBusiness({
-      business_name: document.getElementById('ep-legal-name')?.value.trim() || '',
+    var newEmail = document.getElementById('ep-email')?.value.trim() || '';
+    var emailChanged = newEmail && newEmail !== (window._originalEmail || '');
+
+    var updatePayload = {
       trade_name: document.getElementById('ep-trade-name')?.value.trim() || '',
       whatsapp_phone: normalizePhone(document.getElementById('ep-phone')?.value.trim() || ''),
-      public_email: document.getElementById('ep-email')?.value.trim() || '',
       service_area: serviceAreas.join(', '),
       description: document.getElementById('ep-desc')?.value.trim() || '',
       payment_methods: paymentMethods,
       languages: languages,
       categories: categories
-    });
+    };
 
-    var bizName = document.getElementById('ep-legal-name')?.value.trim();
-    if (bizName) document.querySelectorAll('.biz-display-name').forEach(function(el){ el.textContent = bizName; });
-    showToast(isEn ? '✅ Changes saved' : '✅ Cambios guardados');
+    if (!emailChanged) {
+      updatePayload.public_email = newEmail || window._originalEmail || '';
+    }
+
+    await updateBusiness(updatePayload);
+
+    if (emailChanged) {
+      var token = crypto.randomUUID();
+      var bizId = window.currentBusiness?.id;
+      var verifyUrl = window.location.origin + '/dashboard.html?verify_email=' + token + '&biz=' + bizId;
+      await getSupabase().from('businesses').update({ pending_email: newEmail, pending_email_token: token }).eq('id', bizId);
+      var biz = window.currentBusiness;
+      var bizName2 = biz?.trade_name || biz?.business_name || '';
+      await getSupabase().functions.invoke('send-email', {
+        body: { scenario: 'SB15', lang: isEn ? 'en' : 'es', data: { biz_name: bizName2, new_email: newEmail, verify_url: verifyUrl } }
+      });
+      document.getElementById('ep-email').value = window._originalEmail || '';
+      document.getElementById('ep-email-pending').style.display = 'block';
+      showToast(isEn ? '📧 Verification email sent to new address' : '📧 Correo de verificación enviado');
+    } else {
+      showToast(isEn ? '✅ Changes saved' : '✅ Cambios guardados');
+    }
   } catch(err) {
     console.error('Save error:', err);
     showToast(isEn ? '❌ Could not save. Try again.' : '❌ No se pudo guardar. Intenta de nuevo.');
@@ -1929,6 +1957,32 @@ async function loadAnalytics() {
   }
 }
 
+async function handleEmailVerification() {
+  var params = new URLSearchParams(window.location.search);
+  var token = params.get('verify_email');
+  var bizId = params.get('biz');
+  if (!token || !bizId) return;
+  var isEn = document.body.classList.contains('en');
+  try {
+    var { data: biz } = await getSupabase().from('businesses').select('pending_email,pending_email_token').eq('id', bizId).single();
+    if (!biz || biz.pending_email_token !== token) {
+      showToast(isEn ? '❌ Invalid or expired verification link' : '❌ Enlace de verificación inválido o expirado');
+      return;
+    }
+    await getSupabase().from('businesses').update({ public_email: biz.pending_email, pending_email: null, pending_email_token: null }).eq('id', bizId);
+    window._originalEmail = biz.pending_email;
+    var emailEl = document.getElementById('ep-email');
+    if (emailEl) emailEl.value = biz.pending_email;
+    var pendingEl = document.getElementById('ep-email-pending');
+    if (pendingEl) pendingEl.style.display = 'none';
+    showToast(isEn ? '✅ Email updated successfully' : '✅ Correo actualizado correctamente');
+    // Remove query params from URL
+    window.history.replaceState({}, '', window.location.pathname);
+  } catch(e) {
+    console.error('Email verification error:', e);
+  }
+}
+
 document.addEventListener('DOMContentLoaded', async function(){
   // anm-sim-plan은 구형 시뮬레이션 잔재 — DB 값이 항상 우선이므로 제거
   try { localStorage.removeItem('anm-sim-plan'); } catch(e) {}
@@ -2006,6 +2060,11 @@ document.addEventListener('DOMContentLoaded', async function(){
       f('ep-legal-name', biz.business_name); f('ep-trade-name', biz.trade_name);
       f('ep-phone', biz.whatsapp_phone); f('ep-email', biz.public_email);
       f('ep-area', biz.service_area); f('ep-desc', biz.description);
+      window._originalEmail = biz.public_email || '';
+      if (biz.pending_email) {
+        var pendingEl = document.getElementById('ep-email-pending');
+        if (pendingEl) pendingEl.style.display = 'block';
+      }
 
       // Categories 체크박스 채우기
       var cats = biz.categories || [];
@@ -2046,6 +2105,7 @@ document.addEventListener('DOMContentLoaded', async function(){
       loadRecentInquiries();
       loadReviews();
       renderSavedPhotos(biz.photos || []);
+      handleEmailVerification();
       var emailDisplay = document.getElementById('settings-email-display');
       if (emailDisplay && user.email) emailDisplay.value = user.email;
 

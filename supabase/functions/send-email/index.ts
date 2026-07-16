@@ -254,6 +254,23 @@ function templates(
 <p>Until then, you'll keep your current plan. You can cancel this change anytime from your <a href="https://amigosnearme.com/dashboard.html">dashboard</a>.</p>`,
       };
 
+    case 'SB15':
+      return es ? {
+        subject: `Verifica tu nuevo correo — AmigosNearMe`,
+        html: `<p>Hola ${d.biz_name},</p>
+<p>Recibimos una solicitud para cambiar el correo público de tu negocio a <strong>${d.new_email}</strong>.</p>
+<p>Haz clic en el botón de abajo para confirmar este cambio:</p>
+<p><a href="${d.verify_url}" style="display:inline-block;padding:10px 20px;background:#2d7a4f;color:#fff;border-radius:6px;text-decoration:none;font-weight:600">Verificar correo</a></p>
+<p>Si no solicitaste este cambio, ignora este mensaje. Tu correo actual permanecerá sin cambios.</p>`,
+      } : {
+        subject: `Verify your new email — AmigosNearMe`,
+        html: `<p>Hi ${d.biz_name},</p>
+<p>We received a request to change your business public email to <strong>${d.new_email}</strong>.</p>
+<p>Click the button below to confirm this change:</p>
+<p><a href="${d.verify_url}" style="display:inline-block;padding:10px 20px;background:#2d7a4f;color:#fff;border-radius:6px;text-decoration:none;font-weight:600">Verify email</a></p>
+<p>If you did not request this change, ignore this message. Your current email will remain unchanged.</p>`,
+      };
+
     // ══ Worker ════════════════════════════════════════════════
 
     case 'W1':
