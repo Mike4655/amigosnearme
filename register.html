@@ -757,29 +757,17 @@ if (new URLSearchParams(window.location.search).get('type') === 'staffing') docu
 
     <div class="form-card" id="tu-cuenta-card">
       <div class="form-card-title"><span>👤</span> <span data-es>Tu cuenta</span><span data-en>Your account</span></div>
-      <div class="info-box">
-        <span>ℹ️</span>
-        <span data-es>Se ha completado automáticamente con tu correo de contacto público. Puedes cambiarlo si prefieres usar un correo diferente para iniciar sesión.</span>
-        <span data-en>Auto-filled from your public contact email. You can change it if you prefer a different login email.</span>
-      </div>
-      <div class="two-col">
-        <div class="field-row" id="owner-name-row">
-          <div class="field-label" data-es>Tu nombre <span class="req">*</span></div>
-          <div class="field-label" data-en>Your name <span class="req">*</span></div>
-          <input type="text" id="f-owner-name" oninput="clearAccountError()" placeholder="Jose Garcia">
-        </div>
-        <div class="field-row">
-          <div class="field-label" data-es>Correo de acceso (login) <span class="req">*</span></div>
-          <div class="field-label" data-en>Login email <span class="req">*</span></div>
-          <input type="email" id="f-account-email" oninput="clearAccountError()" placeholder="jose@email.com" style="background:var(--c-green-light)">
-        </div>
+      <div class="field-row">
+        <div class="field-label" data-es>Correo de acceso (login) <span class="req">*</span></div>
+        <div class="field-label" data-en>Login email <span class="req">*</span></div>
+        <input type="email" id="f-account-email" oninput="clearAccountError()" placeholder="jose@email.com">
       </div>
       <div class="field-row">
         <div class="field-label" data-es>Contraseña <span class="req">*</span></div>
         <div class="field-label" data-en>Password <span class="req">*</span></div>
         <input type="password" id="f-password" oninput="clearAccountError()" placeholder="Mínimo 8 caracteres" style="max-width:300px">
       </div>
-      <div class="field-error" id="err-account" data-es-text="Ingresa tu nombre, correo de acceso válido y una contraseña (mínimo 8 caracteres)." data-en-text="Enter your name, a valid login email, and a password (minimum 8 characters).">Ingresa tu nombre, correo de acceso válido y una contraseña (mínimo 8 caracteres).</div>
+      <div class="field-error" id="err-account" data-es-text="Ingresa un correo de acceso válido y una contraseña (mínimo 8 caracteres)." data-en-text="Enter a valid login email and a password (minimum 8 characters).">Ingresa un correo de acceso válido y una contraseña (mínimo 8 caracteres).</div>
     </div>
 
     <div class="form-nav">
@@ -1957,7 +1945,6 @@ function syncLoginEmail(val) {
 }
 
 function clearAccountError() {
-  var ownerName = document.getElementById('f-owner-name');
   var accountEmail = document.getElementById('f-account-email');
   var password = document.getElementById('f-password');
   var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -2081,22 +2068,20 @@ function validateStep2() {
     clearInvalidSection('payment-grid');
   }
 
-  // 6. Account - name + valid login email + password (min 8 chars)
-  var ownerName = document.getElementById('f-owner-name');
+  // 6. Account - valid login email + password (min 8 chars)
   var accountEmail = document.getElementById('f-account-email');
   var password = document.getElementById('f-password');
   var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   var emailValid = emailPattern.test(accountEmail.value.trim());
-  var accountValid = ownerName.value.trim() !== '' && emailValid && password.value.length >= 8;
+  var accountValid = emailValid && password.value.length >= 8;
   if (!accountValid) {
     showError('err-account');
-    if (ownerName.value.trim() === '') markInvalid(ownerName); else clearInvalid(ownerName);
     if (!emailValid) markInvalid(accountEmail); else clearInvalid(accountEmail);
     if (password.value.length < 8) markInvalid(password); else clearInvalid(password);
     valid = false;
   } else {
     hideError('err-account');
-    clearInvalid(ownerName); clearInvalid(accountEmail); clearInvalid(password);
+    clearInvalid(accountEmail); clearInvalid(password);
   }
 
   if (!valid) {
