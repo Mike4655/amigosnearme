@@ -862,8 +862,29 @@ function buildBizRow(biz, idx, loginEmail) {
     + suspendBtn
     + '<button class="btn-save" onclick="savePriorityDB(this)">Save</button>'
     + '<button class="btn-save" style="background:var(--c-blue-light);color:var(--c-blue)" onclick="adminResetPassword(this.closest(\'tr\').dataset.loginemail)">Reset PW</button>'
+    + (biz.pending_plan ? '<button class="btn-save" style="background:#7c3aed1a;color:#7c3aed;white-space:nowrap" onclick="adminActivatePlan(this)" data-bizid="'+escHtml(biz.id)+'" data-plan="'+escHtml(biz.pending_plan)+'">⚡ Activate '+escHtml(biz.pending_plan)+'</button>' : '')
     + '</div></td>'
     + '</tr>';
+}
+
+async function adminActivatePlan(btn) {
+  var bizId = btn.getAttribute('data-bizid');
+  var newPlan = btn.getAttribute('data-plan');
+  if (!confirm('Activate ' + newPlan + ' plan for this business? This will reset their monthly contact count to 0.')) return;
+  btn.disabled = true; btn.textContent = 'Activating…';
+  try {
+    var { error } = await getSupabase().from('businesses')
+      .update({ plan: newPlan, pending_plan: null, contacts_used_month: 0 })
+      .eq('id', bizId);
+    if (error) throw error;
+    showAdminToast('✅ Plan activated: ' + newPlan);
+    btn.closest('tr').querySelector('[data-plan]') && btn.remove();
+    _bizLoaded = false;
+    initAdminPage();
+  } catch(e) {
+    showAdminToast('⚠ Failed to activate plan');
+    btn.disabled = false; btn.textContent = '⚡ Activate ' + newPlan;
+  }
 }
 
 function buildVerifCard(biz, idx) {
