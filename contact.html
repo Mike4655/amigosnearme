@@ -154,6 +154,11 @@
         <input class="form-input" type="email" id="f-email" placeholder="tu@correo.com">
       </div>
       <div class="form-field">
+        <label class="form-label" data-es>WhatsApp <span style="font-weight:400;color:var(--c-muted)">(opcional)</span></label>
+        <label class="form-label" data-en>WhatsApp <span style="font-weight:400;color:var(--c-muted)">(optional)</span></label>
+        <input class="form-input" type="tel" id="f-whatsapp" placeholder="+1 (786) 000-0000">
+      </div>
+      <div class="form-field">
         <label class="form-label" data-es>Asunto</label>
         <label class="form-label" data-en>Subject</label>
         <select class="form-select" id="f-subject">
@@ -258,7 +263,7 @@ async function submitContactForm() {
     var res = await fetch('https://itlcbqecqmenfolexkuj.supabase.co/functions/v1/send-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bGNicWVjcW1lbmZvbGV4a3VqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEzODMyOTAsImV4cCI6MjA2Njk1OTI5MH0.QDx9SWNQmDy2TCpXn8v_jwO1QNWsUYUFN7x79FfX1D0' },
-      body: JSON.stringify({ scenario: 'CONTACT', data: { name: name, email: email, subject: subject, message: message }, lang: 'en' })
+      body: JSON.stringify({ scenario: 'CONTACT', data: { name: name, email: email, whatsapp: (document.getElementById('f-whatsapp').value.trim() || null), subject: subject, message: message }, lang: 'en' })
     });
     if (!res.ok) throw new Error('send failed');
     document.getElementById('form-success').classList.add('show');

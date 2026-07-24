@@ -635,6 +635,7 @@ ${d.reason ? `<p><strong>Reason:</strong> ${d.reason}</p>` : ''}`,
 <table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;font-size:14px">
   <tr><td><strong>Name</strong></td><td>${d.name}</td></tr>
   <tr><td><strong>Email</strong></td><td>${d.email}</td></tr>
+  <tr><td><strong>WhatsApp</strong></td><td>${d.whatsapp || '—'}</td></tr>
   <tr><td><strong>Subject</strong></td><td>${d.subject || '—'}</td></tr>
 </table>
 <p style="margin-top:16px"><strong>Message:</strong></p>
