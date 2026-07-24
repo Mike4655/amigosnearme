@@ -5,6 +5,9 @@
 if (new URLSearchParams(window.location.search).get('type') === 'staffing') document.documentElement.classList.add('worker-mode');
 </script>
 <meta charset="UTF-8">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C94F2B">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Register Your Business — AmigosNearMe</title>
 <meta name="description" content="List your Latin-owned business on AmigosNearMe. Reach thousands of customers in Georgia. Free to start.">
@@ -2795,5 +2798,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <div class="toast" id="plan-toast"></div>
 
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/service-worker.js");}</script>
 </body>
 </html>

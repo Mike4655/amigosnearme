@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C94F2B">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Find Businesses — AmigosNearMe</title>
 <meta name="description" content="Search verified Latin-owned businesses in Atlanta, Georgia. Filter by category, area, language, and rating.">
@@ -139,6 +142,7 @@
   .biz-distance { font-size: 12px; color: var(--c-hint); white-space: nowrap; flex-shrink: 0; display: flex; align-items: center; gap: 3px; }
   .biz-desc { font-size: 13px; color: var(--c-muted); line-height: 1.55; margin-bottom: 14px; }
   .biz-card-bottom { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .btn-view { display: inline-flex; align-items: center; gap: 5px; padding: 7px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; background: var(--c-accent); color: #fff; border: none; cursor: pointer; font-family: var(--font-body); white-space: nowrap; text-decoration: none; }
   .stars { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--c-amber); flex: 1; }
   .stars span { color: var(--c-muted); font-size: 12px; }
   .jobs-completed { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--c-muted); flex: 1; flex-wrap: wrap; }
@@ -213,10 +217,10 @@
   <div class="search-bar-inner">
     <div class="search-input-wrap">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input class="search-input" id="main-search" type="text" placeholder="Landscaping, cleaning, construction..."
-        onkeydown="if(event.key==='Enter') applySearch()">
+      <input class="search-input" id="main-search" type="text" placeholder="Type a category (e.g. landscaping, construction) or area (e.g. Gwinnett, Atlanta)"
+        onkeydown="if(event.key==='Enter') applyFiltersAndRender()">
     </div>
-    <button class="search-go" onclick="applySearch()" id="btn-search">Buscar</button>
+    <button class="search-go" onclick="applyFiltersAndRender()" id="btn-search">Buscar</button>
   </div>
 </div>
 
@@ -399,11 +403,11 @@
   <main>
     <div class="results-header">
       <div class="results-count" id="results-count">Mostrando <strong id="count-num">0</strong> negocios en Georgia</div>
-      <select class="sort-select" onchange="sortChange(this.value)">
-        <option value="recommended" id="sort-recommended" data-i18n-es="Recomendados" data-i18n-en="Recommended">Recomendados</option>
+      <select class="sort-select" id="sort-select" onchange="sortChange(this.value)">
+        <option value="recommended" id="sort-recommended">Recomendados</option>
         <option value="rating">★ Rating</option>
-        <option value="distance" id="sort-distance" data-i18n-es="Más cercanos" data-i18n-en="Nearest first">Más cercanos</option>
-        <option value="newest" id="sort-newest" data-i18n-es="Más nuevos" data-i18n-en="Newest">Más nuevos</option>
+        <option value="distance" id="sort-distance">Más cercanos</option>
+        <option value="newest" id="sort-newest">Más nuevos</option>
       </select>
     </div>
 
@@ -426,29 +430,30 @@
 <script src="supabase-client.js"></script>
 <script>
 // ── CARD NAVIGATION ────────────────────────────────────────
-function goToProfile(bizId) {
-  if (bizId) window.location.href = 'profile.html?id=' + encodeURIComponent(bizId);
+function goToProfile(bizId, isWorker) {
+  if (!bizId) return;
+  var page = isWorker ? 'worker-profile.html' : 'profile.html';
+  var lang = document.body.classList.contains('en') ? '&lang=en' : '';
+  window.location.href = page + '?id=' + encodeURIComponent(bizId) + lang;
 }
 
 async function openBizWhatsApp(bizId, phone, msg, bizEmail, bizName, plan, usedCached) {
-  var PLAN_LIMITS = { free: 3, basic: 10, premium: Infinity };
-  var limit = PLAN_LIMITS[plan] !== undefined ? PLAN_LIMITS[plan] : Infinity;
-
-  // 실시간 DB 조회로 최신 contacts_used_month 확인
-  var used = usedCached;
+  var credits = 0;
+  var prefLang = 'es';
   try {
     var sb = getSupabase();
-    var { data } = await sb.from('businesses').select('contacts_used_month').eq('id', bizId).single();
-    if (data) used = data.contacts_used_month || 0;
+    var { data } = await sb.from('businesses').select('contact_credits, preferred_lang').eq('id', bizId).single();
+    if (data) {
+      credits = data.contact_credits != null ? data.contact_credits : 0;
+      prefLang = data.preferred_lang || 'es';
+    }
   } catch(e) {}
 
-  if (used >= limit) {
+  if (credits <= 0) {
     var isEn = document.body.classList.contains('en');
-    var planName = plan.charAt(0).toUpperCase() + plan.slice(1);
-    var limitNum = isFinite(limit) ? limit : '∞';
     alert(isEn
-      ? 'This business has reached its ' + limitNum + ' request limit for this month (' + planName + ' plan).'
-      : 'Este negocio alcanzó su límite de ' + limitNum + ' solicitudes del mes (plan ' + planName + ').');
+      ? 'This business has used all its contact credits. Please try other businesses.'
+      : 'Este negocio ha agotado sus créditos de contacto. Por favor, contacta otros negocios.');
     return;
   }
 
@@ -456,13 +461,14 @@ async function openBizWhatsApp(bizId, phone, msg, bizEmail, bizName, plan, usedC
 
   var sb2 = getSupabase();
   if (bizId) {
-    sb2.rpc('increment_contact_count', { p_biz_id: bizId }).then(function(){});
+    sb2.rpc('decrement_biz_credit', { p_biz_id: bizId }).then(function(){});
     sb2.auth.getSession().then(function(r) {
       var uid = r && r.data && r.data.session ? r.data.session.user.id : null;
-      sb2.from('contact_log').insert({ biz_id: bizId, customer_id: uid, channel: 'whatsapp', limit_hit: false }).then(function(){});
+      sb2.from('contact_log').insert({ biz_id: bizId, actor_id: uid, channel: 'whatsapp', limit_hit: false }).then(function(){});
     });
     if (bizEmail) {
-      try { sendEmail('SB6', bizEmail, { biz_name: bizName }); } catch(e) {}
+      var sb6Lang = prefLang;
+      try { sendEmail('SB6', bizEmail, { biz_name: bizName }, null, sb6Lang); } catch(e) {}
     }
   }
 }
@@ -549,6 +555,17 @@ function setLang(lang) {
   document.querySelectorAll('[data-es-text]').forEach(function(el) {
     el.textContent = en ? el.getAttribute('data-en-text') : el.getAttribute('data-es-text');
   });
+
+  // Search placeholder
+  var si = document.getElementById('main-search');
+  if (si) si.placeholder = en
+    ? 'Type a category (e.g. landscaping, construction) or area (e.g. Gwinnett, Atlanta)'
+    : 'Escribe una categoría (ej. landscaping, construcción) o área (ej. Gwinnett, Atlanta)';
+
+  // Sort dropdown options
+  setText('sort-recommended', 'Recomendados', 'Recommended');
+  setText('sort-distance',    'Más cercanos',  'Nearest first');
+  setText('sort-newest',      'Más nuevos',    'Newest');
 
   setText('nav-cta', 'Registrar Negocio', 'List Your Business');
   setText('btn-search', 'Buscar', 'Search');
@@ -668,7 +685,8 @@ function applySearch() {
     var i18nText = Array.from(card.querySelectorAll('[data-es-text],[data-en-text]'))
       .map(function(el) { return (el.getAttribute('data-es-text') || '') + ' ' + (el.getAttribute('data-en-text') || ''); })
       .join(' ').toLowerCase();
-    var haystack = stripAccents(text + ' ' + catSlug + ' ' + catTerms + ' ' + i18nText);
+    var extraData = (card.dataset.searchExtra || '').toLowerCase();
+    var haystack = stripAccents(text + ' ' + catSlug + ' ' + catTerms + ' ' + i18nText + ' ' + extraData);
     var show = !q || haystack.indexOf(q) !== -1;
     card.style.display = show ? 'block' : 'none';
     if (show) visible++;
@@ -747,9 +765,19 @@ async function loadBusinesses() {
       .from('businesses')
       .select('*')
       .neq('account_status', 'suspended')
-      .eq('is_worker', false)
+      .neq('account_status', 'deleted')
       .order('verified', { ascending: false })
       .order('business_name', { ascending: true });
+
+    // Workers always belong to the 'staffing' category — normalise so filters work
+    data = (data || []).map(function(b) {
+      if (b.is_worker) {
+        var cats = b.categories || [];
+        if (!cats.includes('staffing')) cats = cats.concat('staffing');
+        return Object.assign({}, b, { categories: cats });
+      }
+      return b;
+    });
 
     if (error) throw error;
     allResults = data || [];
@@ -793,7 +821,11 @@ function applyFiltersAndRender() {
   if (langPt) activeLangs.push('pt');
   if (langEn) activeLangs.push('en');
 
+  var staffingActive = cats.includes('staffing');
+
   var filtered = allResults.filter(function(biz) {
+    // Workers only appear when staffing category is explicitly selected
+    if (biz.is_worker && !staffingActive) return false;
     if (verifiedOnly && !biz.verified) return false;
     if (cats.length > 0) {
       var bizCats = biz.categories || [];
@@ -808,7 +840,17 @@ function applyFiltersAndRender() {
       if (!activeLangs.some(function(l){ return bizLangs.includes(l); })) return false;
     }
     if (q) {
-      var searchable = (biz.business_name + ' ' + biz.trade_name + ' ' + (biz.description||'') + ' ' + (biz.service_area||'')).toLowerCase();
+      var searchable = (
+        biz.business_name + ' ' +
+        (biz.trade_name||'') + ' ' +
+        (biz.description||'') + ' ' +
+        (biz.service_area||'') + ' ' +
+        (biz.staffing_type_other||'') + ' ' +
+        (biz.category_other||'') + ' ' +
+        (biz.categories||[]).join(' ') + ' ' +
+        (biz.staffing_types||[]).join(' ') + ' ' +
+        (biz.is_worker ? 'worker staffing labor' : '')
+      ).toLowerCase();
       if (!searchable.includes(q)) return false;
     }
     if (minRating) {
@@ -855,21 +897,22 @@ function renderPage(filtered) {
     var cat = (biz.categories || [])[0] || '';
     var catLabel = (biz.categories || []).map(function(c){ return catLabels[c] || c; }).join(' · ') || cat;
     var area = biz.service_area || '';
-    var areaShort = area.split(',').slice(0,2).join(',').trim();
+    var areaShort = area.split(',')[0].trim();
     var rating = biz.rating || '';
     var ratingHtml = rating ? '<span style="color:var(--c-amber)">★</span> ' + parseFloat(rating).toFixed(1) : '';
     var verifiedHtml = biz.verified ? '<span style="background:var(--c-green-light);color:var(--c-green);font-size:11px;padding:2px 8px;border-radius:99px;font-weight:500">✓ Verified</span>' : '';
     var insuredHtml = biz.insured ? '<span style="background:#EEF6FF;color:#2563EB;font-size:11px;padding:2px 8px;border-radius:99px;font-weight:500">🛡️ ' + (isEn ? 'Insured' : 'Asegurado') + '</span>' : '';
     var phone = (biz.whatsapp_phone || '').replace(/\D/g,'');
     var waMsg = isEn ? 'Hi! I found you on AmigosNearMe.' : 'Hola! Te encontré en AmigosNearMe.';
-    var waSB6Click = biz.public_email ? 'sendEmail(\'SB6\',\'' + biz.public_email + '\',{biz_name:\'' + (biz.business_name||'').replace(/'/g,"\\'") + '\'});' : '';
+    var waSB6Click = biz.public_email ? 'sendEmail(\'SB6\',\'' + biz.public_email + '\',{biz_name:\'' + (biz.business_name||'').replace(/'/g,"\\'") + '\'},null,\'' + (biz.preferred_lang||'es') + '\');' : '';
 
     var thumbUrl = (biz.photos && biz.photos.length > 0) ? biz.photos[0] : null;
     var avatarHtml = thumbUrl
       ? '<img src="' + thumbUrl + '" style="width:52px;height:52px;border-radius:var(--radius-md);object-fit:contain;background:var(--c-bg);flex-shrink:0" alt="">'
       : '<div class="biz-avatar ' + color + '">' + initials + '</div>';
 
-    return '<div class="biz-card" data-id="' + biz.id + '" data-cat="' + cat + '" data-area="' + areaShort + '" data-rating="' + (rating||0) + '" data-verified="' + !!biz.verified + '" onclick="goToProfile(\'' + biz.id + '\')">' +
+    var searchExtra = ((biz.staffing_type_other||'') + ' ' + (biz.category_other||'')).trim();
+    return '<div class="biz-card" data-id="' + biz.id + '" data-cat="' + cat + '" data-area="' + areaShort + '" data-rating="' + (rating||0) + '" data-verified="' + !!biz.verified + '" data-search-extra="' + searchExtra.toLowerCase() + '" onclick="goToProfile(\'' + biz.id + '\',' + !!biz.is_worker + ')">' +
       '<div class="biz-card-top">' +
       avatarHtml +
       '<div style="flex:1;min-width:0">' +
@@ -880,7 +923,8 @@ function renderPage(filtered) {
       (rating ? '<div style="font-size:12px;color:var(--c-muted);margin-top:2px">' + ratingHtml + '</div>' : '') +
       '</div></div>' +
       '<div class="biz-card-bottom">' +
-      (phone ? '<button onclick="event.stopPropagation();openBizWhatsApp(\'' + biz.id + '\',\'' + phone + '\',' + JSON.stringify(waMsg) + ',' + JSON.stringify(biz.public_email||'') + ',' + JSON.stringify(biz.business_name||'') + ',\'' + (biz.plan||'free') + '\',' + (biz.contacts_used_month||0) + ')" class="btn-wa" style="font-size:12px;padding:7px 14px;border-radius:var(--radius-sm);background:var(--c-green-light);color:var(--c-green);border:0.5px solid rgba(29,158,117,0.3);cursor:pointer;font-weight:500;font-family:var(--font-body)">💬 WhatsApp</button>' : '') +
+      (phone ? '<button onclick="event.stopPropagation();openBizWhatsApp(\'' + biz.id + '\',\'' + phone + '\',' + JSON.stringify(waMsg) + ',' + JSON.stringify(biz.public_email||'') + ',' + JSON.stringify(biz.business_name||'') + ',\'' + (biz.plan||'free') + '\')" class="btn-wa" style="font-size:12px;padding:7px 14px;border-radius:var(--radius-sm);background:var(--c-green-light);color:var(--c-green);border:0.5px solid rgba(29,158,117,0.3);cursor:pointer;font-weight:500;font-family:var(--font-body)">💬 WhatsApp</button>' : '<span></span>') +
+      '<button class="btn-view" onclick="event.stopPropagation();goToProfile(\'' + biz.id + '\',' + !!biz.is_worker + ')">' + (isEn ? 'View Profile →' : 'Ver perfil →') + '</button>' +
       '</div></div>';
   }).join('');
 
@@ -935,7 +979,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       var utype = (sess.user.user_metadata && sess.user.user_metadata.user_type) || '';
       var dashHref = utype === 'employer' ? 'employer-dashboard.html'
                    : utype === 'business' ? 'dashboard.html'
-                   : 'index.html';
+                   : 'login.html';
       if (utype === 'worker') {
         try { var wb = await getMyBusiness(); if (wb && wb.id) dashHref = 'worker-profile.html?id=' + wb.id; } catch(e) {}
       }
@@ -943,15 +987,22 @@ document.addEventListener('DOMContentLoaded', async function() {
       loginEl.textContent = isEn ? 'My Account' : 'Mi Cuenta';
       if (ctaEl) ctaEl.style.display = 'none';
 
+      var sepEl = document.createElement('span');
+      sepEl.textContent = '|';
+      sepEl.style.cssText = 'color:var(--c-muted);opacity:0.4;font-size:11px';
+      loginEl.parentNode.insertBefore(sepEl, loginEl.nextSibling);
+
       var logoutBtn = document.createElement('button');
       logoutBtn.textContent = isEn ? 'Log out' : 'Cerrar sesión';
       logoutBtn.className = 'btn-nav';
       logoutBtn.style.cssText = 'font-size:13px;color:var(--c-muted);background:none;border:none;cursor:pointer;padding:8px 12px';
-      logoutBtn.onclick = async function() { try { await signOut(); } catch(e) {} window.location.href = 'index.html'; };
-      loginEl.parentNode.insertBefore(logoutBtn, loginEl.nextSibling);
+      var _logoutConfirmS = isEn ? 'Log out?' : '¿Cerrar sesión?';
+      logoutBtn.onclick = async function() { if (!confirm(_logoutConfirmS)) return; try { await signOut(); } catch(e) {} window.location.href = 'index.html'; };
+      sepEl.parentNode.insertBefore(logoutBtn, sepEl.nextSibling);
     }
   } catch(e) {}
 });
 </script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/service-worker.js");}</script>
 </body>
 </html>

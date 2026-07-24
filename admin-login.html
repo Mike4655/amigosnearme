@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C94F2B">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Login — AmigosNearMe</title>
 <style>
@@ -216,6 +219,8 @@ async function sendAdminPasswordReset() {
     await sb.auth.resetPasswordForEmail(email, {
       redirectTo: window.location.origin + '/reset-password.html'
     });
+    // SEC2: 재설정 요청 시점 보안 알림
+    sendEmail('SEC2', email, {});
     if (msgEl) {
       msgEl.textContent = '✅ Reset link sent! Check your email.';
       msgEl.style.color = 'var(--c-green)';
@@ -248,5 +253,6 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 </script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/service-worker.js");}</script>
 </body>
 </html>

@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C94F2B">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Find Workers — AmigosNearMe</title>
+<title>Find Job Seekers — AmigosNearMe</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display:ital@0;1&display=swap');
   :root {
@@ -103,7 +106,7 @@
     <div class="search-input-wrap">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <input class="search-input" id="main-search" type="text"
-        placeholder="Landscaping, cleaning, construction..."
+        placeholder="Type a skill (e.g. kitchen, moving) or area (e.g. Gwinnett, Atlanta)"
         onkeydown="if(event.key==='Enter') applySearch()">
     </div>
     <button class="search-go" onclick="applySearch()" id="btn-search">
@@ -121,77 +124,128 @@
     </button>
     <div class="filters-inner" id="filters-inner">
 
+    <!-- Worker Service Types -->
     <div class="filter-card">
       <div class="filter-title">
-        <span data-es>Categoría</span><span data-en>Category</span>
-        <span class="filter-clear" onclick="clearFilter('cat')">
-          <span data-es>Limpiar</span><span data-en>Clear</span>
-        </span>
+        <span data-es>Tipo de trabajo</span><span data-en>Job type</span>
+        <span class="filter-clear" onclick="clearFilter('cat')"><span data-es>Limpiar</span><span data-en>Clear</span></span>
       </div>
       <div class="filter-group" id="filter-cat">
-        <label class="filter-option"><input type="checkbox" value="staffing" onchange="filterChange()"> <span data-es-text="👷 Personal y Mano de Obra" data-en-text="👷 Staffing & Labor">👷 Personal y Mano de Obra</span> <span class="filter-count"></span></label>
-        <label class="filter-option"><input type="checkbox" value="landscaping" onchange="filterChange()"> <span data-es-text="🌿 Landscaping" data-en-text="🌿 Landscaping">🌿 Landscaping</span> <span class="filter-count"></span></label>
-        <label class="filter-option"><input type="checkbox" value="cleaning" onchange="filterChange()"> <span data-es-text="🧹 Limpieza" data-en-text="🧹 Cleaning">🧹 Limpieza</span> <span class="filter-count"></span></label>
-        <label class="filter-option"><input type="checkbox" value="construction" onchange="filterChange()"> <span data-es-text="🏗️ Construcción" data-en-text="🏗️ Construction">🏗️ Construcción</span> <span class="filter-count"></span></label>
-        <label class="filter-option"><input type="checkbox" value="painting" onchange="filterChange()"> <span data-es-text="🪟 Pintura" data-en-text="🪟 Painting">🪟 Pintura</span> <span class="filter-count"></span></label>
-        <label class="filter-option"><input type="checkbox" value="moving" onchange="filterChange()"> <span data-es-text="📦 Mudanzas" data-en-text="📦 Moving">📦 Mudanzas</span> <span class="filter-count"></span></label>
-        <label class="filter-option"><input type="checkbox" value="plumbing" onchange="filterChange()"> <span data-es-text="🔧 Plomería" data-en-text="🔧 Plumbing">🔧 Plomería</span> <span class="filter-count"></span></label>
-        <label class="filter-option"><input type="checkbox" value="electrical" onchange="filterChange()"> <span data-es-text="⚡ Electricidad" data-en-text="⚡ Electrical">⚡ Electricidad</span> <span class="filter-count"></span></label>
+        <label class="filter-option"><input type="checkbox" value="kitchen"      onchange="filterChange()"> <span data-es-text="🍳 Cocina / Restaurante"        data-en-text="🍳 Kitchen / Restaurant">🍳 Cocina / Restaurante</span>      <span class="filter-count"></span></label>
+        <label class="filter-option"><input type="checkbox" value="moving"       onchange="filterChange()"> <span data-es-text="📦 Mudanzas / Carga"            data-en-text="📦 Moving / Loading">📦 Mudanzas / Carga</span>            <span class="filter-count"></span></label>
+        <label class="filter-option"><input type="checkbox" value="construction" onchange="filterChange()"> <span data-es-text="🏗️ Construcción"                data-en-text="🏗️ Construction">🏗️ Construcción</span>                  <span class="filter-count"></span></label>
+        <label class="filter-option"><input type="checkbox" value="warehouse"    onchange="filterChange()"> <span data-es-text="🏭 Producción / Almacén"        data-en-text="🏭 Production / Warehouse">🏭 Producción / Almacén</span>   <span class="filter-count"></span></label>
+        <label class="filter-option"><input type="checkbox" value="cleaning"     onchange="filterChange()"> <span data-es-text="🧹 Limpieza comercial"          data-en-text="🧹 Commercial cleaning">🧹 Limpieza comercial</span>        <span class="filter-count"></span></label>
+        <label class="filter-option"><input type="checkbox" value="agriculture"  onchange="filterChange()"> <span data-es-text="🌾 Trabajo agrícola"            data-en-text="🌾 Agricultural">🌾 Trabajo agrícola</span>               <span class="filter-count"></span></label>
+        <label class="filter-option"><input type="checkbox" value="events"       onchange="filterChange()"> <span data-es-text="🅿️ Eventos / Estacionamiento"  data-en-text="🅿️ Events / Valet">🅿️ Eventos / Estacionamiento</span>    <span class="filter-count"></span></label>
+        <label class="filter-option"><input type="checkbox" value="general"      onchange="filterChange()"> <span data-es-text="🔧 Trabajo general"             data-en-text="🔧 General labor">🔧 Trabajo general</span>               <span class="filter-count"></span></label>
       </div>
     </div>
 
+    <!-- Area -->
     <div class="filter-card">
       <div class="filter-title">
         <span data-es>Área</span><span data-en>Area</span>
-        <span class="filter-clear" onclick="clearFilter('area')">
-          <span data-es>Limpiar</span><span data-en>Clear</span>
-        </span>
+        <span class="filter-clear" onclick="clearFilter('area')"><span data-es>Limpiar</span><span data-en>Clear</span></span>
       </div>
       <div class="filter-group" id="filter-area">
         <div class="acc-header" onclick="toggleAcc('acc-fulton')"><span>Atlanta (Fulton)</span><span class="acc-arrow" id="arr-fulton">▸</span></div>
         <div class="acc-body" id="acc-fulton">
-          <label class="filter-option"><input type="checkbox" value="atlanta" onchange="filterChange()"> <span>Atlanta</span></label>
-          <label class="filter-option"><input type="checkbox" value="alpharetta" onchange="filterChange()"> <span>Alpharetta</span></label>
-          <label class="filter-option"><input type="checkbox" value="roswell" onchange="filterChange()"> <span>Roswell</span></label>
-          <label class="filter-option"><input type="checkbox" value="sandy_springs" onchange="filterChange()"> <span>Sandy Springs</span></label>
-        </div>
-        <div class="acc-header" onclick="toggleAcc('acc-gwinnett')"><span>Gwinnett</span><span class="acc-arrow" id="arr-gwinnett">▸</span></div>
-        <div class="acc-body" id="acc-gwinnett">
-          <label class="filter-option"><input type="checkbox" value="duluth" onchange="filterChange()"> <span>Duluth</span></label>
-          <label class="filter-option"><input type="checkbox" value="norcross" onchange="filterChange()"> <span>Norcross</span></label>
-          <label class="filter-option"><input type="checkbox" value="lawrenceville" onchange="filterChange()"> <span>Lawrenceville</span></label>
-          <label class="filter-option"><input type="checkbox" value="buford" onchange="filterChange()"> <span>Buford</span></label>
-        </div>
-        <div class="acc-header" onclick="toggleAcc('acc-cobb')"><span>Cobb</span><span class="acc-arrow" id="arr-cobb">▸</span></div>
-        <div class="acc-body" id="acc-cobb">
-          <label class="filter-option"><input type="checkbox" value="marietta" onchange="filterChange()"> <span>Marietta</span></label>
-          <label class="filter-option"><input type="checkbox" value="smyrna" onchange="filterChange()"> <span>Smyrna</span></label>
-          <label class="filter-option"><input type="checkbox" value="kennesaw" onchange="filterChange()"> <span>Kennesaw</span></label>
+          <label class="filter-option"><input type="checkbox" value="atlanta"         onchange="filterChange()"> <span>Atlanta</span></label>
+          <label class="filter-option"><input type="checkbox" value="alpharetta"      onchange="filterChange()"> <span>Alpharetta</span></label>
+          <label class="filter-option"><input type="checkbox" value="johns_creek"     onchange="filterChange()"> <span>Johns Creek</span></label>
+          <label class="filter-option"><input type="checkbox" value="sandy_springs"   onchange="filterChange()"> <span>Sandy Springs</span></label>
+          <label class="filter-option"><input type="checkbox" value="milton"          onchange="filterChange()"> <span>Milton</span></label>
+          <label class="filter-option"><input type="checkbox" value="mountain_park"   onchange="filterChange()"> <span>Mountain Park</span></label>
+          <label class="filter-option"><input type="checkbox" value="roswell"         onchange="filterChange()"> <span>Roswell</span></label>
         </div>
         <div class="acc-header" onclick="toggleAcc('acc-dekalb')"><span>DeKalb</span><span class="acc-arrow" id="arr-dekalb">▸</span></div>
         <div class="acc-body" id="acc-dekalb">
-          <label class="filter-option"><input type="checkbox" value="tucker" onchange="filterChange()"> <span>Tucker</span></label>
-          <label class="filter-option"><input type="checkbox" value="chamblee" onchange="filterChange()"> <span>Chamblee</span></label>
-          <label class="filter-option"><input type="checkbox" value="decatur" onchange="filterChange()"> <span>Decatur</span></label>
-          <label class="filter-option"><input type="checkbox" value="doraville" onchange="filterChange()"> <span>Doraville</span></label>
+          <label class="filter-option"><input type="checkbox" value="tucker"           onchange="filterChange()"> <span>Tucker</span></label>
+          <label class="filter-option"><input type="checkbox" value="chamblee"         onchange="filterChange()"> <span>Chamblee</span></label>
+          <label class="filter-option"><input type="checkbox" value="brookhaven"       onchange="filterChange()"> <span>Brookhaven</span></label>
+          <label class="filter-option"><input type="checkbox" value="decatur"          onchange="filterChange()"> <span>Decatur</span></label>
+          <label class="filter-option"><input type="checkbox" value="doraville"        onchange="filterChange()"> <span>Doraville</span></label>
+          <label class="filter-option"><input type="checkbox" value="dunwoody"         onchange="filterChange()"> <span>Dunwoody</span></label>
+          <label class="filter-option"><input type="checkbox" value="lithonia"         onchange="filterChange()"> <span>Lithonia</span></label>
+          <label class="filter-option"><input type="checkbox" value="pine_lake"        onchange="filterChange()"> <span>Pine Lake</span></label>
+          <label class="filter-option"><input type="checkbox" value="stone_mountain"   onchange="filterChange()"> <span>Stone Mountain</span></label>
+          <label class="filter-option"><input type="checkbox" value="stonecrest"       onchange="filterChange()"> <span>Stonecrest</span></label>
+          <label class="filter-option"><input type="checkbox" value="clarkston"        onchange="filterChange()"> <span>Clarkston</span></label>
+          <label class="filter-option"><input type="checkbox" value="avondale_estates" onchange="filterChange()"> <span>Avondale Estates</span></label>
+        </div>
+        <div class="acc-header" onclick="toggleAcc('acc-cobb')"><span>Cobb</span><span class="acc-arrow" id="arr-cobb">▸</span></div>
+        <div class="acc-body" id="acc-cobb">
+          <label class="filter-option"><input type="checkbox" value="marietta"       onchange="filterChange()"> <span>Marietta</span></label>
+          <label class="filter-option"><input type="checkbox" value="smyrna"         onchange="filterChange()"> <span>Smyrna</span></label>
+          <label class="filter-option"><input type="checkbox" value="mableton"       onchange="filterChange()"> <span>Mableton</span></label>
+          <label class="filter-option"><input type="checkbox" value="kennesaw"       onchange="filterChange()"> <span>Kennesaw</span></label>
+          <label class="filter-option"><input type="checkbox" value="acworth"        onchange="filterChange()"> <span>Acworth</span></label>
+          <label class="filter-option"><input type="checkbox" value="powder_springs" onchange="filterChange()"> <span>Powder Springs</span></label>
+        </div>
+        <div class="acc-header" onclick="toggleAcc('acc-gwinnett')"><span>Gwinnett</span><span class="acc-arrow" id="arr-gwinnett">▸</span></div>
+        <div class="acc-body" id="acc-gwinnett">
+          <label class="filter-option"><input type="checkbox" value="duluth"        onchange="filterChange()"> <span>Duluth</span></label>
+          <label class="filter-option"><input type="checkbox" value="suwanee"       onchange="filterChange()"> <span>Suwanee</span></label>
+          <label class="filter-option"><input type="checkbox" value="norcross"      onchange="filterChange()"> <span>Norcross</span></label>
+          <label class="filter-option"><input type="checkbox" value="lawrenceville" onchange="filterChange()"> <span>Lawrenceville</span></label>
+          <label class="filter-option"><input type="checkbox" value="buford"        onchange="filterChange()"> <span>Buford</span></label>
+          <label class="filter-option"><input type="checkbox" value="lilburn"       onchange="filterChange()"> <span>Lilburn</span></label>
+          <label class="filter-option"><input type="checkbox" value="dacula"        onchange="filterChange()"> <span>Dacula</span></label>
+          <label class="filter-option"><input type="checkbox" value="snellville"    onchange="filterChange()"> <span>Snellville</span></label>
+        </div>
+        <div class="acc-header" onclick="toggleAcc('acc-forsyth')"><span>Forsyth / Cherokee</span><span class="acc-arrow" id="arr-forsyth">▸</span></div>
+        <div class="acc-body" id="acc-forsyth">
+          <label class="filter-option"><input type="checkbox" value="cumming"   onchange="filterChange()"> <span>Cumming</span></label>
+          <label class="filter-option"><input type="checkbox" value="canton"    onchange="filterChange()"> <span>Canton</span></label>
+          <label class="filter-option"><input type="checkbox" value="woodstock" onchange="filterChange()"> <span>Woodstock</span></label>
+        </div>
+        <div class="acc-header" onclick="toggleAcc('acc-hall')"><span>Hall</span><span class="acc-arrow" id="arr-hall">▸</span></div>
+        <div class="acc-body" id="acc-hall">
+          <label class="filter-option"><input type="checkbox" value="gainesville"    onchange="filterChange()"> <span>Gainesville</span></label>
+          <label class="filter-option"><input type="checkbox" value="flowery_branch" onchange="filterChange()"> <span>Flowery Branch</span></label>
+          <label class="filter-option"><input type="checkbox" value="lula"           onchange="filterChange()"> <span>Lula</span></label>
+          <label class="filter-option"><input type="checkbox" value="oakwood"        onchange="filterChange()"> <span>Oakwood</span></label>
+          <label class="filter-option"><input type="checkbox" value="clermont"       onchange="filterChange()"> <span>Clermont</span></label>
+          <label class="filter-option"><input type="checkbox" value="braselton"      onchange="filterChange()"> <span>Braselton</span></label>
+        </div>
+        <div class="acc-header" onclick="toggleAcc('acc-barrow')"><span>Barrow</span><span class="acc-arrow" id="arr-barrow">▸</span></div>
+        <div class="acc-body" id="acc-barrow">
+          <label class="filter-option"><input type="checkbox" value="winder"     onchange="filterChange()"> <span>Winder</span></label>
+          <label class="filter-option"><input type="checkbox" value="auburn"     onchange="filterChange()"> <span>Auburn</span></label>
+          <label class="filter-option"><input type="checkbox" value="statham"    onchange="filterChange()"> <span>Statham</span></label>
+          <label class="filter-option"><input type="checkbox" value="bethlehem"  onchange="filterChange()"> <span>Bethlehem</span></label>
+          <label class="filter-option"><input type="checkbox" value="carl"       onchange="filterChange()"> <span>Carl</span></label>
+        </div>
+        <div class="acc-header" onclick="toggleAcc('acc-jackson')"><span>Jackson</span><span class="acc-arrow" id="arr-jackson">▸</span></div>
+        <div class="acc-body" id="acc-jackson">
+          <label class="filter-option"><input type="checkbox" value="jefferson"   onchange="filterChange()"> <span>Jefferson</span></label>
+          <label class="filter-option"><input type="checkbox" value="pendergrass" onchange="filterChange()"> <span>Pendergrass</span></label>
+          <label class="filter-option"><input type="checkbox" value="commerce"    onchange="filterChange()"> <span>Commerce</span></label>
+          <label class="filter-option"><input type="checkbox" value="hoschton"    onchange="filterChange()"> <span>Hoschton</span></label>
+          <label class="filter-option"><input type="checkbox" value="maysville"   onchange="filterChange()"> <span>Maysville</span></label>
         </div>
       </div>
     </div>
 
+    <!-- Language -->
+    <div class="filter-card">
+      <div class="filter-title"><span data-es>Idioma</span><span data-en>Language</span></div>
+      <div class="filter-group">
+        <label class="filter-option"><input type="checkbox" id="f-es" onchange="filterChange()"> <span>Español</span></label>
+        <label class="filter-option"><input type="checkbox" id="f-pt" onchange="filterChange()"> <span>Português</span></label>
+        <label class="filter-option"><input type="checkbox" id="f-en2" onchange="filterChange()"> <span>English</span></label>
+      </div>
+    </div>
+
+    <!-- Rating -->
     <div class="filter-card">
       <div class="filter-title"><span data-es>Calificación</span><span data-en>Rating</span></div>
       <div class="filter-group">
         <label class="filter-option"><input type="radio" name="rating" value="4.5" onchange="filterChange()"> <span>★★★★★ 4.5+</span></label>
-        <label class="filter-option"><input type="radio" name="rating" value="4" onchange="filterChange()"> <span>★★★★ 4.0+</span></label>
-        <label class="filter-option"><input type="radio" name="rating" value="3" onchange="filterChange()"> <span>★★★ 3.0+</span></label>
-        <label class="filter-option"><input type="radio" name="rating" value="" onchange="filterChange()"> <span data-es>Todos</span><span data-en>All</span></label>
-      </div>
-    </div>
-
-    <div class="filter-card">
-      <div class="filter-title"><span data-es>Verificación</span><span data-en>Verification</span></div>
-      <div class="filter-group">
-        <label class="filter-option"><input type="checkbox" id="f-verified" onchange="filterChange()"> <span data-es>✅ Solo verificados</span><span data-en>✅ Verified only</span></label>
+        <label class="filter-option"><input type="radio" name="rating" value="4"   onchange="filterChange()"> <span>★★★★ 4.0+</span></label>
+        <label class="filter-option"><input type="radio" name="rating" value="3"   onchange="filterChange()"> <span>★★★ 3.0+</span></label>
+        <label class="filter-option"><input type="radio" name="rating" value=""    onchange="filterChange()"> <span data-es>Todos</span><span data-en>All</span></label>
       </div>
     </div>
 
@@ -206,9 +260,9 @@
         <span data-es> trabajadores en Georgia</span><span data-en> workers in Georgia</span>
       </div>
       <select class="sort-select" onchange="sortChange(this.value)">
-        <option value="recommended"><span data-es>Recomendados</span><span data-en>Recommended</span></option>
+        <option value="recommended" id="sort-recommended">Recomendados</option>
         <option value="rating">★ Rating</option>
-        <option value="newest"><span data-es>Más nuevos</span><span data-en>Newest</span></option>
+        <option value="newest" id="sort-newest">Más nuevos</option>
       </select>
     </div>
 
@@ -246,6 +300,13 @@ function setLang(lang) {
   document.querySelectorAll('[data-es-text]').forEach(function(el) {
     el.textContent = en ? el.getAttribute('data-en-text') : el.getAttribute('data-es-text');
   });
+  function setText(id, es, e) { var el = document.getElementById(id); if (el) el.textContent = en ? e : es; }
+  setText('sort-recommended', 'Recomendados', 'Recommended');
+  setText('sort-newest',      'Más nuevos',   'Newest');
+  var si = document.getElementById('main-search');
+  if (si) si.placeholder = en
+    ? 'Type a skill (e.g. kitchen, moving) or area (e.g. Gwinnett, Atlanta)'
+    : 'Escribe una habilidad (ej. cocina, mudanza) o área (ej. Gwinnett, Atlanta)';
   try { localStorage.setItem('anm-lang', lang); } catch(e) {}
   if (allResults.length) renderPage(filteredRef);
 }
@@ -274,7 +335,13 @@ function clearFilter(type) {
 function getActiveCats() { return Array.from(document.querySelectorAll('#filter-cat input:checked')).map(function(i){ return i.value; }); }
 function getActiveAreas() { return Array.from(document.querySelectorAll('#filter-area input:checked')).map(function(i){ return i.value; }); }
 function getMinRating() { var r = document.querySelector('input[name="rating"]:checked'); return r ? parseFloat(r.value) || 0 : 0; }
-function getVerifiedOnly() { var el = document.getElementById('f-verified'); return el ? el.checked : false; }
+function getActiveLangs() {
+  var langs = [];
+  if (document.getElementById('f-es') && document.getElementById('f-es').checked) langs.push('es');
+  if (document.getElementById('f-pt') && document.getElementById('f-pt').checked) langs.push('pt');
+  if (document.getElementById('f-en2') && document.getElementById('f-en2').checked) langs.push('en');
+  return langs;
+}
 
 function filterChange() { applyFiltersAndRender(); }
 function sortChange(val) { currentSort = val; applyFiltersAndRender(); }
@@ -303,22 +370,25 @@ function applyFiltersAndRender(forceQ) {
   var cats = getActiveCats();
   var areas = getActiveAreas();
   var minRating = getMinRating();
-  var verifiedOnly = getVerifiedOnly();
+  var langs = getActiveLangs();
   var q = forceQ !== undefined ? forceQ : (document.getElementById('main-search').value || '').toLowerCase().trim();
 
   var filtered = allResults.filter(function(w) {
-    if (verifiedOnly && !w.verified) return false;
     if (cats.length > 0) {
-      var wCats = w.categories || [];
-      if (!cats.some(function(c){ return wCats.some(function(wc){ return wc===c || wc.replace(/_/g,'')===c.replace(/_/g,''); }); })) return false;
+      var wTypes = w.staffing_types || [];
+      if (!cats.some(function(c){ return wTypes.some(function(t){ return t===c || t.replace(/_/g,'')===c.replace(/_/g,''); }); })) return false;
     }
     if (areas.length > 0) {
       var wArea = (w.service_area || '').toLowerCase();
       if (!areas.some(function(a){ return wArea.includes(a) || wArea.includes(a.replace(/_/g,' ')); })) return false;
     }
+    if (langs.length > 0) {
+      var wLangs = w.languages || [];
+      if (!langs.some(function(l){ return wLangs.some(function(wl){ return wl.toLowerCase().startsWith(l); }); })) return false;
+    }
     if (minRating) { if ((parseFloat(w.rating)||0) < minRating) return false; }
     if (q) {
-      var searchable = ((w.business_name||'')+' '+(w.trade_name||'')+' '+(w.description||'')+' '+(w.service_area||'')).toLowerCase();
+      var searchable = ((w.business_name||'')+' '+(w.trade_name||'')+' '+(w.description||'')+' '+(w.service_area||'')+' '+(w.staffing_type_other||'')).toLowerCase();
       if (!searchable.includes(q)) return false;
     }
     return true;
@@ -330,16 +400,15 @@ function applyFiltersAndRender(forceQ) {
   var numEl = document.getElementById('count-num');
   if (numEl) numEl.textContent = filtered.length;
 
-  updateActiveChips(cats, areas, minRating, verifiedOnly);
+  updateActiveChips(cats, areas, minRating, langs);
   currentPage = 1;
   renderPage(filtered);
 }
 
-function updateActiveChips(cats, areas, minRating, verifiedOnly) {
+function updateActiveChips(cats, areas, minRating, langs) {
   var wrap = document.getElementById('active-filters');
   if (!wrap) return;
   wrap.innerHTML = '';
-  var isEn = document.body.classList.contains('en');
   function chip(label, rm) {
     var el = document.createElement('span');
     el.className = 'active-chip';
@@ -353,12 +422,16 @@ function updateActiveChips(cats, areas, minRating, verifiedOnly) {
   cats.forEach(function(c){ chip(c, function(){ clearCatFilter(c); }); });
   areas.forEach(function(a){ chip(a, function(){ clearAreaFilter(a); }); });
   if (minRating) chip('★ '+minRating+'+', clearRating);
-  if (verifiedOnly) chip(isEn ? 'Verified only' : 'Solo verificados', clearVerified);
+  langs.forEach(function(l){ chip(l, function(){ clearLangFilter(l); }); });
 }
 function clearCatFilter(v){ var cb=document.querySelector('#filter-cat input[value="'+v+'"]'); if(cb){cb.checked=false;filterChange();} }
 function clearAreaFilter(v){ var cb=document.querySelector('#filter-area input[value="'+v+'"]'); if(cb){cb.checked=false;filterChange();} }
 function clearRating(){ var r=document.querySelector('input[name="rating"][value=""]'); if(r){r.checked=true;filterChange();} }
-function clearVerified(){ var el=document.getElementById('f-verified'); if(el){el.checked=false;filterChange();} }
+function clearLangFilter(l){
+  var map = { es: 'f-es', pt: 'f-pt', en: 'f-en2' };
+  var el = document.getElementById(map[l]);
+  if (el) { el.checked = false; filterChange(); }
+}
 
 function renderPage(filtered) {
   var list = document.getElementById('biz-list');
@@ -380,7 +453,7 @@ function renderPage(filtered) {
     var initials = (w.business_name || '').split(' ').slice(0,2).map(function(w){ return w[0]||''; }).join('').toUpperCase() || '??';
     var color = COLORS[(start + idx) % COLORS.length];
     var catLabel = (w.categories || []).map(function(c){ return catLabels[c] || c; }).join(' · ') || '';
-    var area = (w.service_area || '').split(',').slice(0,2).join(',').trim();
+    var area = (w.service_area || '').split(',')[0].trim();
     var rating = w.rating ? parseFloat(w.rating).toFixed(1) : '';
     var verBadge = w.verified ? '<span style="background:var(--c-green-light);color:var(--c-green);font-size:11px;padding:2px 8px;border-radius:99px;font-weight:500">✓ Verified</span>' : '';
     var insBadge = w.insured ? '<span style="background:#EEF6FF;color:#2563EB;font-size:11px;padding:2px 8px;border-radius:99px;font-weight:500">🛡️ '+(isEn?'Insured':'Asegurado')+'</span>' : '';
@@ -448,6 +521,12 @@ async function loadWorkers() {
     var data = await searchBusinesses({ isWorker: true, limit: 200 });
     allResults = data || [];
     updateCategoryCounts();
+    // Apply ?q= param from home search
+    var urlQ = new URLSearchParams(window.location.search).get('q');
+    if (urlQ) {
+      var si = document.getElementById('search-input');
+      if (si) si.value = urlQ;
+    }
     applyFiltersAndRender();
   } catch(e) {
     console.error('[worker-search] load error:', e);
@@ -472,7 +551,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       var dashHref = type === 'employer' ? 'employer-dashboard.html'
                    : type === 'business' ? 'dashboard.html'
-                   : 'index.html';
+                   : 'login.html';
       if (type === 'worker') {
         try { var wb = await getMyBusiness(); if (wb && wb.id) dashHref = 'worker-profile.html?id=' + wb.id; } catch(e) {}
       }
@@ -481,15 +560,22 @@ document.addEventListener('DOMContentLoaded', function() {
       loginEl.textContent = isEn ? 'My Account' : 'Mi Cuenta';
 
       // 로그아웃 버튼 추가
+      var sepElW = document.createElement('span');
+      sepElW.textContent = '|';
+      sepElW.style.cssText = 'color:var(--c-muted);opacity:0.4;font-size:11px';
+      loginEl.parentNode.insertBefore(sepElW, loginEl.nextSibling);
+
       var logoutBtn = document.createElement('button');
       logoutBtn.textContent = isEn ? 'Log out' : 'Cerrar sesión';
       logoutBtn.className = 'btn-nav';
       logoutBtn.style.cssText = 'font-size:13px;color:var(--c-muted);background:none;border:none;cursor:pointer';
-      logoutBtn.onclick = async function() { try { await signOut(); } catch(e) {} window.location.href = 'index.html'; };
-      loginEl.parentNode.insertBefore(logoutBtn, loginEl.nextSibling);
+      var _logoutConfirmW = isEn ? 'Log out?' : '¿Cerrar sesión?';
+      logoutBtn.onclick = async function() { if (!confirm(_logoutConfirmW)) return; try { await signOut(); } catch(e) {} window.location.href = 'index.html'; };
+      sepElW.parentNode.insertBefore(logoutBtn, sepElW.nextSibling);
     }
   });
 });
 </script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/service-worker.js");}</script>
 </body>
 </html>

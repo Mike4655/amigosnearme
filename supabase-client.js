@@ -20,7 +20,7 @@ function getSupabase() {
 // AUTH — 회원가입
 // =============================================
 // user_type 허용값: 'business' | 'worker' | 'customer' | 'employer'
-async function signUp({ email, password, userType, businessName, tradeName, phone, publicEmail, description, plan, categories, serviceArea, languages, paymentMethods, hours }) {
+async function signUp({ email, password, userType, businessName, tradeName, phone, publicEmail, description, plan, categories, serviceArea, languages, paymentMethods, hours, preferredLang }) {
   const sb = getSupabase();
   const { data, error } = await sb.auth.signUp({
     email,
@@ -29,6 +29,7 @@ async function signUp({ email, password, userType, businessName, tradeName, phon
       data: {
         user_type: userType,
         business_name: businessName || '',
+        display_name: (userType === 'customer' || userType === 'employer') ? (businessName || '') : '',
         trade_name: tradeName || '',
         phone: phone || '',
         public_email: publicEmail || '',
@@ -38,7 +39,8 @@ async function signUp({ email, password, userType, businessName, tradeName, phon
         service_area: serviceArea || '',
         languages: languages || ['es'],
         payment_methods: paymentMethods || [],
-        hours: hours || []
+        hours: hours || [],
+        preferred_lang: preferredLang || 'es'
       }
     }
   });
@@ -114,7 +116,7 @@ async function getMyBusiness() {
 // =============================================
 // DB — 업체 프로필 생성
 // =============================================
-async function createBusiness({ businessName, tradeName, plan = 'free', publicEmail, phone, description, descriptionEs, descriptionEn, categories, serviceArea, languages, paymentMethods, hours, businessType, insured, isWorker = false, staffingTypes = [], staffingAvailability = [] }) {
+async function createBusiness({ businessName, tradeName, plan = 'free', pendingPlan = null, publicEmail, phone, description, descriptionEs, descriptionEn, categories, serviceArea, languages, paymentMethods, hours, businessType, insured, isWorker = false, staffingTypes = [], staffingAvailability = [], staffingTypeOther = '', categoryOther = '', preferredLang = 'es' }) {
   const sb = getSupabase();
   const user = await getCurrentUser();
   if (!user) throw new Error('Not authenticated');
@@ -146,6 +148,10 @@ async function createBusiness({ businessName, tradeName, plan = 'free', publicEm
     is_worker: !!(isWorker),
     staffing_types: staffingTypes || [],
     staffing_availability: staffingAvailability || [],
+    staffing_type_other: staffingTypeOther || '',
+    category_other: categoryOther || '',
+    preferred_lang: preferredLang || 'es',
+    pending_plan: pendingPlan || null,
     account_status: 'active',
     contacts_used_month: 0,
     contacts_month_reset: new Date().toISOString().slice(0, 10)

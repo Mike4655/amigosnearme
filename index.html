@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C94F2B">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AmigosNearMe — Latin Businesses Near You</title>
 <meta name="description" content="Find trusted, verified Latin-owned businesses in Atlanta, Georgia. Landscaping, cleaning, construction, and more — in English & Español.">
@@ -128,7 +131,7 @@
     font-size: 17px; color: var(--c-muted); line-height: 1.6;
     margin-bottom: 32px; max-width: 440px;
   }
-  .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .hero-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 480px; }
   .btn-primary {
     padding: 13px 28px; border-radius: var(--radius-md);
     background: var(--c-accent); color: #fff;
@@ -168,6 +171,19 @@
     font-size: 14px; font-weight: 500; color: var(--c-muted);
     margin-bottom: 16px;
   }
+  .search-type-toggle {
+    display: flex; gap: 0; margin-bottom: 12px;
+    border: 0.5px solid var(--c-border); border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+  .search-type-btn {
+    flex: 1; padding: 9px 0; font-size: 13px; font-weight: 500;
+    font-family: var(--font-body); border: none; cursor: pointer;
+    background: var(--c-bg); color: var(--c-muted); transition: all 0.15s;
+  }
+  .search-type-btn.active {
+    background: var(--c-accent); color: #fff;
+  }
   .search-wrap {
     display: flex; gap: 8px; margin-bottom: 14px;
   }
@@ -202,6 +218,9 @@
     border-top: 0.5px solid var(--c-border); padding-top: 16px;
     display: flex; flex-direction: column; gap: 10px;
   }
+  #featured-biz-list {
+    display: flex; flex-direction: column; gap: 7px;
+  }
   .featured-label { font-size: 11px; font-weight: 500; color: var(--c-hint); letter-spacing: .05em; text-transform: uppercase; }
   .biz-mini-item {
     display: flex; align-items: center; gap: 10px;
@@ -211,6 +230,10 @@
     text-decoration: none; color: inherit;
   }
   .biz-mini-item:hover { background: var(--c-surface); }
+  .biz-mini-thumb {
+    width: 38px; height: 38px; border-radius: var(--radius-sm);
+    object-fit: cover; flex-shrink: 0;
+  }
   .biz-mini-avatar {
     width: 38px; height: 38px; border-radius: var(--radius-sm);
     display: flex; align-items: center; justify-content: center;
@@ -337,8 +360,8 @@
     .hero-card { display: none; }
     .hero-title { font-size: 32px; }
     .hero-sub { font-size: 15px; }
-    .hero-actions { flex-direction: column; align-items: flex-start; gap: 10px; }
-    .hero-actions a { width: 100%; text-align: center; }
+    .hero-actions { grid-template-columns: 1fr 1fr; gap: 8px; max-width: 100%; }
+    .hero-actions a { text-align: center; }
     .how-grid { grid-template-columns: 1fr; }
     .trust-grid { grid-template-columns: 1fr; }
     .cta-inner { grid-template-columns: 1fr; }
@@ -380,10 +403,12 @@
       <a href="search.html" id="nav-search" data-es>Buscar Negocios</a>
       <a href="search.html" id="nav-search-en" data-en>Find Businesses</a>
     </div>
-    <a href="login.html" class="btn-nav" style="font-size:13px;color:var(--c-muted)" data-es>Iniciar sesión</a>
-    <a href="login.html" class="btn-nav" style="font-size:13px;color:var(--c-muted)" data-en>Log in</a>
-    <a href="register-type.html" class="btn-nav primary" id="nav-cta" data-es>Registrar Negocio</a>
-    <a href="register-type.html" class="btn-nav primary" id="nav-cta-en" data-en>List Your Business</a>
+    <span id="nav-auth-area" style="display:flex;align-items:center;gap:4px">
+      <a href="login.html" class="btn-nav" id="nav-login-es" style="font-size:13px;color:var(--c-muted)" data-es>Iniciar sesión</a>
+      <a href="login.html" class="btn-nav" id="nav-login-en" style="font-size:13px;color:var(--c-muted)" data-en>Log in</a>
+      <a href="register-type.html" class="btn-nav primary" id="nav-cta" data-es>Registrar Negocio</a>
+      <a href="register-type.html" class="btn-nav primary" id="nav-cta-en" data-en>List Your Business</a>
+    </span>
   </div>
 </nav>
 
@@ -400,8 +425,12 @@
       <div class="hero-actions">
         <a href="search.html" class="btn-primary" data-es>Buscar Negocios →</a>
         <a href="search.html" class="btn-primary" data-en>Find Businesses →</a>
-        <a href="register-type.html" class="btn-secondary" data-es>Registrar mi Negocio</a>
-        <a href="register-type.html" class="btn-secondary" data-en>List My Business</a>
+        <a href="worker-search.html" class="btn-primary" data-es>Buscar Trabajadores →</a>
+        <a href="worker-search.html" class="btn-primary" data-en>Find Job Seekers →</a>
+        <a href="register-type.html" class="btn-secondary" data-es>Registrar tu Negocio</a>
+        <a href="register-type.html" class="btn-secondary" data-en>List Your Business</a>
+        <a href="register.html?type=staffing" class="btn-secondary" data-es>Registrarte como Trabajador</a>
+        <a href="register.html?type=staffing" class="btn-secondary" data-en>Register as a Job Seeker</a>
       </div>
       <div class="hero-stats">
         <div>
@@ -426,6 +455,12 @@
     <div class="hero-card">
       <p class="hero-card-title" data-es>¿Qué servicio necesitas?</p>
       <p class="hero-card-title" data-en>What service do you need?</p>
+      <div class="search-type-toggle">
+        <button class="search-type-btn active" id="toggle-biz" onclick="setSearchType('biz')" data-es>🏪 Negocios</button>
+        <button class="search-type-btn active" id="toggle-biz-en" onclick="setSearchType('biz')" data-en>🏪 Businesses</button>
+        <button class="search-type-btn" id="toggle-worker" onclick="setSearchType('worker')" data-es>👷 Trabajadores</button>
+        <button class="search-type-btn" id="toggle-worker-en" onclick="setSearchType('worker')" data-en>👷 Job Seekers</button>
+      </div>
       <div class="search-wrap">
         <input class="search-input" id="hero-search" type="text"
           placeholder="Landscaping, cleaning, construction..."
@@ -433,40 +468,10 @@
         <button class="search-btn" onclick="doSearch()" data-es>Buscar</button>
         <button class="search-btn" onclick="doSearch()" data-en>Search</button>
       </div>
-      <div class="category-chips">
-        <span class="chip" onclick="setSearch('Landscaping')">🌿 Landscaping</span>
-        <span class="chip" onclick="setSearch('Cleaning')">🧹 Cleaning</span>
-        <span class="chip" onclick="setSearch('Construction')">🏗️ Construction</span>
-        <span class="chip" onclick="setSearch('Moving')">📦 Moving</span>
-        <span class="chip" onclick="setSearch('Food')">🍽️ Food</span>
-      </div>
       <div class="featured-biz">
-        <div class="featured-label" data-es>Negocios destacados</div>
-        <div class="featured-label" data-en>Featured businesses</div>
-        <a href="profile.html" class="biz-mini-item">
-          <div class="biz-mini-avatar av-coral">GG</div>
-          <div>
-            <div class="biz-mini-name">Garcia's Garden & Landscaping</div>
-            <div class="biz-mini-cat">Landscaping · Duluth, GA</div>
-          </div>
-          <span class="biz-mini-badge">✓ Verified</span>
-        </a>
-        <a href="profile.html" class="biz-mini-item">
-          <div class="biz-mini-avatar av-teal">RM</div>
-          <div>
-            <div class="biz-mini-name">Rodriguez Cleaning Services</div>
-            <div class="biz-mini-cat">Cleaning · Norcross, GA</div>
-          </div>
-          <span class="biz-mini-badge">✓ Verified</span>
-        </a>
-        <a href="profile.html" class="biz-mini-item">
-          <div class="biz-mini-avatar av-blue">HL</div>
-          <div>
-            <div class="biz-mini-name">Hernandez Construction LLC</div>
-            <div class="biz-mini-cat">Construction · Atlanta, GA</div>
-          </div>
-          <span class="biz-mini-badge">✓ Verified</span>
-        </a>
+        <div class="featured-label" id="featured-label-es">Negocios destacados</div>
+        <div class="featured-label" id="featured-label-en">Featured businesses</div>
+        <div id="featured-biz-list"></div>
       </div>
     </div>
   </div>
@@ -482,103 +487,103 @@
     <p class="section-sub" data-es>Todos los negocios latinos son verificados, legalmente registrados y multilingües.</p>
     <p class="section-sub" data-en>All Hispanic-owned businesses are verified, legally registered, and multilingual.</p>
     <div class="cat-grid">
-      <a href="search.html?cat=staffing" class="cat-card">
+      <a href="search.html?cat=staffing" class="cat-card" data-cat="staffing">
         <div class="cat-icon">👷</div>
         <div class="cat-name" data-es>Personal y Mano de Obra</div>
         <div class="cat-name" data-en>Staffing & Labor</div>
-        <div class="cat-count" data-es>3 negocios</div>
-        <div class="cat-count" data-en>3 businesses</div>
+        <div class="cat-count" data-es>— trabajadores</div>
+        <div class="cat-count" data-en>— workers</div>
       </a>
-      <a href="search.html?cat=landscaping" class="cat-card">
+      <a href="search.html?cat=landscaping" class="cat-card" data-cat="landscaping">
         <div class="cat-icon">🌿</div>
         <div class="cat-name" data-es>Landscaping</div>
         <div class="cat-name" data-en>Landscaping</div>
-        <div class="cat-count" data-es>1 negocios</div>
-        <div class="cat-count" data-en>1 businesses</div>
+        <div class="cat-count" data-es>— negocios</div>
+        <div class="cat-count" data-en>— businesses</div>
       </a>
-      <a href="search.html?cat=cleaning" class="cat-card">
+      <a href="search.html?cat=cleaning" class="cat-card" data-cat="cleaning">
         <div class="cat-icon">🧹</div>
         <div class="cat-name" data-es>Limpieza</div>
         <div class="cat-name" data-en>Cleaning</div>
-        <div class="cat-count" data-es>1 negocios</div>
-        <div class="cat-count" data-en>1 businesses</div>
+        <div class="cat-count" data-es>— negocios</div>
+        <div class="cat-count" data-en>— businesses</div>
       </a>
-      <a href="search.html?cat=construction" class="cat-card">
+      <a href="search.html?cat=construction" class="cat-card" data-cat="construction">
         <div class="cat-icon">🏗️</div>
         <div class="cat-name" data-es>Construcción</div>
         <div class="cat-name" data-en>Construction</div>
-        <div class="cat-count" data-es>1 negocios</div>
-        <div class="cat-count" data-en>1 businesses</div>
+        <div class="cat-count" data-es>— negocios</div>
+        <div class="cat-count" data-en>— businesses</div>
       </a>
-      <a href="search.html?cat=moving" class="cat-card">
+      <a href="search.html?cat=moving" class="cat-card" data-cat="moving">
         <div class="cat-icon">📦</div>
         <div class="cat-name" data-es>Mudanzas</div>
         <div class="cat-name" data-en>Moving</div>
-        <div class="cat-count" data-es>0 negocios</div>
-        <div class="cat-count" data-en>0 businesses</div>
+        <div class="cat-count" data-es>— negocios</div>
+        <div class="cat-count" data-en>— businesses</div>
       </a>
-      <a href="search.html?cat=food" class="cat-card">
+      <a href="search.html?cat=food" class="cat-card" data-cat="food">
         <div class="cat-icon">🍽️</div>
         <div class="cat-name" data-es>Comida & Catering</div>
         <div class="cat-name" data-en>Food & Catering</div>
-        <div class="cat-count" data-es>0 negocios</div>
-        <div class="cat-count" data-en>0 businesses</div>
+        <div class="cat-count" data-es>— negocios</div>
+        <div class="cat-count" data-en>— businesses</div>
       </a>
-      <a href="search.html?cat=auto" class="cat-card">
+      <a href="search.html?cat=auto" class="cat-card" data-cat="auto">
         <div class="cat-icon">🚗</div>
         <div class="cat-name" data-es>Autos</div>
         <div class="cat-name" data-en>Auto Repair</div>
-        <div class="cat-count" data-es>0 negocios</div>
-        <div class="cat-count" data-en>0 businesses</div>
+        <div class="cat-count" data-es>— negocios</div>
+        <div class="cat-count" data-en>— businesses</div>
       </a>
-      <a href="search.html?cat=translation" class="cat-card">
+      <a href="search.html?cat=translation" class="cat-card" data-cat="translation">
         <div class="cat-icon">🗣️</div>
         <div class="cat-name" data-es>Traducción</div>
         <div class="cat-name" data-en>Translation</div>
-        <div class="cat-count" data-es>0 negocios</div>
-        <div class="cat-count" data-en>0 businesses</div>
+        <div class="cat-count" data-es>— negocios</div>
+        <div class="cat-count" data-en>— businesses</div>
       </a>
-      <a href="search.html?cat=plumbing" class="cat-card">
+      <a href="search.html?cat=plumbing" class="cat-card" data-cat="plumbing">
         <div class="cat-icon">🔧</div>
         <div class="cat-name" data-es>Plomería</div>
         <div class="cat-name" data-en>Plumbing</div>
-        <div class="cat-count" data-es>1 negocios</div>
-        <div class="cat-count" data-en>1 businesses</div>
+        <div class="cat-count" data-es>— negocios</div>
+        <div class="cat-count" data-en>— businesses</div>
       </a>
-      <a href="search.html?cat=electrical" class="cat-card">
+      <a href="search.html?cat=electrical" class="cat-card" data-cat="electrical">
         <div class="cat-icon">⚡</div>
         <div class="cat-name" data-es>Electricidad</div>
         <div class="cat-name" data-en>Electrical</div>
-        <div class="cat-count" data-es>1 negocios</div>
-        <div class="cat-count" data-en>1 businesses</div>
+        <div class="cat-count" data-es>— negocios</div>
+        <div class="cat-count" data-en>— businesses</div>
       </a>
-      <a href="search.html?cat=painting" class="cat-card">
+      <a href="search.html?cat=painting" class="cat-card" data-cat="painting">
         <div class="cat-icon">🪟</div>
         <div class="cat-name" data-es>Pintura</div>
         <div class="cat-name" data-en>Painting</div>
-        <div class="cat-count" data-es>1 negocios</div>
-        <div class="cat-count" data-en>1 businesses</div>
+        <div class="cat-count" data-es>— negocios</div>
+        <div class="cat-count" data-en>— businesses</div>
       </a>
-      <a href="search.html?cat=tree" class="cat-card">
+      <a href="search.html?cat=tree" class="cat-card" data-cat="tree">
         <div class="cat-icon">🌳</div>
         <div class="cat-name" data-es>Árboles</div>
         <div class="cat-name" data-en>Tree Removal</div>
-        <div class="cat-count" data-es>0 negocios</div>
-        <div class="cat-count" data-en>0 businesses</div>
+        <div class="cat-count" data-es>— negocios</div>
+        <div class="cat-count" data-en>— businesses</div>
       </a>
-      <a href="search.html?cat=realestate" class="cat-card">
+      <a href="search.html?cat=realestate" class="cat-card" data-cat="realestate">
         <div class="cat-icon">🏠</div>
         <div class="cat-name" data-es>Agente Inmobiliario</div>
         <div class="cat-name" data-en>Real Estate</div>
-        <div class="cat-count" data-es>0 negocios</div>
-        <div class="cat-count" data-en>0 businesses</div>
+        <div class="cat-count" data-es>— negocios</div>
+        <div class="cat-count" data-en>— businesses</div>
       </a>
-      <a href="search.html" class="cat-card">
+      <a href="search.html" class="cat-card" data-cat="all">
         <div class="cat-icon">➕</div>
         <div class="cat-name" data-es>Ver todo</div>
         <div class="cat-name" data-en>See all</div>
-        <div class="cat-count" data-es>9 negocios</div>
-        <div class="cat-count" data-en>9 businesses</div>
+        <div class="cat-count" data-es>— negocios</div>
+        <div class="cat-count" data-en>— businesses</div>
       </a>
     </div>
   </div>
@@ -667,10 +672,10 @@
       <p class="cta-sub" data-en>Reach thousands of customers in your area. Showcase your fair pricing. Start free — no credit card required.</p>
     </div>
     <div class="cta-actions">
-      <a href="register-type.html" class="btn-primary" data-es>Registrar mi Negocio →</a>
-      <a href="register-type.html" class="btn-primary" data-en>List My Business →</a>
-      <a href="search.html" class="btn-secondary" data-es>Ver negocios</a>
-      <a href="search.html" class="btn-secondary" data-en>Browse businesses</a>
+      <a href="register-type.html" class="btn-primary" data-es>Registrar tu Negocio →</a>
+      <a href="register-type.html" class="btn-primary" data-en>List Your Business →</a>
+      <a href="register.html?type=staffing" class="btn-secondary" data-es>Registrarte como Trabajador</a>
+      <a href="register.html?type=staffing" class="btn-secondary" data-en>Register as a Job Seeker</a>
     </div>
   </div>
 </section>
@@ -741,6 +746,8 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase-client.js"></script>
 <script>
 function setLang(lang) {
   document.body.classList.toggle('en', lang === 'en');
@@ -752,19 +759,227 @@ function setLang(lang) {
   if (srch) srch.textContent = lang === 'en' ? 'Find Businesses' : 'Buscar Negocios';
   try { localStorage.setItem('anm-lang', lang); } catch(e) {}
 }
+var AV_COLORS = ['av-coral','av-teal','av-blue','av-coral','av-teal','av-blue'];
+
+async function loadFeaturedBusinesses() {
+  var container = document.getElementById('featured-biz-list');
+  if (!container) return;
+  try {
+    var sb = getSupabase();
+    var { data, error } = await sb
+      .from('businesses')
+      .select('id, trade_name, business_name, categories, verified, plan, account_status, is_worker, photos')
+      .neq('account_status', 'suspended')
+      .order('verified', { ascending: false })
+      .limit(6);
+    if (error) { console.error('[featured] query error:', error); return; }
+    if (!data || data.length === 0) return;
+    data = data.filter(function(b){ return !b.is_worker; });
+    var isEn = document.body.classList.contains('en');
+    container.innerHTML = '';
+    data.forEach(function(biz, i) {
+      var displayName = biz.trade_name || biz.business_name || '?';
+      var initials = displayName.split(' ').slice(0,2).map(function(w){ return w[0]||''; }).join('').toUpperCase() || '?';
+      var cat = Array.isArray(biz.categories) ? biz.categories[0] : (biz.categories || '');
+      var thumbUrl = Array.isArray(biz.photos) && biz.photos[0] ? biz.photos[0] : null;
+      var avatarHtml = thumbUrl
+        ? '<img src="' + thumbUrl + '" class="biz-mini-thumb" alt="">'
+        : '<div class="biz-mini-avatar ' + AV_COLORS[i] + '">' + initials + '</div>';
+      var a = document.createElement('a');
+      a.href = 'profile.html?id=' + biz.id;
+      a.className = 'biz-mini-item';
+      a.innerHTML =
+        avatarHtml +
+        '<div>' +
+          '<div class="biz-mini-name">' + displayName + '</div>' +
+          '<div class="biz-mini-cat">' + cat + '</div>' +
+        '</div>' +
+        (biz.verified ? '<span class="biz-mini-badge">✓ ' + (isEn ? 'Verified' : 'Verificado') + '</span>' : '');
+      container.appendChild(a);
+    });
+  } catch(e) {
+    console.error('[featured]', e);
+  }
+}
+
+async function loadFeaturedWorkers() {
+  var container = document.getElementById('featured-biz-list');
+  if (!container) return;
+  try {
+    var sb = getSupabase();
+    var { data, error } = await sb
+      .from('businesses')
+      .select('id, trade_name, business_name, staffing_types, verified, account_status, is_worker, photos')
+      .eq('is_worker', true)
+      .neq('account_status', 'suspended')
+      .order('created_at', { ascending: false })
+      .limit(6);
+    if (error) { console.error('[featured-workers] query error:', error); return; }
+    if (!data || data.length === 0) { container.innerHTML = ''; return; }
+    var isEn = document.body.classList.contains('en');
+    container.innerHTML = '';
+    data.forEach(function(w, i) {
+      var displayName = w.trade_name || w.business_name || '?';
+      var initials = displayName.split(' ').slice(0,2).map(function(w){ return w[0]||''; }).join('').toUpperCase() || '?';
+      var type = Array.isArray(w.staffing_types) ? w.staffing_types[0] : '';
+      var thumbUrl = Array.isArray(w.photos) && w.photos[0] ? w.photos[0] : null;
+      var avatarHtml = thumbUrl
+        ? '<img src="' + thumbUrl + '" class="biz-mini-thumb" alt="">'
+        : '<div class="biz-mini-avatar ' + AV_COLORS[i] + '">' + initials + '</div>';
+      var a = document.createElement('a');
+      a.href = 'worker-profile.html?id=' + w.id;
+      a.className = 'biz-mini-item';
+      a.innerHTML =
+        avatarHtml +
+        '<div>' +
+          '<div class="biz-mini-name">' + displayName + '</div>' +
+          '<div class="biz-mini-cat">' + (type || '') + '</div>' +
+        '</div>' +
+        (w.verified ? '<span class="biz-mini-badge">✓ ' + (isEn ? 'Verified' : 'Verificado') + '</span>' : '');
+      container.appendChild(a);
+    });
+  } catch(e) {
+    console.error('[featured-workers]', e);
+  }
+}
+
+async function loadCategoryCounts() {
+  try {
+    var sb = getSupabase();
+    // 업체(is_worker=false) 전체 categories 로드
+    var { data: bizData } = await sb
+      .from('businesses')
+      .select('categories')
+      .neq('account_status', 'suspended')
+      .eq('is_worker', false);
+
+    // 워커 수
+    var { count: workerCount } = await sb
+      .from('businesses')
+      .select('id', { count: 'exact', head: true })
+      .neq('account_status', 'suspended')
+      .eq('is_worker', true);
+
+    // 카테고리별 카운트 집계
+    var catCounts = {};
+    var totalBiz = 0;
+    if (bizData) {
+      bizData.forEach(function(b) {
+        totalBiz++;
+        if (Array.isArray(b.categories)) {
+          b.categories.forEach(function(c) {
+            var key = (c || '').toLowerCase();
+            catCounts[key] = (catCounts[key] || 0) + 1;
+          });
+        }
+      });
+    }
+
+    var isEn = document.body.classList.contains('en');
+    document.querySelectorAll('.cat-card[data-cat]').forEach(function(card) {
+      var cat = card.getAttribute('data-cat');
+      var countEsEl = card.querySelector('[data-es].cat-count');
+      var countEnEl = card.querySelector('[data-en].cat-count');
+      var n, labelEs, labelEn;
+      if (cat === 'staffing') {
+        n = workerCount || 0;
+        labelEs = n + ' trabajador' + (n === 1 ? '' : 'es');
+        labelEn = n + ' job seeker' + (n === 1 ? '' : 's');
+      } else if (cat === 'all') {
+        n = totalBiz;
+        labelEs = n + ' negocio' + (n === 1 ? '' : 's');
+        labelEn = n + ' business' + (n === 1 ? 'es' : 'es');
+      } else {
+        n = catCounts[cat] || 0;
+        labelEs = n + ' negocio' + (n === 1 ? '' : 's');
+        labelEn = n + ' business' + (n === 1 ? '' : 'es');
+      }
+      if (countEsEl) countEsEl.textContent = labelEs;
+      if (countEnEl) countEnEl.textContent = labelEn;
+    });
+  } catch(e) {
+    console.error('[catCounts]', e);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  loadFeaturedBusinesses();
+  loadCategoryCounts();
+});
+
 function setSearch(val) {
   document.getElementById('hero-search').value = val;
 }
+var _searchType = 'biz';
+function setSearchType(type) {
+  _searchType = type;
+  ['toggle-biz','toggle-biz-en'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.classList.toggle('active', type === 'biz');
+  });
+  ['toggle-worker','toggle-worker-en'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.classList.toggle('active', type === 'worker');
+  });
+  var isEn = document.body.classList.contains('en');
+  var ph = document.getElementById('hero-search');
+  if (ph) ph.placeholder = type === 'worker'
+    ? (isEn ? 'Type a skill (e.g. kitchen, moving) or area (e.g. Gwinnett, Atlanta)'
+             : 'Escribe una habilidad (ej. cocina, mudanza) o área (ej. Gwinnett, Atlanta)')
+    : (isEn ? 'Type a category (e.g. landscaping, construction) or area (e.g. Gwinnett, Atlanta)'
+             : 'Escribe una categoría (ej. landscaping, construcción) o área (ej. Gwinnett, Atlanta)');
+  var labelEs = document.getElementById('featured-label-es');
+  var labelEn = document.getElementById('featured-label-en');
+  if (labelEs) labelEs.textContent = type === 'worker' ? 'Trabajadores destacados' : 'Negocios destacados';
+  if (labelEn) labelEn.textContent = type === 'worker' ? 'Featured job seekers'    : 'Featured businesses';
+  if (type === 'worker') loadFeaturedWorkers(); else loadFeaturedBusinesses();
+}
 function doSearch() {
   var q = document.getElementById('hero-search').value.trim();
-  window.location.href = 'search.html' + (q ? '?q=' + encodeURIComponent(q) : '');
+  var base = _searchType === 'worker' ? 'worker-search.html' : 'search.html';
+  window.location.href = base + (q ? '?q=' + encodeURIComponent(q) : '');
 }
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
   var saved = ''; try { saved = localStorage.getItem('anm-lang'); } catch(e) {}
   var browser = (navigator.language || 'es').toLowerCase();
   var lang = saved || (browser.startsWith('en') ? 'en' : 'es');
   setLang(lang);
+
+  // 로그인 상태에 따라 nav 버튼 교체
+  try {
+    var session = await getSession();
+    if (session) {
+      var userType = session.user.user_metadata?.user_type || 'customer';
+      var isEn = document.body.classList.contains('en');
+      var authArea = document.getElementById('nav-auth-area');
+      if (!authArea) return;
+
+      var dashHref = userType === 'employer' ? 'employer-dashboard.html'
+                   : userType === 'business' ? 'dashboard.html'
+                   : userType === 'worker'   ? '#'
+                   : 'login.html';
+
+      // worker는 본인 프로필 링크로
+      if (userType === 'worker') {
+        try { var wb = await getMyBusiness(); if (wb && wb.id) dashHref = 'worker-profile.html?id=' + wb.id; } catch(e) {}
+      }
+
+      authArea.innerHTML =
+        '<a href="' + dashHref + '" class="btn-nav" style="font-size:13px;color:var(--c-muted)">' +
+          (isEn ? 'My Account' : 'Mi Cuenta') +
+        '</a>' +
+        '<button onclick="doSignOut()" class="btn-nav" style="font-size:13px;color:var(--c-muted);background:none;border:none;cursor:pointer">' +
+          (isEn ? 'Log out' : 'Cerrar sesión') +
+        '</button>';
+    }
+  } catch(e) {}
 });
+
+async function doSignOut() {
+  try { await signOut(); } catch(e) {}
+  window.location.reload();
+}
 </script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/service-worker.js");}</script>
 </body>
 </html>

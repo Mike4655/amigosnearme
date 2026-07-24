@@ -2,6 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C94F2B">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AmigosNearMe — Mi cuenta</title>
 <style>
@@ -1397,5 +1400,6 @@ document.addEventListener('DOMContentLoaded', async function() {
   } catch(e) { console.error('Session check error:', e); }
 });
 </script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/service-worker.js");}</script>
 </body>
 </html>

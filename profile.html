@@ -1,7 +1,20 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+// Apply lang from URL param immediately — before any render
+(function() {
+  var p = new URLSearchParams(window.location.search).get('lang');
+  if (p === 'en' || p === 'es') {
+    try { localStorage.setItem('anm-lang', p); } catch(e) {}
+    if (p === 'en') document.documentElement.classList.add('en-preload');
+  }
+})();
+</script>
 <meta charset="UTF-8">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C94F2B">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Garcia's Garden & Landscaping — AmigosNearMe</title>
 <meta name="description" content="Garcia's Garden & Landscaping — Verified Latin business in Duluth, GA. Landscaping, lawn care, tree trimming. Free estimates.">
@@ -504,7 +517,13 @@
       <div id="review-form" style="display:none; background:var(--c-bg); border-radius:var(--radius-md); padding:16px; margin-bottom:16px;">
         <div class="form-field">
           <label class="form-label"><span data-es>Tu calificación</span><span data-en>Your rating</span></label>
-          <div style="font-size:24px; cursor:pointer; letter-spacing:4px" id="star-pick" onclick="pickStar(event)">☆☆☆☆☆</div>
+          <div id="star-pick" style="font-size:28px;cursor:pointer;display:flex;gap:4px;width:fit-content">
+            <span onclick="pickStar(1)">☆</span>
+            <span onclick="pickStar(2)">☆</span>
+            <span onclick="pickStar(3)">☆</span>
+            <span onclick="pickStar(4)">☆</span>
+            <span onclick="pickStar(5)">☆</span>
+          </div>
         </div>
         <div class="form-field">
           <label class="form-label"><span data-es>Tu nombre</span><span data-en>Your name</span></label>
@@ -795,6 +814,18 @@ function buildBizObject(biz, reviews) {
     var c = CATEGORY_MAP[cat] || {};
     return [c.emoji || '🔹', c.es || cat, c.en || cat];
   });
+  // Append manually entered category
+  if (biz.category_other) {
+    biz.category_other.split(',').map(function(s){ return s.trim(); }).filter(Boolean).forEach(function(v){
+      services.push(['🔹', v, v]);
+    });
+  }
+  // For workers: also append staffing_type_other
+  if (biz.is_worker && biz.staffing_type_other) {
+    biz.staffing_type_other.split(',').map(function(s){ return s.trim(); }).filter(Boolean).forEach(function(v){
+      services.push(['🔧', v, v]);
+    });
+  }
   if (!services.length) services = [['🔹', 'Servicio general', 'General service']];
 
   var h = Array.isArray(biz.hours) ? biz.hours : [];
@@ -1065,12 +1096,16 @@ async function loadBusiness() {
     document.getElementById('reviews').style.display = 'block';
     document.getElementById('jobs-completed-section').style.display = 'none';
     // Photos: render from DB photos array (Supabase Storage)
+    // Free plan → section hidden (photos preserved in DB, not shown until upgrade)
     var photos = (bizRes.data && bizRes.data.photos) ? bizRes.data.photos : [];
+    var bizPlan = (bizRes.data && bizRes.data.plan) ? bizRes.data.plan : 'free';
+    var PROFILE_PHOTO_LIMIT = { basic: 5, premium: 20 };
+    var photoLimit = PROFILE_PHOTO_LIMIT[bizPlan] || 0;
     var photoSection = document.getElementById('photos-section');
     var photoGrid = document.getElementById('photo-grid');
-    if (photos.length > 0 && photoSection && photoGrid) {
+    if (bizPlan !== 'free' && photos.length > 0 && photoSection && photoGrid) {
       photoGrid.innerHTML = '';
-      photos.slice(0, 5).forEach(function(url, i) {
+      photos.slice(0, photoLimit).forEach(function(url, i) {
         var img = document.createElement('img');
         img.src = url;
         img.alt = '';
@@ -1078,10 +1113,11 @@ async function loadBusiness() {
         img.style.cssText = 'width:100%;height:100%;object-fit:contain;background:var(--c-bg);border-radius:6px;display:block';
         photoGrid.appendChild(img);
       });
+      var displayCount = Math.min(photos.length, photoLimit);
       var seeAllEs = document.getElementById('photos-see-all-es');
       var seeAllEn = document.getElementById('photos-see-all-en');
-      if (seeAllEs) seeAllEs.textContent = 'Ver todas (' + photos.length + ')';
-      if (seeAllEn) seeAllEn.textContent = 'See all (' + photos.length + ')';
+      if (seeAllEs) seeAllEs.textContent = 'Ver todas (' + displayCount + ')';
+      if (seeAllEn) seeAllEn.textContent = 'See all (' + displayCount + ')';
       photoSection.style.display = 'block';
     }
     document.getElementById('hours-sidebar-card').style.display = 'block';
@@ -1151,8 +1187,8 @@ async function loadBusiness() {
   document.getElementById('contact-title-en').textContent = 'Contact ' + b.name;
   document.getElementById('fallback-hint-es').textContent = 'Le enviaremos tu solicitud directamente a ' + b.name + ' por correo y SMS.';
   document.getElementById('fallback-hint-en').textContent = "We'll send your request directly to " + b.name + ' by email and text.';
-  document.getElementById('fallback-success-es').textContent = '✓ Solicitud enviada. ' + b.name + ' recibirá tu nombre, teléfono y servicio por correo y SMS, y te contactará directamente.';
-  document.getElementById('fallback-success-en').textContent = '✓ Request sent. ' + b.name + ' will receive your name, phone, and service by email and text, and will contact you directly.';
+  document.getElementById('fallback-success-es').textContent = '✓ Solicitud enviada. ' + b.name + ' recibirá tu nombre, teléfono y servicio por correo, y te contactará directamente.';
+  document.getElementById('fallback-success-en').textContent = '✓ Request sent. ' + b.name + ' will receive your name, phone, and service by email, and will contact you directly.';
   document.getElementById('notice-text-es').innerHTML = 'Vamos a abrir WhatsApp con tu solicitud ya escrita. ' + b.name + ' solo la recibirá si tú presionas <strong>Enviar</strong> dentro de WhatsApp.';
   document.getElementById('notice-text-en').innerHTML = "We'll open WhatsApp with your request already written. " + b.name + ' only receives it once <strong>you</strong> press <strong>Send</strong> inside WhatsApp.';
 
@@ -1201,7 +1237,7 @@ function logContact(bizId, channel, limitHit) {
     var customerId = (sess && sess.user) ? sess.user.id : null;
     getSupabase().from('contact_log').insert({
       biz_id:    bizId,
-      customer_id:  customerId,
+      actor_id:  customerId,
       channel:   channel,
       limit_hit: !!limitHit
     }).then(function(res) {
@@ -1229,7 +1265,7 @@ async function toggleReviewForm() {
       .from('contact_log')
       .select('id', { count: 'exact', head: true })
       .eq('biz_id', bizId)
-      .eq('customer_id', sess.user.id)
+      .eq('actor_id', sess.user.id)
       .eq('limit_hit', false);
     eligible = !eligRes.error && (eligRes.count || 0) > 0;
   }
@@ -1238,6 +1274,12 @@ async function toggleReviewForm() {
     gate.style.display = 'none';
     form.style.display = 'block';
     form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // 이름 자동 입력 (user_metadata.business_name)
+    var nameEl = document.getElementById('review-name');
+    if (nameEl && !nameEl.value && sess && sess.user) {
+      var meta = sess.user.user_metadata || {};
+      nameEl.value = meta.display_name || meta.business_name || '';
+    }
   } else {
     form.style.display = 'none';
     gate.style.display = 'block';
@@ -1264,32 +1306,33 @@ async function submitQuote() {
   var bizName  = window.currentBusiness ? window.currentBusiness.business_name : '';
   var plan     = window.currentBusiness ? (window.currentBusiness.plan || 'free') : 'free';
   var planName = plan.charAt(0).toUpperCase() + plan.slice(1);
-  var PLAN_LIMITS = { free: 3, basic: 10, premium: Infinity };
-  var limit = PLAN_LIMITS[plan.toLowerCase()] !== undefined ? PLAN_LIMITS[plan.toLowerCase()] : Infinity;
+  var bizLang = (window.currentBusiness && window.currentBusiness.preferred_lang) || 'es';
 
-  // 실시간 DB 조회로 최신 contacts_used_month 확인 (캐시된 값 대신)
-  var used = window.currentBusiness ? (window.currentBusiness.contacts_used_month || 0) : 0;
-  if (bizId && isFinite(limit)) {
+  // 실시간 DB 조회로 최신 contact_credits 확인
+  var credits = window.currentBusiness ? (window.currentBusiness.contact_credits != null ? window.currentBusiness.contact_credits : 0) : 0;
+  if (bizId) {
     try {
-      var { data: freshBiz } = await getSupabase().from('businesses').select('contacts_used_month').eq('id', bizId).single();
-      if (freshBiz) used = freshBiz.contacts_used_month || 0;
+      var { data: freshBiz } = await getSupabase().from('businesses').select('contact_credits, preferred_lang').eq('id', bizId).single();
+      if (freshBiz) {
+        credits = freshBiz.contact_credits != null ? freshBiz.contact_credits : 0;
+        if (freshBiz.preferred_lang && window.currentBusiness) window.currentBusiness.preferred_lang = freshBiz.preferred_lang;
+      }
     } catch(e) {}
   }
 
-  // 월 단위 dedup용 ref suffix (SB8/SB9/SB12/SB13)
-  var monthKey = bizId ? bizId + '_' + new Date().toISOString().slice(0, 7) : bizId;
+  var creditKey = bizId ? bizId + '_credits' : bizId;
 
-  // [1] 한도 확인 (DB 기반 — window.currentBusiness는 페이지 로드 시 DB에서 가져온 값)
-  if (used >= limit) {
-    if (bizEmail) sendEmail('SB12', bizEmail, { biz_name: bizName }, monthKey);
+  // [1] 크레딧 확인
+  if (credits <= 0) {
+    if (bizEmail) sendEmail('SB12', bizEmail, { biz_name: bizName, plan: planName }, creditKey, bizLang);
     getSession().then(function(sess) {
       var customerId = (sess && sess.user) ? sess.user.id : null;
       if (sess && sess.user && sess.user.email) {
-        var customerMonthKey = sess.user.id + '_' + bizId + '_' + new Date().toISOString().slice(0, 7);
-        sendEmail('SB13', sess.user.email, { biz_name: bizName }, customerMonthKey);
+        var custLang = (sess.user.user_metadata && sess.user.user_metadata.preferred_lang) || (isEn ? 'en' : 'es');
+        sendEmail('SB13', sess.user.email, { biz_name: bizName }, creditKey, custLang);
       }
       if (bizId) {
-        getSupabase().from('contact_log').insert({ biz_id: bizId, customer_id: customerId, channel: 'whatsapp', limit_hit: true })
+        getSupabase().from('contact_log').insert({ biz_id: bizId, actor_id: customerId, channel: 'whatsapp', limit_hit: true })
           .then(function(r){ if (r.error) console.warn('[contact_log whatsapp limit] error:', r.error.message); });
       }
     });
@@ -1297,32 +1340,33 @@ async function submitQuote() {
     return;
   }
 
-  // [2] WhatsApp 창 열기 — 카운트 기준 시점 (사용자 제스처 직전, §4.2)
+  // [2] WhatsApp 창 열기
   var phone = (window.currentBusiness && window.currentBusiness.phone) ? window.currentBusiness.phone.replace(/\D/g, '') : '';
   var msgEs = 'Hola, vi su perfil en AmigosNearMe y quisiera un presupuesto para: ' + parts[0] + '.';
   var msgEn = 'Hi, I saw your profile on AmigosNearMe and would like a quote for: ' + parts[1] + '.';
   var waUrl = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(isEn ? msgEn : msgEs);
   window.open(waUrl, '_blank');
 
-  // [3] DB 카운트 증가 (창 열린 후, fire-and-forget)
+  // [3] 크레딧 차감 (fire-and-forget)
   if (bizId) {
-    getSupabase().rpc('increment_contact_count', { p_biz_id: bizId }).then(function(res) {
-      if (res.error) console.warn('[submitQuote] increment error:', res.error.message);
+    getSupabase().rpc('decrement_biz_credit', { p_biz_id: bizId }).then(function(res) {
+      if (res.error) console.warn('[submitQuote] decrement error:', res.error.message);
     });
   }
 
   // 세션 내 재요청 방지용 메모리 업데이트
-  if (window.currentBusiness) window.currentBusiness.contacts_used_month = used + 1;
-  var remaining = isFinite(limit) ? limit - (used + 1) : Infinity;
+  var remaining = credits - 1;
+  if (window.currentBusiness) window.currentBusiness.contact_credits = remaining;
+  var warnAt = plan.toLowerCase() === 'free' ? 1 : 2;
 
-  // [4] SB8/SB9: 한도 근접·소진 알림 (업체에, 월 단위 dedup)
+  // [4] SB8/SB9: 크레딧 근접·소진 알림
   if (bizEmail) {
-    if (remaining === 0) sendEmail('SB9', bizEmail, { biz_name: bizName, plan: planName }, monthKey);
-    else if (remaining === 1) sendEmail('SB8', bizEmail, { biz_name: bizName, plan: planName, remaining: '1' }, monthKey);
+    if (remaining === 0) sendEmail('SB9', bizEmail, { biz_name: bizName, plan: planName }, creditKey, bizLang);
+    else if (remaining === warnAt) sendEmail('SB8', bizEmail, { biz_name: bizName, plan: planName, remaining: String(remaining) }, creditKey, bizLang);
   }
 
   // [5] SB6: WhatsApp 문의 수신 알림 (업체에)
-  if (bizEmail) sendEmail('SB6', bizEmail, { biz_name: bizName, service: serviceLabel });
+  if (bizEmail) sendEmail('SB6', bizEmail, { biz_name: bizName, service: serviceLabel }, null, bizLang);
 
   logContact(bizId, 'whatsapp', false);
 }
@@ -1482,7 +1526,7 @@ async function submitWorkerContact() {
   if (bizId) {
     sb.from('contact_log').insert({
       biz_id:   bizId,
-      customer_id: sess.user.id,
+      actor_id: sess.user.id,
       channel:  'whatsapp',
       limit_hit: false
     }).then(function(r) { if (r.error) console.warn('[contact_log worker]', r.error.message); });
@@ -1500,9 +1544,19 @@ function openWorkerWhatsApp() {
   trackContact('worker_contact', '');
   var isEn = document.body.classList.contains('en');
   var name = (window.currentBusiness && window.currentBusiness.name) ? window.currentBusiness.name : '';
-  var msgEs = 'Hola ' + name + ', vi tu perfil en AmigosNearMe y me gustaría contratarte. ¿Estás disponible?';
-  var msgEn = 'Hi ' + name + ', I saw your profile on AmigosNearMe and would like to hire you. Are you available?';
-  var msg = isEn ? msgEn : msgEs;
+  var msgEs = 'Hola ' + name + ', vi tu perfil en AmigosNearMe y me gustaría hablar contigo. ¿Estás disponible?';
+  var msgEn = 'Hi ' + name + ', I saw your profile on AmigosNearMe and would like to talk with you. Are you available?';
+  var bizLangs = (window.currentBusiness && window.currentBusiness.languages) ? window.currentBusiness.languages : [];
+  var bizSpeaksEn = bizLangs.includes('en');
+  var bizSpeaksEs = bizLangs.includes('es');
+  var msg;
+  if (bizSpeaksEn && !bizSpeaksEs) {
+    msg = msgEn;
+  } else if (bizSpeaksEs && !bizSpeaksEn) {
+    msg = msgEs;
+  } else {
+    msg = msgEn + '\n\n' + msgEs;
+  }
   var phone = (window.currentBusiness && window.currentBusiness.phone) ? window.currentBusiness.phone.replace('+', '') : '17865550192';
   var waUrl = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg);
   window.open(waUrl, '_blank');
@@ -1515,18 +1569,14 @@ function openWorkerWhatsApp() {
      profile, and the business owner receives an email/WhatsApp notification. */
 function showLimitReachedMessage() {
   var isEn = document.body.classList.contains('en');
-  var plan = window.currentBusiness ? (window.currentBusiness.plan || 'free') : 'free';
-  var planName = plan.charAt(0).toUpperCase() + plan.slice(1);
-  var limits = { free: 3, basic: 10 };
-  var limit = limits[plan.toLowerCase()] || 0;
   var msg = isEn
-    ? 'This business has reached its ' + limit + ' request limit for this month (' + planName + ' plan). They may upgrade to receive more.'
-    : 'Este negocio alcanzó su límite de ' + limit + ' solicitudes del mes (plan ' + planName + '). Puede actualizar su plan para recibir más.';
+    ? 'This business is not available for new requests at this time. Please try other businesses or contact this business later.'
+    : 'Este negocio no está disponible para nuevas solicitudes en este momento. Por favor, contacta otros negocios o inténtalo más tarde.';
   var overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(26,26,24,0.55);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px';
   overlay.innerHTML = '<div style="background:#fff;border-radius:18px;padding:28px;max-width:360px;width:100%;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,0.12)">'
     + '<div style="font-size:28px;margin-bottom:12px">📭</div>'
-    + '<div style="font-family:\'DM Serif Display\',serif;font-size:20px;margin-bottom:10px">' + (isEn ? 'No longer accepting requests' : 'No acepta más solicitudes') + '</div>'
+    + '<div style="font-family:\'DM Serif Display\',serif;font-size:20px;margin-bottom:10px">' + (isEn ? 'Currently Unavailable' : 'No disponible ahora') + '</div>'
     + '<p style="font-size:13.5px;color:#6B6B66;line-height:1.6;margin-bottom:20px">' + msg + '</p>'
     + '<button onclick="this.closest(\'[data-limit-overlay]\').remove()" style="padding:11px 20px;border-radius:8px;border:none;background:#C94F2B;color:#fff;font-size:14px;cursor:pointer;width:100%">' + (isEn ? 'OK' : 'Entendido') + '</button>'
     + '</div>';
@@ -1538,7 +1588,7 @@ function trackContact(type, serviceLabel) {
   var bizId = (window.currentBusiness && window.currentBusiness.id) ? window.currentBusiness.id : null;
   if (!bizId) return;
   try {
-    getSupabase().rpc('increment_contact_count', { p_biz_id: bizId }).then(function(res) {
+    getSupabase().rpc('decrement_biz_credit', { p_biz_id: bizId }).then(function(res) {
       if (res.error) console.warn('[trackContact] RPC error:', res.error.message);
     });
   } catch(e) { console.warn('[trackContact] error:', e); }
@@ -1547,7 +1597,7 @@ function toggleFallback() {
   var f = document.getElementById('fallback-form');
   f.classList.toggle('open');
 }
-function submitFallback() {
+async function submitFallback() {
   var service = document.getElementById('fallback-service');
   var name = document.getElementById('fallback-name');
   var phone = document.getElementById('fallback-phone');
@@ -1571,24 +1621,32 @@ function submitFallback() {
   var bizName  = window.currentBusiness ? window.currentBusiness.business_name : '';
   var plan     = window.currentBusiness ? (window.currentBusiness.plan || 'free') : 'free';
   var planName = plan.charAt(0).toUpperCase() + plan.slice(1);
-  var used     = window.currentBusiness ? (window.currentBusiness.contacts_used_month || 0) : 0;
-  var PLAN_LIMITS = { free: 3, basic: 10, premium: Infinity };
-  var limit = PLAN_LIMITS[plan.toLowerCase()] !== undefined ? PLAN_LIMITS[plan.toLowerCase()] : Infinity;
+  var bizLang = (window.currentBusiness && window.currentBusiness.preferred_lang) || 'es';
 
-  // 월 단위 dedup용 ref suffix (SB8/SB9/SB12/SB13)
-  var monthKey = bizId ? bizId + '_' + new Date().toISOString().slice(0, 7) : bizId;
+  var credits = window.currentBusiness ? (window.currentBusiness.contact_credits != null ? window.currentBusiness.contact_credits : 0) : 0;
+  if (bizId) {
+    try {
+      var { data: freshBiz2 } = await getSupabase().from('businesses').select('contact_credits, preferred_lang').eq('id', bizId).single();
+      if (freshBiz2) {
+        credits = freshBiz2.contact_credits != null ? freshBiz2.contact_credits : 0;
+        if (freshBiz2.preferred_lang && window.currentBusiness) window.currentBusiness.preferred_lang = freshBiz2.preferred_lang;
+      }
+    } catch(e) {}
+  }
 
-  // [1] 한도 확인 (DB 기반)
-  if (used >= limit) {
-    if (bizEmail) sendEmail('SB12', bizEmail, { biz_name: bizName }, monthKey);
+  var creditKey = bizId ? bizId + '_credits' : bizId;
+
+  // [1] 크레딧 확인
+  if (credits <= 0) {
+    if (bizEmail) sendEmail('SB12', bizEmail, { biz_name: bizName, plan: planName }, creditKey, bizLang);
     getSession().then(function(sess) {
       var customerId = (sess && sess.user) ? sess.user.id : null;
       if (sess && sess.user && sess.user.email) {
-        var customerMonthKey = sess.user.id + '_' + bizId + '_' + new Date().toISOString().slice(0, 7);
-        sendEmail('SB13', sess.user.email, { biz_name: bizName }, customerMonthKey);
+        var custLang = (sess.user.user_metadata && sess.user.user_metadata.preferred_lang) || (isEn ? 'en' : 'es');
+        sendEmail('SB13', sess.user.email, { biz_name: bizName }, creditKey, custLang);
       }
       if (bizId) {
-        getSupabase().from('contact_log').insert({ biz_id: bizId, customer_id: customerId, channel: 'form', limit_hit: true })
+        getSupabase().from('contact_log').insert({ biz_id: bizId, actor_id: customerId, channel: 'form', limit_hit: true })
           .then(function(r){ if (r.error) console.warn('[contact_log form limit] error:', r.error.message); });
       }
     });
@@ -1600,24 +1658,25 @@ function submitFallback() {
   var parts = service.value.split('|');
   var serviceLabel = isEn ? parts[1] : parts[0];
 
-  // [2] SB7: 폼 문의 수신 알림 (업체에) — 폼 제출이 카운트 기준 시점
-  if (bizEmail) sendEmail('SB7', bizEmail, { biz_name: bizName, customer_name: name.value.trim(), customer_phone: phone.value.trim(), service: serviceLabel });
+  // [2] SB7: 폼 문의 수신 알림 (업체에)
+  if (bizEmail) sendEmail('SB7', bizEmail, { biz_name: bizName, customer_name: name.value.trim(), customer_phone: phone.value.trim(), service: serviceLabel }, null, bizLang);
 
-  // [3] DB 카운트 증가 (폼 제출 후, fire-and-forget)
+  // [3] 크레딧 차감 (fire-and-forget)
   if (bizId) {
-    getSupabase().rpc('increment_contact_count', { p_biz_id: bizId }).then(function(res) {
-      if (res.error) console.warn('[submitFallback] increment error:', res.error.message);
+    getSupabase().rpc('decrement_biz_credit', { p_biz_id: bizId }).then(function(res) {
+      if (res.error) console.warn('[submitFallback] decrement error:', res.error.message);
     });
   }
 
   // 세션 내 재요청 방지용 메모리 업데이트
-  if (window.currentBusiness) window.currentBusiness.contacts_used_month = used + 1;
-  var remaining = isFinite(limit) ? limit - (used + 1) : Infinity;
+  var remaining = credits - 1;
+  if (window.currentBusiness) window.currentBusiness.contact_credits = remaining;
+  var warnAt = plan.toLowerCase() === 'free' ? 1 : 2;
 
-  // [4] SB8/SB9: 한도 근접·소진 알림 (업체에, 월 단위 dedup)
+  // [4] SB8/SB9: 크레딧 근접·소진 알림
   if (bizEmail) {
-    if (remaining === 0) sendEmail('SB9', bizEmail, { biz_name: bizName, plan: planName }, monthKey);
-    else if (remaining === 1) sendEmail('SB8', bizEmail, { biz_name: bizName, plan: planName, remaining: '1' }, monthKey);
+    if (remaining === 0) sendEmail('SB9', bizEmail, { biz_name: bizName, plan: planName }, creditKey, bizLang);
+    else if (remaining === warnAt) sendEmail('SB8', bizEmail, { biz_name: bizName, plan: planName, remaining: String(remaining) }, creditKey, bizLang);
   }
 
   logContact(bizId, 'form', false);
@@ -1631,19 +1690,83 @@ function submitFallback() {
     service.value = '';
   }, 3500);
 }
+async function loadReviews() {
+  var b = window.currentBusiness;
+  if (!b || !b.id) return;
+  var sb = getSupabase();
+  var { data: rows } = await sb.from('reviews').select('*').eq('biz_id', b.id).eq('removed', false).order('created_at', { ascending: false }).limit(10);
+  rows = rows || [];
+
+  var revCount = rows.length;
+  var avgRating = revCount ? rows.reduce(function(s,r){ return s+(r.rating||0); },0)/revCount : 0;
+  b.reviewCount = revCount;
+  b.ratingNum   = revCount ? avgRating.toFixed(1) : '—';
+  b.stars       = revCount ? '★'.repeat(Math.round(avgRating))+'☆'.repeat(5-Math.round(avgRating)) : '';
+  b.reviews     = rows.map(function(r) {
+    var nm = r.reviewer_name || r.name || 'Cliente';
+    return {
+      initials: getAvatarInitials(nm), name: nm,
+      stars:  '★'.repeat(r.rating||0)+'☆'.repeat(5-(r.rating||0)),
+      dateEs: relativeDate(r.created_at,'es'), dateEn: relativeDate(r.created_at,'en'),
+      textEs: r.comment || r.review_text || '',
+      textEn: r.comment_en || r.review_text || ''
+    };
+  });
+
+  document.getElementById('reviews-title-es').textContent = 'Reseñas (' + revCount + ')';
+  document.getElementById('reviews-title-en').textContent = 'Reviews (' + revCount + ')';
+  document.getElementById('big-rating-num').textContent = b.ratingNum;
+  document.getElementById('big-rating-stars').textContent = b.stars;
+  document.getElementById('big-rating-count-es').textContent = revCount + ' reseñas';
+  document.getElementById('big-rating-count-en').textContent = revCount + ' reviews';
+
+  var ratingSummary = document.querySelector('.rating-summary');
+  if (ratingSummary) ratingSummary.style.display = revCount ? '' : 'none';
+  if (revCount) {
+    var dist = [5,4,3,2,1].map(function(s){ return rows.filter(function(r){ return r.rating===s; }).length; });
+    [5,4,3,2,1].forEach(function(s,i){
+      var fill = document.getElementById('rbar-'+s);
+      var num  = document.getElementById('rbar-'+s+'-n');
+      var pct  = Math.round((dist[i]/revCount)*100);
+      if (fill) fill.style.width = pct+'%';
+      if (num)  num.textContent  = dist[i];
+    });
+  }
+
+  var reviewsList = document.getElementById('reviews-list');
+  if (reviewsList) reviewsList.innerHTML = b.reviews.map(function(r) {
+    return '<div class="review-item"><div class="review-top">'
+      +'<div class="review-avatar">'+r.initials+'</div>'
+      +'<div><div class="review-name">'+r.name+'</div><div class="review-stars">'+r.stars+'</div></div>'
+      +'<div class="review-date" data-es>'+r.dateEs+'</div>'
+      +'<div class="review-date" data-en>'+r.dateEn+'</div>'
+      +'</div>'
+      +'<div class="review-text" data-es>'+r.textEs+'</div>'
+      +'<div class="review-text" data-en>'+r.textEn+'</div>'
+      +'</div>';
+  }).join('');
+
+  document.getElementById('see-all-reviews-es').textContent = 'Ver todas las reseñas ('+revCount+') →';
+  document.getElementById('see-all-reviews-en').textContent = 'See all reviews ('+revCount+') →';
+}
+
 async function submitReview() {
-  var starEl  = document.getElementById('star-pick');
-  var textEl  = document.getElementById('review-text');
-  var rating  = starEl ? (starEl.textContent.match(/★/g) || []).length : 0;
-  var text    = textEl ? textEl.value.trim() : '';
+  var starEl    = document.getElementById('star-pick');
+  var textEl    = document.getElementById('review-text');
+  var nameEl    = document.getElementById('review-name');
+  var rating    = _selectedRating || 0;
+  var text      = textEl ? textEl.value.trim() : '';
+  var reviewerName = nameEl ? nameEl.value.trim() : '';
 
   if (rating === 0) {
     alert(document.body.classList.contains('en') ? 'Please select a star rating.' : 'Por favor selecciona una calificación.');
     return;
   }
 
-  var bizId = (window.currentBusiness && window.currentBusiness.id) ? window.currentBusiness.id : null;
-  var bizName = (window.currentBusiness && window.currentBusiness.business_name) ? window.currentBusiness.business_name : '';
+  var bizId    = (window.currentBusiness && window.currentBusiness.id) ? window.currentBusiness.id : null;
+  var bizName  = (window.currentBusiness && window.currentBusiness.business_name) ? window.currentBusiness.business_name : '';
+  var bizEmail = (window.currentBusiness && window.currentBusiness.public_email) ? window.currentBusiness.public_email : null;
+  var bizLang = (window.currentBusiness && window.currentBusiness.preferred_lang) || 'es';
 
   try {
     var session = await getSession();
@@ -1657,7 +1780,7 @@ async function submitReview() {
     var eligRes = await sb.from('contact_log')
       .select('id', { count: 'exact', head: true })
       .eq('biz_id', bizId)
-      .eq('customer_id', session.user.id)
+      .eq('actor_id', session.user.id)
       .eq('limit_hit', false);
     if (eligRes.error || (eligRes.count || 0) === 0) {
       alert(document.body.classList.contains('en')
@@ -1666,51 +1789,76 @@ async function submitReview() {
       return;
     }
 
-    var { error } = await sb.from('reviews').upsert({
-      biz_id:      bizId,
-      reviewer_id: session.user.id,
-      rating:      rating,
-      review_text: text
-    }, { onConflict: 'biz_id,reviewer_id' });
+    // 기존 리뷰 여부 확인 → 있으면 UPDATE, 없으면 INSERT
+    var { data: existing } = await sb.from('reviews')
+      .select('id')
+      .eq('biz_id', bizId)
+      .eq('reviewer_id', session.user.id)
+      .maybeSingle();
 
-    if (error) throw error;
+    var writeError;
+    if (existing) {
+      var { error: updErr } = await sb.from('reviews')
+        .update({ rating: rating, review_text: text, reviewer_name: reviewerName || null, removed: false, removed_note: null, removed_at: null, flagged: false, flagged_at: null })
+        .eq('id', existing.id);
+      writeError = updErr;
+    } else {
+      var { error: insErr } = await sb.from('reviews').insert({
+        biz_id:         bizId,
+        reviewer_id:    session.user.id,
+        rating:         rating,
+        review_text:    text,
+        reviewer_name:  reviewerName || null
+      });
+      writeError = insErr;
+    }
 
-    // AD2: 1점 리뷰 → 관리자 알림
-    if (rating === 1) {
-      sendEmail('AD2', null, { biz_name: bizName, rating: rating, review_text: text }, bizId);
+    if (writeError) throw writeError;
+
+    // SB16: 업체주에게 새 리뷰 알림 (항상 발송)
+    if (bizEmail) sendEmail('SB16', bizEmail, { biz_name: bizName, rating: rating, review_text: text }, bizId, bizLang);
+
+    // AD2: 1~2점 리뷰 → 관리자 알림
+    if (rating <= 2) {
+      sendEmail('AD2', null, { biz_name: bizName, rating: rating, review_text: text });
     }
 
     // AD3: 스팸 감지 (URL, 전화번호, 이메일 포함 여부)
     var spamPattern = /https?:\/\/|www\.|[\+\d][\d\s\-\(\)]{7,}|\b[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}/;
     if (text && spamPattern.test(text)) {
-      sendEmail('AD3', null, { biz_name: bizName, rating: rating, review_text: text }, bizId);
+      sendEmail('AD3', null, { biz_name: bizName, rating: rating, review_text: text });
     }
+
+    // 성공 시에만 메시지 표시
+    var msgs = document.querySelectorAll('#review-success');
+    msgs.forEach(function(m){ m.style.display = 'block'; });
+    setTimeout(function(){
+      msgs.forEach(function(m){ m.style.display = 'none'; });
+      if (textEl) textEl.value = '';
+      _selectedRating = 0;
+      document.querySelectorAll('#star-pick span').forEach(function(s){ s.textContent = '☆'; });
+      loadReviews();
+    }, 3000);
 
   } catch(e) {
     console.error('[submitReview] error:', e);
+    alert(document.body.classList.contains('en') ? 'Failed to submit review. Please try again.' : 'Error al enviar la reseña. Inténtalo de nuevo.');
   }
-
-  var msgs = document.querySelectorAll('#review-success');
-  msgs.forEach(function(m){ m.style.display = 'block'; });
-  setTimeout(function(){
-    msgs.forEach(function(m){ m.style.display = 'none'; });
-    if (textEl) textEl.value = '';
-    if (starEl) starEl.textContent = '☆☆☆☆☆';
-  }, 3000);
 }
-function pickStar(e) {
-  var stars = document.getElementById('star-pick');
-  var rect = stars.getBoundingClientRect();
-  var x = e.clientX - rect.left;
-  var w = rect.width;
-  var n = Math.ceil((x / w) * 5);
-  stars.textContent = '★'.repeat(n) + '☆'.repeat(5-n);
+var _selectedRating = 0;
+function pickStar(n) {
+  // 같은 별 재클릭 시 하나 낮춤 (1번 별 재클릭 시 0으로 초기화)
+  if (_selectedRating === n) n = n - 1;
+  _selectedRating = n;
+  var spans = document.querySelectorAll('#star-pick span');
+  spans.forEach(function(s, i) { s.textContent = i < n ? '★' : '☆'; });
 }
 document.addEventListener('DOMContentLoaded', function() {
   loadBusiness();
+  var urlLang = new URLSearchParams(window.location.search).get('lang');
   var saved = ''; try { saved = localStorage.getItem('anm-lang'); } catch(e) {}
   var browser = (navigator.language || 'es').toLowerCase();
-  setLang(saved || (browser.startsWith('en') ? 'en' : 'es'));
+  setLang(urlLang || saved || (browser.startsWith('en') ? 'en' : 'es'));
   if (window.location.hash === '#quote') { toggleQuote(); document.getElementById('quote').scrollIntoView({behavior:'smooth'}); }
 
   // If the user was redirected back here after logging in to save a business, auto-trigger save
@@ -1739,19 +1887,23 @@ document.addEventListener('DOMContentLoaded', function() {
     var utype = (sess.user.user_metadata && sess.user.user_metadata.user_type) || '';
     var dashHref = utype === 'employer' ? 'employer-dashboard.html'
                  : utype === 'business' ? 'dashboard.html'
-                 : 'index.html';
+                 : 'login.html';
     if (utype === 'worker') {
       try { var wb = await getMyBusiness(); if (wb && wb.id) dashHref = 'worker-profile.html?id=' + wb.id; } catch(e) {}
     }
+    var logoutLabel = isEn ? 'Log out' : 'Cerrar sesión';
+    var logoutConfirm = isEn ? 'Log out?' : '¿Cerrar sesión?';
     authArea.innerHTML =
       '<a href="' + dashHref + '" class="btn-nav" style="font-size:13px;color:var(--c-muted)">' +
         (isEn ? 'My Account' : 'Mi Cuenta') +
       '</a>' +
-      '<button onclick="(async function(){try{await signOut();}catch(e){}window.location.href=\'index.html\';})()" class="btn-nav" style="font-size:13px;color:var(--c-muted);background:none;border:none;cursor:pointer">' +
-        (isEn ? 'Log out' : 'Cerrar sesión') +
+      '<span style="color:var(--c-muted);opacity:0.4;font-size:11px">|</span>' +
+      '<button onclick="if(!confirm(\'' + logoutConfirm + '\'))return;(async function(){try{await signOut();}catch(e){}window.location.href=\'index.html\';})()" class="btn-nav" style="font-size:13px;color:var(--c-muted);background:none;border:none;cursor:pointer">' +
+        logoutLabel +
       '</button>';
   });
 });
 </script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/service-worker.js");}</script>
 </body>
 </html>

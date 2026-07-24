@@ -101,6 +101,15 @@ serve(async (req) => {
         return json({ error: `DB update failed: ${dbErr.message}` }, 500);
       }
 
+      // 결제 히스토리 기록
+      const { error: txInsertErr } = await sb
+        .from('plan_transactions')
+        .insert({ biz_id, plan, amount_usd: parseFloat(amount), payment_ref: txId });
+      if (txInsertErr) {
+        console.warn('[process-payment] plan_transactions insert failed:', txInsertErr.message);
+        // 결제·플랜 적용은 성공 — 히스토리 실패는 로그만 남기고 계속
+      }
+
       // SB5 이메일 발송 (비차단) — businesses.languages[0] 으로 언어 감지
       if (owner_email) {
         const planLabel = (plan as string).charAt(0).toUpperCase() + (plan as string).slice(1);

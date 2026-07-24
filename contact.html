@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C94F2B">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Contact Us — AmigosNearMe</title>
 <meta name="description" content="Get in touch with the AmigosNearMe team — questions, support, or partnership inquiries.">
@@ -275,5 +278,6 @@ async function submitContactForm() {
 }
 </script>
 
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/service-worker.js");}</script>
 </body>
 </html>

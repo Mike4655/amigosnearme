@@ -1,0 +1,43 @@
+name: Monthly Contacts Reset
+
+on:
+  schedule:
+    - cron: '0 5 1 * *'   # 매월 1일 05:00 UTC (01:00 ET) 실행
+  workflow_dispatch:        # 수동 실행 가능
+
+jobs:
+  reset-contacts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reset monthly contact counts
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          python3 - <<'EOF'
+          import urllib.request, urllib.error, json, os
+
+          SUPABASE_URL = os.environ['SUPABASE_URL']
+          SERVICE_KEY  = os.environ['SUPABASE_SERVICE_ROLE_KEY']
+
+          payload = json.dumps({ 'biz_id': None }).encode()
+
+          req = urllib.request.Request(
+            f"{SUPABASE_URL}/rest/v1/rpc/reset_monthly_contacts",
+            data=b'{}',
+            headers={
+              'apikey': SERVICE_KEY,
+              'Authorization': f'Bearer {SERVICE_KEY}',
+              'Content-Type': 'application/json'
+            },
+            method='POST'
+          )
+
+          try:
+            with urllib.request.urlopen(req) as res:
+              print(f"Monthly reset complete: HTTP {res.status}")
+          except urllib.error.HTTPError as e:
+            body = e.read().decode()
+            print(f"Reset failed: {e.code} {body}")
+            raise SystemExit(1)
+          EOF

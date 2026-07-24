@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C94F2B">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>About Us — AmigosNearMe</title>
 <meta name="description" content="AmigosNearMe connects Hispanic-owned businesses and skilled workers with customers across metro Atlanta. Learn about our mission.">
@@ -141,7 +144,7 @@
     <div class="pillar-card">
       <div class="pillar-icon">👷</div>
       <div class="pillar-title" data-es>Personal y mano de obra, gratis</div>
-      <div class="pillar-title" data-en>Workers list for free</div>
+      <div class="pillar-title" data-en>Job seekers list for free</div>
       <div class="pillar-desc" data-es>Si buscas trabajo, crear tu perfil siempre es gratis. Las empresas que necesitan personal te encuentran a ti.</div>
       <div class="pillar-desc" data-en>If you're looking for work, listing yourself is always free. Businesses that need workers find you.</div>
     </div>
@@ -229,5 +232,6 @@ async function doSignOut() {
 }
 </script>
 
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/service-worker.js");}</script>
 </body>
 </html>

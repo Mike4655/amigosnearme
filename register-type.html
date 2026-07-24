@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C94F2B">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>List Your Business or Yourself — AmigosNearMe</title>
 <meta name="description" content="Choose whether you're listing a business or registering yourself as available for hire on AmigosNearMe.">
@@ -125,7 +128,7 @@
       <span class="choice-arrow">→</span>
       <div class="choice-icon">👷</div>
       <span class="choice-tag tag-worker" data-es>Personal</span>
-      <span class="choice-tag tag-worker" data-en>Worker</span>
+      <span class="choice-tag tag-worker" data-en>Job Seeker</span>
       <div class="choice-title" data-es>Busco trabajo / ofrezco mi mano de obra</div>
       <div class="choice-title" data-en>I'm looking for work / offering my labor</div>
       <div class="choice-desc" data-es>Cocina, mudanzas, construcción, producción y más. Los negocios que necesitan personal podrán encontrarte y contactarte directamente. Gratis para ti.</div>
@@ -162,5 +165,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/service-worker.js");}</script>
 </body>
 </html>
