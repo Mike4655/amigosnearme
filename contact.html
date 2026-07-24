@@ -238,19 +238,34 @@ async function doSignOut() {
   window.location.href = 'index.html';
 }
 
-// NOTE: This form is front-end only — no backend exists yet to actually deliver
-// the message. See the project's backend roadmap (database + notifications) for
-// when this becomes a real submission instead of a simulated confirmation.
-function submitContactForm() {
-  var name = document.getElementById('f-name').value.trim();
-  var email = document.getElementById('f-email').value.trim();
+async function submitContactForm() {
+  var isEn = document.body.classList.contains('en');
+  var name    = document.getElementById('f-name').value.trim();
+  var email   = document.getElementById('f-email').value.trim();
   var message = document.getElementById('f-message').value.trim();
+  var subjectEl = document.getElementById('f-subject');
+  var subject = subjectEl ? subjectEl.options[subjectEl.selectedIndex].getAttribute(isEn ? 'data-en' : 'data-es') : '';
+
   if (!name || !email || !message) {
-    var isEn = document.body.classList.contains('en');
     alert(isEn ? 'Please fill in your name, email, and message.' : 'Por favor completa tu nombre, correo y mensaje.');
     return;
   }
-  document.getElementById('form-success').classList.add('show');
+
+  var btn = document.querySelector('.btn-submit:not([style*="display:none"])') || document.querySelector('.btn-submit');
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.6'; }
+
+  try {
+    var res = await fetch('https://itlcbqecqmenfolexkuj.supabase.co/functions/v1/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bGNicWVjcW1lbmZvbGV4a3VqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEzODMyOTAsImV4cCI6MjA2Njk1OTI5MH0.QDx9SWNQmDy2TCpXn8v_jwO1QNWsUYUFN7x79FfX1D0' },
+      body: JSON.stringify({ scenario: 'CONTACT', data: { name: name, email: email, subject: subject, message: message }, lang: 'en' })
+    });
+    if (!res.ok) throw new Error('send failed');
+    document.getElementById('form-success').classList.add('show');
+  } catch(e) {
+    alert(isEn ? 'Failed to send. Please try again.' : 'Error al enviar. Inténtalo de nuevo.');
+    if (btn) { btn.disabled = false; btn.style.opacity = ''; }
+  }
 }
 </script>
 

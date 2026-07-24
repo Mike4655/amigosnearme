@@ -628,6 +628,19 @@ ${d.reason ? `<p><strong>Reason:</strong> ${d.reason}</p>` : ''}`,
 <p><a href="https://amigosnearme.com/admin.html#reviews">Review in admin console →</a></p>`,
       };
 
+    case 'CONTACT':
+      return {
+        subject: `[Contact] ${d.subject || 'General question'} — ${d.name}`,
+        html: `<p>New contact form submission:</p>
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;font-size:14px">
+  <tr><td><strong>Name</strong></td><td>${d.name}</td></tr>
+  <tr><td><strong>Email</strong></td><td>${d.email}</td></tr>
+  <tr><td><strong>Subject</strong></td><td>${d.subject || '—'}</td></tr>
+</table>
+<p style="margin-top:16px"><strong>Message:</strong></p>
+<p style="background:#f5f5f5;padding:12px;border-radius:6px">${(d.message || '').replace(/\n/g, '<br>')}</p>`,
+      };
+
     case 'AD4':
       return {
         subject: `[Admin] Cancellation request — ${d.biz_name}`,
@@ -724,7 +737,7 @@ serve(async (req: Request) => {
       lang?: string;       // 'es' | 'en' — 없으면 'es' 기본값
     };
 
-    const isAdminScenario = ['AD1','AD2','AD3','AD4','ADMIN_ZELLE'].includes(scenario);
+    const isAdminScenario = ['AD1','AD2','AD3','AD4','ADMIN_ZELLE','CONTACT'].includes(scenario);
 
     // `to` 없고 ref_id가 UUID이면 auth.users에서 이메일 조회
     let resolvedTo = to;
