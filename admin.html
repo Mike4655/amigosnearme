@@ -210,8 +210,10 @@
     <a class="sb-link" id="nav-employers" onclick="showAdminPane('employers')"><span>🏗️</span> Employers</a>
     <a class="sb-link" id="nav-workers" onclick="showAdminPane('workers')"><span>👷</span> Workers</a>
     <a class="sb-link" id="nav-verification" onclick="showAdminPane('verification')"><span>✅</span> Verification Queue<span class="nav-badge" id="badge-verification"></span></a>
+    <a class="sb-link" id="nav-zelle" onclick="showAdminPane('zelle')"><span>💸</span> Payment Pending<span class="nav-badge" id="badge-zelle"></span></a>
     <a class="sb-link" id="nav-cancellations" onclick="showAdminPane('cancellations')"><span>🚪</span> Cancellation Requests<span class="nav-badge" id="badge-cancellations"></span></a>
     <a class="sb-link" id="nav-reviews" onclick="showAdminPane('reviews')"><span>💬</span> Reviews Moderation<span class="nav-badge" id="badge-reviews"></span></a>
+    <a class="sb-link" id="nav-billing" onclick="showAdminPane('billing')"><span>🧾</span> Billing</a>
     <a class="sb-link" id="nav-settings" onclick="showAdminPane('settings')"><span>⚙️</span> Settings</a>
   </nav>
   <div class="sb-foot">Logged in as <span id="sb-user-email">…</span><br><a href="#" onclick="adminSignOut();return false" style="color:rgba(255,255,255,0.45);text-decoration:none">Sign out →</a></div>
@@ -250,8 +252,8 @@
         <div class="stat-val" style="color:var(--c-amber)" id="stat-biz-premium">—</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Pending Verification</div>
-        <div class="stat-val" style="color:var(--c-accent)" id="stat-biz-pending">—</div>
+        <div class="stat-label">Basic Plan</div>
+        <div class="stat-val" style="color:var(--c-blue)" id="stat-biz-basic">—</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Verified Businesses</div>
@@ -274,9 +276,9 @@
       </select>
     </div>
 
-    <div class="table-card">
+    <div class="table-card" style="overflow-y:auto;max-height:480px">
       <table>
-        <thead>
+        <thead style="position:sticky;top:0;background:var(--c-surface);z-index:1">
           <tr>
             <th>Business</th>
             <th>Login Email</th>
@@ -284,8 +286,8 @@
             <th>Plan</th>
             <th>Verification</th>
             <th>Rating</th>
-            <th>Contacts</th>
-            <th>Remaining</th>
+            <th>Contacts (log)</th>
+            <th>Credits Left</th>
             <th>Priority Score</th>
             <th>Status</th>
             <th></th>
@@ -338,20 +340,21 @@
       </select>
     </div>
 
-    <div class="table-card">
+    <div class="table-card" style="overflow-y:auto;max-height:480px">
       <table>
-        <thead>
+        <thead style="position:sticky;top:0;background:var(--c-surface);z-index:1">
           <tr>
-            <th>Login Email</th>
-            <th>Contacts (month)</th>
-            <th>Contacts (total)</th>
-            <th>Reviews</th>
-            <th>Status</th>
+            <th style="min-width:130px">Name</th>
+            <th style="min-width:180px">Login Email</th>
+            <th style="min-width:120px">Contacts (month)</th>
+            <th style="min-width:120px">Contacts (total)</th>
+            <th style="min-width:80px">Reviews</th>
+            <th style="min-width:90px">Status</th>
             <th></th>
           </tr>
         </thead>
         <tbody id="customer-table-body">
-          <tr><td colspan="6" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>
+          <tr><td colspan="7" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>
         </tbody>
       </table>
     </div>
@@ -443,6 +446,29 @@
   <!-- ===== END REVIEWS MODERATION PANE ===== -->
 
   <!-- ===== PLATFORM ANALYTICS PANE ===== -->
+  <!-- ══ PAYMENT PENDING PANE ══ -->
+  <div id="pane-zelle" style="display:none">
+    <div class="info-banner" style="background:var(--c-amber-light);border-color:rgba(186,117,23,0.2);margin-bottom:20px">
+      <span>💸</span>
+      <div>
+        <strong>Manual payment confirmation required.</strong>
+        Check your Zelle app (<strong>pagos@amigosnearme.com</strong>) or Wells Fargo account for incoming payments, then click <em>Confirm Payment</em> to activate.
+      </div>
+    </div>
+
+    <h3 style="font-size:14px;font-weight:700;margin-bottom:10px">📋 Business Plan Payments — Zelle</h3>
+    <div id="zelle-queue"></div>
+
+    <h3 style="font-size:14px;font-weight:700;margin:24px 0 10px">🏦 Business Plan Payments — ACH</h3>
+    <div id="ach-queue"></div>
+
+    <h3 style="font-size:14px;font-weight:700;margin:24px 0 10px">👔 Employer Credit Payments — Zelle</h3>
+    <div id="employer-credit-queue-zelle"></div>
+
+    <h3 style="font-size:14px;font-weight:700;margin:24px 0 10px">🏦 Employer Credit Payments — ACH</h3>
+    <div id="employer-credit-queue-ach"></div>
+  </div>
+
   <!-- ══ CANCELLATION REQUESTS PANE ══ -->
   <div id="pane-cancellations" style="display:none">
 
@@ -481,25 +507,25 @@
 
   <div id="pane-analytics" style="display:none">
 
-    <!-- Row 1: MRR / Revenue -->
+    <!-- Row 1: Revenue -->
     <div class="stats-row" style="grid-template-columns:repeat(4,1fr);margin-bottom:12px">
       <div class="stat-card">
-        <div class="stat-label">Est. MRR</div>
-        <div class="stat-val" id="an-mrr" style="color:var(--c-green)">—</div>
-        <div class="stat-delta" id="an-mrr-sub" style="font-size:11px;color:var(--c-muted);margin-top:4px"></div>
+        <div class="stat-label">This Month's Revenue</div>
+        <div class="stat-val" id="an-month-rev" style="color:var(--c-accent)">—</div>
+        <div class="stat-delta" id="an-month-rev-sub" style="font-size:11px;color:var(--c-muted);margin-top:4px"></div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Basic Revenue</div>
-        <div class="stat-val" id="an-basic-rev" style="color:var(--c-blue)">—</div>
-        <div class="stat-delta" id="an-basic-count" style="font-size:11px;color:var(--c-muted);margin-top:4px"></div>
+        <div class="stat-label">All-time Revenue (Plan + Credits)</div>
+        <div class="stat-val" id="an-alltime-rev" style="color:var(--c-green)">—</div>
+        <div class="stat-delta" id="an-alltime-rev-sub" style="font-size:11px;color:var(--c-muted);margin-top:4px"></div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Premium Revenue</div>
-        <div class="stat-val" id="an-prem-rev" style="color:var(--c-amber)">—</div>
-        <div class="stat-delta" id="an-prem-count" style="font-size:11px;color:var(--c-muted);margin-top:4px"></div>
+        <div class="stat-label">All-time Plan Revenue</div>
+        <div class="stat-val" id="an-plan-rev-total">—</div>
+        <div class="stat-delta" id="an-plan-rev-sub" style="font-size:11px;color:var(--c-muted);margin-top:4px"></div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Credit Revenue (all-time)</div>
+        <div class="stat-label">All-time Credit Revenue</div>
         <div class="stat-val" id="an-credit-rev">—</div>
         <div class="stat-delta" id="an-credit-sub" style="font-size:11px;color:var(--c-muted);margin-top:4px"></div>
       </div>
@@ -555,6 +581,47 @@
         </div>
       </div>
 
+      <div class="chart-card" style="grid-column:1/-1">
+        <div class="chart-title">Monthly Revenue (Plan + Credits)</div>
+        <div class="bar-chart" id="an-revenue-chart">
+          <div style="padding:20px;color:var(--c-muted);font-size:12px;text-align:center;width:100%">Loading…</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Payment History -->
+    <div class="chart-card" style="margin-top:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div class="chart-title" style="margin:0">Payment History</div>
+        <div style="display:flex;gap:8px">
+          <select id="an-pay-filter-type" onchange="filterPaymentHistory()" style="font-size:12px;border:1px solid var(--c-border);border-radius:6px;padding:4px 8px;background:var(--c-bg)">
+            <option value="all">All Types</option>
+            <option value="plan">Plan Upgrades</option>
+            <option value="credit">Credit Purchases</option>
+          </select>
+          <select id="an-pay-filter-month" onchange="filterPaymentHistory()" style="font-size:12px;border:1px solid var(--c-border);border-radius:6px;padding:4px 8px;background:var(--c-bg)">
+            <option value="all">All Months</option>
+          </select>
+        </div>
+      </div>
+      <div style="overflow-x:auto;overflow-y:auto;max-height:360px">
+        <table style="width:100%;border-collapse:collapse;font-size:13px" id="an-pay-table">
+          <thead>
+            <tr style="border-bottom:1px solid var(--c-border);color:var(--c-muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em">
+              <th style="text-align:left;padding:6px 10px;font-weight:500">Date</th>
+              <th style="text-align:left;padding:6px 10px;font-weight:500">Type</th>
+              <th style="text-align:left;padding:6px 10px;font-weight:500">Business / Employer</th>
+              <th style="text-align:left;padding:6px 10px;font-weight:500">Detail</th>
+              <th style="text-align:right;padding:6px 10px;font-weight:500">Amount</th>
+              <th style="text-align:left;padding:6px 10px;font-weight:500">Ref</th>
+            </tr>
+          </thead>
+          <tbody id="an-pay-tbody">
+            <tr><td colspan="6" style="padding:20px;text-align:center;color:var(--c-muted);font-size:12px">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
   </div>
@@ -598,21 +665,22 @@
       </select>
     </div>
 
-    <div class="table-card">
+    <div class="table-card" style="overflow-y:auto;max-height:480px">
       <table>
-        <thead>
+        <thead style="position:sticky;top:0;background:var(--c-surface);z-index:1">
           <tr>
-            <th>Login Email</th>
-            <th>Phone</th>
-            <th>Credits</th>
-            <th>Contacts (month)</th>
-            <th>Total Purchased</th>
-            <th>Status</th>
-            <th></th>
+            <th style="min-width:140px">Name</th>
+            <th style="min-width:180px">Login Email</th>
+            <th style="min-width:130px">Phone</th>
+            <th style="min-width:130px">Contacts (month)</th>
+            <th style="min-width:160px">Total Purchased Credit</th>
+            <th style="min-width:140px">Remaining Credit</th>
+            <th style="min-width:90px">Status</th>
+            <th style="min-width:80px"></th>
           </tr>
         </thead>
         <tbody id="emp-table-body">
-          <tr><td colspan="7" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>
+          <tr><td colspan="8" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>
         </tbody>
       </table>
     </div>
@@ -636,26 +704,21 @@
         <div class="stat-val" id="stat-wkr-total">—</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Verified</div>
-        <div class="stat-val" style="color:var(--c-green)" id="stat-wkr-verified">—</div>
+        <div class="stat-label">Active</div>
+        <div class="stat-val" style="color:var(--c-green)" id="stat-wkr-active">—</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Pending Verification</div>
-        <div class="stat-val" style="color:var(--c-accent)" id="stat-wkr-pending">—</div>
+        <div class="stat-label">Suspended</div>
+        <div class="stat-val" style="color:var(--c-accent)" id="stat-wkr-suspended">—</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Avg Priority Score</div>
-        <div class="stat-val" id="stat-wkr-priority">—</div>
+        <div class="stat-label">Contacts This Month</div>
+        <div class="stat-val" id="stat-wkr-contacts">—</div>
       </div>
     </div>
 
     <div class="toolbar">
       <input class="search-input" type="text" placeholder="Search by name..." onkeyup="filterWorkerTable()" id="wkr-search-box">
-      <select class="filter-select" id="wkr-verify-filter" onchange="filterWorkerTable()">
-        <option value="">All Verification</option>
-        <option value="verified">Verified</option>
-        <option value="unverified">Unverified</option>
-      </select>
       <select class="filter-select" id="wkr-status-filter" onchange="filterWorkerTable()">
         <option value="">All Statuses</option>
         <option value="active">Active</option>
@@ -663,23 +726,22 @@
       </select>
     </div>
 
-    <div class="table-card">
+    <div class="table-card" style="overflow-y:auto;max-height:480px">
       <table>
-        <thead>
+        <thead style="position:sticky;top:0;background:var(--c-surface);z-index:1">
           <tr>
-            <th>Worker</th>
-            <th>Login Email</th>
-            <th>Contact</th>
-            <th>Categories</th>
-            <th>Verification</th>
-            <th>Rating</th>
-            <th>Priority Score</th>
-            <th>Status</th>
-            <th></th>
+            <th style="min-width:160px">Worker</th>
+            <th style="min-width:140px">Categories</th>
+            <th style="min-width:180px">Login Email</th>
+            <th style="min-width:130px">Contact</th>
+            <th style="min-width:110px">Contacts (month)</th>
+            <th style="min-width:110px">Contacts (total)</th>
+            <th style="min-width:90px">Status</th>
+            <th style="min-width:80px"></th>
           </tr>
         </thead>
         <tbody id="wkr-table-body">
-          <tr><td colspan="9" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>
+          <tr><td colspan="8" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>
         </tbody>
       </table>
     </div>
@@ -755,6 +817,165 @@
   </div>
   <!-- ===== END SETTINGS PANE ===== -->
 
+  <!-- ===== BILLING PANE ===== -->
+  <div id="pane-billing" style="display:none">
+
+    <!-- View tabs -->
+    <div style="display:flex;gap:4px;margin-bottom:20px;border-bottom:0.5px solid var(--c-border);padding-bottom:0">
+      <button id="abt-biz" onclick="switchBillingTab('biz')"
+        style="padding:8px 18px;font-size:13px;font-weight:600;border:none;background:none;cursor:pointer;color:var(--c-accent);border-bottom:2px solid var(--c-accent);font-family:var(--font-body)">
+        🏢 Business Owners
+      </button>
+      <button id="abt-emp" onclick="switchBillingTab('emp')"
+        style="padding:8px 18px;font-size:13px;font-weight:600;border:none;background:none;cursor:pointer;color:var(--c-muted);border-bottom:2px solid transparent;font-family:var(--font-body)">
+        🏗️ Employers
+      </button>
+      <button id="abt-all" onclick="switchBillingTab('all')"
+        style="padding:8px 18px;font-size:13px;font-weight:600;border:none;background:none;cursor:pointer;color:var(--c-muted);border-bottom:2px solid transparent;font-family:var(--font-body)">
+        📊 Combined
+      </button>
+    </div>
+
+    <!-- ── BUSINESS TAB ── -->
+    <div id="abt-section-biz">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-label">This Month</div><div class="stat-val" id="ab-month-total">—</div><div style="font-size:11px;color:var(--c-muted);margin-top:2px" id="ab-month-sub">—</div></div>
+        <div class="stat-card"><div class="stat-label">This Year</div><div class="stat-val" id="ab-year-total">—</div><div style="font-size:11px;color:var(--c-muted);margin-top:2px" id="ab-year-sub">—</div></div>
+        <div class="stat-card"><div class="stat-label">All-time</div><div class="stat-val" id="ab-all-total">—</div><div style="font-size:11px;color:var(--c-muted);margin-top:2px" id="ab-all-sub">—</div></div>
+        <div class="stat-card"><div class="stat-label">Paying Businesses</div><div class="stat-val" id="ab-biz-count">—</div><div style="font-size:11px;color:var(--c-muted);margin-top:2px">with ≥1 payment</div></div>
+      </div>
+      <div class="chart-card" style="margin-bottom:16px">
+        <div class="chart-title">Revenue by Business</div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <thead><tr style="border-bottom:1px solid var(--c-border);color:var(--c-muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em">
+              <th style="text-align:left;padding:7px 12px;font-weight:500">Business</th>
+              <th style="text-align:left;padding:7px 12px;font-weight:500">Plan</th>
+              <th style="text-align:center;padding:7px 12px;font-weight:500">Transactions</th>
+              <th style="text-align:right;padding:7px 12px;font-weight:500">This Month</th>
+              <th style="text-align:right;padding:7px 12px;font-weight:500">This Year</th>
+              <th style="text-align:right;padding:7px 12px;font-weight:500">All-time</th>
+              <th style="text-align:center;padding:7px 12px;font-weight:500">Detail</th>
+            </tr></thead>
+            <tbody id="ab-biz-tbody"><tr><td colspan="7" style="padding:20px;text-align:center;color:var(--c-muted);font-size:12px">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+          <div class="chart-title" style="margin:0">Payment History — Business Owners</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <select id="ab-filter-biz" onchange="filterAdminBilling()" style="font-size:12px;border:1px solid var(--c-border);border-radius:6px;padding:4px 10px;background:var(--c-bg)"><option value="all">All Businesses</option></select>
+            <select id="ab-filter-period" onchange="filterAdminBilling()" style="font-size:12px;border:1px solid var(--c-border);border-radius:6px;padding:4px 10px;background:var(--c-bg)">
+              <option value="all">All Time</option><option value="month">This Month</option><option value="year">This Year</option>
+            </select>
+          </div>
+        </div>
+        <div style="overflow-x:auto;overflow-y:auto;max-height:360px">
+          <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <thead style="position:sticky;top:0;background:var(--c-surface);z-index:1"><tr style="border-bottom:1px solid var(--c-border);color:var(--c-muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em">
+              <th style="text-align:left;padding:7px 12px;font-weight:500">Date</th>
+              <th style="text-align:left;padding:7px 12px;font-weight:500">Business</th>
+              <th style="text-align:left;padding:7px 12px;font-weight:500">Detail</th>
+              <th style="text-align:right;padding:7px 12px;font-weight:500">Amount</th>
+              <th style="text-align:left;padding:7px 12px;font-weight:500">Ref #</th>
+            </tr></thead>
+            <tbody id="ab-pay-tbody"><tr><td colspan="5" style="padding:20px;text-align:center;color:var(--c-muted);font-size:12px">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- ── EMPLOYER TAB ── -->
+    <div id="abt-section-emp" style="display:none">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-label">This Month</div><div class="stat-val" id="ae-month-total">—</div><div style="font-size:11px;color:var(--c-muted);margin-top:2px" id="ae-month-sub">—</div></div>
+        <div class="stat-card"><div class="stat-label">This Year</div><div class="stat-val" id="ae-year-total">—</div><div style="font-size:11px;color:var(--c-muted);margin-top:2px" id="ae-year-sub">—</div></div>
+        <div class="stat-card"><div class="stat-label">All-time</div><div class="stat-val" id="ae-all-total">—</div><div style="font-size:11px;color:var(--c-muted);margin-top:2px" id="ae-all-sub">—</div></div>
+        <div class="stat-card"><div class="stat-label">Paying Employers</div><div class="stat-val" id="ae-emp-count">—</div><div style="font-size:11px;color:var(--c-muted);margin-top:2px">with ≥1 purchase</div></div>
+      </div>
+      <div class="chart-card" style="margin-bottom:16px">
+        <div class="chart-title">Spending by Employer</div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <thead><tr style="border-bottom:1px solid var(--c-border);color:var(--c-muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em">
+              <th style="text-align:left;padding:7px 12px;font-weight:500">Employer</th>
+              <th style="text-align:center;padding:7px 12px;font-weight:500">Purchases</th>
+              <th style="text-align:center;padding:7px 12px;font-weight:500">Credits Bought</th>
+              <th style="text-align:right;padding:7px 12px;font-weight:500">This Month</th>
+              <th style="text-align:right;padding:7px 12px;font-weight:500">This Year</th>
+              <th style="text-align:right;padding:7px 12px;font-weight:500">All-time</th>
+              <th style="text-align:center;padding:7px 12px;font-weight:500">Detail</th>
+            </tr></thead>
+            <tbody id="ae-emp-tbody"><tr><td colspan="7" style="padding:20px;text-align:center;color:var(--c-muted);font-size:12px">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+          <div class="chart-title" style="margin:0">Payment History — Employers</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <select id="ae-filter-emp" onchange="filterAdminBillingEmp()" style="font-size:12px;border:1px solid var(--c-border);border-radius:6px;padding:4px 10px;background:var(--c-bg)"><option value="all">All Employers</option></select>
+            <select id="ae-filter-period" onchange="filterAdminBillingEmp()" style="font-size:12px;border:1px solid var(--c-border);border-radius:6px;padding:4px 10px;background:var(--c-bg)">
+              <option value="all">All Time</option><option value="month">This Month</option><option value="year">This Year</option>
+            </select>
+          </div>
+        </div>
+        <div style="overflow-x:auto;overflow-y:auto;max-height:360px">
+          <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <thead style="position:sticky;top:0;background:var(--c-surface);z-index:1"><tr style="border-bottom:1px solid var(--c-border);color:var(--c-muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em">
+              <th style="text-align:left;padding:7px 12px;font-weight:500">Date</th>
+              <th style="text-align:left;padding:7px 12px;font-weight:500">Employer</th>
+              <th style="text-align:center;padding:7px 12px;font-weight:500">Credits</th>
+              <th style="text-align:right;padding:7px 12px;font-weight:500">Amount</th>
+              <th style="text-align:left;padding:7px 12px;font-weight:500">Ref #</th>
+            </tr></thead>
+            <tbody id="ae-pay-tbody"><tr><td colspan="5" style="padding:20px;text-align:center;color:var(--c-muted);font-size:12px">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── COMBINED TAB ── -->
+    <div id="abt-section-all" style="display:none">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-label">This Month (Total)</div><div class="stat-val" id="ac-month-total">—</div><div style="font-size:11px;color:var(--c-muted);margin-top:2px" id="ac-month-sub">—</div></div>
+        <div class="stat-card"><div class="stat-label">This Year (Total)</div><div class="stat-val" id="ac-year-total">—</div><div style="font-size:11px;color:var(--c-muted);margin-top:2px" id="ac-year-sub">—</div></div>
+        <div class="stat-card"><div class="stat-label">All-time (Total)</div><div class="stat-val" id="ac-all-total">—</div><div style="font-size:11px;color:var(--c-muted);margin-top:2px" id="ac-all-sub">—</div></div>
+        <div class="stat-card"><div class="stat-label">Business vs Employer</div><div class="stat-val" style="font-size:16px;line-height:1.4" id="ac-split">—</div></div>
+      </div>
+      <div class="chart-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+          <div class="chart-title" style="margin:0">Combined Payment History</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <select id="ac-filter-type" onchange="filterAdminBillingCombined()" style="font-size:12px;border:1px solid var(--c-border);border-radius:6px;padding:4px 10px;background:var(--c-bg)">
+              <option value="all">All Types</option>
+              <option value="plan">Business (Plans)</option>
+              <option value="credit">Employer (Credits)</option>
+            </select>
+            <select id="ac-filter-period" onchange="filterAdminBillingCombined()" style="font-size:12px;border:1px solid var(--c-border);border-radius:6px;padding:4px 10px;background:var(--c-bg)">
+              <option value="all">All Time</option><option value="month">This Month</option><option value="year">This Year</option>
+            </select>
+          </div>
+        </div>
+        <div style="overflow-x:auto;overflow-y:auto;max-height:360px">
+          <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <thead style="position:sticky;top:0;background:var(--c-surface);z-index:1"><tr style="border-bottom:1px solid var(--c-border);color:var(--c-muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em">
+              <th style="text-align:left;padding:7px 12px;font-weight:500">Date</th>
+              <th style="text-align:left;padding:7px 12px;font-weight:500">Type</th>
+              <th style="text-align:left;padding:7px 12px;font-weight:500">Account</th>
+              <th style="text-align:left;padding:7px 12px;font-weight:500">Detail</th>
+              <th style="text-align:right;padding:7px 12px;font-weight:500">Amount</th>
+              <th style="text-align:left;padding:7px 12px;font-weight:500">Ref #</th>
+            </tr></thead>
+            <tbody id="ac-pay-tbody"><tr><td colspan="6" style="padding:20px;text-align:center;color:var(--c-muted);font-size:12px">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- ===== END BILLING PANE ===== -->
+
   </div>
 </div>
 
@@ -778,6 +999,64 @@
       <button class="btn-modal-cancel" onclick="closeRejectModal()">Cancel</button>
       <button class="btn-modal-confirm" onclick="confirmReject()">Send & Reject</button>
     </div>
+  </div>
+</div>
+
+<!-- ===== BILLING MODAL ===== -->
+<div class="modal-overlay" id="billing-modal-overlay" onclick="if(event.target===this)closeBillingModal()">
+  <div class="modal-card" style="max-width:680px;width:100%">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <div class="modal-title" id="billing-modal-title" style="margin:0">🧾 Billing</div>
+      <button onclick="closeBillingModal()" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--c-muted);line-height:1">✕</button>
+    </div>
+    <div class="modal-sub" id="billing-modal-sub" style="margin-bottom:14px"></div>
+
+    <!-- Summary row -->
+    <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+      <div style="flex:1;min-width:130px;background:var(--c-bg);border:0.5px solid var(--c-border);border-radius:8px;padding:10px 14px">
+        <div style="font-size:11px;color:var(--c-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">This Month</div>
+        <div style="font-size:18px;font-weight:700" id="bm-month-total">—</div>
+        <div style="font-size:11px;color:var(--c-muted)" id="bm-month-count">—</div>
+      </div>
+      <div style="flex:1;min-width:130px;background:var(--c-bg);border:0.5px solid var(--c-border);border-radius:8px;padding:10px 14px">
+        <div style="font-size:11px;color:var(--c-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">This Year</div>
+        <div style="font-size:18px;font-weight:700" id="bm-year-total">—</div>
+        <div style="font-size:11px;color:var(--c-muted)" id="bm-year-count">—</div>
+      </div>
+      <div style="flex:1;min-width:130px;background:var(--c-bg);border:0.5px solid var(--c-border);border-radius:8px;padding:10px 14px">
+        <div style="font-size:11px;color:var(--c-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">All-time</div>
+        <div style="font-size:18px;font-weight:700" id="bm-all-total">—</div>
+        <div style="font-size:11px;color:var(--c-muted)" id="bm-all-count">—</div>
+      </div>
+    </div>
+
+    <!-- Filter row -->
+    <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
+      <select id="bm-filter" onchange="renderBillingModal()" style="font-size:12px;border:1px solid var(--c-border);border-radius:6px;padding:4px 10px;background:var(--c-bg)">
+        <option value="all">All History</option>
+        <option value="month">This Month</option>
+        <option value="year">This Year</option>
+      </select>
+    </div>
+
+    <!-- Table -->
+    <div style="overflow-x:auto;max-height:320px;overflow-y:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead style="position:sticky;top:0;background:var(--c-surface)">
+          <tr style="border-bottom:1px solid var(--c-border);color:var(--c-muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em">
+            <th style="text-align:left;padding:7px 10px;font-weight:500">Date</th>
+            <th style="text-align:left;padding:7px 10px;font-weight:500">Type</th>
+            <th style="text-align:left;padding:7px 10px;font-weight:500">Detail</th>
+            <th style="text-align:right;padding:7px 10px;font-weight:500">Amount</th>
+            <th style="text-align:left;padding:7px 10px;font-weight:500">Ref #</th>
+          </tr>
+        </thead>
+        <tbody id="bm-tbody">
+          <tr><td colspan="5" style="padding:20px;text-align:center;color:var(--c-muted)">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="bm-empty" style="display:none;padding:24px;text-align:center;color:var(--c-muted);font-size:13px">No payment records found.</div>
   </div>
 </div>
 
@@ -806,7 +1085,7 @@ function getAvatarInitialsAdmin(name) {
   return parts.length >= 2 ? (parts[0][0]+parts[1][0]).toUpperCase() : name.slice(0,2).toUpperCase();
 }
 
-function buildBizRow(biz, idx, loginEmail) {
+function buildBizRow(biz, idx, loginEmail, monthContactCount) {
   loginEmail = loginEmail || '—';
   var name  = biz.trade_name || biz.business_name || '(unnamed)';
   var cats  = Array.isArray(biz.categories) ? biz.categories : [];
@@ -823,22 +1102,26 @@ function buildBizRow(biz, idx, loginEmail) {
   var pvClass = priorityVal === 0 ? 'zero' : priorityVal <= 7 ? 'low' : priorityVal <= 13 ? 'mid' : 'high';
   var autoTag = plan === 'premium' ? '<span class="auto-tag">auto +10</span>' : '';
 
-  var bizStatus = biz.account_status === 'suspended' ? 'suspended' : 'active';
+  var bizStatus = biz.account_status === 'suspended' ? 'suspended' : biz.account_status === 'deleted' ? 'deleted' : 'active';
   var firstPhoto = Array.isArray(biz.photos) && biz.photos.length > 0 ? biz.photos[0] : null;
   var avatarHtml = firstPhoto
     ? '<div class="biz-avatar '+bizAvatarClass(idx)+'" style="overflow:hidden"><img src="'+escHtml(firstPhoto)+'" style="width:100%;height:100%;object-fit:contain;background:var(--c-bg);border-radius:8px"></div>'
     : '<div class="biz-avatar '+bizAvatarClass(idx)+'">'+getAvatarInitialsAdmin(name)+'</div>';
   var statusBadge = bizStatus === 'suspended'
     ? '<span class="basic-badge" style="background:var(--c-accent-light);color:var(--c-accent)">Suspended</span>'
-    : '<span class="verified-badge">Active</span>';
-  var suspendBtn = bizStatus === 'suspended'
-    ? '<button class="btn-suspend" style="background:var(--c-green-light);color:var(--c-green)" onclick="toggleBusinessStatus(this)">Reactivate</button>'
-    : '<button class="btn-suspend" style="background:var(--c-accent-light);color:var(--c-accent)" onclick="toggleBusinessStatus(this)">Suspend</button>';
+    : bizStatus === 'deleted'
+      ? '<span class="basic-badge" style="background:#f1f1f1;color:#999">Deleted</span>'
+      : '<span class="verified-badge">Active</span>';
+  var suspendBtn = bizStatus === 'deleted'
+    ? ''
+    : bizStatus === 'suspended'
+      ? '<button class="btn-suspend" style="background:var(--c-green-light);color:var(--c-green)" onclick="toggleBusinessStatus(this)">Reactivate</button>'
+      : '<button class="btn-suspend" style="background:var(--c-accent-light);color:var(--c-accent)" onclick="toggleBusinessStatus(this)">Suspend</button>';
   var contactHtml = '<span style="font-size:11px;line-height:1.6">'
     + (biz.whatsapp_phone ? '📱 '+escHtml(biz.whatsapp_phone) : '—')
     + '</span>';
 
-  return '<tr data-plan="'+plan+'" data-verify="'+(biz.verified?'verified':'basic-tier')+'" data-name="'+name.toLowerCase()+'" data-status="'+bizStatus+'" data-bizid="'+biz.id+'" data-bizname="'+escHtml(name)+'" data-loginemail="'+escHtml(loginEmail)+'">'
+  return '<tr data-plan="'+plan+'" data-verify="'+(biz.verified?'verified':'basic-tier')+'" data-name="'+name.toLowerCase()+'" data-status="'+bizStatus+'" data-bizid="'+biz.id+'" data-bizname="'+escHtml(name)+'" data-loginemail="'+escHtml(loginEmail)+'" data-email="'+escHtml(loginEmail)+'" data-preferred-lang="'+escHtml(biz.preferred_lang||'es')+'">'
     + '<td><div class="biz-cell">'+avatarHtml
     + '<div><div class="biz-name">'+escHtml(name)+'</div><div class="biz-cat">'+escHtml(catLabel)+' · '+escHtml(area)+', GA</div></div></div></td>'
     + '<td style="font-size:12px;color:var(--c-muted)">'+escHtml(loginEmail)+'</td>'
@@ -846,13 +1129,10 @@ function buildBizRow(biz, idx, loginEmail) {
     + '<td><span class="'+planClass+'">'+planLabel+'</span></td>'
     + '<td>'+verBadge+'</td>'
     + '<td>—</td>'
-    + '<td style="text-align:center">'+(biz.contacts_used_month != null ? biz.contacts_used_month : 0)+'</td>'
+    + '<td style="text-align:center">'+(monthContactCount != null ? monthContactCount : '—')+'</td>'
     + (function(){
-        var used = biz.contacts_used_month != null ? biz.contacts_used_month : 0;
-        var lim = plan === 'premium' ? Infinity : plan === 'basic' ? 10 : 3;
-        if (!isFinite(lim)) return '<td style="text-align:center;color:var(--c-green)">∞</td>';
-        var rem = Math.max(0, lim - used);
-        var color = rem === 0 ? 'var(--c-accent)' : rem === 1 ? '#E8A020' : 'var(--c-green)';
+        var rem = biz.contact_credits != null ? biz.contact_credits : 0;
+        var color = rem === 0 ? 'var(--c-accent)' : rem <= 2 ? '#E8A020' : 'var(--c-green)';
         return '<td style="text-align:center;color:'+color+';font-weight:500">'+rem+'</td>';
       })()
     + '<td><div class="priority-cell"><input type="range" class="priority-slider" min="0" max="20" value="'+priorityVal+'" oninput="updatePriority(this)">'
@@ -867,6 +1147,457 @@ function buildBizRow(biz, idx, loginEmail) {
     + '</tr>';
 }
 
+/* ===== BILLING MODAL ===== */
+var _bmRows = [];
+
+async function showBizBilling(bizId, bizName) {
+  var overlay = document.getElementById('billing-modal-overlay');
+  var titleEl = document.getElementById('billing-modal-title');
+  var subEl   = document.getElementById('billing-modal-sub');
+  var tbody   = document.getElementById('bm-tbody');
+  if (!overlay) return;
+
+  if (titleEl) titleEl.textContent = '🧾 ' + bizName;
+  if (subEl)   subEl.textContent   = 'Business ID: ' + bizId;
+  if (tbody)   tbody.innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--c-muted)">Loading…</td></tr>';
+  ['bm-month-total','bm-year-total','bm-all-total'].forEach(function(id){ var e=document.getElementById(id); if(e) e.textContent='—'; });
+  document.getElementById('bm-filter').value = 'all';
+  document.getElementById('bm-empty').style.display = 'none';
+  overlay.classList.add('show');
+
+  try {
+    var sb = getSupabase();
+    var { data: txs, error } = await sb
+      .from('plan_transactions')
+      .select('plan, amount_usd, payment_ref, created_at')
+      .eq('biz_id', bizId)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    txs = txs || [];
+
+    var now        = new Date();
+    var thisYear   = now.getFullYear();
+    var thisMonth  = now.getMonth();
+    var monthStart = new Date(thisYear, thisMonth, 1).getTime();
+    var yearStart  = new Date(thisYear, 0, 1).getTime();
+    var monthTotal = 0, monthCount = 0, yearTotal = 0, yearCount = 0, allTotal = 0;
+
+    _bmRows = txs.map(function(t) {
+      var d   = new Date(t.created_at);
+      var ts  = d.getTime();
+      var amt = parseFloat(t.amount_usd || 0);
+      var planName = t.plan ? (t.plan.charAt(0).toUpperCase() + t.plan.slice(1)) : '—';
+      allTotal += amt;
+      if (ts >= yearStart)  { yearTotal  += amt; yearCount++;  }
+      if (ts >= monthStart) { monthTotal += amt; monthCount++; }
+      return {
+        date:   d.toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' }),
+        detail: planName + ' Plan',
+        amount: amt,
+        ref:    t.payment_ref || '—',
+        ts:     ts,
+        year:   d.getFullYear()
+      };
+    });
+
+    var fmt = function(n) { return '$' + n.toFixed(2); };
+    var setEl = function(id, v) { var e=document.getElementById(id); if(e) e.textContent=v; };
+    setEl('bm-month-total', fmt(monthTotal));
+    setEl('bm-month-count', monthCount + ' transaction' + (monthCount!==1?'s':''));
+    setEl('bm-year-total',  fmt(yearTotal));
+    setEl('bm-year-count',  yearCount  + ' transaction' + (yearCount!==1?'s':''));
+    setEl('bm-all-total',   fmt(allTotal));
+    setEl('bm-all-count',   txs.length + ' transaction' + (txs.length!==1?'s':''));
+
+    renderBillingModal();
+  } catch(e) {
+    console.error('[billing modal]', e);
+    var tb = document.getElementById('bm-tbody');
+    if (tb) tb.innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--c-muted)">Failed to load.</td></tr>';
+  }
+}
+
+function renderBillingModal() {
+  var filter   = (document.getElementById('bm-filter') || {}).value || 'all';
+  var now      = new Date();
+  var mStart   = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+  var yStart   = new Date(now.getFullYear(), 0, 1).getTime();
+  var filtered = _bmRows.filter(function(r) {
+    if (filter === 'month') return r.ts >= mStart;
+    if (filter === 'year')  return r.ts >= yStart;
+    return true;
+  });
+  var tbody  = document.getElementById('bm-tbody');
+  var emptyEl = document.getElementById('bm-empty');
+  if (!filtered.length) {
+    if (tbody) tbody.innerHTML = '';
+    if (emptyEl) emptyEl.style.display = 'block';
+    return;
+  }
+  if (emptyEl) emptyEl.style.display = 'none';
+  if (tbody) tbody.innerHTML = filtered.map(function(r) {
+    return '<tr style="border-bottom:0.5px solid var(--c-border)">'
+      + '<td style="padding:8px 10px;color:var(--c-muted)">' + r.date + '</td>'
+      + '<td style="padding:8px 10px"><span style="background:#dbeafe;color:#1d4ed8;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600">Plan Upgrade</span></td>'
+      + '<td style="padding:8px 10px;font-weight:500">' + r.detail + '</td>'
+      + '<td style="padding:8px 10px;text-align:right;font-weight:700">$' + r.amount.toFixed(2) + '</td>'
+      + '<td style="padding:8px 10px;color:var(--c-muted);font-family:monospace;font-size:11px">' + r.ref + '</td>'
+      + '</tr>';
+  }).join('');
+}
+
+function closeBillingModal() {
+  var overlay = document.getElementById('billing-modal-overlay');
+  if (overlay) overlay.classList.remove('show');
+  _bmRows = [];
+}
+
+/* ===== ADMIN BILLING PANE ===== */
+var _adminBillingLoaded = false;
+var _adminBillingRows = [];   // all plan_transactions enriched with biz name
+
+async function loadAdminBilling() {
+  if (_adminBillingLoaded) { filterAdminBilling(); return; }
+  var setEl = function(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
+
+  try {
+    var sb = getSupabase();
+    var [txRes, bizRes] = await Promise.all([
+      sb.from('plan_transactions')
+        .select('biz_id, plan, amount_usd, payment_ref, created_at')
+        .order('created_at', { ascending: false }),
+      sb.from('businesses')
+        .select('id, trade_name, business_name, plan')
+        .eq('is_worker', false)
+    ]);
+
+    var txs  = txRes.data  || [];
+    var bizs = bizRes.data || [];
+
+    var bizMap = {};
+    bizs.forEach(function(b) {
+      bizMap[b.id] = { name: b.trade_name || b.business_name || '—', plan: b.plan || 'free' };
+    });
+
+    var now        = new Date();
+    var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    var yearStart  = new Date(now.getFullYear(), 0, 1).getTime();
+
+    var monthTotal = 0, yearTotal = 0, allTotal = 0;
+    var bizRevMap  = {};   // bizId → {name, plan, month, year, all, count}
+
+    _adminBillingRows = txs.map(function(t) {
+      var d   = new Date(t.created_at);
+      var ts  = d.getTime();
+      var amt = parseFloat(t.amount_usd || 0);
+      var biz = bizMap[t.biz_id] || { name: '(unknown)', plan: '—' };
+      var planName = t.plan ? (t.plan.charAt(0).toUpperCase() + t.plan.slice(1)) : '—';
+
+      allTotal += amt;
+      if (ts >= yearStart)  yearTotal  += amt;
+      if (ts >= monthStart) monthTotal += amt;
+
+      if (!bizRevMap[t.biz_id]) {
+        bizRevMap[t.biz_id] = { name: biz.name, plan: biz.plan, month: 0, year: 0, all: 0, count: 0 };
+      }
+      bizRevMap[t.biz_id].all   += amt;
+      bizRevMap[t.biz_id].count += 1;
+      if (ts >= yearStart)  bizRevMap[t.biz_id].year  += amt;
+      if (ts >= monthStart) bizRevMap[t.biz_id].month += amt;
+
+      return {
+        date:    d.toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' }),
+        bizId:   t.biz_id,
+        bizName: biz.name,
+        detail:  planName + ' Plan',
+        amount:  amt,
+        ref:     t.payment_ref || '—',
+        ts:      ts
+      };
+    });
+
+    // Summary cards
+    var fmt = function(n) { return '$' + n.toFixed(2); };
+    setEl('ab-month-total', fmt(monthTotal));
+    setEl('ab-month-sub',   txs.filter(function(t){ return new Date(t.created_at).getTime() >= monthStart; }).length + ' transactions');
+    setEl('ab-year-total',  fmt(yearTotal));
+    setEl('ab-year-sub',    txs.filter(function(t){ return new Date(t.created_at).getTime() >= yearStart; }).length + ' transactions');
+    setEl('ab-all-total',   fmt(allTotal));
+    setEl('ab-all-sub',     txs.length + ' total transactions');
+    setEl('ab-biz-count',   Object.keys(bizRevMap).length);
+
+    // Per-business breakdown table
+    var PLAN_LABELS = { free: 'Free', basic: '⭐ Basic', premium: '🌟 Premium' };
+    var PLAN_CLASSES = { free: 'plan-badge plan-free', basic: 'plan-badge plan-basic', premium: 'plan-badge plan-premium' };
+    var bizRows = Object.keys(bizRevMap)
+      .map(function(id) { return Object.assign({ id: id }, bizRevMap[id]); })
+      .sort(function(a, b) { return b.all - a.all; });
+
+    var bizTbody = document.getElementById('ab-biz-tbody');
+    if (bizTbody) {
+      if (!bizRows.length) {
+        bizTbody.innerHTML = '<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--c-muted);font-size:12px">No payment records yet.</td></tr>';
+      } else {
+        bizTbody.innerHTML = bizRows.map(function(b) {
+          var planClass = PLAN_CLASSES[b.plan] || 'plan-badge plan-free';
+          var planLabel = PLAN_LABELS[b.plan]  || b.plan;
+          return '<tr style="border-bottom:0.5px solid var(--c-border)">'
+            + '<td style="padding:9px 12px;font-weight:500"><a href="profile.html?id=' + escHtml(b.id) + '" target="_blank" style="color:inherit;text-decoration:underline;text-underline-offset:2px">' + escHtml(b.name) + '</a></td>'
+            + '<td style="padding:9px 12px"><span class="' + planClass + '">' + planLabel + '</span></td>'
+            + '<td style="padding:9px 12px;text-align:center;color:var(--c-muted)">' + b.count + '</td>'
+            + '<td style="padding:9px 12px;text-align:right">' + (b.month > 0 ? '<strong>$' + b.month.toFixed(2) + '</strong>' : '<span style="color:var(--c-muted)">—</span>') + '</td>'
+            + '<td style="padding:9px 12px;text-align:right">' + (b.year  > 0 ? '$' + b.year.toFixed(2)  : '<span style="color:var(--c-muted)">—</span>') + '</td>'
+            + '<td style="padding:9px 12px;text-align:right;font-weight:600">$' + b.all.toFixed(2) + '</td>'
+            + '<td style="padding:9px 12px;text-align:center"><button class="btn-save" style="padding:3px 10px;font-size:11px" onclick="filterBizDetail(\'' + escHtml(b.id) + '\')">View</button></td>'
+            + '</tr>';
+        }).join('');
+      }
+    }
+
+    // Business filter dropdown
+    var bizSel = document.getElementById('ab-filter-biz');
+    if (bizSel) {
+      var opts = '<option value="all">All Businesses</option>'
+        + bizRows.map(function(b) {
+            return '<option value="' + escHtml(b.id) + '">' + escHtml(b.name) + '</option>';
+          }).join('');
+      bizSel.innerHTML = opts;
+    }
+
+    _adminBillingLoaded = true;
+    filterAdminBilling();
+  } catch(e) {
+    console.error('[adminBilling]', e);
+    var t = document.getElementById('ab-pay-tbody');
+    if (t) t.innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--c-muted)">Failed to load.</td></tr>';
+  }
+}
+
+function filterBizDetail(bizId) {
+  var sel = document.getElementById('ab-filter-biz');
+  if (sel) sel.value = bizId;
+  document.getElementById('ab-pay-table').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  filterAdminBilling();
+}
+
+function filterAdminBilling() {
+  var bizFilter    = (document.getElementById('ab-filter-biz')    || {}).value || 'all';
+  var periodFilter = (document.getElementById('ab-filter-period') || {}).value || 'all';
+  var now          = new Date();
+  var monthStart   = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+  var yearStart    = new Date(now.getFullYear(), 0, 1).getTime();
+
+  var filtered = _adminBillingRows.filter(function(r) {
+    if (bizFilter !== 'all' && r.bizId !== bizFilter) return false;
+    if (periodFilter === 'month') return r.ts >= monthStart;
+    if (periodFilter === 'year')  return r.ts >= yearStart;
+    return true;
+  });
+
+  var tbody = document.getElementById('ab-pay-tbody');
+  if (!tbody) return;
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--c-muted);font-size:12px">No records found.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = filtered.map(function(r) {
+    return '<tr style="border-bottom:0.5px solid var(--c-border)">'
+      + '<td style="padding:8px 12px;font-size:12px;color:var(--c-muted)">' + r.date + '</td>'
+      + '<td style="padding:8px 12px;font-size:13px;font-weight:500">' + escHtml(r.bizName) + '</td>'
+      + '<td style="padding:8px 12px"><span style="background:var(--c-blue-light);color:var(--c-blue);border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600">' + r.detail + '</span></td>'
+      + '<td style="padding:8px 12px;text-align:right;font-weight:700">$' + r.amount.toFixed(2) + '</td>'
+      + '<td style="padding:8px 12px;font-size:11px;color:var(--c-muted);font-family:monospace">' + r.ref + '</td>'
+      + '</tr>';
+  }).join('');
+}
+
+/* ===== BILLING TAB SWITCHER ===== */
+var _adminBillingEmpLoaded = false;
+var _adminBillingEmpRows   = [];
+var _adminBillingCombinedReady = false;
+var _combinedRows = [];
+
+function switchBillingTab(tab) {
+  ['biz','emp','all'].forEach(function(t) {
+    var sec = document.getElementById('abt-section-' + t);
+    var btn = document.getElementById('abt-' + t);
+    var active = t === tab;
+    if (sec) sec.style.display = active ? 'block' : 'none';
+    if (btn) {
+      btn.style.color       = active ? 'var(--c-accent)' : 'var(--c-muted)';
+      btn.style.borderBottom = active ? '2px solid var(--c-accent)' : '2px solid transparent';
+    }
+  });
+  if (tab === 'emp') loadAdminBillingEmp();
+  if (tab === 'all') loadAdminBillingCombined();
+}
+
+/* ===== EMPLOYER BILLING ===== */
+async function loadAdminBillingEmp() {
+  if (_adminBillingEmpLoaded) { filterAdminBillingEmp(); return; }
+  var setEl = function(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
+  try {
+    var sb = getSupabase();
+    // SECURITY DEFINER RPC — credit_transactions/employer_profiles RLS 우회
+    var txRpcRes = await sb.rpc('get_employer_credit_transactions');
+    if (txRpcRes.error) console.error('[adminBillingEmp] rpc error:', txRpcRes.error);
+    var txs = txRpcRes.data || [];
+
+    var now        = new Date();
+    var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    var yearStart  = new Date(now.getFullYear(), 0, 1).getTime();
+    var mAmt = 0, yAmt = 0, aAmt = 0;
+    var empRevMap  = {};
+
+    _adminBillingEmpRows = txs.map(function(t) {
+      var d   = new Date(t.created_at);
+      var ts  = d.getTime();
+      var amt = parseFloat(t.amount_usd || 0);
+      var cr  = t.credits_added || 0;
+      var name = t.display_name || t.email || '(unknown)';
+      aAmt += amt;
+      if (ts >= yearStart)  yAmt += amt;
+      if (ts >= monthStart) mAmt += amt;
+      if (!empRevMap[t.employer_id]) empRevMap[t.employer_id] = { name: name, month: 0, year: 0, all: 0, count: 0, credits: 0 };
+      empRevMap[t.employer_id].all     += amt;
+      empRevMap[t.employer_id].credits += cr;
+      empRevMap[t.employer_id].count   += 1;
+      if (ts >= yearStart)  empRevMap[t.employer_id].year  += amt;
+      if (ts >= monthStart) empRevMap[t.employer_id].month += amt;
+      return { date: d.toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' }),
+               empId: t.employer_id, empName: name, credits: cr, amount: amt, ref: t.payment_ref || '—', ts: ts };
+    });
+
+    var fmt = function(n) { return '$' + n.toFixed(2); };
+    setEl('ae-month-total', fmt(mAmt)); setEl('ae-month-sub', txs.filter(function(t){ return new Date(t.created_at).getTime() >= monthStart; }).length + ' purchases');
+    setEl('ae-year-total',  fmt(yAmt)); setEl('ae-year-sub',  txs.filter(function(t){ return new Date(t.created_at).getTime() >= yearStart;  }).length + ' purchases');
+    setEl('ae-all-total',   fmt(aAmt)); setEl('ae-all-sub',   txs.length + ' total purchases');
+    setEl('ae-emp-count',   Object.keys(empRevMap).length);
+
+    var empRows = Object.keys(empRevMap).map(function(id) { return Object.assign({ id: id }, empRevMap[id]); }).sort(function(a,b){ return b.all - a.all; });
+    var empTbody = document.getElementById('ae-emp-tbody');
+    if (empTbody) {
+      empTbody.innerHTML = empRows.length ? empRows.map(function(e) {
+        return '<tr style="border-bottom:0.5px solid var(--c-border)">'
+          + '<td style="padding:9px 12px;font-weight:500">' + escHtml(e.name) + '</td>'
+          + '<td style="padding:9px 12px;text-align:center;color:var(--c-muted)">' + e.count + '</td>'
+          + '<td style="padding:9px 12px;text-align:center"><span style="background:var(--c-green-light);color:var(--c-green);border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600">' + e.credits + '</span></td>'
+          + '<td style="padding:9px 12px;text-align:right">' + (e.month > 0 ? '<strong>$' + e.month.toFixed(2) + '</strong>' : '<span style="color:var(--c-muted)">—</span>') + '</td>'
+          + '<td style="padding:9px 12px;text-align:right">' + (e.year  > 0 ? '$' + e.year.toFixed(2)  : '<span style="color:var(--c-muted)">—</span>') + '</td>'
+          + '<td style="padding:9px 12px;text-align:right;font-weight:600">$' + e.all.toFixed(2) + '</td>'
+          + '<td style="padding:9px 12px;text-align:center"><button class="btn-save" style="padding:3px 10px;font-size:11px" onclick="filterEmpDetail(\'' + escHtml(e.id) + '\')">View</button></td>'
+          + '</tr>';
+      }).join('')
+      : '<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--c-muted);font-size:12px">No employer payments yet.</td></tr>';
+    }
+
+    var empSel = document.getElementById('ae-filter-emp');
+    if (empSel) empSel.innerHTML = '<option value="all">All Employers</option>' + empRows.map(function(e) { return '<option value="' + escHtml(e.id) + '">' + escHtml(e.name) + '</option>'; }).join('');
+
+    _adminBillingEmpLoaded = true;
+    filterAdminBillingEmp();
+  } catch(e) { console.error('[adminBillingEmp]', e); }
+}
+
+function filterEmpDetail(empId) {
+  var sel = document.getElementById('ae-filter-emp');
+  if (sel) sel.value = empId;
+  document.getElementById('ae-pay-tbody').closest('table').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  filterAdminBillingEmp();
+}
+
+function filterAdminBillingEmp() {
+  var empFilter    = (document.getElementById('ae-filter-emp')    || {}).value || 'all';
+  var periodFilter = (document.getElementById('ae-filter-period') || {}).value || 'all';
+  var now = new Date();
+  var mStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+  var yStart = new Date(now.getFullYear(), 0, 1).getTime();
+  var filtered = _adminBillingEmpRows.filter(function(r) {
+    if (empFilter !== 'all' && r.empId !== empFilter) return false;
+    if (periodFilter === 'month') return r.ts >= mStart;
+    if (periodFilter === 'year')  return r.ts >= yStart;
+    return true;
+  });
+  var tbody = document.getElementById('ae-pay-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = filtered.length ? filtered.map(function(r) {
+    return '<tr style="border-bottom:0.5px solid var(--c-border)">'
+      + '<td style="padding:8px 12px;font-size:12px;color:var(--c-muted)">' + r.date + '</td>'
+      + '<td style="padding:8px 12px;font-weight:500">' + escHtml(r.empName) + '</td>'
+      + '<td style="padding:8px 12px;text-align:center"><span style="background:var(--c-green-light);color:var(--c-green);border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600">+' + r.credits + '</span></td>'
+      + '<td style="padding:8px 12px;text-align:right;font-weight:700">$' + r.amount.toFixed(2) + '</td>'
+      + '<td style="padding:8px 12px;font-size:11px;color:var(--c-muted);font-family:monospace">' + r.ref + '</td>'
+      + '</tr>';
+  }).join('')
+  : '<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--c-muted);font-size:12px">No records found.</td></tr>';
+}
+
+/* ===== COMBINED BILLING ===== */
+async function loadAdminBillingCombined() {
+  if (_adminBillingCombinedReady) { filterAdminBillingCombined(); return; }
+  // Ensure both datasets are loaded first
+  if (!_adminBillingLoaded)    await loadAdminBilling();
+  if (!_adminBillingEmpLoaded) await loadAdminBillingEmp();
+
+  var now        = new Date();
+  var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+  var yearStart  = new Date(now.getFullYear(), 0, 1).getTime();
+
+  _combinedRows = _adminBillingRows.map(function(r) {
+    return { date: r.date, type: 'plan', typeBadge: '<span style="background:var(--c-blue-light);color:var(--c-blue);border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600">Business Plan</span>',
+             account: r.bizName, detail: r.detail, amount: r.amount, ref: r.ref, ts: r.ts };
+  }).concat(_adminBillingEmpRows.map(function(r) {
+    return { date: r.date, type: 'credit', typeBadge: '<span style="background:var(--c-green-light);color:var(--c-green);border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600">Employer Credits</span>',
+             account: r.empName, detail: '+' + r.credits + ' credits', amount: r.amount, ref: r.ref, ts: r.ts };
+  })).sort(function(a, b) { return b.ts - a.ts; });
+
+  // Summary
+  var fmt = function(n) { return '$' + n.toFixed(2); };
+  var setEl = function(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
+  var mAmt = 0, yAmt = 0, aAmt = 0, mCnt = 0, yCnt = 0;
+  _combinedRows.forEach(function(r) {
+    aAmt += r.amount;
+    if (r.ts >= yearStart)  { yAmt += r.amount; yCnt++; }
+    if (r.ts >= monthStart) { mAmt += r.amount; mCnt++; }
+  });
+  var bizTotal = _adminBillingRows.reduce(function(s,r){ return s + r.amount; }, 0);
+  var empTotal = _adminBillingEmpRows.reduce(function(s,r){ return s + r.amount; }, 0);
+  setEl('ac-month-total', fmt(mAmt)); setEl('ac-month-sub', mCnt + ' transactions');
+  setEl('ac-year-total',  fmt(yAmt)); setEl('ac-year-sub',  yCnt + ' transactions');
+  setEl('ac-all-total',   fmt(aAmt)); setEl('ac-all-sub',   _combinedRows.length + ' total');
+  setEl('ac-split', 'Biz ' + fmt(bizTotal) + ' / Emp ' + fmt(empTotal));
+
+  _adminBillingCombinedReady = true;
+  filterAdminBillingCombined();
+}
+
+function filterAdminBillingCombined() {
+  var typeFilter   = (document.getElementById('ac-filter-type')   || {}).value || 'all';
+  var periodFilter = (document.getElementById('ac-filter-period') || {}).value || 'all';
+  var now = new Date();
+  var mStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+  var yStart = new Date(now.getFullYear(), 0, 1).getTime();
+  var filtered = _combinedRows.filter(function(r) {
+    if (typeFilter !== 'all' && r.type !== typeFilter) return false;
+    if (periodFilter === 'month') return r.ts >= mStart;
+    if (periodFilter === 'year')  return r.ts >= yStart;
+    return true;
+  });
+  var tbody = document.getElementById('ac-pay-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = filtered.length ? filtered.map(function(r) {
+    return '<tr style="border-bottom:0.5px solid var(--c-border)">'
+      + '<td style="padding:8px 12px;font-size:12px;color:var(--c-muted)">' + r.date + '</td>'
+      + '<td style="padding:8px 12px">' + r.typeBadge + '</td>'
+      + '<td style="padding:8px 12px;font-weight:500">' + escHtml(r.account) + '</td>'
+      + '<td style="padding:8px 12px;font-size:12px;color:var(--c-muted)">' + escHtml(r.detail) + '</td>'
+      + '<td style="padding:8px 12px;text-align:right;font-weight:700">$' + r.amount.toFixed(2) + '</td>'
+      + '<td style="padding:8px 12px;font-size:11px;color:var(--c-muted);font-family:monospace">' + r.ref + '</td>'
+      + '</tr>';
+  }).join('')
+  : '<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--c-muted);font-size:12px">No records found.</td></tr>';
+}
+
 async function adminActivatePlan(btn) {
   var bizId = btn.getAttribute('data-bizid');
   var newPlan = btn.getAttribute('data-plan');
@@ -874,7 +1605,7 @@ async function adminActivatePlan(btn) {
   btn.disabled = true; btn.textContent = 'Activating…';
   try {
     var { error } = await getSupabase().from('businesses')
-      .update({ plan: newPlan, pending_plan: null, contacts_used_month: 0 })
+      .update({ plan: newPlan, pending_plan: null })
       .eq('id', bizId);
     if (error) throw error;
     showAdminToast('✅ Plan activated: ' + newPlan);
@@ -895,12 +1626,27 @@ function buildVerifCard(biz, idx) {
   var d = biz.created_at ? new Date(biz.created_at) : null;
   var submittedStr = d ? 'Submitted ' + Math.floor((Date.now()-d)/86400000) + ' days ago' : '';
 
-  return '<div class="queue-card" data-vstatus="pending" data-bizid="'+biz.id+'" data-bizname="'+escHtml(name)+'">'
+  var docs = Array.isArray(biz.docs) ? biz.docs : [];
+  var chipsHtml = docs.map(function(doc) {
+    if (doc.type === 'ein') {
+      return '<span class="doc-chip">🔢 EIN: ' + escHtml(doc.url || '(none)') + '</span>';
+    } else if (doc.type === 'document' && doc.url && doc.url !== 'pending_upload') {
+      var pubUrl = getSupabase().storage.from('business-docs').getPublicUrl(doc.url).data.publicUrl;
+      var fname = doc.url.split('/').pop();
+      return '<span class="doc-chip">📄 <a href="' + escHtml(pubUrl) + '" target="_blank" style="color:inherit">' + escHtml(fname) + '</a></span>';
+    } else if (doc.url === 'pending_upload') {
+      return '<span class="doc-chip" style="color:var(--c-muted)">📄 Doc pending upload</span>';
+    }
+    return '<span class="doc-chip">📋 ' + escHtml(doc.type || 'unknown') + '</span>';
+  }).join('');
+  if (!chipsHtml) chipsHtml = '<span class="doc-chip" style="color:var(--c-muted)">No documents submitted</span>';
+
+  return '<div class="queue-card" data-vstatus="pending" data-bizid="'+biz.id+'" data-bizname="'+escHtml(name)+'" data-email="'+escHtml(biz._email||'')+'" data-preferred-lang="'+escHtml(biz.preferred_lang||'es')+'">'
     + '<div class="queue-main"><div class="biz-cell">'
     + '<div class="biz-avatar '+bizAvatarClass(idx)+'">'+getAvatarInitialsAdmin(name)+'</div>'
     + '<div><div class="biz-name">'+escHtml(name)+'</div>'
     + '<div class="biz-cat">'+escHtml(catLabel)+' · '+escHtml(area)+', GA · '+submittedStr+'</div></div>'
-    + '</div><div class="doc-chips"><span class="doc-chip">📋 Registered business</span></div></div>'
+    + '</div><div class="doc-chips">'+chipsHtml+'</div></div>'
     + '<div class="queue-actions">'
     + '<button class="btn-reject" onclick="openRejectModal(this,\'verification\')">Reject</button>'
     + '<button class="btn-approve" onclick="reviewVerification(this,\'approved\')">✓ Approve</button>'
@@ -917,7 +1663,7 @@ async function getAdminEmailMap(ownerIds) {
   try {
     var { data } = await getSupabase().rpc('admin_get_user_emails', { p_user_ids: ids });
     var map = {};
-    (data || []).forEach(function(r){ map[r.user_id] = r.email; });
+    (data || []).forEach(function(r){ map[r.id || r.user_id] = r.email; });
     return map;
   } catch(e) { return {}; }
 }
@@ -945,27 +1691,42 @@ async function initAdminPage() {
     var { data: businesses, error: bizErr } = await sb
       .from('businesses')
       .select('*')
+      .eq('is_worker', false)
       .order('created_at', { ascending: false });
 
     var tbody = document.getElementById('biz-table-body');
     if (businesses && businesses.length) {
       var bizOwnerIds = businesses.map(function(b){ return b.owner_id; });
-      var bizEmailMap = await getAdminEmailMap(bizOwnerIds);
-      tbody.innerHTML = businesses.map(function(b, idx){ return buildBizRow(b, idx, bizEmailMap[b.owner_id] || '—'); }).join('');
+      var monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+
+      var [bizEmailMap, clRes] = await Promise.all([
+        getAdminEmailMap(bizOwnerIds),
+        sb.rpc('get_contact_log_admin')
+      ]);
+
+      // 업체별 이번 달 실제 contact 횟수
+      var contactCountMap = {};
+      (clRes.data || []).filter(function(r){ return r.created_at >= monthStart && !r.limit_hit; }).forEach(function(r) {
+        contactCountMap[r.biz_id] = (contactCountMap[r.biz_id] || 0) + 1;
+      });
+
+      tbody.innerHTML = businesses.map(function(b, idx){
+        return buildBizRow(b, idx, bizEmailMap[b.owner_id] || '—', contactCountMap[b.id] || 0);
+      }).join('');
 
       var total    = businesses.length;
       var premium  = businesses.filter(function(b){ return b.plan==='premium'; }).length;
-      var pending  = businesses.filter(function(b){ return !b.verified; }).length;
+      var basic    = businesses.filter(function(b){ return b.plan==='basic'; }).length;
       var verified = businesses.filter(function(b){ return b.verified; }).length;
 
       var el;
       el = document.getElementById('stat-biz-total');    if (el) el.textContent = total;
       el = document.getElementById('stat-biz-premium');  if (el) el.textContent = premium;
-      el = document.getElementById('stat-biz-pending');  if (el) el.textContent = pending;
+      el = document.getElementById('stat-biz-basic');    if (el) el.textContent = basic;
       el = document.getElementById('stat-biz-verified'); if (el) el.textContent = verified;
     } else {
       tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--c-muted);padding:20px">No businesses registered yet.</td></tr>';
-      ['stat-biz-total','stat-biz-premium','stat-biz-pending','stat-biz-adjusted'].forEach(function(id){
+      ['stat-biz-total','stat-biz-premium','stat-biz-basic','stat-biz-verified'].forEach(function(id){
         var el = document.getElementById(id); if (el) el.textContent = '0';
       });
     }
@@ -979,10 +1740,17 @@ async function initAdminPage() {
     var bizMap = {};
     (businesses || []).forEach(function(b){ bizMap[b.id] = b; });
 
-    var verifItems = (vqRows || []).map(function(vq){
-      var biz = bizMap[vq.business_id] || {};
-      return Object.assign({}, biz, { vq_id: vq.id, vq_doc_type: vq.document_type, vq_doc_url: vq.document_url });
-    }).filter(function(item){ return item.id; });
+    // 업체별로 제출 자료 그룹핑
+    var verifGroups = {};
+    (vqRows || []).forEach(function(vq) {
+      var biz = bizMap[vq.business_id];
+      if (!biz) return;
+      if (!verifGroups[vq.business_id]) {
+        verifGroups[vq.business_id] = Object.assign({}, biz, { docs: [], _email: bizEmailMap[biz.owner_id] || '' });
+      }
+      verifGroups[vq.business_id].docs.push({ type: vq.document_type, url: vq.document_url, id: vq.id });
+    });
+    var verifItems = Object.values(verifGroups);
 
     var queue = document.getElementById('verification-queue');
     var emptyEl = document.getElementById('verification-empty');
@@ -1032,7 +1800,7 @@ function markInvalid(el) { if (el) el.classList.add('input-error'); }
 function clearInvalid(el) { if (el) el.classList.remove('input-error'); }
 
 function showAdminPane(pane) {
-  var panes = ['businesses','customers','verification','reviews','cancellations','employers','workers','analytics','settings'];
+  var panes = ['businesses','customers','verification','reviews','cancellations','zelle','employers','workers','analytics','settings','billing'];
   panes.forEach(function(p) {
     var el = document.getElementById('pane-' + p);
     if (el) el.style.display = (p === pane) ? 'block' : 'none';
@@ -1046,10 +1814,12 @@ function showAdminPane(pane) {
     verification: ['Verification Queue', 'Review submitted documents and grant the Verified badge'],
     reviews:      ['Reviews Moderation', 'Review flagged content before it stays public'],
     cancellations:['Cancellation Requests', 'Review and process account cancellation requests'],
+    zelle:        ['Payment Pending', 'Confirm Zelle/ACH payments and activate business plans or employer credits'],
     employers:    ['Employers', 'Manage employer accounts, credits, and suspension'],
     workers:      ['Workers', 'Manage worker profiles, verification, and priority'],
     analytics:    ['Platform Analytics', 'Growth, plan mix, and category trends across AmigosNearMe'],
-    settings:     ['Settings', 'Platform-wide defaults and admin team access']
+    settings:     ['Settings', 'Platform-wide defaults and admin team access'],
+    billing:      ['Billing', 'Payment history and revenue breakdown by business']
   };
   document.getElementById('top-bar-title').textContent = titles[pane][0];
   document.getElementById('top-bar-sub').textContent = titles[pane][1];
@@ -1059,8 +1829,10 @@ function showAdminPane(pane) {
   if (pane === 'employers')     loadEmployers();
   if (pane === 'workers')       loadWorkers();
   if (pane === 'cancellations') { loadCancellations(); setNavBadge('badge-cancellations', 0); }
+  if (pane === 'zelle')        { loadZellePending(); setNavBadge('badge-zelle', 0); }
   if (pane === 'verification')  { setNavBadge('badge-verification', 0); }
   if (pane === 'reviews')       { loadFlaggedReviews(); setNavBadge('badge-reviews', 0); }
+  if (pane === 'billing')       loadAdminBilling();
 }
 
 function setNavBadge(id, count) {
@@ -1073,8 +1845,9 @@ function setNavBadge(id, count) {
 async function loadNavBadges() {
   var sb = getSupabase();
   try {
-    var { count } = await sb.from('verification_queue').select('id', { count: 'exact', head: true }).eq('status', 'pending');
-    setNavBadge('badge-verification', count || 0);
+    var { data: vqBadge } = await sb.from('verification_queue').select('business_id').eq('status', 'pending');
+    var uniqueBizCount = new Set((vqBadge || []).map(function(r){ return r.business_id; })).size;
+    setNavBadge('badge-verification', uniqueBizCount);
   } catch(e) {}
   try {
     var { data } = await sb.rpc('get_cancellation_admin_data');
@@ -1085,63 +1858,90 @@ async function loadNavBadges() {
     var { count: rCount } = await sb.from('reviews').select('id', { count: 'exact', head: true }).eq('flagged', true).eq('removed', false);
     setNavBadge('badge-reviews', rCount || 0);
   } catch(e) {}
+  try {
+    var [zelleRes, achRes, empRpc] = await Promise.all([
+      sb.from('businesses').select('id', { count: 'exact', head: true }).eq('plan', 'pending_zelle').eq('is_worker', false),
+      sb.from('businesses').select('id', { count: 'exact', head: true }).eq('plan', 'pending_ach').eq('is_worker', false),
+      sb.rpc('get_employer_credit_pending'),
+    ]);
+    var empCount = (empRpc.data && empRpc.data.length) || 0;
+    var totalPending = (zelleRes.count || 0) + (achRes.count || 0) + empCount;
+    setNavBadge('badge-zelle', totalPending);
+  } catch(e) {}
 }
 
 var _analyticsLoaded = false;
+var _paymentHistory = [];  // [{date, type, name, detail, amount, ref, monthKey}]
+
 async function loadAnalytics() {
   if (_analyticsLoaded) return;
   try {
     var sb = getSupabase();
-
-    // Fetch all data in parallel
     var now = new Date();
     var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+    var setEl = function(id, val) { var e = document.getElementById(id); if (e) e.textContent = val; };
 
+    // Fetch all data in parallel (RPCs for RLS-restricted tables)
     var results = await Promise.all([
-      sb.from('businesses').select('plan, categories, created_at, is_worker, account_status'),
-      sb.from('contact_log').select('id', { count: 'exact', head: true }).gte('created_at', monthStart),
-      sb.from('credit_transactions').select('amount_usd, credits_added'),
-      sb.from('employer_profiles').select('id', { count: 'exact', head: true })
+      sb.from('businesses').select('id, trade_name, business_name, plan, categories, created_at, is_worker, account_status'),
+      sb.rpc('get_contact_log_admin'),
+      sb.rpc('get_employer_credit_transactions'),
+      sb.rpc('get_employer_admin_data'),
+      sb.from('plan_transactions').select('biz_id, plan, amount_usd, payment_ref, created_at').order('created_at', { ascending: false })
     ]);
 
-    var businesses  = results[0].data || [];
-    var contactsRes = results[1];
-    var txData      = results[2].data || [];
-    var empCount    = results[3].count || 0;
+    var businesses   = results[0].data || [];
+    var contactLogAll = results[1].data || [];
+    var contactsRes  = { count: contactLogAll.filter(function(r){ return r.created_at >= monthStart; }).length };
+    var creditTxData = results[2].data || [];
+    var employers    = results[3].data || [];
+    var planTxData   = results[4].data || [];
 
-    // Segment businesses vs workers
-    var bizOnly     = businesses.filter(function(b){ return !b.is_worker; });
-    var workerOnly  = businesses.filter(function(b){ return b.is_worker; });
+    // Lookup maps
+    var bizMap = {};
+    businesses.forEach(function(b) { bizMap[b.id] = b.trade_name || b.business_name || '—'; });
+    var empMap = {};
+    employers.forEach(function(e) { empMap[e.id] = e.display_name || e.email || '—'; });
 
-    var basicCount   = bizOnly.filter(function(b){ return b.plan === 'basic'; }).length;
-    var premiumCount = bizOnly.filter(function(b){ return b.plan === 'premium'; }).length;
+    // Segment
+    var bizOnly    = businesses.filter(function(b){ return !b.is_worker; });
+    var workerOnly = businesses.filter(function(b){ return b.is_worker; });
 
-    var basicRev   = basicCount * 29;
-    var premiumRev = premiumCount * 79;
-    var creditRev  = txData.reduce(function(s, t){ return s + (parseFloat(t.amount_usd) || 0); }, 0);
-    var mrr        = basicRev + premiumRev;
+    // This Month's Revenue (plan_transactions + credit_transactions)
+    var thisMonthPlan = planTxData
+      .filter(function(t){ return t.created_at >= monthStart; })
+      .reduce(function(s, t){ return s + parseFloat(t.amount_usd || 0); }, 0);
+    var thisMonthCredit = creditTxData
+      .filter(function(t){ return t.created_at >= monthStart; })
+      .reduce(function(s, t){ return s + parseFloat(t.amount_usd || 0); }, 0);
+    var thisMonthTotal = thisMonthPlan + thisMonthCredit;
+    setEl('an-month-rev',     '$' + thisMonthTotal.toFixed(2));
+    setEl('an-month-rev-sub', 'Plan $' + thisMonthPlan.toFixed(2) + ' + Credits $' + thisMonthCredit.toFixed(2));
 
-    // MRR row
-    var setEl = function(id, val) { var e = document.getElementById(id); if (e) e.textContent = val; };
-    setEl('an-mrr',        '$' + mrr.toLocaleString());
-    setEl('an-mrr-sub',    'Basic + Premium subscriptions');
-    setEl('an-basic-rev',  '$' + basicRev.toLocaleString());
-    setEl('an-basic-count', basicCount + ' businesses × $29');
-    setEl('an-prem-rev',   '$' + premiumRev.toLocaleString());
-    setEl('an-prem-count', premiumCount + ' businesses × $79');
-    setEl('an-credit-rev', '$' + creditRev.toFixed(2));
-    setEl('an-credit-sub', txData.length + ' transactions');
+    // All-time Revenue (Plan + Credits)
+    var planRevTotal   = planTxData.reduce(function(s, t){ return s + parseFloat(t.amount_usd || 0); }, 0);
+    var creditRevTotal = creditTxData.reduce(function(s, t){ return s + parseFloat(t.amount_usd || 0); }, 0);
+    var allTimeTotal   = planRevTotal + creditRevTotal;
+    setEl('an-alltime-rev',     '$' + allTimeTotal.toFixed(2));
+    setEl('an-alltime-rev-sub', 'Plan $' + planRevTotal.toFixed(2) + ' + Credits $' + creditRevTotal.toFixed(2));
+
+    // All-time Plan Revenue
+    setEl('an-plan-rev-total', '$' + planRevTotal.toFixed(2));
+    setEl('an-plan-rev-sub',   planTxData.length + ' transactions');
+
+    // All-time Credit Revenue
+    setEl('an-credit-rev', '$' + creditRevTotal.toFixed(2));
+    setEl('an-credit-sub', creditTxData.length + ' transactions');
 
     // Activity row
-    var total = bizOnly.length;
-    setEl('an-total-biz',       total);
+    setEl('an-total-biz',       bizOnly.length);
     setEl('an-total-workers',   workerOnly.length);
-    setEl('an-total-employers', empCount);
+    setEl('an-total-employers', employers.length);
     setEl('an-contacts-month',  contactsRes.error ? '—' : (contactsRes.count || 0));
 
     // Plan distribution
     var planCount = { free: 0, basic: 0, premium: 0 };
-    businesses.forEach(function(b) { var p = b.plan || 'free'; if (planCount[p] !== undefined) planCount[p]++; });
+    bizOnly.forEach(function(b) { var p = b.plan || 'free'; if (planCount[p] !== undefined) planCount[p]++; });
     var maxPlan = Math.max(planCount.free, planCount.basic, planCount.premium) || 1;
     var planEl = document.getElementById('an-plan-dist');
     if (planEl) planEl.innerHTML = [
@@ -1157,24 +1957,22 @@ async function loadAnalytics() {
 
     // Top categories
     var catCount = {};
-    businesses.forEach(function(b) {
+    bizOnly.forEach(function(b) {
       (b.categories || []).forEach(function(c) { catCount[c] = (catCount[c] || 0) + 1; });
     });
     var cats = Object.keys(catCount).sort(function(a,b){ return catCount[b]-catCount[a]; }).slice(0, 7);
     var maxCat = cats.length ? catCount[cats[0]] : 1;
     var catEl = document.getElementById('an-categories');
-    if (catEl) {
-      catEl.innerHTML = cats.length
-        ? cats.map(function(c) {
-            var w = Math.round((catCount[c] / maxCat) * 100);
-            return '<div class="dist-row"><span class="dist-label">' + escHtml(c) + '</span>'
-              + '<div class="dist-bar"><div class="dist-fill" style="width:' + w + '%"></div></div>'
-              + '<span class="dist-val">' + catCount[c] + '</span></div>';
-          }).join('')
-        : '<div style="padding:16px;color:var(--c-muted);font-size:12px;text-align:center">No category data yet.</div>';
-    }
+    if (catEl) catEl.innerHTML = cats.length
+      ? cats.map(function(c) {
+          var w = Math.round((catCount[c] / maxCat) * 100);
+          return '<div class="dist-row"><span class="dist-label">' + escHtml(c) + '</span>'
+            + '<div class="dist-bar"><div class="dist-fill" style="width:' + w + '%"></div></div>'
+            + '<span class="dist-val">' + catCount[c] + '</span></div>';
+        }).join('')
+      : '<div style="padding:16px;color:var(--c-muted);font-size:12px;text-align:center">No category data yet.</div>';
 
-    // Monthly bar chart (last 6 months)
+    // New businesses monthly bar chart (last 6 months)
     var months = [];
     for (var i = 5; i >= 0; i--) {
       var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
@@ -1183,8 +1981,8 @@ async function loadAnalytics() {
     var monthCount = {};
     businesses.forEach(function(b) {
       if (!b.created_at) return;
-      var d = new Date(b.created_at);
-      var key = d.getFullYear() + '-' + d.getMonth();
+      var d2 = new Date(b.created_at);
+      var key = d2.getFullYear() + '-' + d2.getMonth();
       monthCount[key] = (monthCount[key] || 0) + 1;
     });
     var maxMonth = Math.max.apply(null, months.map(function(m){ return monthCount[m.year+'-'+m.month] || 0; })) || 1;
@@ -1197,11 +1995,266 @@ async function loadAnalytics() {
         + '<span>' + m.label + '</span></div>';
     }).join('');
 
+    // Monthly Revenue chart (last 6 months, plan + credits combined)
+    var revByMonth = {};
+    months.forEach(function(m) { revByMonth[m.year + '-' + m.month] = 0; });
+    planTxData.forEach(function(t) {
+      var d3 = new Date(t.created_at);
+      var key = d3.getFullYear() + '-' + d3.getMonth();
+      if (revByMonth[key] !== undefined) revByMonth[key] += parseFloat(t.amount_usd || 0);
+    });
+    creditTxData.forEach(function(t) {
+      var d4 = new Date(t.created_at);
+      var key = d4.getFullYear() + '-' + d4.getMonth();
+      if (revByMonth[key] !== undefined) revByMonth[key] += parseFloat(t.amount_usd || 0);
+    });
+    var maxRev = Math.max.apply(null, months.map(function(m){ return revByMonth[m.year+'-'+m.month] || 0; })) || 1;
+    var revChartEl = document.getElementById('an-revenue-chart');
+    if (revChartEl) revChartEl.innerHTML = months.map(function(m, i) {
+      var amt = revByMonth[m.year + '-' + m.month] || 0;
+      var h = Math.max(4, Math.round((amt / maxRev) * 100));
+      var isLast = i === months.length - 1;
+      return '<div class="bar-col" style="position:relative">'
+        + '<div style="font-size:10px;color:var(--c-muted);margin-bottom:2px">' + (amt > 0 ? '$' + amt.toFixed(0) : '') + '</div>'
+        + '<div class="bar' + (isLast ? ' accent' : '') + '" style="height:' + h + '%"></div>'
+        + '<span>' + m.label + '</span></div>';
+    }).join('');
+
+    // Build payment history rows
+    _paymentHistory = [];
+    planTxData.forEach(function(t) {
+      var d5 = new Date(t.created_at);
+      var mk = d5.getFullYear() + '-' + String(d5.getMonth()+1).padStart(2,'0');
+      _paymentHistory.push({
+        date:     d5.toLocaleDateString('en-US', {year:'numeric',month:'short',day:'numeric'}),
+        type:     'plan',
+        name:     bizMap[t.biz_id] || '—',
+        detail:   t.plan.charAt(0).toUpperCase() + t.plan.slice(1) + ' Plan',
+        amount:   parseFloat(t.amount_usd || 0),
+        ref:      t.payment_ref || '—',
+        monthKey: mk,
+        ts:       d5.getTime()
+      });
+    });
+    creditTxData.forEach(function(t) {
+      var d6 = new Date(t.created_at);
+      var mk = d6.getFullYear() + '-' + String(d6.getMonth()+1).padStart(2,'0');
+      _paymentHistory.push({
+        date:     d6.toLocaleDateString('en-US', {year:'numeric',month:'short',day:'numeric'}),
+        type:     'credit',
+        name:     t.display_name || t.email || '—',
+        detail:   t.credits_added + ' credits',
+        amount:   parseFloat(t.amount_usd || 0),
+        ref:      t.payment_ref || '—',
+        monthKey: mk,
+        ts:       d6.getTime()
+      });
+    });
+    _paymentHistory.sort(function(a,b){ return b.ts - a.ts; });
+
+    // Populate month filter options
+    var monthKeys = [...new Set(_paymentHistory.map(function(r){ return r.monthKey; }))].sort().reverse();
+    var monthSel = document.getElementById('an-pay-filter-month');
+    if (monthSel) {
+      monthSel.innerHTML = '<option value="all">All Months</option>'
+        + monthKeys.map(function(mk){ return '<option value="' + mk + '">' + mk + '</option>'; }).join('');
+    }
+
+    filterPaymentHistory();
+
     _analyticsLoaded = true;
   } catch(e) {
     console.error('[Admin] loadAnalytics error:', e);
   }
 }
+
+function filterPaymentHistory() {
+  var type  = (document.getElementById('an-pay-filter-type')  || {}).value || 'all';
+  var month = (document.getElementById('an-pay-filter-month') || {}).value || 'all';
+  var rows  = _paymentHistory.filter(function(r) {
+    return (type  === 'all' || r.type     === type)
+        && (month === 'all' || r.monthKey === month);
+  });
+  var tbody = document.getElementById('an-pay-tbody');
+  if (!tbody) return;
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--c-muted);font-size:12px">No payment records found.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map(function(r) {
+    var typeBadge = r.type === 'plan'
+      ? '<span style="background:var(--c-amber-light);color:var(--c-amber);font-size:11px;padding:2px 7px;border-radius:10px;font-weight:500">Plan</span>'
+      : '<span style="background:var(--c-blue-light);color:var(--c-blue);font-size:11px;padding:2px 7px;border-radius:10px;font-weight:500">Credits</span>';
+    return '<tr style="border-bottom:1px solid var(--c-border)">'
+      + '<td style="padding:8px 10px;color:var(--c-muted);font-size:12px">' + r.date + '</td>'
+      + '<td style="padding:8px 10px">' + typeBadge + '</td>'
+      + '<td style="padding:8px 10px;font-weight:500">' + escHtml(r.name) + '</td>'
+      + '<td style="padding:8px 10px;color:var(--c-muted)">' + escHtml(r.detail) + '</td>'
+      + '<td style="padding:8px 10px;text-align:right;font-weight:600">$' + r.amount.toFixed(2) + '</td>'
+      + '<td style="padding:8px 10px;color:var(--c-muted);font-size:11px;font-family:monospace">' + escHtml(r.ref) + '</td>'
+      + '</tr>';
+  }).join('');
+}
+
+/* ===== PAYMENT PENDING TAB ===== */
+var _zelleLoaded = false;
+
+async function loadZellePending() {
+  if (_zelleLoaded) return;
+  _zelleLoaded = true;
+  await Promise.all([loadBizPending('zelle'), loadBizPending('ach'), loadEmployerCreditPending()]);
+}
+
+async function loadBizPending(method) {
+  var sb = getSupabase();
+  var queueId = method === 'zelle' ? 'zelle-queue' : 'ach-queue';
+  var queue = document.getElementById(queueId);
+  queue.innerHTML = '<div style="padding:12px;color:var(--c-muted)">Loading…</div>';
+  try {
+    var { data, error } = await sb
+      .from('businesses')
+      .select('id, business_name, public_email, pending_plan, preferred_lang, created_at')
+      .eq('plan', 'pending_' + method)
+      .eq('is_worker', false)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      queue.innerHTML = '<div style="padding:16px;color:var(--c-muted)">✅ No pending ' + method.toUpperCase() + ' payments.</div>';
+      return;
+    }
+
+    var rows = data.map(function(r) {
+      var planLabel = r.pending_plan === 'premium' ? '<span class="plan-badge plan-premium">⭐ Premium $79</span>' : '<span class="plan-badge plan-basic">Basic $29</span>';
+      var submittedAt = r.created_at ? new Date(r.created_at).toLocaleString('en-US', {timeZone:'America/New_York',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+      return '<tr data-bizid="'+escHtml(r.id)+'" data-bizname="'+escHtml(r.business_name||'')+'" data-email="'+escHtml(r.public_email||'')+'" data-plan="'+escHtml(r.pending_plan||'basic')+'" data-preflang="'+escHtml(r.preferred_lang||'es')+'">'
+        + '<td><div class="biz-cell"><div class="biz-avatar av-amber">'+escHtml((r.business_name||'?').slice(0,2).toUpperCase())+'</div><div><div class="biz-name">'+escHtml(r.business_name||'—')+'</div><div class="biz-cat">'+escHtml(r.public_email||'—')+'</div></div></div></td>'
+        + '<td>'+planLabel+'</td>'
+        + '<td>'+submittedAt+' ET</td>'
+        + '<td><button class="btn-approve" onclick="confirmBizPayment(this,\''+method+'\')">✓ Confirm Payment</button></td>'
+        + '</tr>';
+    }).join('');
+
+    queue.innerHTML = '<div class="table-card"><table>'
+      + '<thead><tr><th>Business</th><th>Plan</th><th>Submitted</th><th>Action</th></tr></thead>'
+      + '<tbody>' + rows + '</tbody></table></div>';
+  } catch(e) {
+    console.error('[Admin] loadBizPending error:', method, e);
+    queue.innerHTML = '<div style="padding:12px;color:var(--c-accent)">Error loading ' + method.toUpperCase() + ' pending list.</div>';
+  }
+}
+
+async function confirmBizPayment(btn, method) {
+  var row = btn.closest('tr');
+  var bizId   = row.dataset.bizid;
+  var bizName = row.dataset.bizname;
+  var email   = row.dataset.email;
+  var plan    = row.dataset.plan || 'basic';
+  var rpcName = 'confirm_biz_credit_purchase';
+  if (!confirm('Confirm ' + method.toUpperCase() + ' payment for "' + bizName + '" and activate ' + plan + ' plan?')) return;
+  btn.disabled = true;
+  btn.textContent = 'Processing…';
+  try {
+    var sb = getSupabase();
+    var { data: activatedPlan, error } = await sb.rpc(rpcName, { p_biz_id: bizId, p_method: method });
+    if (error) throw error;
+    var planLabel = (activatedPlan || plan) === 'premium' ? 'Premium' : 'Basic';
+    var bizPrefLang = row.dataset.preflang || 'es';
+    var credits = activatedPlan === 'premium' ? 50 : 20;
+    sendEmail('SB5', email, { biz_name: bizName, plan: planLabel + ' (' + credits + ' contact credits)' }, bizId, bizPrefLang);
+    row.innerHTML = '<td colspan="4" style="color:var(--c-green);padding:14px">✅ '+escHtml(bizName)+' — '+planLabel+' plan activated. Email sent.</td>';
+    showAdminToast('✅ ' + bizName + ' — ' + planLabel + ' plan activated');
+  } catch(err) {
+    console.error('[Admin] confirmBizPayment error:', err);
+    btn.disabled = false;
+    btn.textContent = '✓ Confirm Payment';
+    showAdminToast('⚠ Error: ' + (err.message || 'Could not confirm payment'));
+  }
+}
+
+async function loadEmployerCreditPending() {
+  _empCreditRows = null;   // 매 호출마다 캐시 초기화
+  await Promise.all([
+    loadEmployerCreditPendingByMethod('zelle'),
+    loadEmployerCreditPendingByMethod('ach'),
+  ]);
+}
+
+var _empCreditRows = null;   // 캐시 — 두 메서드가 공유
+
+async function loadEmployerCreditPendingByMethod(method) {
+  var sb = getSupabase();
+  var queueId = method === 'zelle' ? 'employer-credit-queue-zelle' : 'employer-credit-queue-ach';
+  var queue = document.getElementById(queueId);
+  queue.innerHTML = '<div style="padding:12px;color:var(--c-muted)">Loading…</div>';
+  try {
+    // 첫 번째 메서드 호출에서만 RPC 실행, 두 번째는 캐시 사용
+    if (_empCreditRows === null) {
+      var { data, error } = await sb.rpc('get_employer_credit_pending');
+      if (error) throw error;
+      _empCreditRows = data || [];
+    }
+
+    var filtered = _empCreditRows.filter(function(r) { return r.emp_pending_method === method; });
+
+    if (filtered.length === 0) {
+      queue.innerHTML = '<div style="padding:16px;color:var(--c-muted)">✅ No pending ' + method.toUpperCase() + ' payments.</div>';
+      return;
+    }
+
+    var pkgAmounts = { starter: '$10', value: '$20', pro: '$30' };
+    var rows = filtered.map(function(r) {
+      var pkgLabel = (r.emp_pending_package || '').charAt(0).toUpperCase() + (r.emp_pending_package || '').slice(1)
+        + ' (' + (pkgAmounts[r.emp_pending_package] || '?') + ') — ' + (r.emp_pending_credits || '?') + ' credits';
+      var nameLabel = r.emp_display_name ? escHtml(r.emp_display_name) : '<span style="color:var(--c-muted);font-size:11px">' + escHtml((r.emp_owner_id||'').slice(0,8)) + '…</span>';
+      var submittedAt = r.emp_pending_at ? new Date(r.emp_pending_at).toLocaleString('en-US', {timeZone:'America/New_York',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+      var nameRaw = r.emp_display_name || (r.emp_owner_id||'').slice(0,8) + '…';
+      return '<tr data-empid="'+escHtml(r.emp_id)+'" data-empname="'+escHtml(nameRaw)+'" data-empemail="'+escHtml(r.emp_email||'')+'" data-emplang="'+escHtml(r.emp_preferred_lang||'es')+'" data-credits="'+escHtml(String(r.emp_pending_credits||0))+'" data-pkg="'+escHtml(r.emp_pending_package||'')+'">'
+        + '<td>' + nameLabel + '</td>'
+        + '<td>' + pkgLabel + '</td>'
+        + '<td>' + submittedAt + ' ET</td>'
+        + '<td><button class="btn-approve" onclick="confirmEmployerCredit(this)">✓ Add Credits</button></td>'
+        + '</tr>';
+    }).join('');
+
+    queue.innerHTML = '<div class="table-card"><table>'
+      + '<thead><tr><th>Employer</th><th>Package</th><th>Submitted</th><th>Action</th></tr></thead>'
+      + '<tbody>' + rows + '</tbody></table></div>';
+  } catch(e) {
+    console.error('[Admin] loadEmployerCreditPending error:', method, e);
+    queue.innerHTML = '<div style="padding:12px;color:var(--c-accent)">Error loading ' + method.toUpperCase() + ' employer credit list.</div>';
+  }
+}
+
+async function confirmEmployerCredit(btn) {
+  var row     = btn.closest('tr');
+  var empId   = row.dataset.empid;
+  var empName = row.dataset.empname || empId;
+  var empEmail = row.dataset.empemail || null;
+  var empLang  = row.dataset.emplang || 'es';
+  var credits = row.dataset.credits;
+  var pkg     = row.dataset.pkg;
+  if (!confirm('Confirm payment and add ' + credits + ' credits (' + pkg + ') to employer "' + empName + '"?')) return;
+  btn.disabled = true;
+  btn.textContent = 'Processing…';
+  try {
+    var sb = getSupabase();
+    var { error } = await sb.rpc('confirm_employer_credit_manual', { p_employer_id: empId });
+    if (error) throw error;
+    // EM2: Employer에게 크레딧 추가 알림 이메일
+    if (empEmail) sendEmail('EM2', empEmail, { name: empName, credits: credits }, null, empLang);
+    row.innerHTML = '<td colspan="5" style="color:var(--c-green);padding:14px">✅ ' + credits + ' credits added to employer account.</td>';
+    showAdminToast('✅ ' + credits + ' credits confirmed');
+  } catch(err) {
+    console.error('[Admin] confirmEmployerCredit error:', err);
+    btn.disabled = false;
+    btn.textContent = '✓ Add Credits';
+    showAdminToast('⚠ Error: ' + (err.message || 'Could not confirm credits'));
+  }
+}
+
+// keep old name as alias for any existing callers
+function confirmZellePayment(btn) { confirmBizPayment(btn, 'zelle'); }
 
 /* ===== CANCELLATION REQUESTS TAB ===== */
 var _cancellationsLoaded = false;
@@ -1231,8 +2284,9 @@ async function loadCancellations() {
 
     emptyEl.style.display = 'none';
     queue.innerHTML = rows.map(function(r) {
-      var email    = r.email || r.user_id.slice(0,8) + '…';
-      var type     = r.user_type || '—';
+      var email    = r.email || (r.biz_id ? r.biz_id.slice(0,8) + '…' : '—');
+      var bizName  = r.biz_name || email;
+      var initials = bizName.trim().split(/\s+/).map(function(w){ return w[0]; }).join('').slice(0,2).toUpperCase() || '??';
       var reason   = r.reason || 'Not provided';
       var d        = new Date(r.created_at);
       var dateStr  = d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
@@ -1242,18 +2296,18 @@ async function loadCancellations() {
       var actionBtn = r.resolved ? '' :
         '<button class="btn-approve" onclick="processCancellation(this)" '
         + 'data-reqid="'+escHtml(r.id)+'" '
-        + 'data-userid="'+escHtml(r.user_id)+'" '
-        + 'data-usertype="'+escHtml(type)+'" '
-        + 'data-email="'+escHtml(r.email||'')+'">'
+        + 'data-bizid="'+escHtml(r.biz_id||'')+'" '
+        + 'data-email="'+escHtml(r.email||'')+'" '
+        + 'data-lang="'+escHtml(r.preferred_lang||'es')+'">'
         + '✓ Process (Delete account)</button>';
 
       return '<div class="queue-card" data-reqid="'+escHtml(r.id)+'">'
         + '<div class="queue-main">'
         + '<div class="biz-cell">'
-        + '<div class="biz-avatar av-coral" style="font-size:10px;width:32px;height:32px">'+type.slice(0,2).toUpperCase()+'</div>'
+        + '<div class="biz-avatar av-coral" style="font-size:10px;width:32px;height:32px">'+initials+'</div>'
         + '<div>'
-        + '<div class="biz-name">'+escHtml(email)+'</div>'
-        + '<div class="biz-cat">'+escHtml(type)+' · '+dateStr+'</div>'
+        + '<div class="biz-name">'+escHtml(bizName)+'</div>'
+        + '<div class="biz-cat">'+escHtml(email)+' · '+dateStr+'</div>'
         + '</div></div>'
         + '<div style="margin-top:8px;margin-left:42px;font-size:12px;color:var(--c-muted)">'+escHtml(reason)+'</div>'
         + '<div style="margin-top:6px;margin-left:42px">'+statusBadge+'</div>'
@@ -1271,8 +2325,7 @@ async function loadCancellations() {
 
 async function processCancellation(btn) {
   var reqId    = btn.dataset.reqid;
-  var userId   = btn.dataset.userid;
-  var userType = btn.dataset.usertype;
+  var bizId    = btn.dataset.bizid;
   var email    = btn.dataset.email || null;
 
   btn.disabled = true;
@@ -1281,31 +2334,15 @@ async function processCancellation(btn) {
   try {
     var sb = getSupabase();
 
-    // 1. Soft-delete: account_status = 'deleted'
-    if (userType === 'business' || userType === 'worker') {
-      await sb.from('businesses').update({ account_status: 'deleted' }).eq('owner_id', userId);
-    } else if (userType === 'employer') {
-      await sb.from('employer_profiles').update({ account_status: 'deleted' }).eq('owner_id', userId);
-    } else if (userType === 'customer') {
-      await sb.from('customer_profiles').update({ account_status: 'deleted' }).eq('owner_id', userId);
-    }
+    // 1+2. Soft-delete + resolved = true (SECURITY DEFINER RPC)
+    var { error: procErr } = await sb.rpc('process_cancellation_request', {
+      p_req_id:  reqId,
+      p_biz_id:  bizId
+    });
+    if (procErr) throw procErr;
 
-    // 2. resolved = true
-    await sb.from('cancellation_requests').update({ resolved: true }).eq('id', reqId);
-
-    // 3. Deletion confirmation email (ref_id = userId so edge fn looks up email)
-    var scenario = userType === 'business' ? 'SB11'
-                 : userType === 'worker'   ? 'W4'
-                 : userType === 'employer' ? 'EM5'
-                 : 'CU4';
-    var emailData = userType === 'employer'
-      ? { action: 'deleted', name: '' }
-      : userType === 'customer'
-        ? { action: 'deleted', name: '' }
-        : userType === 'worker'
-          ? { worker_name: '' }
-          : { owner_name: '', biz_name: email || '' };
-    sendEmail(scenario, email, emailData, userId);
+    // 3. Deletion confirmation email
+    sendEmail('SB11', email, { owner_name: '', biz_name: email || '' }, bizId, 'es');
 
     // UI update
     var card = btn.closest('.queue-card');
@@ -1323,7 +2360,7 @@ async function processCancellation(btn) {
     if (pendingEl)  pendingEl.textContent  = Math.max(0, parseInt(pendingEl.textContent,10)-1);
     if (resolvedEl) resolvedEl.textContent = (parseInt(resolvedEl.textContent,10)||0)+1;
 
-    showAdminToast('✅ Account deleted — ' + (email || userId.slice(0,8)));
+    showAdminToast('✅ Account deleted — ' + (email || bizId.slice(0,8)));
   } catch(err) {
     console.error('[Admin] processCancellation error:', err);
     showAdminToast('⚠ Error processing cancellation');
@@ -1338,6 +2375,7 @@ async function reviewVerification(btn, decision) {
   var bizName = card.querySelector('.biz-name') ? card.querySelector('.biz-name').textContent : bizId;
 
   var bizEmail = card.getAttribute('data-email') || null;
+  var bizPrefLang = card.getAttribute('data-preferred-lang') || 'es';
   if (decision === 'approved' && bizId) {
     btn.disabled = true;
     btn.textContent = '…';
@@ -1349,7 +2387,7 @@ async function reviewVerification(btn, decision) {
       // verification_queue status → approved
       await sb.from('verification_queue').update({ status: 'approved', reviewed_at: new Date().toISOString() }).eq('business_id', bizId);
       // SB3: Verified Badge 승인 — 업체에 이메일
-      if (bizEmail) sendEmail('SB3', bizEmail, { biz_name: bizName }, bizId);
+      if (bizEmail) sendEmail('SB3', bizEmail, { biz_name: bizName }, bizId, bizPrefLang);
       showAdminToast('✅ ' + bizName + ' approved — Verified badge is now live');
     } catch(e) {
       console.error('[Admin] approve error:', e);
@@ -1401,7 +2439,7 @@ async function loadFlaggedReviews() {
     // flagged=true, removed=false 리뷰 + businesses join
     var { data: flagged, error } = await sb
       .from('reviews')
-      .select('id, rating, review_text, flagged_at, created_at, biz_id, reviewer_id, businesses(business_name, trade_name)')
+      .select('id, rating, review_text, flagged_at, created_at, biz_id, reviewer_id, businesses(business_name, trade_name, public_email, preferred_lang, is_worker)')
       .eq('flagged', true)
       .eq('removed', false)
       .order('flagged_at', { ascending: false });
@@ -1443,9 +2481,18 @@ async function loadFlaggedReviews() {
       card.className = 'queue-card';
       card.setAttribute('data-review-id', r.id);
       card.setAttribute('data-reviewer-id', r.reviewer_id);
+      card.setAttribute('data-biz-id', r.biz_id);
       card.setAttribute('data-biz-name', bizName);
+      var isWorkerReview = !!(r.businesses && r.businesses.is_worker);
+      card.setAttribute('data-biz-email', (r.businesses && r.businesses.public_email) ? r.businesses.public_email : '');
+      card.setAttribute('data-biz-preferred-lang', (r.businesses && r.businesses.preferred_lang) ? r.businesses.preferred_lang : 'es');
+      card.setAttribute('data-rating', r.rating);
+      card.setAttribute('data-is-worker', isWorkerReview ? '1' : '0');
+      var typeBadge = isWorkerReview
+        ? '<span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--c-green-light);color:var(--c-green);margin-left:8px">Worker</span>'
+        : '<span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--c-blue-light);color:var(--c-blue);margin-left:8px">Business</span>';
       card.innerHTML = `
-        <div class="biz-name" style="font-weight:600;margin-bottom:4px">${bizName}</div>
+        <div style="display:flex;align-items:center;margin-bottom:4px"><div class="biz-name" style="font-weight:600">${bizName}</div>${typeBadge}</div>
         <div style="font-size:13px;color:var(--c-amber);margin-bottom:4px">${stars} (${r.rating}/5)</div>
         <div style="font-size:13px;margin-bottom:8px;color:var(--c-text)">"${r.review_text || '(no text)'}"</div>
         <div style="font-size:11px;color:var(--c-muted);margin-bottom:12px">Flagged: ${flaggedDate}</div>
@@ -1551,7 +2598,7 @@ function clearRejectError() {
   if (ta.value.trim() !== '') { hideError('err-reject-reason'); clearInvalid(ta); }
 }
 
-function confirmReject() {
+async function confirmReject() {
   var ta = document.getElementById('reject-reason-text');
   if (ta.value.trim() === '') {
     showError('err-reject-reason');
@@ -1567,11 +2614,11 @@ function confirmReject() {
     if (bizId) {
       try { localStorage.removeItem('anm-verified-' + bizId); } catch(e) {}
       var bizName = rejectContext.card.querySelector('.biz-name') ? rejectContext.card.querySelector('.biz-name').textContent : bizId;
-      // SB4: Verified Badge 반려 — 업체에 거절 사유 이메일
       var bizEmail = rejectContext.card.getAttribute('data-email') || null;
-      if (bizEmail) sendEmail('SB4', bizEmail, { biz_name: bizName, reason: ta.value.trim() }, bizId);
+      var bizPrefLang4 = rejectContext.card.getAttribute('data-preferred-lang') || 'es';
+      if (bizEmail) sendEmail('SB4', bizEmail, { biz_name: bizName, reason: ta.value.trim() }, bizId, bizPrefLang4);
       var sb = getSupabase();
-      sb.from('verification_queue').update({ status: 'rejected', admin_note: ta.value.trim(), reviewed_at: new Date().toISOString() }).eq('business_id', bizId).then(function(){});
+      await sb.from('verification_queue').update({ status: 'rejected', admin_note: ta.value.trim(), reviewed_at: new Date().toISOString() }).eq('business_id', bizId);
       showAdminToast('✗ ' + bizName + ' rejected — owner will be notified');
       var pendingEl = document.querySelector('#pane-verification .stat-card .stat-val[style*="accent"]');
       if (pendingEl) {
@@ -1583,14 +2630,40 @@ function confirmReject() {
   if (rejectContext.type === 'review') {
     var reviewId = rejectContext.card.getAttribute('data-review-id');
     var reviewerId = rejectContext.card.getAttribute('data-reviewer-id');
+    var bizId = rejectContext.card.getAttribute('data-biz-id');
     var bizName = rejectContext.card.getAttribute('data-biz-name') || '';
+    var bizEmail = rejectContext.card.getAttribute('data-biz-email') || '';
+    var rating = rejectContext.card.getAttribute('data-rating') || '';
     var note = ta.value.trim();
     var sb = getSupabase();
-    // DB: removed=true, removed_note, removed_at
-    sb.from('reviews').update({ removed: true, removed_note: note, removed_at: new Date().toISOString(), flagged: false }).eq('id', reviewId).then(function(){});
-    // 리뷰어에게 이메일 (reviewer_id로 auth.users 이메일 조회는 Edge Function에서 처리)
-    sendEmail('CU4', null, { name: 'there', action: 'review removed', reason: note }, reviewerId);
-    showAdminToast('✗ Review removed — reviewer notified');
+    var { error } = await sb.from('reviews')
+      .update({ removed: true, removed_note: note, removed_at: new Date().toISOString(), flagged: false })
+      .eq('id', reviewId);
+    if (error) {
+      alert('Failed to remove review: ' + error.message);
+      return;
+    }
+    try {
+      var emailMap = await getAdminEmailMap([reviewerId]);
+      var reviewerEmail = emailMap[reviewerId] || null;
+      if (reviewerEmail) sendEmail('CU4', reviewerEmail, { name: 'there', action: 'review removed', reason: note }, 'review_removed_' + reviewId);
+    } catch(e) { console.warn('[CU4 review removed]', e); }
+    var bizPrefLang17 = rejectContext.card.getAttribute('data-biz-preferred-lang') || 'es';
+    var isWorkerReview = rejectContext.card.getAttribute('data-is-worker') === '1';
+    if (bizEmail) {
+      if (isWorkerReview) {
+        sendEmail('W7', bizEmail, { worker_name: bizName, rating: rating, reason: note || 'Violation of platform policies' }, bizId, bizPrefLang17);
+      } else {
+        sendEmail('SB17', bizEmail, { biz_name: bizName, rating: rating, reason: note || 'Violation of platform policies' }, bizId, bizPrefLang17);
+      }
+    }
+    showAdminToast('✗ Review removed — reviewer and business notified');
+    // 카운트 갱신
+    var flaggedStat = document.querySelector('#pane-reviews .stat-card:first-child .stat-val');
+    if (flaggedStat) {
+      var n = parseInt(flaggedStat.textContent, 10);
+      if (!isNaN(n) && n > 0) flaggedStat.textContent = n - 1;
+    }
   }
 
   document.getElementById('reject-modal-overlay').classList.remove('show');
@@ -1606,6 +2679,7 @@ async function toggleBusinessStatus(btn) {
   var bizEmail = row.dataset.email || null;
   var bizName  = row.dataset.bizname || (row.querySelector('.biz-name') ? row.querySelector('.biz-name').textContent : '');
   var bizId    = row.dataset.bizid || null;
+  var bizLang  = row.dataset.preferredLang || 'es';
   var newStatus = isSuspended ? 'active' : 'suspended';
 
   btn.disabled = true;
@@ -1640,7 +2714,7 @@ async function toggleBusinessStatus(btn) {
     btn.style.background = 'var(--c-green-light)';
     btn.style.color = 'var(--c-green)';
     // SB10: 계정 정지 알림 — 업체에 이메일
-    if (bizEmail) sendEmail('SB10', bizEmail, { biz_name: bizName }, bizId);
+    if (bizEmail) sendEmail('SB10', bizEmail, { biz_name: bizName }, bizId, bizLang);
   }
   btn.disabled = false;
   showAdminToast(isSuspended ? '✅ Business reactivated' : '⛔ Business suspended');
@@ -1680,29 +2754,33 @@ async function loadCustomers() {
   try {
     // get_customer_admin_data() returns id, owner_id, email, account_status, created_at
     var custRes = await sb.rpc('get_customer_admin_data');
+    if (custRes.error) console.error('[Admin] get_customer_admin_data error:', custRes.error);
     var customers = custRes.data || [];
 
     var now = new Date();
     var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
 
     // contact_log: count per actor_id (month + total)
-    var [clMonthRes, clTotalRes, revRes] = await Promise.all([
-      sb.from('contact_log').select('actor_id').gte('created_at', monthStart).eq('limit_hit', false),
-      sb.from('contact_log').select('actor_id'),
+    var [clAllRes, revRes] = await Promise.all([
+      sb.rpc('get_contact_log_admin'),
       sb.from('reviews').select('reviewer_id')
     ]);
 
+    var clAll = clAllRes.data || [];
     var clMonth = {};
-    (clMonthRes.data || []).forEach(function(r){ clMonth[r.actor_id] = (clMonth[r.actor_id]||0)+1; });
+    clAll.filter(function(r){ return r.created_at >= monthStart && !r.limit_hit; })
+      .forEach(function(r){ clMonth[r.actor_id] = (clMonth[r.actor_id]||0)+1; });
     var clTotal = {};
-    (clTotalRes.data || []).forEach(function(r){ clTotal[r.actor_id] = (clTotal[r.actor_id]||0)+1; });
+    clAll.forEach(function(r){ clTotal[r.actor_id] = (clTotal[r.actor_id]||0)+1; });
     var revCount = {};
     (revRes.data || []).forEach(function(r){ revCount[r.reviewer_id] = (revCount[r.reviewer_id]||0)+1; });
 
     var total     = customers.length;
     var active    = customers.filter(function(c){ return c.account_status === 'active'; }).length;
     var suspended = customers.filter(function(c){ return c.account_status === 'suspended'; }).length;
-    var totalContacts = Object.values(clMonth).reduce(function(s,v){ return s+v; }, 0);
+    var custIdSet = new Set(customers.map(function(c){ return c.id; }));
+    var totalContacts = Object.keys(clMonth).filter(function(id){ return custIdSet.has(id); })
+      .reduce(function(s, id){ return s + clMonth[id]; }, 0);
 
     document.getElementById('stat-cust-total').textContent     = total;
     document.getElementById('stat-cust-active').textContent    = active;
@@ -1710,34 +2788,37 @@ async function loadCustomers() {
     document.getElementById('stat-cust-contacts').textContent  = totalContacts;
 
     if (!customers.length) {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--c-muted);padding:20px">No customers yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--c-muted);padding:20px">No customers yet.</td></tr>';
       _customersLoaded = true;
       return;
     }
 
     tbody.innerHTML = customers.map(function(c) {
       var email   = c.email || '—';
+      var name    = c.full_name || '—';
       var status  = c.account_status || 'active';
       var month   = clMonth[c.owner_id] || 0;
       var total_c = clTotal[c.owner_id] || 0;
       var reviews = revCount[c.owner_id] || 0;
       var statusBadge = status === 'active'
         ? '<span class="verified-badge">Active</span>'
-        : '<span class="basic-badge" style="background:var(--c-accent-light);color:var(--c-accent)">Suspended</span>';
-      var suspendLabel = status === 'active' ? 'Suspend' : 'Restore';
-      var suspendStyle = status === 'active'
-        ? 'background:var(--c-accent-light);color:var(--c-accent)'
-        : 'background:var(--c-green-light);color:var(--c-green)';
+        : status === 'deleted'
+          ? '<span class="basic-badge" style="background:#f1f1f1;color:#999">Deleted</span>'
+          : '<span class="basic-badge" style="background:var(--c-accent-light);color:var(--c-accent)">Suspended</span>';
+      var actionButtons = status === 'deleted'
+        ? '<button class="btn-save" style="background:var(--c-blue-light);color:var(--c-blue)" onclick="adminResetPassword(this.closest(\'tr\').dataset.loginemail)">Reset PW</button>'
+        : (status === 'active'
+            ? '<button class="btn-suspend" style="background:var(--c-accent-light);color:var(--c-accent)" onclick="toggleCustomerStatus(this)">Suspend</button>'
+            : '<button class="btn-suspend" style="background:var(--c-green-light);color:var(--c-green)" onclick="toggleCustomerStatus(this)">Restore</button>')
+          + '<button class="btn-save" style="background:var(--c-blue-light);color:var(--c-blue)" onclick="adminResetPassword(this.closest(\'tr\').dataset.loginemail)">Reset PW</button>';
       return '<tr data-custstatus="'+escHtml(status)+'" data-custemail="'+escHtml(email.toLowerCase())+'" data-ownerid="'+escHtml(c.owner_id)+'" data-custid="'+escHtml(c.id)+'" data-loginemail="'+escHtml(email)+'">'
-        + '<td style="font-size:13px">'+escHtml(email)+'</td>'
+        + '<td style="font-size:13px;font-weight:500">'+escHtml(name)+'</td>'
+        + '<td style="font-size:13px;color:var(--c-muted)">'+escHtml(email)+'</td>'
         + '<td style="text-align:center">'+month+'</td>'
         + '<td style="text-align:center">'+total_c+'</td>'
         + '<td style="text-align:center">'+reviews+'</td>'
         + '<td>'+statusBadge+'</td>'
-        + '<td><div class="action-cell">'
-        + '<button class="btn-suspend" style="'+suspendStyle+'" onclick="toggleCustomerStatus(this)">'+suspendLabel+'</button>'
-        + '<button class="btn-save" style="background:var(--c-blue-light);color:var(--c-blue)" onclick="adminResetPassword(this.closest(\'tr\').dataset.loginemail)">Reset PW</button>'
-        + '</div></td>'
+        + '<td><div class="action-cell">'+actionButtons+'</div></td>'
         + '</tr>';
     }).join('');
 
@@ -1759,7 +2840,8 @@ async function toggleCustomerStatus(btn) {
   btn.textContent = '…';
   try {
     var sb = getSupabase();
-    await sb.from('customer_profiles').update({ account_status: newStatus }).eq('id', custId);
+    var { error: rpcErr } = await sb.rpc('set_customer_account_status', { p_customer_id: custId, p_status: newStatus });
+    if (rpcErr) throw rpcErr;
 
     row.dataset.custstatus = newStatus;
     var statusCell = row.querySelector('td:nth-child(5)');
@@ -1893,33 +2975,22 @@ async function loadEmployers() {
   var tbody = document.getElementById('emp-table-body');
 
   try {
-    // Join employer_profiles with auth.users email via a view or fetch users separately
-    var epRes = await sb.from('employer_profiles')
-      .select('id, owner_id, credit_balance, account_status, created_at, display_name, phone');
-    var eps = epRes.data || [];
-    var empOwnerIds = eps.map(function(e){ return e.owner_id; });
-    var empEmailMap = await getAdminEmailMap(empOwnerIds);
-
-    // Fetch auth user emails via admin.listUsers not available client-side;
-    // use a profiles/metadata approach — fetch user emails from businesses or customer_profiles
-    // Fallback: show owner_id truncated if no email joinable
-    // For each employer, count contacts this month
+    // SECURITY DEFINER RPC — employer_profiles RLS(owner-only) 우회
     var now = new Date();
     var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
 
-    // credit_transactions sum per employer
-    var txRes = await sb.from('credit_transactions').select('employer_id, credits_added');
-    var txMap = {};
-    (txRes.data || []).forEach(function(t) {
-      txMap[t.employer_id] = (txMap[t.employer_id] || 0) + (t.credits_added || 0);
-    });
+    var [epRpcRes, clRes] = await Promise.all([
+      sb.rpc('get_employer_admin_data'),
+      sb.rpc('get_contact_log_admin')
+    ]);
 
-    // contacts this month per owner_id
-    var clRes = await sb.from('contact_log')
-      .select('actor_id')
-      .gte('created_at', monthStart);
+    if (epRpcRes.error) {
+      console.error('[Admin] get_employer_admin_data error:', epRpcRes.error);
+    }
+    var eps = epRpcRes.data || [];
+
     var clMap = {};
-    (clRes.data || []).forEach(function(r) {
+    (clRes.data || []).filter(function(r){ return r.created_at >= monthStart; }).forEach(function(r) {
       clMap[r.actor_id] = (clMap[r.actor_id] || 0) + 1;
     });
 
@@ -1934,33 +3005,43 @@ async function loadEmployers() {
     document.getElementById('stat-emp-credits').textContent = totalCredits;
 
     if (!eps.length) {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--c-muted);padding:20px">No employers yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--c-muted);padding:20px">No employers yet.</td></tr>';
       _employersLoaded = true;
       return;
     }
 
     tbody.innerHTML = eps.map(function(ep) {
-      var contacts = clMap[ep.owner_id] || 0;
-      var purchased = txMap[ep.id] || 0;
-      var status = ep.account_status || 'active';
-      var loginEmail = empEmailMap[ep.owner_id] || '—';
-      var statusBadge = status === 'active'
-        ? '<span class="verified-badge">Active</span>'
-        : '<span class="basic-badge" style="background:var(--c-accent-light);color:var(--c-accent)">Suspended</span>';
+      var contacts  = clMap[ep.owner_id] || 0;
+      var purchased = ep.credits_purchased || 0;
+      var remaining = ep.credit_balance || 0;
+      var status    = ep.account_status || 'active';
+      var loginEmail = ep.email || '—';
+      var displayName = ep.display_name || '—';
+      // +1 phone formatting
+      var rawPhone = ep.phone || '';
+      var phoneDisplay = rawPhone
+        ? (rawPhone.startsWith('+') ? rawPhone : '+1 ' + rawPhone.replace(/\D/g,'').replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3'))
+        : '—';
+      var statusBadge = status === 'deleted'
+        ? '<span class="basic-badge" style="background:#e5e7eb;color:#6b7280">Deleted</span>'
+        : status === 'active'
+          ? '<span class="verified-badge">Active</span>'
+          : '<span class="basic-badge" style="background:var(--c-accent-light);color:var(--c-accent)">Suspended</span>';
       var suspendLabel = status === 'active' ? 'Suspend' : 'Restore';
       var suspendStyle = status === 'active'
         ? 'background:var(--c-accent-light);color:var(--c-accent)'
         : 'background:var(--c-green-light);color:var(--c-green)';
-      var credColor = ep.credit_balance === 0 ? 'var(--c-accent)' : ep.credit_balance <= 2 ? 'var(--c-amber)' : 'var(--c-green)';
-      return '<tr data-empid="'+escHtml(ep.id)+'" data-ownerid="'+escHtml(ep.owner_id)+'" data-empstatus="'+escHtml(status)+'" data-empname="'+escHtml(ep.display_name||'')+'" data-loginemail="'+escHtml(loginEmail)+'">'
+      var remColor = remaining === 0 ? 'var(--c-accent)' : remaining <= 2 ? 'var(--c-amber)' : 'var(--c-green)';
+      return '<tr data-empid="'+escHtml(ep.id)+'" data-ownerid="'+escHtml(ep.owner_id)+'" data-empstatus="'+escHtml(status)+'" data-empname="'+escHtml(displayName.toLowerCase())+'" data-loginemail="'+escHtml(loginEmail)+'">'
+        + '<td style="font-size:13px;font-weight:500">'+escHtml(displayName)+'</td>'
         + '<td style="font-size:12px;color:var(--c-muted)">'+escHtml(loginEmail)+'</td>'
-        + '<td style="font-size:12px;color:var(--c-muted)">'+escHtml(ep.phone||'—')+'</td>'
-        + '<td style="font-weight:600;color:'+credColor+'">'+ep.credit_balance+'</td>'
+        + '<td style="font-size:12px;color:var(--c-muted)">'+escHtml(phoneDisplay)+'</td>'
         + '<td style="text-align:center">'+contacts+'</td>'
-        + '<td style="text-align:center">'+purchased+'</td>'
+        + '<td style="text-align:center;font-weight:600">'+purchased+'</td>'
+        + '<td style="text-align:center;font-weight:600;color:'+remColor+'">'+remaining+'</td>'
         + '<td>'+statusBadge+'</td>'
         + '<td><div class="action-cell">'
-        + '<button class="btn-suspend" style="'+suspendStyle+'" onclick="toggleEmployerStatus(this)">'+suspendLabel+'</button>'
+        + (status !== 'deleted' ? '<button class="btn-suspend" style="'+suspendStyle+'" onclick="toggleEmployerStatus(this)">'+suspendLabel+'</button>' : '')
         + '<button class="btn-save" style="background:var(--c-blue-light);color:var(--c-blue)" onclick="adminResetPassword(this.closest(\'tr\').dataset.loginemail)">Reset PW</button>'
         + '</div></td>'
         + '</tr>';
@@ -1969,7 +3050,7 @@ async function loadEmployers() {
     _employersLoaded = true;
   } catch(e) {
     console.error('[Admin] loadEmployers error:', e);
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--c-accent);padding:20px">Error loading employers.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--c-accent);padding:20px">Error loading employers.</td></tr>';
   }
 }
 
@@ -1985,10 +3066,10 @@ async function toggleEmployerStatus(btn) {
 
   try {
     var sb = getSupabase();
-    await sb.from('employer_profiles').update({ account_status: newStatus }).eq('id', empId);
+    await sb.rpc('set_employer_account_status', { p_employer_id: empId, p_status: newStatus });
 
     row.dataset.empstatus = newStatus;
-    var statusCell = row.querySelector('td:nth-child(5)');
+    var statusCell = row.querySelector('td:nth-child(7)');
     if (newStatus === 'active') {
       statusCell.innerHTML = '<span class="verified-badge">Active</span>';
       btn.textContent = 'Suspend';
@@ -2025,10 +3106,11 @@ function filterEmployerTable() {
   var q      = (document.getElementById('emp-search-box').value || '').toLowerCase();
   var status = document.getElementById('emp-status-filter').value;
   document.querySelectorAll('#emp-table-body tr').forEach(function(row) {
-    var id  = (row.dataset.ownerid || '').toLowerCase();
-    var st  = row.dataset.empstatus || '';
-    var show = true;
-    if (q && id.indexOf(q) === -1) show = false;
+    var name  = (row.dataset.empname  || '').toLowerCase();
+    var email = (row.dataset.loginemail || '').toLowerCase();
+    var st    = row.dataset.empstatus || '';
+    var show  = true;
+    if (q && name.indexOf(q) === -1 && email.indexOf(q) === -1) show = false;
     if (status && st !== status) show = false;
     row.style.display = show ? '' : 'none';
   });
@@ -2042,24 +3124,36 @@ async function loadWorkers() {
   var tbody = document.getElementById('wkr-table-body');
 
   try {
-    var res = await sb.from('businesses')
-      .select('*')
-      .eq('is_worker', true)
-      .order('created_at', { ascending: false });
+    var now2 = new Date();
+    var monthStart2 = new Date(now2.getFullYear(), now2.getMonth(), 1).toISOString();
+
+    var [res, clRes2] = await Promise.all([
+      sb.from('businesses').select('*').eq('is_worker', true).order('created_at', { ascending: false }),
+      sb.rpc('get_contact_log_admin')
+    ]);
     var workers = res.data || [];
+    var clAll2 = clRes2.data || [];
 
-    var total    = workers.length;
-    var verified = workers.filter(function(w){ return w.verified; }).length;
-    var pending  = workers.filter(function(w){ return !w.verified; }).length;
-    var avgPrio  = total ? Math.round(workers.reduce(function(s,w){ return s+(w.priority_score||0); },0)/total) : 0;
+    // biz_id 기준 contact 집계
+    var clMonthBiz = {}, clTotalBiz = {};
+    clAll2.forEach(function(r) {
+      if (!r.biz_id) return;
+      clTotalBiz[r.biz_id] = (clTotalBiz[r.biz_id] || 0) + 1;
+      if (r.created_at >= monthStart2) clMonthBiz[r.biz_id] = (clMonthBiz[r.biz_id] || 0) + 1;
+    });
 
-    document.getElementById('stat-wkr-total').textContent    = total;
-    document.getElementById('stat-wkr-verified').textContent = verified;
-    document.getElementById('stat-wkr-pending').textContent  = pending;
-    document.getElementById('stat-wkr-priority').textContent = avgPrio;
+    var total     = workers.length;
+    var active    = workers.filter(function(w){ return (w.account_status||'active') === 'active'; }).length;
+    var suspended = workers.filter(function(w){ return w.account_status === 'suspended'; }).length;
+    var totalContactsMonth = workers.reduce(function(s,w){ return s + (clMonthBiz[w.id]||0); }, 0);
+
+    document.getElementById('stat-wkr-total').textContent     = total;
+    document.getElementById('stat-wkr-active').textContent    = active;
+    document.getElementById('stat-wkr-suspended').textContent = suspended;
+    document.getElementById('stat-wkr-contacts').textContent  = totalContactsMonth;
 
     if (!workers.length) {
-      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--c-muted);padding:20px">No workers registered yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--c-muted);padding:20px">No workers registered yet.</td></tr>';
       _workersLoaded = true;
       return;
     }
@@ -2075,9 +3169,11 @@ async function loadWorkers() {
         ? '<span class="verified-badge">✅ Verified</span>'
         : '<span class="basic-badge">⏳ Unverified</span>';
       var status = w.account_status || 'active';
-      var statusBadge = status === 'active'
-        ? '<span class="verified-badge">Active</span>'
-        : '<span class="basic-badge" style="background:var(--c-accent-light);color:var(--c-accent)">Suspended</span>';
+      var statusBadge = status === 'deleted'
+        ? '<span class="basic-badge" style="background:#e5e7eb;color:#6b7280">Deleted</span>'
+        : status === 'active'
+          ? '<span class="verified-badge">Active</span>'
+          : '<span class="basic-badge" style="background:var(--c-accent-light);color:var(--c-accent)">Suspended</span>';
       var prio = w.priority_score != null ? w.priority_score : 0;
       var pvClass = prio===0?'zero':prio<=7?'low':prio<=13?'mid':'high';
       var suspendLabel = status === 'active' ? 'Suspend' : 'Restore';
@@ -2087,19 +3183,22 @@ async function loadWorkers() {
       var contactHtml = '<span style="font-size:11px;line-height:1.6">'
         + (w.whatsapp_phone ? '📱 '+escHtml(w.whatsapp_phone) : '—')
         + '</span>';
-      return '<tr data-wkrstatus="'+escHtml(status)+'" data-wkrverify="'+(w.verified?'verified':'unverified')+'" data-wkrname="'+escHtml(name.toLowerCase())+'" data-bizid="'+escHtml(w.id)+'" data-bizname="'+escHtml(name)+'" data-loginemail="'+escHtml(loginEmail)+'">'
-        + '<td><div class="biz-cell"><div class="biz-avatar '+bizAvatarClass(idx)+'">'+getAvatarInitialsAdmin(name)+'</div>'
+      var thumbHtml = (w.photos && w.photos.length)
+        ? '<img src="'+escHtml(w.photos[0])+'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0">'
+        : '<div class="biz-avatar '+bizAvatarClass(idx)+'">'+getAvatarInitialsAdmin(name)+'</div>';
+      var cMonth = clMonthBiz[w.id] || 0;
+      var cTotal = clTotalBiz[w.id] || 0;
+      return '<tr data-wkrstatus="'+escHtml(status)+'" data-wkrverify="'+(w.verified?'verified':'unverified')+'" data-wkrname="'+escHtml(name.toLowerCase())+'" data-bizid="'+escHtml(w.id)+'" data-bizname="'+escHtml(name)+'" data-loginemail="'+escHtml(loginEmail)+'" data-preflang="'+escHtml(w.preferred_lang||'es')+'">'
+        + '<td><div class="biz-cell">'+thumbHtml
         + '<div><div class="biz-name">'+escHtml(name)+'</div></div></div></td>'
         + '<td style="font-size:12px;color:var(--c-muted)">'+escHtml(cats)+'</td>'
         + '<td style="font-size:12px;color:var(--c-muted)">'+escHtml(loginEmail)+'</td>'
         + '<td>'+contactHtml+'</td>'
-        + '<td>'+verBadge+'</td>'
-        + '<td><div class="priority-cell"><input type="range" class="priority-slider" min="0" max="20" value="'+prio+'" oninput="updatePriority(this)">'
-        + '<span class="priority-val '+pvClass+'">'+prio+'</span></div></td>'
+        + '<td style="text-align:center">'+cMonth+'</td>'
+        + '<td style="text-align:center">'+cTotal+'</td>'
         + '<td>'+statusBadge+'</td>'
         + '<td><div class="action-cell">'
-        + '<button class="btn-suspend" style="'+suspendStyle+'" onclick="toggleWorkerStatus(this)">'+suspendLabel+'</button>'
-        + '<button class="btn-save" onclick="savePriorityDB(this)">Save</button>'
+        + (status !== 'deleted' ? '<button class="btn-suspend" style="'+suspendStyle+'" onclick="toggleWorkerStatus(this)">'+suspendLabel+'</button>' : '')
         + '<button class="btn-save" style="background:var(--c-blue-light);color:var(--c-blue)" onclick="adminResetPassword(this.closest(\'tr\').dataset.loginemail)">Reset PW</button>'
         + '</div></td>'
         + '</tr>';
@@ -2108,7 +3207,7 @@ async function loadWorkers() {
     _workersLoaded = true;
   } catch(e) {
     console.error('[Admin] loadWorkers error:', e);
-    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--c-accent);padding:20px">Error loading workers.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--c-accent);padding:20px">Error loading workers.</td></tr>';
   }
 }
 
@@ -2116,7 +3215,7 @@ async function toggleWorkerStatus(btn) {
   var row = btn.closest('tr');
   var bizId    = row.dataset.bizid;
   var bizName  = row.dataset.bizname || '';
-  var bizEmail = row.dataset.email || null;
+  var bizEmail = row.dataset.loginemail || null;
   var isSuspended = row.dataset.wkrstatus === 'suspended';
   var newStatus = isSuspended ? 'active' : 'suspended';
 
@@ -2127,7 +3226,7 @@ async function toggleWorkerStatus(btn) {
     await sb.from('businesses').update({ account_status: newStatus }).eq('id', bizId);
 
     row.dataset.wkrstatus = newStatus;
-    var statusCell = row.querySelector('td:nth-child(6)');
+    var statusCell = row.querySelector('td:nth-child(7)');
     if (newStatus === 'active') {
       statusCell.innerHTML = '<span class="verified-badge">Active</span>';
       btn.textContent = 'Suspend';
@@ -2138,7 +3237,7 @@ async function toggleWorkerStatus(btn) {
       btn.textContent = 'Restore';
       btn.style.background = 'var(--c-green-light)';
       btn.style.color = 'var(--c-green)';
-      if (bizEmail) sendEmail('W3', bizEmail, { biz_name: bizName }, bizId);
+      if (bizEmail) sendEmail('W3', bizEmail, { worker_name: bizName }, bizId + '_susp_' + Date.now(), row.dataset.preflang || 'es');
     }
     showAdminToast((newStatus==='active'?'✅ Worker restored':'🚫 Worker suspended') + ' — ' + bizName);
   } catch(err) {
@@ -2150,15 +3249,12 @@ async function toggleWorkerStatus(btn) {
 
 function filterWorkerTable() {
   var q      = (document.getElementById('wkr-search-box').value || '').toLowerCase();
-  var verify = document.getElementById('wkr-verify-filter').value;
   var status = document.getElementById('wkr-status-filter').value;
   document.querySelectorAll('#wkr-table-body tr').forEach(function(row) {
     var name = row.dataset.wkrname || '';
     var st   = row.dataset.wkrstatus || '';
-    var vf   = row.dataset.wkrverify || '';
     var show = true;
     if (q && name.indexOf(q) === -1) show = false;
-    if (verify && vf !== verify) show = false;
     if (status && st !== status) show = false;
     row.style.display = show ? '' : 'none';
   });

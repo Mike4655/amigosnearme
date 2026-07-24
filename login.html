@@ -21,9 +21,9 @@
   }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   body{font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);font-size:14px;line-height:1.6}
-  [data-en]{display:none}
-  body.en [data-es]{display:none}
-  body.en [data-en]{display:revert}
+  [data-en]{display:none !important}
+  body.en [data-es]{display:none !important}
+  body.en [data-en]{display:revert !important}
   a{color:inherit}
 
   /* NAV */
@@ -42,6 +42,11 @@
   .auth-tabs{display:flex;gap:4px;background:var(--c-bg);border-radius:var(--radius-md);padding:4px;margin-bottom:22px}
   .auth-tab{flex:1;text-align:center;padding:8px;border-radius:8px;font-size:13px;font-weight:500;color:var(--c-muted);cursor:pointer;transition:all 0.15s}
   .auth-tab.active{background:var(--c-surface);color:var(--c-text);box-shadow:0 1px 2px rgba(0,0,0,0.06)}
+  /* Worker·Business owner: Sign up 탭 숨김 — ID 선택자로 lang !important 규칙 무력화 */
+  body.worker-login #tab-signup,
+  body.worker-login #tab-signup-en,
+  body.business-login #tab-signup,
+  body.business-login #tab-signup-en { display: none !important; }
 
   .field-row{margin-bottom:14px}
   .field-label{font-size:12px;font-weight:500;color:var(--c-muted);margin-bottom:5px;display:block}
@@ -155,6 +160,14 @@
   </div>
 </nav>
 
+<!-- 삭제 계정 안내 배너 (reason=deleted 파라미터 시 표시) -->
+<div id="deleted-account-banner" style="display:none;max-width:480px;margin:24px auto 0;padding:16px 20px;background:var(--c-accent-light);border:0.5px solid rgba(186,62,39,0.25);border-radius:var(--radius-md)">
+  <div style="font-weight:600;color:var(--c-accent);margin-bottom:6px" data-es>Cuenta eliminada</div>
+  <div style="font-weight:600;color:var(--c-accent);margin-bottom:6px" data-en>Account deleted</div>
+  <div style="font-size:13px;color:var(--c-muted)" data-es>Esta cuenta ha sido eliminada y ya no está activa. Si crees que esto es un error, contáctanos por <a href="https://wa.me/17862388827">WhatsApp +1 (786) 238-8827</a>.</div>
+  <div style="font-size:13px;color:var(--c-muted)" data-en>This account has been deleted and is no longer active. If you believe this is an error, contact us on <a href="https://wa.me/17862388827">WhatsApp +1 (786) 238-8827</a>.</div>
+</div>
+
 <!-- ============ AUTH (LOGIN / SIGNUP) ============ -->
 <div class="auth-wrap" id="auth-wrap">
 
@@ -172,8 +185,8 @@
           <div style="text-align:left">
             <div style="font-weight:600;font-size:14px" data-es>Soy cliente — busco servicios</div>
             <div style="font-weight:600;font-size:14px" data-en>I'm a customer — looking for services</div>
-            <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-es>Guarda favoritos, deja reseñas, contacta personal</div>
-            <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-en>Save favorites, leave reviews, contact workers</div>
+            <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-es>Guarda favoritos, deja reseñas, contacta negocios</div>
+            <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-en>Save favorites, leave reviews, contact businesses</div>
           </div>
         </button>
         <button class="type-btn" onclick="selectUserType('business')">
@@ -185,22 +198,29 @@
             <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-en>Access your dashboard, manage requests and profile</div>
           </div>
         </button>
-        <button class="type-btn" onclick="selectUserType('staffing')">
+        <button class="type-btn" onclick="selectUserType('employer')">
+          <span style="font-size:22px">🏗️</span>
+          <div style="text-align:left">
+            <div style="font-weight:600;font-size:14px" data-es>Soy empleador — contrato trabajadores</div>
+            <div style="font-weight:600;font-size:14px" data-en>I'm an employer — hiring workers</div>
+            <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-es>Busca y contacta trabajadores individuales con créditos</div>
+            <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-en>Find and contact individual workers using contact credits</div>
+          </div>
+        </button>
+        <button class="type-btn" onclick="selectUserType('worker')">
           <span style="font-size:22px">👷</span>
           <div style="text-align:left">
-            <div style="font-weight:600;font-size:14px" data-es>Busco personal / mano de obra</div>
-            <div style="font-weight:600;font-size:14px" data-en>I'm hiring workers / labor</div>
-            <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-es>Necesito cuenta para contactar trabajadores individuales</div>
-            <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-en>I need an account to contact individual workers</div>
+            <div style="font-weight:600;font-size:14px" data-es>Soy trabajador — mi perfil de trabajo</div>
+            <div style="font-weight:600;font-size:14px" data-en>I'm a worker — my work profile</div>
+            <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-es>Accede a tu perfil público y gestiona tu información</div>
+            <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-en>Access your public profile and manage your information</div>
           </div>
         </button>
       </div>
 
       <div style="margin-top:16px;text-align:center;font-size:12.5px;color:var(--c-hint)">
-        <span data-es>¿Quieres registrar tu negocio o trabajo? </span>
-        <span data-en>Want to list your business or work? </span>
-        <a href="register-type.html" style="color:var(--c-accent)" data-es>Regístrate aquí →</a>
-        <a href="register-type.html" style="color:var(--c-accent)" data-en>Register here →</a>
+        <span data-es>¿Eres nuevo trabajador? <a href="register.html?type=staffing" style="color:var(--c-accent)">Crea tu perfil →</a></span>
+        <span data-en>New worker? <a href="register.html?type=staffing" style="color:var(--c-accent)">Create your profile →</a></span>
       </div>
     </div>
   </div>
@@ -235,12 +255,12 @@
       <div class="field-row">
         <label class="field-label" data-es>Correo electrónico</label>
         <label class="field-label" data-en>Email</label>
-        <input type="email" id="login-email" placeholder="tu@email.com" oninput="clearLoginError()">
+        <input type="email" id="login-email" placeholder="tu@email.com" oninput="clearLoginError();syncForgotEmail(this.value)" onkeydown="if(event.key==='Enter')doLogin()">
       </div>
       <div class="field-row">
         <label class="field-label" data-es>Contraseña</label>
         <label class="field-label" data-en>Password</label>
-        <input type="password" id="login-password" placeholder="••••••••" oninput="clearLoginError()">
+        <input type="password" id="login-password" placeholder="••••••••" oninput="clearLoginError()" onkeydown="if(event.key==='Enter')doLogin()">
       </div>
       <div class="field-error" id="err-login" data-es-text="Ingresa un correo válido y tu contraseña." data-en-text="Enter a valid email and your password.">Ingresa un correo válido y tu contraseña.</div>
 
@@ -253,7 +273,7 @@
       <div id="forgot-section" style="display:none;margin-bottom:12px;padding:14px;background:var(--c-accent-light);border-radius:var(--radius-sm)">
         <div style="font-size:12px;font-weight:500;margin-bottom:8px" data-es>Te enviaremos un enlace para restablecer tu contraseña.</div>
         <div style="font-size:12px;font-weight:500;margin-bottom:8px" data-en>We'll send you a password reset link.</div>
-        <input type="email" id="forgot-email" placeholder="tu@correo.com" style="width:100%;padding:9px 11px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:13px;font-family:var(--font-body);background:#fff;color:var(--c-text);margin-bottom:8px">
+        <input type="email" id="forgot-email" readonly style="width:100%;padding:9px 11px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:13px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-muted);margin-bottom:8px;cursor:default">
         <div id="forgot-msg" style="display:none;font-size:12px;color:var(--c-green);margin-bottom:6px"></div>
         <div style="display:flex;gap:8px">
           <button onclick="sendPasswordReset()" style="flex:1;padding:8px;border-radius:var(--radius-sm);background:var(--c-accent);color:#fff;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:var(--font-body)" data-es>Enviar enlace</button>
@@ -277,17 +297,17 @@
       <div class="field-row">
         <label class="field-label" data-es>Nombre</label>
         <label class="field-label" data-en>Name</label>
-        <input type="text" id="signup-name" placeholder="Maria López" oninput="clearSignupError()">
+        <input type="text" id="signup-name" placeholder="Maria López" oninput="clearSignupError()" onkeydown="if(event.key==='Enter')doSignup()">
       </div>
       <div class="field-row">
         <label class="field-label" data-es>Correo electrónico</label>
         <label class="field-label" data-en>Email</label>
-        <input type="email" id="signup-email" placeholder="tu@email.com" oninput="clearSignupError()">
+        <input type="email" id="signup-email" placeholder="tu@email.com" oninput="clearSignupError()" onkeydown="if(event.key==='Enter')doSignup()">
       </div>
       <div class="field-row">
         <label class="field-label" data-es>Contraseña</label>
         <label class="field-label" data-en>Password</label>
-        <input type="password" id="signup-password" placeholder="Mínimo 8 caracteres" oninput="clearSignupError()">
+        <input type="password" id="signup-password" placeholder="Mínimo 8 caracteres" oninput="clearSignupError()" onkeydown="if(event.key==='Enter')doSignup()">
       </div>
       <div class="field-error" id="err-signup" data-es-text="Completa tu nombre, correo válido y contraseña (mínimo 8 caracteres)." data-en-text="Fill in your name, a valid email, and password (minimum 8 characters).">Completa tu nombre, correo válido y contraseña (mínimo 8 caracteres).</div>
 
@@ -332,13 +352,17 @@
   <div class="account-tabs">
     <div class="acc-tab active" onclick="switchAccTab('saved')"><span>⭐</span><span data-es>Guardados</span><span data-en>Saved</span></div>
     <div class="acc-tab" onclick="switchAccTab('quotes')"><span>📋</span><span data-es>Mis solicitudes</span><span data-en>My requests</span></div>
-    <div class="acc-tab" onclick="switchAccTab('settings')"><span>⚙️</span><span data-es>Configuración</span><span data-en>Settings</span></div>
+    <div class="acc-tab" onclick="switchAccTab('reviews')"><span>✍️</span><span data-es>Mis reseñas</span><span data-en>My reviews</span></div>
     <div class="acc-tab" onclick="switchAccTab('settings')"><span>⚙️</span><span data-es>Configuración</span><span data-en>Settings</span></div>
   </div>
 
   <!-- SAVED BUSINESSES — rendered dynamically from localStorage -->
   <div class="acc-pane show" id="pane-saved">
-    <div class="saved-grid" id="saved-grid-container">
+    <div id="saved-browse-link" style="text-align:right;margin-bottom:12px;display:none">
+      <a href="search.html" data-es style="font-size:13px;color:var(--c-accent);text-decoration:none;font-weight:500">Explorar negocios →</a>
+      <a href="search.html" data-en style="font-size:13px;color:var(--c-accent);text-decoration:none;font-weight:500">Browse businesses →</a>
+    </div>
+    <div class="saved-grid" id="saved-grid-container" style="max-height:480px;overflow-y:auto">
       <!-- populated by renderSavedGrid() on load -->
     </div>
     <div id="saved-empty" style="display:none;text-align:center;padding:40px 0;color:var(--c-hint)">
@@ -347,57 +371,22 @@
       <div style="font-size:14px;font-weight:500;margin-bottom:6px" data-en>No saved businesses yet</div>
       <div style="font-size:13px;color:var(--c-hint)" data-es>Haz clic en "⭐ Guardar negocio" en cualquier perfil para guardarlo aquí.</div>
       <div style="font-size:13px;color:var(--c-hint)" data-en>Click "⭐ Save business" on any profile to save it here.</div>
-      <a href="search.html" style="display:inline-block;margin-top:16px;padding:9px 18px;background:var(--c-accent);color:#fff;border-radius:var(--radius-sm);font-size:13px;font-weight:500;text-decoration:none" data-es>Explorar negocios →</a>
-      <a href="search.html" style="display:inline-block;margin-top:16px;padding:9px 18px;background:var(--c-accent);color:#fff;border-radius:var(--radius-sm);font-size:13px;font-weight:500;text-decoration:none" data-en>Browse businesses →</a>
+      <div data-es style="margin-top:16px"><a href="search.html" style="display:inline-block;padding:9px 18px;background:var(--c-accent);color:#fff;border-radius:var(--radius-sm);font-size:13px;font-weight:500;text-decoration:none">Explorar negocios →</a></div>
+      <div data-en style="margin-top:16px"><a href="search.html" style="display:inline-block;padding:9px 18px;background:var(--c-accent);color:#fff;border-radius:var(--radius-sm);font-size:13px;font-weight:500;text-decoration:none">Browse businesses →</a></div>
     </div>
   </div>
 
-  <!-- MY QUOTE REQUESTS -->
-  <!-- MY REQUESTS — honest contact history timeline -->
-  <div class="acc-pane" id="pane-quotes">
+  <!-- MY REVIEWS -->
+  <div class="acc-pane" id="pane-reviews" style="max-height:480px;overflow-y:auto"></div>
 
-    <div style="background:var(--c-bg);border:0.5px solid var(--c-border);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:var(--c-muted);display:flex;gap:8px;align-items:flex-start">
-      <span>💬</span>
-      <span data-es>Este historial muestra cuándo contactaste a cada negocio. La conversación real ocurre en WhatsApp o por teléfono — AmigosNearMe no tiene acceso a esas respuestas.</span>
-      <span data-en>This history shows when you contacted each business. The actual conversation happens in WhatsApp or by phone — AmigosNearMe does not have access to those replies.</span>
-    </div>
-
-    <div class="quote-item">
-      <div>
-        <div class="quote-biz">Hernandez Construction LLC</div>
-        <div class="quote-cat" data-es>Construcción · Contactado por WhatsApp</div>
-        <div class="quote-cat" data-en>Construction · Contacted via WhatsApp</div>
-        <div class="quote-date" data-es>Hace 2 días</div>
-        <div class="quote-date" data-en>2 days ago</div>
-      </div>
-      <span class="status-pill" style="background:var(--c-green-light);color:var(--c-green)">📲 WhatsApp</span>
-    </div>
-
-    <div class="quote-item">
-      <div>
-        <div class="quote-biz">Martinez Plumbing & Repair</div>
-        <div class="quote-cat" data-es>Plomería · Contactado por formulario</div>
-        <div class="quote-cat" data-en>Plumbing · Contacted via form</div>
-        <div class="quote-date" data-es>Hace 5 días</div>
-        <div class="quote-date" data-en>5 days ago</div>
-      </div>
-      <span class="status-pill" style="background:var(--c-blue-light);color:var(--c-blue)">📋 Form</span>
-    </div>
-
-    <div class="quote-item">
-      <div>
-        <div class="quote-biz">Flores Painting Co.</div>
-        <div class="quote-cat" data-es>Pintura · Contactado por WhatsApp</div>
-        <div class="quote-cat" data-en>Painting · Contacted via WhatsApp</div>
-        <div class="quote-date" data-es>Hace 3 semanas</div>
-        <div class="quote-date" data-en>3 weeks ago</div>
-      </div>
-      <span class="status-pill" style="background:var(--c-green-light);color:var(--c-green)">📲 WhatsApp</span>
-    </div>
-
-    <div style="margin-top:16px;text-align:center;font-size:12px;color:var(--c-hint)">
-      <span data-es>💡 Para ver las respuestas de los negocios, abre WhatsApp en tu teléfono.</span>
-      <span data-en>💡 To see replies from businesses, open WhatsApp on your phone.</span>
+  <!-- MY REQUESTS — contact history timeline -->
+  <div class="acc-pane" id="pane-quotes" style="max-height:480px;overflow-y:auto">
+    <div style="text-align:center;padding:40px 0;color:var(--c-hint)">
+      <div style="font-size:32px;margin-bottom:10px">📋</div>
+      <div style="font-size:14px;font-weight:500;margin-bottom:6px" data-es>Todavía no has contactado ningún negocio</div>
+      <div style="font-size:14px;font-weight:500;margin-bottom:6px" data-en>No contact history yet</div>
+      <div style="font-size:13px;color:var(--c-hint)" data-es>Cuando contactes un negocio por WhatsApp o formulario, aparecerá aquí.</div>
+      <div style="font-size:13px;color:var(--c-hint)" data-en>When you contact a business via WhatsApp or form, it will appear here.</div>
     </div>
   </div>
 
@@ -427,8 +416,8 @@
         </label>
       </div>
 
-      <div id="notif-saved-msg" style="display:none;font-size:12px;color:var(--c-green);margin-top:8px" data-es>✅ Preferencia guardada.</div>
-      <div id="notif-saved-msg-en" style="display:none;font-size:12px;color:var(--c-green);margin-top:8px" data-en>✅ Preference saved.</div>
+      <div id="notif-saved-msg" style="display:none;font-size:12px;color:var(--c-green);margin-top:8px">✅ Preferencia guardada.</div>
+      <div id="notif-saved-msg-en" style="display:none;font-size:12px;color:var(--c-green);margin-top:8px">✅ Preference saved.</div>
 
       <p style="font-size:11px;color:var(--c-hint);margin-top:12px;line-height:1.5" data-es>
         ℹ️ Esta es la única notificación disponible. AmigosNearMe no puede notificarte sobre respuestas de negocios porque las conversaciones ocurren directamente en WhatsApp, fuera de la plataforma.
@@ -446,21 +435,29 @@
       <div class="field-row">
         <label class="field-label" data-es>Nombre</label>
         <label class="field-label" data-en>Name</label>
-        <input type="text" id="settings-name" value="Maria López">
+        <input type="text" id="settings-name" value="">
       </div>
       <div class="field-row">
         <label class="field-label" data-es>Correo electrónico</label>
         <label class="field-label" data-en>Email</label>
-        <input type="email" id="settings-email" value="maria@email.com">
+        <input type="email" id="settings-email" value="" readonly style="background:var(--c-bg);color:var(--c-muted)">
       </div>
       <div class="field-row">
         <label class="field-label" data-es>Teléfono (para contactar negocios)</label>
         <label class="field-label" data-en>Phone (used when contacting businesses)</label>
         <input type="tel" id="settings-phone" placeholder="+1 (404) 000-0000">
       </div>
+      <div class="field-row">
+        <label class="field-label" data-es>Idioma preferido para emails</label>
+        <label class="field-label" data-en>Preferred email language</label>
+        <select id="settings-preferred-lang" style="padding:8px 10px;border:0.5px solid var(--c-border);border-radius:8px;font-size:13px;background:var(--c-surface)">
+          <option value="es">Español</option>
+          <option value="en">English</option>
+        </select>
+      </div>
 
-      <div id="settings-save-confirm" style="display:none;font-size:12px;color:var(--c-green);margin-bottom:8px" data-es>✅ Cambios guardados.</div>
-      <div id="settings-save-confirm-en" style="display:none;font-size:12px;color:var(--c-green);margin-bottom:8px" data-en>✅ Changes saved.</div>
+      <div id="settings-save-confirm" style="display:none;font-size:12px;color:var(--c-green);margin-bottom:8px">✅ Cambios guardados.</div>
+      <div id="settings-save-confirm-en" style="display:none;font-size:12px;color:var(--c-green);margin-bottom:8px">✅ Changes saved.</div>
 
       <button class="btn-primary" style="background:var(--c-accent)" onclick="saveAccountSettings()" data-es>Guardar cambios</button>
       <button class="btn-primary" style="background:var(--c-accent)" onclick="saveAccountSettings()" data-en>Save changes</button>
@@ -486,8 +483,8 @@
         <input type="password" id="settings-pw-confirm" placeholder="••••••••">
       </div>
       <div id="settings-pw-error" style="display:none;font-size:12px;color:var(--c-accent);margin-bottom:8px"></div>
-      <div id="settings-pw-confirm-msg" style="display:none;font-size:12px;color:var(--c-green);margin-bottom:8px" data-es>✅ Contraseña actualizada.</div>
-      <div id="settings-pw-confirm-msg-en" style="display:none;font-size:12px;color:var(--c-green);margin-bottom:8px" data-en>✅ Password updated.</div>
+      <div id="settings-pw-confirm-msg" style="display:none;font-size:12px;color:var(--c-green);margin-bottom:8px">✅ Contraseña actualizada.</div>
+      <div id="settings-pw-confirm-msg-en" style="display:none;font-size:12px;color:var(--c-green);margin-bottom:8px">✅ Password updated.</div>
       <button class="btn-primary" style="background:var(--c-text)" onclick="changePassword()" data-es>Actualizar contraseña</button>
       <button class="btn-primary" style="background:var(--c-text)" onclick="changePassword()" data-en>Update password</button>
     </div>
@@ -521,6 +518,15 @@ function setLang(lang) {
   try { localStorage.setItem('anm-lang', lang); } catch(e) {}
 }
 
+// 삭제 계정 진입 시 배너 표시
+(function() {
+  var reason = new URLSearchParams(window.location.search).get('reason');
+  if (reason === 'deleted') {
+    var banner = document.getElementById('deleted-account-banner');
+    if (banner) banner.style.display = 'block';
+  }
+})();
+
 var selectedUserType = '';
 
 var USER_TYPE_INFO = {
@@ -534,10 +540,21 @@ var USER_TYPE_INFO = {
     es: 'Dueño de negocio',
     en: 'Business owner'
   },
+  employer: {
+    icon: '🏗️',
+    es: 'Empleador — contratando trabajadores',
+    en: 'Employer — hiring workers'
+  },
+  // 하위 호환: staffing → employer 와 동일 처리
   staffing: {
+    icon: '🏗️',
+    es: 'Empleador — contratando trabajadores',
+    en: 'Employer — hiring workers'
+  },
+  worker: {
     icon: '👷',
-    es: 'Buscando personal / mano de obra',
-    en: 'Hiring workers / labor'
+    es: 'Trabajador — mi perfil de trabajo',
+    en: 'Job Seeker — my work profile'
   }
 };
 
@@ -551,25 +568,38 @@ function selectUserType(type) {
   document.getElementById('auth-context-text-es').textContent = info.es;
   document.getElementById('auth-context-text-en').textContent = info.en;
 
-  // If business owner, redirect to dashboard login
+  // If business owner, login only (register via register.html)
   if (type === 'business') {
     document.getElementById('type-selector').style.display = 'none';
     document.getElementById('auth-form-wrap').style.display = 'block';
-    // Business owner: update subtitle to reflect dashboard access
     document.querySelector('#form-login .auth-sub[data-es]').textContent = 'Accede a tu panel de control y gestiona solicitudes.';
     document.querySelector('#form-login .auth-sub[data-en]').textContent = 'Access your business dashboard and manage requests.';
+    switchAuthTab('login');
+    document.body.classList.add('business-login');
     return;
   }
+  document.body.classList.remove('business-login');
 
-  // Customer or Staffing: show the auth form
+  // Customer / Employer / Staffing(하위호환): show the auth form
   document.getElementById('type-selector').style.display = 'none';
   document.getElementById('auth-form-wrap').style.display = 'block';
 
-  if (type === 'staffing') {
-    document.querySelector('#form-login .auth-sub[data-es]').textContent = 'Inicia sesión para contactar trabajadores individuales.';
-    document.querySelector('#form-login .auth-sub[data-en]').textContent = 'Log in to contact individual workers.';
-    document.querySelector('#form-signup .auth-sub[data-es]').textContent = 'Crea tu cuenta para buscar y contactar personal disponible.';
-    document.querySelector('#form-signup .auth-sub[data-en]').textContent = 'Create your account to find and contact available workers.';
+  if (type === 'employer' || type === 'staffing') {
+    document.querySelector('#form-login .auth-sub[data-es]').textContent = 'Inicia sesión en tu cuenta de empleador para contactar trabajadores.';
+    document.querySelector('#form-login .auth-sub[data-en]').textContent = 'Log in to your employer account to contact workers.';
+    document.querySelector('#form-signup .auth-sub[data-es]').textContent = 'Crea tu cuenta de empleador para buscar y contactar trabajadores disponibles.';
+    document.querySelector('#form-signup .auth-sub[data-en]').textContent = 'Create your employer account to find and contact available workers.';
+    switchAuthTab('login');
+  }
+
+  if (type === 'worker') {
+    document.querySelector('#form-login .auth-sub[data-es]').textContent = 'Inicia sesión para ver y gestionar tu perfil público de trabajador.';
+    document.querySelector('#form-login .auth-sub[data-en]').textContent = 'Log in to view and manage your worker profile.';
+    // 워커는 로그인만 (신규 가입은 register.html?type=staffing)
+    switchAuthTab('login');
+    document.body.classList.add('worker-login');
+  } else {
+    document.body.classList.remove('worker-login');
   }
 }
 
@@ -599,6 +629,12 @@ function clearLoginError() {
   hideError('err-login');
 }
 
+function syncForgotEmail(val) {
+  var sec = document.getElementById('forgot-section');
+  if (!sec || sec.style.display === 'none') return;
+  var fe = document.getElementById('forgot-email');
+  if (fe) fe.value = val;
+}
 function showForgotPassword() {
   var sec = document.getElementById('forgot-section');
   var emailVal = document.getElementById('login-email');
@@ -624,8 +660,10 @@ async function sendPasswordReset() {
   if (emailEl) emailEl.style.borderColor = '';
   try {
     var sb = getSupabase();
-    await sb.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + '/reset-password.html'
+    var lang = isEn ? 'en' : 'es';
+    // Edge Function이 reset 링크 생성 + SEC2 커스텀 이메일 발송을 일괄 처리
+    await sb.functions.invoke('request-password-reset', {
+      body: { email, lang, origin: window.location.origin }
     });
     if (msgEl) {
       msgEl.textContent = isEn
@@ -666,10 +704,58 @@ async function doLogin() {
   try {
     var data = await signIn({ email: emailEl.value.trim(), password: passwordEl.value });
     var userType = data.user?.user_metadata?.user_type || 'customer';
+    var _returnTo = (new URLSearchParams(window.location.search)).get('returnTo');
     if (userType === 'business') {
+      try {
+        var biz = await getMyBusiness();
+        if (biz && (biz.account_status === 'suspended' || biz.account_status === 'deleted')) {
+          await getSupabase().auth.signOut();
+          var isEnBiz = document.body.classList.contains('en');
+          alert(biz.account_status === 'deleted'
+            ? (isEnBiz ? '⛔ This account has been deleted and is no longer active.' : '⛔ Esta cuenta ha sido eliminada y ya no está activa.')
+            : (isEnBiz ? '⛔ Your account has been suspended. Please contact support.' : '⛔ Tu cuenta ha sido suspendida. Por favor contacta a soporte.'));
+          return;
+        }
+      } catch(e) {}
       window.location.href = 'dashboard.html';
+    } else if (userType === 'employer') {
+      try {
+        var sb0 = getSupabase();
+        var { data: epLogin } = await sb0.from('employer_profiles').select('account_status').eq('owner_id', data.user.id).maybeSingle();
+        if (epLogin && (epLogin.account_status === 'suspended' || epLogin.account_status === 'deleted')) {
+          await sb0.auth.signOut();
+          var isEnEp = document.body.classList.contains('en');
+          alert(epLogin.account_status === 'deleted'
+            ? (isEnEp ? '⛔ This account has been deleted and is no longer active.' : '⛔ Esta cuenta ha sido eliminada y ya no está activa.')
+            : (isEnEp ? '⛔ Your account has been suspended. Please contact support.' : '⛔ Tu cuenta ha sido suspendida. Por favor contacta a soporte.'));
+          return;
+        }
+      } catch(e) {}
+      window.location.href = _returnTo ? decodeURIComponent(_returnTo) : 'employer-dashboard.html';
+    } else if (userType === 'worker') {
+      try {
+        var wBiz = await getMyBusiness();
+        if (wBiz && (wBiz.account_status === 'suspended' || wBiz.account_status === 'deleted')) {
+          await getSupabase().auth.signOut();
+          var isEnWk = document.body.classList.contains('en');
+          alert(wBiz.account_status === 'deleted'
+            ? (isEnWk ? '⛔ This account has been deleted and is no longer active.' : '⛔ Esta cuenta ha sido eliminada y ya no está activa.')
+            : (isEnWk ? '⛔ Your account has been suspended. Please contact support.' : '⛔ Tu cuenta ha sido suspendida. Por favor contacta a soporte.'));
+          return;
+        }
+        if (wBiz && wBiz.id) { window.location.href = 'worker-profile.html?id=' + wBiz.id; return; }
+      } catch(e) {}
     } else {
       var displayName = data.user.user_metadata?.display_name || emailEl.value.split('@')[0];
+      var custStatus = await checkCustomerBlocked(data.user.id);
+      if (custStatus === 'suspended' || custStatus === 'deleted') {
+        await getSupabase().auth.signOut();
+        var isEnL = document.body.classList.contains('en');
+        alert(custStatus === 'deleted'
+          ? (isEnL ? '⛔ This account has been deleted.' : '⛔ Esta cuenta ha sido eliminada.')
+          : (isEnL ? '⛔ Your account has been suspended. Please contact support.' : '⛔ Tu cuenta ha sido suspendida. Por favor contacta a soporte.'));
+        return;
+      }
       enterAccount(displayName, emailEl.value.trim());
     }
   } catch(err) {
@@ -696,10 +782,29 @@ async function doSignup() {
   var btn = document.querySelector('[onclick="doSignup()"]');
   if (btn) { btn.disabled = true; btn.textContent = isEn ? 'Creating account…' : 'Creando cuenta…'; }
   try {
-    var resolvedType = (new URLSearchParams(window.location.search)).get('type') === 'employer' ? 'employer' : 'customer';
-    await signUp({ email: emailEl.value.trim(), password: passwordEl.value, userType: resolvedType, businessName: nameEl.value.trim() });
-    // CU1 / EM1: 가입 완료 이메일
-    sendEmail(resolvedType === 'employer' ? 'EM1' : 'CU1', emailEl.value.trim(), { name: nameEl.value.trim() });
+    var urlType = (new URLSearchParams(window.location.search)).get('type');
+    var resolvedType = (urlType === 'employer' || selectedUserType === 'employer' || selectedUserType === 'staffing') ? 'employer' : 'customer';
+    var detectedLang = document.body.classList.contains('en') ? 'en' : 'es';
+    await signUp({ email: emailEl.value.trim(), password: passwordEl.value, userType: resolvedType, businessName: nameEl.value.trim(), preferredLang: detectedLang });
+    // CU1 / EM1: 가입 완료 이메일 — 감지된 언어로 발송
+    var uiLang = detectedLang;
+    sendEmail(resolvedType === 'employer' ? 'EM1' : 'CU1', emailEl.value.trim(), { name: nameEl.value.trim() }, null, uiLang);
+    // 세션 확인: 이메일 확인 비활성화 시 즉시 세션 생성됨
+    var newSess = await getSession();
+    if (newSess && newSess.user) {
+      var newUid = newSess.user.id;
+      if (resolvedType === 'employer') {
+        await getSupabase().from('employer_profiles').insert({ owner_id: newUid });
+        var _returnToSU = (new URLSearchParams(window.location.search)).get('returnTo');
+        window.location.href = _returnToSU ? decodeURIComponent(_returnToSU) : 'employer-dashboard.html';
+        return;
+      } else {
+        await getSupabase().from('customer_profiles').insert({ owner_id: newUid });
+        enterAccount(nameEl.value.trim(), emailEl.value.trim());
+        return;
+      }
+    }
+    // 세션 없음 = 이메일 확인 필요 (Supabase 설정에서 Confirm email ON 상태)
     document.getElementById('auth-wrap').innerHTML =
       '<div style="text-align:center;padding:48px 24px;max-width:440px;margin:0 auto">' +
       '<div style="font-size:40px;margin-bottom:16px">📧</div>' +
@@ -707,7 +812,14 @@ async function doSignup() {
       '<p style="color:var(--c-muted);font-size:14px">' + (isEn ? 'We sent a confirmation link to <strong>' + emailEl.value.trim() + '</strong>.' : 'Enviamos un enlace de confirmación a <strong>' + emailEl.value.trim() + '</strong>.') + '</p>' +
       '</div>';
   } catch(err) {
-    showError('err-signup');
+    var msg = (err && (err.message || err.msg || '')).toLowerCase();
+    if (msg.includes('already registered') || msg.includes('already in use') || msg.includes('email address is already')) {
+      alert(isEn
+        ? '⛔ This email has been deleted and cannot be used to register again.'
+        : '⛔ Este correo fue eliminado y no puede usarse para registrarse nuevamente.');
+    } else {
+      showError('err-signup');
+    }
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = isEn ? 'Create account' : 'Crear cuenta'; }
   }
@@ -752,29 +864,39 @@ function loadNotifSettings() {
   } catch(e) {}
 }
 
-function saveAccountSettings() {
+async function saveAccountSettings() {
   var name = document.getElementById('settings-name');
   var email = document.getElementById('settings-email');
   var phone = document.getElementById('settings-phone');
   var isEn = document.body.classList.contains('en');
 
-  // Basic validation
   if (name && name.value.trim() === '') {
     name.style.borderColor = 'var(--c-accent)';
     return;
   }
   if (name) name.style.borderColor = '';
 
-  // Save to localStorage (simulation — in production: PATCH /api/customer/:id)
+  // Supabase user_metadata에 저장
+  try {
+    var updates = {};
+    if (name) updates.display_name = name.value.trim();
+    if (phone) updates.phone = phone.value.trim();
+    var langSel = document.getElementById('settings-preferred-lang');
+    if (langSel) updates.preferred_lang = langSel.value;
+    await getSupabase().auth.updateUser({ data: updates });
+  } catch(e) { console.warn('[saveAccountSettings]', e); }
+
+  // localStorage 동기화
   try {
     var profile = JSON.parse(localStorage.getItem('anm-customer-profile') || '{}');
     if (name) profile.name = name.value.trim();
-    if (email) profile.email = email.value.trim();
     if (phone) profile.phone = phone.value.trim();
+    var langSel2 = document.getElementById('settings-preferred-lang');
+    if (langSel2) profile.preferred_lang = langSel2.value;
     localStorage.setItem('anm-customer-profile', JSON.stringify(profile));
   } catch(e) {}
 
-  // Update avatar and name in header
+  // 헤더 이름/아바타 즉시 반영
   if (name && name.value) {
     var av = document.getElementById('acc-avatar');
     var nm = document.getElementById('acc-name');
@@ -782,7 +904,6 @@ function saveAccountSettings() {
     if (nm) nm.textContent = name.value.trim();
   }
 
-  // Show confirmation
   var conf = document.getElementById(isEn ? 'settings-save-confirm-en' : 'settings-save-confirm');
   if (conf) {
     conf.style.display = 'block';
@@ -820,25 +941,48 @@ function changePassword() {
   if (okEl) { okEl.style.display = 'block'; setTimeout(function(){ okEl.style.display='none'; }, 3000); }
 }
 
-function confirmDeleteAccount() {
+async function confirmDeleteAccount() {
   var isEn = document.body.classList.contains('en');
   var msg = isEn
-    ? 'Are you sure you want to delete your account? This will remove all your saved businesses and reviews. This action cannot be undone.'
-    : '¿Estás seguro de que quieres eliminar tu cuenta? Esto eliminará todos tus negocios guardados y reseñas. Esta acción no se puede deshacer.';
-  if (window.confirm(msg)) {
-    // In production: DELETE /api/customer/:id
-    try {
-      localStorage.removeItem('anm-sim-logged-in');
-      localStorage.removeItem('anm-saved-businesses');
-      localStorage.removeItem('anm-customer-profile');
-    } catch(e) {}
-    window.location.href = 'index.html';
+    ? 'Are you sure you want to delete your account? Your reviews will remain (anonymously). This action cannot be undone, and you will not be able to re-register with this email address.'
+    : '¿Estás seguro de que quieres eliminar tu cuenta? Tus reseñas quedarán de forma anónima. Esta acción no se puede deshacer y no podrás volver a registrarte con este correo electrónico.';
+  if (!window.confirm(msg)) return;
+
+  try {
+    var sb = getSupabase();
+    var sess = await sb.auth.getSession();
+    var uid = sess && sess.data && sess.data.session && sess.data.session.user
+      ? sess.data.session.user.id : null;
+    if (!uid) throw new Error('Not authenticated');
+
+    // Soft-delete customer_profiles (reviews are kept as-is)
+    var { error } = await sb.from('customer_profiles')
+      .update({ account_status: 'deleted' })
+      .eq('id', uid);
+    if (error) throw error;
+
+    await sb.auth.signOut();
+    window.location.href = 'login.html?reason=deleted';
+  } catch(e) {
+    alert(document.body.classList.contains('en')
+      ? '❌ Could not delete account. Try again.'
+      : '❌ No se pudo eliminar la cuenta. Intenta de nuevo.');
   }
 }
 
 // ── SAVED BUSINESSES ───────────────────────────────────────
 function getSavedBusinesses() {
-  try { return JSON.parse(localStorage.getItem('anm-saved-businesses') || '[]'); } catch(e) { return []; }
+  try {
+    var list = JSON.parse(localStorage.getItem('anm-saved-businesses') || '[]');
+    // 잘못 저장된 단일 글자 area 자동 정리 (예: "j" → "")
+    var fixed = false;
+    list = list.map(function(b) {
+      if (b.area && b.area.length <= 2) { b.area = ''; fixed = true; }
+      return b;
+    });
+    if (fixed) localStorage.setItem('anm-saved-businesses', JSON.stringify(list));
+    return list;
+  } catch(e) { return []; }
 }
 function setSavedBusinesses(list) {
   try { localStorage.setItem('anm-saved-businesses', JSON.stringify(list)); } catch(e) {}
@@ -851,12 +995,15 @@ function renderSavedGrid() {
   var saved = getSavedBusinesses();
   var isEn = document.body.classList.contains('en');
 
+  var browseLink = document.getElementById('saved-browse-link');
   grid.innerHTML = '';
   if (saved.length === 0) {
     if (empty) empty.style.display = 'block';
+    if (browseLink) browseLink.style.display = 'none';
     return;
   }
   if (empty) empty.style.display = 'none';
+  if (browseLink) browseLink.style.display = '';
 
   saved.forEach(function(biz) {
     var initials = biz.name.split(' ').slice(0,2).map(function(w){ return w[0]; }).join('').toUpperCase();
@@ -882,6 +1029,14 @@ function unsaveBusiness(bizId) {
   renderSavedGrid();
 }
 
+async function checkCustomerBlocked(uid) {
+  try {
+    var sb = getSupabase();
+    var { data } = await sb.from('customer_profiles').select('account_status').eq('id', uid).maybeSingle();
+    return data ? data.account_status : null;
+  } catch(e) { return null; }
+}
+
 function enterAccount(name, email) {
   // Set simulated login flag so profile.html recognizes this session as logged in
   try { localStorage.setItem('anm-sim-logged-in', '1'); } catch(e) {}
@@ -904,26 +1059,173 @@ function enterAccount(name, email) {
     document.getElementById('acc-avatar').textContent = name.charAt(0).toUpperCase();
   }
   if (email) document.getElementById('acc-email').textContent = email;
+  // Settings 폼에도 채우기
+  var sName = document.getElementById('settings-name');
+  var sEmail = document.getElementById('settings-email');
+  if (sName && name) sName.value = name;
+  if (sEmail && email) sEmail.value = email;
   renderSavedGrid(); // populate saved businesses from localStorage
   loadNotifSettings(); // restore notification preference
   window.scrollTo({top:0, behavior:'smooth'});
+
+  // Admin이 suspend/delete 시 이미 로그인된 Customer를 강제 로그아웃
+  setInterval(async function() {
+    try {
+      var sb = getSupabase();
+      var sess = await sb.auth.getSession();
+      if (!sess || !sess.data || !sess.data.session) return;
+      var uid = sess.data.session.user.id;
+      var status = await checkCustomerBlocked(uid);
+      if (status === 'suspended' || status === 'deleted') {
+        await sb.auth.signOut();
+        var isEn = document.body.classList.contains('en');
+        alert(status === 'deleted'
+          ? (isEn ? '⛔ This account has been deleted and is no longer active.' : '⛔ Esta cuenta ha sido eliminada y ya no está activa.')
+          : (isEn ? '⛔ Your account has been suspended. Please contact support.' : '⛔ Tu cuenta ha sido suspendida. Por favor contacta a soporte.'));
+        window.location.href = 'index.html';
+      }
+    } catch(e) {}
+  }, 30000); // 30초마다 확인
 }
 
 async function doLogout() {
   await signOut();
-  document.getElementById('account-wrap').classList.remove('show');
-  document.getElementById('auth-wrap').style.display = 'block';
-  switchAuthTab('login');
-  window.scrollTo({top:0, behavior:'smooth'});
+  window.location.href = 'index.html';
 }
 
 function switchAccTab(tab) {
   document.querySelectorAll('.acc-tab').forEach(function(t, i) {
-    var tabs = ['saved','quotes','settings'];
+    var tabs = ['saved','quotes','reviews','settings'];
     t.classList.toggle('active', tabs[i] === tab);
   });
   document.querySelectorAll('.acc-pane').forEach(function(p) { p.classList.remove('show'); });
   document.getElementById('pane-' + tab).classList.add('show');
+  if (tab === 'quotes') loadCustomerRequests();
+  if (tab === 'reviews') loadCustomerReviews();
+}
+
+var _reviewsLoaded = false;
+async function loadCustomerReviews() {
+  if (_reviewsLoaded) return;
+  var pane = document.getElementById('pane-reviews');
+  var isEn = document.body.classList.contains('en');
+  pane.innerHTML = '<div style="text-align:center;padding:32px;color:var(--c-hint);font-size:13px">' + (isEn ? 'Loading…' : 'Cargando…') + '</div>';
+  try {
+    var sb = getSupabase();
+    var session = await getSession();
+    var uid = session && session.user && session.user.id;
+    if (!uid) { pane.innerHTML = ''; return; }
+
+    var { data: rows, error } = await sb
+      .from('reviews')
+      .select('id, rating, review_text, created_at, biz_id')
+      .eq('reviewer_id', uid)
+      .eq('removed', false)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    _reviewsLoaded = true;
+
+    if (!rows || rows.length === 0) {
+      pane.innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--c-hint)">' +
+        '<div style="font-size:32px;margin-bottom:10px">⭐</div>' +
+        '<div style="font-size:14px;font-weight:500;margin-bottom:6px">' + (isEn ? 'No reviews yet' : 'Aún no has escrito reseñas') + '</div>' +
+        '<div style="font-size:13px">' + (isEn ? 'After contacting a business, you can leave a review on their profile.' : 'Después de contactar un negocio, puedes dejar una reseña en su perfil.') + '</div>' +
+        '</div>';
+      return;
+    }
+
+    // 업체명 별도 조회
+    var bizIds = [...new Set(rows.filter(function(r){ return r.biz_id; }).map(function(r){ return r.biz_id; }))];
+    var bizMap = {};
+    if (bizIds.length > 0) {
+      var { data: bizRows } = await sb.from('businesses').select('id, trade_name, business_name').in('id', bizIds);
+      (bizRows || []).forEach(function(b) { bizMap[b.id] = b.trade_name || b.business_name || '—'; });
+    }
+
+    var stars = function(n) { return '★'.repeat(n) + '☆'.repeat(5 - n); };
+    var html = '<div style="padding:4px 0">';
+    rows.forEach(function(r) {
+      var bizName = r.biz_id ? (bizMap[r.biz_id] || '—') : '—';
+      var dt = new Date(r.created_at);
+      var dateStr = dt.toLocaleDateString(isEn ? 'en-US' : 'es-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      html += '<div style="padding:14px 0;border-bottom:0.5px solid var(--c-border)">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">' +
+          '<div style="font-size:13px;font-weight:600;color:var(--c-text)">' + bizName + '</div>' +
+          '<div style="font-size:12px;color:var(--c-hint)">' + dateStr + '</div>' +
+        '</div>' +
+        '<div style="color:#f5a623;font-size:14px;letter-spacing:1px;margin-bottom:4px">' + stars(r.rating) + '</div>' +
+        (r.review_text ? '<div style="font-size:13px;color:var(--c-muted);line-height:1.5">' + r.review_text + '</div>' : '') +
+        '</div>';
+    });
+    html += '</div>';
+    pane.innerHTML = html;
+  } catch(e) {
+    pane.innerHTML = '<div style="text-align:center;padding:32px;color:var(--c-hint);font-size:13px">' + (isEn ? 'Failed to load reviews.' : 'Error al cargar las reseñas.') + '</div>';
+    console.error('loadCustomerReviews:', e);
+  }
+}
+
+var _reqLoaded = false;
+async function loadCustomerRequests() {
+  if (_reqLoaded) return;
+  var pane = document.getElementById('pane-quotes');
+  var isEn = document.body.classList.contains('en');
+  pane.innerHTML = '<div style="text-align:center;padding:32px;color:var(--c-hint);font-size:13px">' + (isEn ? 'Loading…' : 'Cargando…') + '</div>';
+  try {
+    var sb = getSupabase();
+    var session = await getSession();
+    var uid = session && session.user && session.user.id;
+    if (!uid) { pane.innerHTML = '<div style="padding:32px;text-align:center;color:var(--c-hint);font-size:13px">Not logged in</div>'; return; }
+
+    var { data: rows, error } = await sb
+      .from('contact_log')
+      .select('id, channel, created_at, biz_id')
+      .eq('actor_id', uid)
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (error) throw error;
+    _reqLoaded = true;
+
+    if (!rows || rows.length === 0) {
+      pane.innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--c-hint)">' +
+        '<div style="font-size:32px;margin-bottom:10px">📋</div>' +
+        '<div style="font-size:14px;font-weight:500;margin-bottom:6px">' + (isEn ? 'No contact history yet' : 'Todavía no has contactado ningún negocio') + '</div>' +
+        '<div style="font-size:13px">' + (isEn ? 'When you contact a business via WhatsApp or form, it will appear here.' : 'Cuando contactes un negocio por WhatsApp o formulario, aparecerá aquí.') + '</div>' +
+        '</div>';
+      return;
+    }
+
+    // 업체명 별도 조회
+    var bizIds = [...new Set(rows.filter(r => r.biz_id).map(r => r.biz_id))];
+    var bizMap = {};
+    if (bizIds.length > 0) {
+      var { data: bizRows } = await sb.from('businesses').select('id, trade_name, business_name').in('id', bizIds);
+      (bizRows || []).forEach(function(b) { bizMap[b.id] = b.trade_name || b.business_name || '—'; });
+    }
+
+    var html = '<div style="padding:4px 0">';
+    rows.forEach(function(r) {
+      var bizName = r.biz_id ? (bizMap[r.biz_id] || '—') : '—';
+      var dt = new Date(r.created_at);
+      var dateStr = dt.toLocaleDateString(isEn ? 'en-US' : 'es-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                  + ' · ' + dt.toLocaleTimeString(isEn ? 'en-US' : 'es-US', { hour: '2-digit', minute: '2-digit' });
+      var ch = r.channel === 'whatsapp' ? '📱 WhatsApp' : r.channel === 'form' ? '📋 ' + (isEn ? 'Form' : 'Formulario') : (r.channel || '—');
+      html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:0.5px solid var(--c-border)">' +
+        '<div>' +
+          '<div style="font-size:13px;font-weight:600;color:var(--c-text)">' + bizName + '</div>' +
+          '<div style="font-size:12px;color:var(--c-muted);margin-top:2px">' + ch + '</div>' +
+        '</div>' +
+        '<div style="font-size:12px;color:var(--c-hint);white-space:nowrap;margin-left:12px">' + dateStr + '</div>' +
+      '</div>';
+    });
+    html += '</div>';
+    pane.innerHTML = html;
+  } catch(e) {
+    pane.innerHTML = '<div style="text-align:center;padding:32px;color:var(--c-hint);font-size:13px">' + (isEn ? 'Failed to load history.' : 'Error al cargar el historial.') + '</div>';
+    console.error('loadCustomerRequests:', e);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -942,26 +1244,91 @@ document.addEventListener('DOMContentLoaded', async function() {
       const user = session.user;
       const userType = user.user_metadata?.user_type || 'customer';
 
-      // Business owner → 바로 dashboard로
+      // Business owner → suspended/deleted 체크 후 dashboard로
       if (userType === 'business') {
+        try {
+          var biz = await getMyBusiness();
+          if (biz && (biz.account_status === 'suspended' || biz.account_status === 'deleted')) {
+            await getSupabase().auth.signOut();
+            var isEnB = document.body.classList.contains('en');
+            alert(biz.account_status === 'deleted'
+              ? (isEnB ? '⛔ This account has been deleted and is no longer active.' : '⛔ Esta cuenta ha sido eliminada y ya no está activa.')
+              : (isEnB ? '⛔ Your account has been suspended. Please contact support.' : '⛔ Tu cuenta ha sido suspendida. Por favor contacta a soporte.'));
+            return;
+          }
+        } catch(e) {}
         window.location.href = 'dashboard.html';
         return;
       }
 
-      // Employer → Worker 검색 화면으로
+      // Employer → deleted 체크 후 전용 대시보드로 (returnTo 있으면 해당 페이지로)
+      var _rtParam = params.get('returnTo');
+      var _empDest = _rtParam ? decodeURIComponent(_rtParam) : 'employer-dashboard.html';
       if (userType === 'employer') {
-        window.location.href = 'search.html?mode=workers';
+        try {
+          var { data: epRestore } = await getSupabase().from('employer_profiles').select('account_status').eq('owner_id', user.id).maybeSingle();
+          if (epRestore && (epRestore.account_status === 'suspended' || epRestore.account_status === 'deleted')) {
+            await getSupabase().auth.signOut();
+            var isEnEmp = document.body.classList.contains('en');
+            alert(epRestore.account_status === 'deleted'
+              ? (isEnEmp ? '⛔ This account has been deleted and is no longer active.' : '⛔ Esta cuenta ha sido eliminada y ya no está activa.')
+              : (isEnEmp ? '⛔ Your account has been suspended. Please contact support.' : '⛔ Tu cuenta ha sido suspendida. Por favor contacta a soporte.'));
+            return;
+          }
+        } catch(e) {}
+        window.location.href = _empDest;
         return;
       }
 
-      // Worker → staffing 타입 선택 화면으로
+      // Worker → deleted 체크 후 본인 프로필 페이지로
       if (userType === 'worker') {
-        selectUserType('staffing');
+        try {
+          var wBiz = await getMyBusiness();
+          if (wBiz && (wBiz.account_status === 'suspended' || wBiz.account_status === 'deleted')) {
+            await getSupabase().auth.signOut();
+            var isEnWk = document.body.classList.contains('en');
+            alert(wBiz.account_status === 'deleted'
+              ? (isEnWk ? '⛔ This account has been deleted and is no longer active.' : '⛔ Esta cuenta ha sido eliminada y ya no está activa.')
+              : (isEnWk ? '⛔ Your account has been suspended. Please contact support.' : '⛔ Tu cuenta ha sido suspendida. Por favor contacta a soporte.'));
+            return;
+          }
+          if (wBiz && wBiz.id) { window.location.href = 'worker-profile.html?id=' + wBiz.id; return; }
+        } catch(e) {}
+        return;
+      }
+
+      // employer_profiles 행 존재 여부로 employer 판별 (user_type 미설정 계정 대응)
+      const { data: empCheck } = await getSupabase()
+        .from('employer_profiles')
+        .select('id')
+        .eq('owner_id', user.id)
+        .maybeSingle();
+      if (empCheck) {
+        window.location.href = _empDest;
+        return;
+      }
+
+      // ?type=employer로 접근했으나 employer_profiles 없는 경우 → 자동 생성 후 대시보드로
+      if (typeParam === 'employer') {
+        await getSupabase().from('employer_profiles').insert({ owner_id: user.id });
+        window.location.href = _empDest;
+        return;
+      }
+
+      // 고객 계정 — suspended / deleted 체크
+      var custStatusInit = await checkCustomerBlocked(user.id);
+      if (custStatusInit === 'suspended' || custStatusInit === 'deleted') {
+        await getSupabase().auth.signOut();
+        document.getElementById('auth-wrap').style.display = '';
+        var isEn = document.body.classList.contains('en');
+        alert(custStatusInit === 'deleted'
+          ? (isEn ? '⛔ This account has been deleted.' : '⛔ Esta cuenta ha sido eliminada.')
+          : (isEn ? '⛔ Your account has been suspended. Please contact support.' : '⛔ Tu cuenta ha sido suspendida. Por favor contacta a soporte.'));
         return;
       }
 
       // 고객 계정 → 바로 계정 화면 표시
-      const displayName = user.user_metadata?.display_name || user.email.split('@')[0];
+      const displayName = user.user_metadata?.display_name || user.user_metadata?.business_name || user.email.split('@')[0];
       document.getElementById('auth-wrap').style.display = 'none';
       document.getElementById('account-wrap').classList.add('show');
       var nameEl = document.getElementById('acc-name');
@@ -970,6 +1337,31 @@ document.addEventListener('DOMContentLoaded', async function() {
       if (nameEl) nameEl.textContent = displayName;
       if (avatarEl) avatarEl.textContent = displayName.charAt(0).toUpperCase();
       if (emailEl2) emailEl2.textContent = user.email;
+      // Settings 폼에 실제 사용자 데이터 채우기
+      var sName = document.getElementById('settings-name');
+      var sEmail = document.getElementById('settings-email');
+      if (sName) sName.value = displayName;
+      if (sEmail) sEmail.value = user.email;
+      var sPhone = document.getElementById('settings-phone');
+      if (sPhone) {
+        var metaPhone = user.user_metadata && user.user_metadata.phone;
+        if (metaPhone) {
+          sPhone.value = metaPhone;
+        } else {
+          try {
+            var profile = JSON.parse(localStorage.getItem('anm-customer-profile') || '{}');
+            if (profile.phone) sPhone.value = profile.phone;
+          } catch(e) {}
+        }
+      }
+      var sLang = document.getElementById('settings-preferred-lang');
+      if (sLang) {
+        var metaLang = user.user_metadata && user.user_metadata.preferred_lang;
+        if (!metaLang) {
+          try { metaLang = JSON.parse(localStorage.getItem('anm-customer-profile') || '{}').preferred_lang; } catch(e) {}
+        }
+        sLang.value = metaLang || 'es';
+      }
       renderSavedGrid();
       loadNotifSettings();
 
@@ -983,6 +1375,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             const userType2 = session2.user.user_metadata?.user_type || 'customer';
             if (userType2 === 'business') {
               window.location.href = 'dashboard.html';
+            } else if (userType2 === 'employer') {
+              window.location.href = 'employer-dashboard.html';
             } else if (userType2 === 'worker') {
               selectUserType('staffing');
             } else {
@@ -996,6 +1390,8 @@ document.addEventListener('DOMContentLoaded', async function() {
       // URL 파라미터로 타입 지정된 경우
       if (typeParam && USER_TYPE_INFO[typeParam]) {
         selectUserType(typeParam);
+        // ?mode=login 이면 signup 대신 login 탭으로
+        if (params.get('mode') === 'login') switchAuthTab('login');
       }
     }
   } catch(e) { console.error('Session check error:', e); }

@@ -397,32 +397,33 @@ if (new URLSearchParams(window.location.search).get('type') === 'staffing') docu
     <div class="pricing-grid" id="pricing-section">
       <div class="plan-card" onclick="selectPlan(this,'free')">
         <div class="plan-name">Free</div>
-        <div class="plan-price">$0<span data-es>/mes</span><span data-en>/mo</span></div>
-        <div style="height:10px"></div>
+        <div class="plan-price">$0</div>
+        <div style="font-size:11px;color:var(--c-accent-dark);margin-bottom:10px" data-es>3 créditos de contacto incluidos</div>
+        <div style="font-size:11px;color:var(--c-accent-dark);margin-bottom:10px" data-en>3 contact credits included</div>
         <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>Perfil básico</span><span data-en>Basic profile</span></div>
-        <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>3 solicitudes/mes</span><span data-en>3 requests/mo</span></div>
+        <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>3 contactos de clientes</span><span data-en>3 customer contacts</span></div>
         <div class="plan-feature"><span class="feat-no">✗</span> <span data-es>Análisis</span><span data-en>Analytics</span></div>
         <div class="plan-feature"><span class="feat-no">✗</span> <span data-es>Fotos del negocio</span><span data-en>Business photos</span></div>
         <div class="plan-feature"><span class="feat-no">✗</span> <span data-es>Notas superiores</span><span data-en>Top placement</span></div>
       </div>
       <div class="plan-card featured selected" data-badge="⭐ Más popular" onclick="selectPlan(this,'basic')">
         <div class="plan-name">Basic</div>
-        <div class="plan-price">$29<span data-es>/mes</span><span data-en>/mo</span></div>
-        <div style="font-size:11px;color:var(--c-accent-dark);margin-bottom:10px" data-es>🔄 Suscripción mensual · cancela cuando quieras</div>
-        <div style="font-size:11px;color:var(--c-accent-dark);margin-bottom:10px" data-en>🔄 Monthly subscription · cancel anytime</div>
+        <div class="plan-price">$19</div>
+        <div style="font-size:11px;color:var(--c-accent-dark);margin-bottom:10px" data-es>20 créditos de contacto</div>
+        <div style="font-size:11px;color:var(--c-accent-dark);margin-bottom:10px" data-en>20 contact credits</div>
         <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>Perfil completo</span><span data-en>Full profile</span></div>
-        <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>10 solicitudes/mes</span><span data-en>10 requests/mo</span></div>
+        <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>20 contactos de clientes</span><span data-en>20 customer contacts</span></div>
         <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>Análisis básico</span><span data-en>Basic analytics</span></div>
         <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>5 fotos</span><span data-en>5 photos</span></div>
         <div class="plan-feature"><span class="feat-no">✗</span> <span data-es>Prioridad en búsquedas</span><span data-en>Priority search placement</span></div>
       </div>
       <div class="plan-card" onclick="selectPlan(this,'premium')">
         <div class="plan-name">Premium</div>
-        <div class="plan-price">$79<span data-es>/mes</span><span data-en>/mo</span></div>
-        <div style="font-size:11px;color:var(--c-accent-dark);margin-bottom:10px" data-es>🔄 Suscripción mensual · cancela cuando quieras</div>
-        <div style="font-size:11px;color:var(--c-accent-dark);margin-bottom:10px" data-en>🔄 Monthly subscription · cancel anytime</div>
+        <div class="plan-price">$39</div>
+        <div style="font-size:11px;color:var(--c-accent-dark);margin-bottom:10px" data-es>50 créditos de contacto</div>
+        <div style="font-size:11px;color:var(--c-accent-dark);margin-bottom:10px" data-en>50 contact credits</div>
         <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>Todo en Basic</span><span data-en>Everything in Basic</span></div>
-        <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>Solicitudes ilimitadas</span><span data-en>Unlimited requests</span></div>
+        <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>50 contactos de clientes</span><span data-en>50 customer contacts</span></div>
         <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>Análisis completo</span><span data-en>Full analytics</span></div>
         <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>30 fotos</span><span data-en>30 photos</span></div>
         <div class="plan-feature"><span class="feat-yes">✓</span> <span data-es>Prioridad en búsquedas</span><span data-en>Priority search placement</span></div>
@@ -549,6 +550,13 @@ if (new URLSearchParams(window.location.search).get('type') === 'staffing') docu
           <div class="cat-chip" onclick="toggleCat(this)">🏠 <span data-es>Bienes Raíces</span><span data-en>Real Estate</span></div>
         </div>
         <div class="field-error" id="err-cat" data-es-text="Selecciona al menos una categoría." data-en-text="Select at least one category.">Selecciona al menos una categoría.</div>
+        <div style="margin-top:10px">
+          <div style="font-size:11px;font-weight:600;color:var(--c-hint);letter-spacing:.04em;text-transform:uppercase;margin-bottom:5px" data-es>Otra categoría (escribe aquí)</div>
+          <div style="font-size:11px;font-weight:600;color:var(--c-hint);letter-spacing:.04em;text-transform:uppercase;margin-bottom:5px" data-en>Other category (type here)</div>
+          <input type="text" id="f-cat-other" placeholder="e.g. Roofing, Pest control, Photography..." style="width:100%;padding:7px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-bg);color:var(--c-text)">
+          <div style="font-size:11px;color:var(--c-hint);margin-top:4px;line-height:1.5" data-es>Si tu categoría no está en la lista, escríbela aquí — aparecerá en búsquedas de texto.</div>
+          <div style="font-size:11px;color:var(--c-hint);margin-top:4px;line-height:1.5" data-en>If your category is not listed, type it here — it will appear in text search results.</div>
+        </div>
       </div>
     </div>
 
@@ -572,6 +580,13 @@ if (new URLSearchParams(window.location.search).get('type') === 'staffing') docu
           <div class="cat-chip" onclick="toggleStaffingType(this)">🌾 <span data-es>Trabajo agrícola</span><span data-en>Agricultural work</span></div>
           <div class="cat-chip" onclick="toggleStaffingType(this)">🅿️ <span data-es>Eventos / Estacionamiento</span><span data-en>Events / Valet parking</span></div>
           <div class="cat-chip" onclick="toggleStaffingType(this)">🔧 <span data-es>Otro trabajo general</span><span data-en>Other general labor</span></div>
+        </div>
+        <div style="margin-top:10px">
+          <div style="font-size:11px;font-weight:600;color:var(--c-hint);letter-spacing:.04em;text-transform:uppercase;margin-bottom:5px" data-es>Otro tipo (escribe aquí)</div>
+          <div style="font-size:11px;font-weight:600;color:var(--c-hint);letter-spacing:.04em;text-transform:uppercase;margin-bottom:5px" data-en>Other type (type here)</div>
+          <input type="text" id="staffing-type-other" placeholder="e.g. Landscaping, Security guard, Driver..." style="width:100%;padding:7px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-bg);color:var(--c-text)">
+          <div style="font-size:11px;color:var(--c-hint);margin-top:4px;line-height:1.5" data-es>Si tu tipo de trabajo no está en la lista, escríbelo aquí — aparecerá en los resultados de búsqueda de texto.</div>
+          <div style="font-size:11px;color:var(--c-hint);margin-top:4px;line-height:1.5" data-en>If your work type is not listed, type it here — it will appear in text search results.</div>
         </div>
         <div class="field-error" id="err-staffing-types" data-es-text="Selecciona al menos un tipo de trabajador." data-en-text="Select at least one worker type.">Selecciona al menos un tipo de trabajador.</div>
       </div>
@@ -717,8 +732,8 @@ if (new URLSearchParams(window.location.search).get('type') === 'staffing') docu
           <div style="grid-column:1/-1;font-size:11px;font-weight:600;color:var(--c-hint);letter-spacing:.04em;text-transform:uppercase;padding:8px 0 2px" data-en>Other area</div>
           <div style="grid-column:1/-1">
             <input type="text" id="f-area-other" placeholder="e.g. Gainesville, FL · Any area in GA" style="width:100%;padding:7px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-bg);color:var(--c-text)">
-            <div style="font-size:11px;color:var(--c-hint);margin-top:4px;line-height:1.5" data-es>Si tu área no está en la lista, escríbela aquí. ⓘ Las áreas escritas manualmente serán revisadas por el equipo y agregadas a la lista oficial — hasta entonces, <strong>no aparecerán en los resultados de búsqueda</strong>.</div>
-            <div style="font-size:11px;color:var(--c-hint);margin-top:4px;line-height:1.5" data-en>If your area is not listed, type it here. ⓘ Manually entered areas will be reviewed by our team and added to the official list — until then, <strong>they won't appear in search results</strong>.</div>
+            <div style="font-size:11px;color:var(--c-hint);margin-top:4px;line-height:1.5" data-es>Si tu área no está en la lista, escríbela aquí — aparecerá en los resultados de búsqueda de texto. ⓘ El equipo la revisará para agregarla al filtro oficial.</div>
+            <div style="font-size:11px;color:var(--c-hint);margin-top:4px;line-height:1.5" data-en>If your area is not listed, type it here — it will appear in text search results. ⓘ Our team will review it to add it to the official filter.</div>
           </div>
         </div>
         <div class="field-error" id="err-area" data-es-text="Selecciona al menos un área de servicio o escribe tu área." data-en-text="Select at least one service area or type your area.">Selecciona al menos un área de servicio o escribe tu área.</div>
@@ -1027,18 +1042,74 @@ if (new URLSearchParams(window.location.search).get('type') === 'staffing') docu
 
   <!-- ── SUCCESS ── -->
   <div id="step-success" class="success-screen">
-    <div class="success-icon">📧</div>
-    <h2 class="success-title" data-es>¡Casi listo! Confirma tu correo</h2>
-    <h2 class="success-title" data-en>Almost there! Confirm your email</h2>
-    <p class="success-sub" data-es>Te enviamos un enlace de confirmación a <strong id="confirm-email-display"></strong>. Haz clic en el enlace para activar tu cuenta.</p>
-    <p class="success-sub" data-en>We sent a confirmation link to <strong id="confirm-email-display-en"></strong>. Click the link to activate your account.</p>
-    <p class="success-sub" style="font-size:13px;margin-top:8px" data-es>¿No lo ves? Revisa tu carpeta de spam.</p>
-    <p class="success-sub" style="font-size:13px;margin-top:8px" data-en>Don't see it? Check your spam folder.</p>
-    <div class="success-actions">
-      <a href="login.html" class="btn-secondary" data-es>Ya confirmé — Iniciar sesión →</a>
-      <a href="login.html" class="btn-secondary" data-en>I confirmed — Log in →</a>
-      <a href="search.html" class="btn-secondary" data-es>Ver la plataforma</a>
-      <a href="search.html" class="btn-secondary" data-en>Browse platform</a>
+    <!-- Normal (card/free) success -->
+    <div id="success-normal">
+      <div class="success-icon">📧</div>
+      <h2 class="success-title" data-es>¡Casi listo! Confirma tu correo</h2>
+      <h2 class="success-title" data-en>Almost there! Confirm your email</h2>
+      <p class="success-sub" data-es>Te enviamos un enlace de confirmación a <strong id="confirm-email-display"></strong>. Haz clic en el enlace para activar tu cuenta.</p>
+      <p class="success-sub" data-en>We sent a confirmation link to <strong id="confirm-email-display-en"></strong>. Click the link to activate your account.</p>
+      <p class="success-sub" style="font-size:13px;margin-top:8px" data-es>¿No lo ves? Revisa tu carpeta de spam.</p>
+      <p class="success-sub" style="font-size:13px;margin-top:8px" data-en>Don't see it? Check your spam folder.</p>
+      <div class="success-actions">
+        <a href="login.html" class="btn-secondary" data-es>Ya confirmé — Iniciar sesión →</a>
+        <a href="login.html" class="btn-secondary" data-en>I confirmed — Log in →</a>
+        <a href="search.html" class="btn-secondary" data-es>Ver la plataforma</a>
+        <a href="search.html" class="btn-secondary" data-en>Browse platform</a>
+      </div>
+    </div>
+    <!-- ACH pending success -->
+    <div id="success-ach" style="display:none">
+      <div class="success-icon">🏦</div>
+      <h2 class="success-title" data-es>¡Cuenta creada! Verificando tu transferencia</h2>
+      <h2 class="success-title" data-en>Account created! Verifying your transfer</h2>
+      <p class="success-sub" data-es>Tu cuenta fue registrada con éxito. Tu plan <strong id="ach-plan-name-es"></strong> será activado dentro de <strong>1–3 días hábiles</strong> después de confirmar tu transferencia ACH.</p>
+      <p class="success-sub" data-en>Your account was registered successfully. Your <strong id="ach-plan-name-en"></strong> plan will be activated within <strong>1–3 business days</strong> after we confirm your ACH transfer.</p>
+      <div class="warn-box" style="max-width:460px;margin:0 auto 20px;text-align:left">
+        <span>⚠️</span>
+        <div>
+          <span data-es>Si aún no realizaste la transferencia, hazlo ahora:</span>
+          <span data-en>If you haven't sent the transfer yet, please do so now:</span>
+          <ul style="margin-top:6px;padding-left:16px;line-height:1.9;font-size:13px">
+            <li data-es>Banco: <strong>Wells Fargo</strong> | Routing: <strong>061000227</strong></li>
+            <li data-en>Bank: <strong>Wells Fargo</strong> | Routing: <strong>061000227</strong></li>
+            <li data-es>Cuenta: <strong>8516934588</strong></li>
+            <li data-en>Account: <strong>8516934588</strong> | Name: <strong>AmigosNearMe</strong></li>
+            <li data-es>Memo: tu nombre de negocio + plan</li>
+            <li data-en>Memo: your business name + plan</li>
+          </ul>
+        </div>
+      </div>
+      <div class="success-actions">
+        <a href="login.html" class="btn-secondary" data-es>Iniciar sesión →</a>
+        <a href="login.html" class="btn-secondary" data-en>Log in →</a>
+      </div>
+    </div>
+
+    <!-- Zelle pending success -->
+    <div id="success-zelle" style="display:none">
+      <div class="success-icon">💸</div>
+      <h2 class="success-title" data-es>¡Cuenta creada! Verificando tu pago</h2>
+      <h2 class="success-title" data-en>Account created! Verifying your payment</h2>
+      <p class="success-sub" data-es>Tu cuenta fue registrada con éxito. Tu plan <strong id="zelle-plan-name-es"></strong> será activado dentro de <strong>24 horas hábiles</strong> después de confirmar tu pago Zelle.</p>
+      <p class="success-sub" data-en>Your account was registered successfully. Your <strong id="zelle-plan-name-en"></strong> plan will be activated within <strong>24 business hours</strong> after we confirm your Zelle payment.</p>
+      <div class="warn-box" style="max-width:460px;margin:0 auto 20px;text-align:left">
+        <span>⚠️</span>
+        <div>
+          <span data-es>Si aún no enviaste el pago, hazlo ahora:</span>
+          <span data-en>If you haven't sent the payment yet, please do so now:</span>
+          <ul style="margin-top:6px;padding-left:16px;line-height:1.9;font-size:13px">
+            <li data-es>Envía a: <strong>pagos@amigosnearme.com</strong></li>
+            <li data-en>Send to: <strong>pagos@amigosnearme.com</strong></li>
+            <li data-es>Memo: tu nombre de negocio + plan</li>
+            <li data-en>Memo: your business name + plan</li>
+          </ul>
+        </div>
+      </div>
+      <div class="success-actions">
+        <a href="login.html" class="btn-secondary" data-es>Iniciar sesión →</a>
+        <a href="login.html" class="btn-secondary" data-en>Log in →</a>
+      </div>
     </div>
   </div>
 
@@ -1188,7 +1259,7 @@ function updateProfileStepForStaffing() {
   if (workerPhotoCard) workerPhotoCard.style.display = staffing ? 'block' : 'none';
 }
 
-async function goSuccess() {
+async function goSuccess(isZelle, isAch) {
   var isEn = document.body.classList.contains('en');
   var emailEl = document.getElementById('f-account-email');
   var passwordEl = document.getElementById('f-password');
@@ -1289,6 +1360,18 @@ async function goSuccess() {
   }
   try {
     console.log('=== goSuccess ===', { email, bizName, serviceArea, languages, paymentMethods, categories });
+
+    // 삭제된 이메일 사전 체크
+    try {
+      var { data: isDeletedPre } = await getSupabase().rpc('is_deleted_business_email', { p_email: email });
+      console.log('[register] pre-check is_deleted_business_email:', isDeletedPre);
+      if (isDeletedPre) {
+        alert(isEn ? '⛔ This email has been deleted and cannot be used to register again.' : '⛔ Este correo fue eliminado y no puede usarse para registrarse nuevamente.');
+        window.location.href = 'index.html';
+        return;
+      }
+    } catch(preErr) { console.warn('[register] pre-check error:', preErr); }
+
     var normalizedPhone = normalizePhone(phoneEl ? phoneEl.value.trim() : '');
     try { var es = await getSession(); if (es) { await signOut(); } } catch(e) {}
     await signUp({ email, password,
@@ -1308,8 +1391,11 @@ async function goSuccess() {
         var bizTypeEl = document.getElementById('biz-type-select');
         var insuredEl = document.getElementById('f-insured');
         var isWorkerReg = isStaffingSelected();
+        var detectedLang = document.body.classList.contains('en') ? 'en' : 'es';
+        var effectivePlan = isAch ? 'pending_ach' : (isZelle ? 'pending_zelle' : (selectedPlan || 'free'));
+        var pendingPlanVal = (isZelle || isAch) ? (selectedPlan || 'basic') : null;
         await createBusiness({ businessName: bizName, tradeName: tradeNameEl ? tradeNameEl.value.trim() : '',
-          plan: selectedPlan || 'free', publicEmail: email,
+          plan: effectivePlan, pendingPlan: pendingPlanVal, publicEmail: email,
           phone: normalizedPhone, description: descEl ? descEl.value.trim() : '',
           descriptionEs: descEl ? descEl.value.trim() : '',
           descriptionEn: descEnEl ? descEnEl.value.trim() : '',
@@ -1318,9 +1404,23 @@ async function goSuccess() {
           businessType: bizTypeEl ? bizTypeEl.value : '',
           insured: insuredEl ? insuredEl.checked : false,
           isWorker: isWorkerReg,
-          staffingTypes: staffingTypes, staffingAvailability: staffingAvailability
+          staffingTypes: staffingTypes, staffingAvailability: staffingAvailability,
+          staffingTypeOther: (document.getElementById('staffing-type-other') || {}).value ? document.getElementById('staffing-type-other').value.trim() : '',
+          categoryOther: (document.getElementById('f-cat-other') || {}).value ? document.getElementById('f-cat-other').value.trim() : '',
+          preferredLang: detectedLang
         });
         console.log('✅ Business record created in DB');
+
+        // Free 플랜 가입 시 3 contact_credits 자동 지급
+        if (!isZelle && !isAch && (selectedPlan === 'free' || !selectedPlan)) {
+          try {
+            var freeBiz = await getMyBusiness();
+            if (freeBiz && freeBiz.id) {
+              await getSupabase().from('businesses').update({ contact_credits: 3 }).eq('id', freeBiz.id);
+              console.log('✅ Free plan: 3 contact credits granted');
+            }
+          } catch(credErr) { console.warn('Free credits grant error:', credErr); }
+        }
 
         // 사진 업로드 (Storage)
         try {
@@ -1375,21 +1475,31 @@ async function goSuccess() {
           } catch(arErr) { console.warn('area_requests insert failed:', arErr); }
         }
 
-        // SB1 / W1: 가입 완료 환영 이메일
-        var scenario = isWorkerReg ? 'W1' : 'SB1';
         var ownerName = bizName || email.split('@')[0];
-        sendEmail(scenario, email, { owner_name: ownerName, worker_name: ownerName, biz_name: bizName });
-        // Verified Badge 신청 서류는 Business 전용 (Worker는 Badge 신청 없음)
-        if (!isWorkerReg) {
-          var biz = await getMyBusiness();
-          if (biz && biz.id) {
-            var saved = await saveVerificationQueue(biz.id);
-            // saveVerificationQueue 는 서류가 있을 때만 저장 (_pendingVerification 체크)
-            if (window._pendingVerification && (window._pendingVerification.ein || (window._pendingVerification.docs && window._pendingVerification.docs.length > 0))) {
-              // SB2: 업체에 Badge 신청 접수 확인 이메일
-              sendEmail('SB2', email, { owner_name: ownerName, biz_name: bizName }, biz.id);
-              // AD1: 관리자에게 Badge 신청 알림
-              sendEmail('AD1', null, { biz_name: bizName, owner_email: email, submitted_at: new Date().toLocaleString('en-US', {timeZone:'America/New_York'}) }, biz.id);
+        if (isZelle || isAch) {
+          // Zelle/ACH 결제 대기: 고객에게 확인 대기 이메일 + 관리자에게 알림
+          var planLabel = (selectedPlan === 'premium') ? 'Premium ($39 / 50 credits)' : 'Basic ($19 / 20 credits)';
+          var zelBiz = await getMyBusiness();
+          sendEmail('SB_ZELLE_REQ', email, { biz_name: bizName, plan_name: planLabel }, zelBiz ? zelBiz.id : null, detectedLang);
+          sendEmail('ADMIN_ZELLE', null, {
+            biz_name: bizName, owner_email: email, plan_name: planLabel,
+            amount: selectedPlan === 'premium' ? '$39' : '$19',
+            payment_method: isAch ? 'ACH (Wells Fargo)' : 'Zelle',
+            submitted_at: new Date().toLocaleString('en-US', {timeZone:'America/New_York'})
+          }, zelBiz ? zelBiz.id : null);
+        } else {
+          // SB1 / W1: 가입 완료 환영 이메일
+          var scenario = isWorkerReg ? 'W1' : 'SB1';
+          sendEmail(scenario, email, { owner_name: ownerName, worker_name: ownerName, biz_name: bizName }, null, detectedLang);
+          // Verified Badge 신청 서류는 Business 전용 (Worker는 Badge 신청 없음)
+          if (!isWorkerReg) {
+            var biz = await getMyBusiness();
+            if (biz && biz.id) {
+              var saved = await saveVerificationQueue(biz.id);
+              if (window._pendingVerification && (window._pendingVerification.ein || (window._pendingVerification.docs && window._pendingVerification.docs.length > 0))) {
+                sendEmail('SB2', email, { owner_name: ownerName, biz_name: bizName }, biz.id, detectedLang);
+                sendEmail('AD1', null, { biz_name: bizName, owner_email: email, submitted_at: new Date().toLocaleString('en-US', {timeZone:'America/New_York'}) }, biz.id);
+              }
             }
           }
         }
@@ -1397,10 +1507,33 @@ async function goSuccess() {
     } catch(dbErr) { console.error('Business record error:', dbErr); }
   } catch(err) {
     if (err.message && err.message.includes('already')) {
-      alert(isEn ? 'This email is already registered. Please log in.' : 'Este correo ya está registrado. Por favor inicia sesión.');
-      window.location.href = 'login.html'; return;
+      try {
+        var { data: isDeleted, error: rpcErr } = await getSupabase().rpc('is_deleted_business_email', { p_email: email });
+        console.log('[register] is_deleted_business_email:', isDeleted, 'error:', rpcErr);
+        if (isDeleted) {
+          alert(isEn ? '⛔ This email has been deleted and cannot be used to register again.' : '⛔ Este correo fue eliminado y no puede usarse para registrarse nuevamente.');
+          return;
+        }
+      } catch(e) { console.warn('[register] is_deleted_business_email exception:', e); }
+      alert(isEn ? '⛔ This email cannot be used to register. The account may have been deleted or is already active.' : '⛔ Este correo no puede usarse para registrarse. La cuenta fue eliminada o ya está activa.');
+      return;
     }
     console.error('Signup error:', err);
+  }
+  // Zelle 모드: 대시보드로 이동하지 않고 대기 화면 표시
+  if (isZelle || isAch) {
+    document.getElementById('step-4').style.display = 'none';
+    document.getElementById('step-success').style.display = 'block';
+    document.querySelector('.progress-bar').style.display = 'none';
+    document.getElementById('success-normal').style.display = 'none';
+    document.getElementById('success-zelle').style.display = isZelle ? 'block' : 'none';
+    document.getElementById('success-ach').style.display = isAch ? 'block' : 'none';
+    var planLabel = selectedPlan === 'premium' ? 'Premium' : 'Basic';
+    ['zelle-plan-name-es','zelle-plan-name-en','ach-plan-name-es','ach-plan-name-en'].forEach(function(id){
+      var el = document.getElementById(id); if (el) el.textContent = planLabel;
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
   }
   try {
     var ns = await getSession();
@@ -1433,7 +1566,12 @@ var _activePayTab = 'dropin';
 async function submitDropinPayment() {
   if (_activePayTab === 'zelle') {
     closePaymentModal();
-    await goSuccess();
+    await goSuccess(true, false);
+    return;
+  }
+  if (_activePayTab === 'ach') {
+    closePaymentModal();
+    await goSuccess(false, true);
     return;
   }
   if (!_dropinInstance) return;
@@ -1798,6 +1936,7 @@ function syncChipState(checkbox) {
 
 function skipVerification() {
   verificationSkipped = true;
+  window._pendingVerification = null;
   goStep(4);
 }
 
@@ -1945,14 +2084,15 @@ function syncLoginEmail(val) {
 }
 
 function clearAccountError() {
+  var ownerName = document.getElementById('f-owner-name');
   var accountEmail = document.getElementById('f-account-email');
   var password = document.getElementById('f-password');
   var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  var emailValid = emailPattern.test(accountEmail.value.trim());
-  if (ownerName.value.trim() !== '') clearInvalid(ownerName);
+  var emailValid = emailPattern.test(accountEmail ? accountEmail.value.trim() : '');
+  if (ownerName && ownerName.value.trim() !== '') clearInvalid(ownerName);
   if (emailValid) clearInvalid(accountEmail);
-  if (password.value.length >= 8) clearInvalid(password);
-  if (ownerName.value.trim() !== '' && emailValid && password.value.length >= 8) {
+  if (password && password.value.length >= 8) clearInvalid(password);
+  if (ownerName && ownerName.value.trim() !== '' && emailValid && password && password.value.length >= 8) {
     hideError('err-account');
   }
 }
@@ -2217,7 +2357,7 @@ function switchPayTab(method, btn) {
       t.classList.add('selected');
     }
   });
-  ['dropin','zelle'].forEach(function(m){
+  ['zelle','ach'].forEach(function(m){
     var p = document.getElementById('pay-panel-' + m);
     if (p) p.style.display = m === method ? 'block' : 'none';
   });
@@ -2226,49 +2366,19 @@ function switchPayTab(method, btn) {
 }
 
 async function openPaymentModal(plan) {
-  var prices = { basic: { name: 'Basic', priceEs: '$29/mes', priceEn: '$29/mo' }, premium: { name: 'Premium', priceEs: '$79/mes', priceEn: '$79/mo' } };
+  var prices = { basic: { name: 'Basic', priceEs: '$19 · 20 créditos', priceEn: '$19 · 20 credits' }, premium: { name: 'Premium', priceEs: '$39 · 50 créditos', priceEn: '$39 · 50 credits' } };
   var p = prices[plan] || prices.basic;
   var isEn = document.body.classList.contains('en');
   document.getElementById('modal-plan-name').textContent = p.name;
   document.getElementById('modal-plan-price').textContent = isEn ? p.priceEn : p.priceEs;
-  var zelleEs = document.getElementById('zelle-plan-es');
-  var zelleEn = document.getElementById('zelle-plan-en');
-  if (zelleEs) zelleEs.textContent = p.name;
-  if (zelleEn) zelleEn.textContent = p.name;
-  switchPayTab('dropin', null);
+  ['zelle-plan-es','zelle-plan-en','ach-plan-reg-es','ach-plan-reg-en'].forEach(function(id){
+    var el = document.getElementById(id); if (el) el.textContent = p.name;
+  });
+  switchPayTab('zelle', null);
   document.getElementById('payment-modal').classList.add('open');
-  // Initialize Braintree Drop-in
+  // [HOLD] Braintree Drop-in init — reactivate when Braintree Production connected
   _dropinInstance = null;
   _paymentNonce = null;
-  var container = document.getElementById('bt-dropin-container');
-  var loading = document.getElementById('bt-dropin-loading');
-  var errEl = document.getElementById('bt-dropin-error');
-  if (container) container.innerHTML = '';
-  if (errEl) errEl.style.display = 'none';
-  if (loading) loading.style.display = 'block';
-  try {
-    var sb = getSupabase();
-    var session = (await sb.auth.getSession()).data.session;
-    var token = (session && session.access_token) ? session.access_token : 'sb_publishable_2-VOhM33bU5T6F9eMNV7iw_GcVXyWPQ';
-    var resp = await fetch('https://itlcbqecqmenfolexkuj.supabase.co/functions/v1/process-payment', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ action: 'client-token' })
-    });
-    var data = await resp.json();
-    if (!data.clientToken) throw new Error('Could not load payment form.');
-    if (loading) loading.style.display = 'none';
-    braintree.dropin.create({ authorization: data.clientToken, container: '#bt-dropin-container' }, function(err, instance) {
-      if (err) {
-        if (errEl) { errEl.style.display = 'block'; errEl.textContent = err.message; }
-        return;
-      }
-      _dropinInstance = instance;
-    });
-  } catch (e) {
-    if (loading) loading.style.display = 'none';
-    if (errEl) { errEl.style.display = 'block'; errEl.textContent = e.message || 'Failed to load payment form.'; }
-  }
 }
 
 function closePaymentModal() {
@@ -2332,6 +2442,10 @@ function prefillWorkerForm(biz) {
       if (biz.staffing_types.indexOf(key) !== -1) chip.classList.add('sel');
     });
   }
+  var stOtherEl = document.getElementById('staffing-type-other');
+  if (stOtherEl && biz.staffing_type_other) stOtherEl.value = biz.staffing_type_other;
+  var fCatOther = document.getElementById('f-cat-other');
+  if (fCatOther) fCatOther.value = biz.category_other || '';
   // Staffing availability
   if (biz.staffing_availability && biz.staffing_availability.length) {
     document.querySelectorAll('#staffing-availability-grid input[type=checkbox]').forEach(function(cb) {
@@ -2348,6 +2462,32 @@ function prefillWorkerForm(biz) {
   var insuredEl = document.getElementById('f-insured');
   if (insuredEl) insuredEl.checked = !!biz.insured;
   updateWordCount();
+}
+
+async function confirmDeleteWorkerAccountFromRegister() {
+  var isEn = document.body.classList.contains('en');
+  var msg = isEn
+    ? 'Are you sure you want to delete your account? Your public profile will be permanently removed. This cannot be undone.'
+    : '¿Estás seguro de que quieres eliminar tu cuenta? Tu perfil público será eliminado de forma permanente. Esta acción no se puede deshacer.';
+  if (!window.confirm(msg)) return;
+
+  var errEl = document.getElementById('reg-delete-err');
+  if (errEl) errEl.style.display = 'none';
+
+  try {
+    var sb = getSupabase();
+    var { error } = await sb.from('businesses')
+      .update({ account_status: 'deleted' })
+      .eq('id', window._editBizId);
+    if (error) throw error;
+    await sb.auth.signOut();
+    window.location.href = 'login.html?reason=deleted';
+  } catch(e) {
+    if (errEl) {
+      errEl.textContent = isEn ? '❌ Could not delete account. Try again.' : '❌ No se pudo eliminar la cuenta. Intenta de nuevo.';
+      errEl.style.display = 'block';
+    }
+  }
 }
 
 async function saveWorkerEdits() {
@@ -2450,6 +2590,8 @@ async function saveWorkerEdits() {
       insured: insuredEl ? insuredEl.checked : false,
       staffing_types: saveStaffingTypes,
       staffing_availability: saveStaffingAvailability,
+      staffing_type_other: (document.getElementById('staffing-type-other') || {}).value ? document.getElementById('staffing-type-other').value.trim() : '',
+      category_other: (document.getElementById('f-cat-other') || {}).value ? document.getElementById('f-cat-other').value.trim() : '',
     });
     window.location.href = 'worker-profile.html?id=' + (window._editBizId || '');
   } catch(e) {
@@ -2502,6 +2644,31 @@ document.addEventListener('DOMContentLoaded', function() {
       });
       // Hide Back button (edit goes back to profile)
       document.querySelectorAll('#step-2 .btn-back').forEach(function(btn) { btn.style.display = 'none'; });
+      // Inject Delete Account section at bottom of step-2
+      var step2 = document.getElementById('step-2');
+      if (step2 && !document.getElementById('worker-edit-danger-zone')) {
+        var dangerDiv = document.createElement('div');
+        dangerDiv.id = 'worker-edit-danger-zone';
+        dangerDiv.style.cssText = 'margin-top:36px;padding-top:24px;border-top:0.5px solid var(--c-border)';
+        dangerDiv.innerHTML = [
+          '<p style="font-size:13px;font-weight:600;color:var(--c-accent);margin:0 0 6px">',
+            '<span data-es>⚠️ Zona de peligro</span><span data-en>⚠️ Danger zone</span>',
+          '</p>',
+          '<p style="font-size:12.5px;color:var(--c-muted);margin:0 0 12px">',
+            '<span data-es>Al eliminar tu cuenta se borrará tu perfil público de forma permanente. Esta acción no se puede deshacer.</span>',
+            '<span data-en>Deleting your account permanently removes your public profile. This action cannot be undone.</span>',
+          '</p>',
+          '<button onclick="confirmDeleteWorkerAccountFromRegister()" style="padding:8px 20px;border-radius:var(--radius-sm);background:transparent;color:var(--c-accent);font-size:13px;font-weight:600;border:1.5px solid var(--c-accent);cursor:pointer;font-family:var(--font-body)">',
+            '<span data-es>Eliminar mi cuenta</span><span data-en>Delete my account</span>',
+          '</button>',
+          '<div id="reg-delete-err" style="display:none;margin-top:8px;font-size:12px;color:var(--c-accent)"></div>'
+        ].join('');
+        step2.appendChild(dangerDiv);
+        // Apply current language to newly injected spans
+        var isEn = document.body.classList.contains('en');
+        dangerDiv.querySelectorAll('[data-es]').forEach(function(el){ el.style.display = isEn ? 'none' : ''; });
+        dangerDiv.querySelectorAll('[data-en]').forEach(function(el){ el.style.display = isEn ? '' : 'none'; });
+      }
       // Pre-fill existing data
       (async function() {
         try {
@@ -2557,53 +2724,72 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="modal-plan-summary">
       <span class="modal-plan-name" id="modal-plan-name">Basic</span>
       <div style="text-align:right">
-        <div class="modal-plan-price" id="modal-plan-price">$29/mo</div>
-        <div style="font-size:11px;color:var(--c-accent-dark);margin-top:2px" data-es>🔄 Cobro mensual automático</div>
-        <div style="font-size:11px;color:var(--c-accent-dark);margin-top:2px" data-en>🔄 Recurring monthly charge</div>
+        <div class="modal-plan-price" id="modal-plan-price">$19 · 20 credits</div>
+        <div style="font-size:11px;color:var(--c-accent-dark);margin-top:2px" data-es>💳 Pago único · sin suscripción</div>
+        <div style="font-size:11px;color:var(--c-accent-dark);margin-top:2px" data-en>💳 One-time payment · no subscription</div>
       </div>
     </div>
 
     <!-- Payment method tabs -->
     <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap">
+      <!-- [HOLD] Braintree Card/Venmo tabs — activate when Braintree Production connected
       <button class="pay-tab active" id="tab-dropin-es" onclick="switchPayTab('dropin',this)" data-es>💳 Tarjeta</button>
       <button class="pay-tab active" id="tab-dropin-en" onclick="switchPayTab('dropin',this)" data-en>💳 Card</button>
-      <button class="pay-tab" onclick="switchPayTab('zelle',this)">Zelle</button>
-    </div>
-
-    <!-- Braintree Drop-in UI -->
-    <div id="pay-panel-dropin">
-      <div id="bt-dropin-container"></div>
-      <div id="bt-dropin-loading" style="text-align:center;padding:20px;color:var(--c-muted);font-size:13px">
-        <span data-es>Cargando método de pago seguro…</span><span data-en>Loading secure payment…</span>
-      </div>
-      <div id="bt-dropin-error" style="display:none;color:#DC2626;font-size:12px;margin-top:8px;padding:8px 12px;background:#FEF2F2;border-radius:6px"></div>
+      <button class="pay-tab" onclick="switchPayTab('venmo',this)">Venmo</button>
+      -->
+      <button class="pay-tab selected" onclick="switchPayTab('zelle',this)">Zelle</button>
+      <button class="pay-tab" onclick="switchPayTab('ach',this)">ACH</button>
     </div>
 
     <!-- Zelle manual panel -->
-    <div id="pay-panel-zelle" style="display:none">
+    <div id="pay-panel-zelle">
       <div style="background:var(--c-amber-light);border-radius:var(--radius-md);padding:16px;margin-bottom:12px;border:0.5px solid rgba(186,117,23,0.2)">
         <div style="font-size:13px;font-weight:600;margin-bottom:8px" data-es>📲 Instrucciones para pagar con Zelle</div>
         <div style="font-size:13px;font-weight:600;margin-bottom:8px" data-en>📲 How to pay with Zelle</div>
         <ol style="font-size:13px;color:var(--c-text);line-height:1.8;padding-left:18px" data-es>
           <li>Abre tu app bancaria o la app de Zelle</li>
-          <li>Envía el monto exacto a: <strong>pagos@amigosnearme.com</strong></li>
+          <li>Envía el monto exacto a: Zelle tag: <strong>amigosnearme</strong></li>
           <li>En el memo escribe tu <strong>nombre de negocio</strong> y el plan (<strong id="zelle-plan-es">Basic</strong>)</li>
-          <li>Toma una captura de pantalla y envíala a <strong>hola@amigosnearme.com</strong></li>
+          <li>Toma una captura de pantalla y envíala por <strong><a href="https://wa.me/17862388827" style="color:var(--c-accent)">WhatsApp +1 (786) 238-8827</a></strong></li>
         </ol>
         <ol style="font-size:13px;color:var(--c-text);line-height:1.8;padding-left:18px" data-en>
           <li>Open your bank app or the Zelle app</li>
-          <li>Send the exact amount to: <strong>pagos@amigosnearme.com</strong></li>
+          <li>Send the exact amount to: Zelle tag: <strong>amigosnearme</strong></li>
           <li>In the memo write your <strong>business name</strong> and plan (<strong id="zelle-plan-en">Basic</strong>)</li>
-          <li>Take a screenshot and email it to <strong>hola@amigosnearme.com</strong></li>
+          <li>Take a screenshot and send it via <strong><a href="https://wa.me/17862388827" style="color:var(--c-accent)">WhatsApp +1 (786) 238-8827</a></strong></li>
         </ol>
       </div>
       <p style="font-size:12px;color:var(--c-muted)" data-es>⏱ Tu plan será activado manualmente dentro de 24 horas hábiles después de confirmar tu pago.</p>
       <p style="font-size:12px;color:var(--c-muted)" data-en>⏱ Your plan will be manually activated within 24 business hours after we confirm your payment.</p>
     </div>
 
-    <button class="modal-btn-primary" id="modal-pay-btn" onclick="submitDropinPayment()"><span data-es>Pagar y continuar →</span><span data-en>Pay & continue →</span></button>
+    <!-- ACH bank transfer panel -->
+    <div id="pay-panel-ach" style="display:none">
+      <div style="background:#EEF2FF;border-radius:var(--radius-md);padding:16px;margin-bottom:12px;border:0.5px solid rgba(99,102,241,0.25)">
+        <div style="font-size:13px;font-weight:600;margin-bottom:10px" data-es>🏦 Instrucciones para transferencia bancaria (ACH)</div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:10px" data-en>🏦 Bank Transfer Instructions (ACH)</div>
+        <table style="font-size:13px;line-height:1.9;border-collapse:collapse;width:100%" data-es>
+          <tr><td style="color:var(--c-muted);padding-right:12px;white-space:nowrap">Banco</td><td><strong>Wells Fargo</strong></td></tr>
+          <tr><td style="color:var(--c-muted);padding-right:12px;white-space:nowrap">Routing #</td><td><strong>061000227</strong></td></tr>
+          <tr><td style="color:var(--c-muted);padding-right:12px;white-space:nowrap">Account #</td><td><strong>8516934588</strong></td></tr>
+          <tr><td style="color:var(--c-muted);padding-right:12px;white-space:nowrap">Memo</td><td>tu nombre de negocio + plan (<strong id="ach-plan-reg-es">Basic</strong>)</td></tr>
+        </table>
+        <table style="font-size:13px;line-height:1.9;border-collapse:collapse;width:100%" data-en>
+          <tr><td style="color:var(--c-muted);padding-right:12px;white-space:nowrap">Bank</td><td><strong>Wells Fargo</strong></td></tr>
+          <tr><td style="color:var(--c-muted);padding-right:12px;white-space:nowrap">Routing #</td><td><strong>061000227</strong></td></tr>
+          <tr><td style="color:var(--c-muted);padding-right:12px;white-space:nowrap">Account #</td><td><strong>8516934588</strong></td></tr>
+          <tr><td style="color:var(--c-muted);padding-right:12px;white-space:nowrap">Memo</td><td>your business name + plan (<strong id="ach-plan-reg-en">Basic</strong>)</td></tr>
+        </table>
+        <p style="font-size:13px;margin-top:10px;margin-bottom:0" data-es>Envía captura de pantalla por <strong><a href="https://wa.me/17862388827" style="color:var(--c-accent)">WhatsApp +1 (786) 238-8827</a></strong></p>
+        <p style="font-size:13px;margin-top:10px;margin-bottom:0" data-en>Send a screenshot via <strong><a href="https://wa.me/17862388827" style="color:var(--c-accent)">WhatsApp +1 (786) 238-8827</a></strong></p>
+      </div>
+      <p style="font-size:12px;color:var(--c-muted)" data-es>⏱ ACH puede tardar 1–3 días hábiles. Tu plan será activado al confirmar el depósito.</p>
+      <p style="font-size:12px;color:var(--c-muted)" data-en>⏱ ACH transfers take 1–3 business days. Your plan will be activated once the deposit is confirmed.</p>
+    </div>
+
+    <button class="modal-btn-primary" id="modal-pay-btn" onclick="submitDropinPayment()"><span data-es>Ya envié el pago →</span><span data-en>I've sent the payment →</span></button>
     <button class="modal-btn-ghost" onclick="closePaymentModal()"><span data-es>Cancelar</span><span data-en>Cancel</span></button>
-    <div class="modal-note"><span data-es>Pagos con tarjeta y PayPal procesados de forma segura por Braintree. Zelle es manual.</span><span data-en>Card and PayPal payments processed securely by Braintree. Zelle is manual.</span></div>
+    <div class="modal-note"><span data-es>Zelle y ACH son pagos manuales. Tu plan se activa dentro de 24h (Zelle) o 1–3 días hábiles (ACH).</span><span data-en>Zelle and ACH are manual payments. Plan activates within 24h (Zelle) or 1–3 business days (ACH).</span></div>
   </div>
 </div>
 

@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+(function() {
+  var p = new URLSearchParams(window.location.search).get('lang');
+  if (p === 'en' || p === 'es') {
+    try { localStorage.setItem('anm-lang', p); } catch(e) {}
+    if (p === 'en') document.documentElement.classList.add('en-preload');
+  }
+})();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Worker Profile — AmigosNearMe</title>
@@ -37,6 +46,9 @@
   .btn-wa{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:var(--radius-md);background:var(--c-green);color:#fff;font-size:15px;font-weight:600;border:none;cursor:pointer;font-family:var(--font-body);transition:opacity 0.15s}
   .btn-wa:hover{opacity:0.9}
   .btn-wa:disabled{opacity:0.45;cursor:not-allowed}
+  .btn-webform{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:var(--radius-md);background:var(--c-surface);color:var(--c-text);font-size:15px;font-weight:600;border:0.5px solid var(--c-border);cursor:pointer;font-family:var(--font-body);transition:opacity 0.15s}
+  .btn-webform:hover{background:var(--c-bg)}
+  .btn-webform:disabled{opacity:0.45;cursor:not-allowed}
   .btn-login{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:var(--radius-md);background:var(--c-accent);color:#fff;font-size:15px;font-weight:600;border:none;cursor:pointer;font-family:var(--font-body)}
   .wa-note{font-size:12px;color:var(--c-muted);text-align:center;margin-top:8px}
   .credit-banner{padding:12px 16px;border-radius:var(--radius-md);font-size:13px;margin-bottom:16px;display:none}
@@ -44,7 +56,7 @@
   .credit-warn{background:var(--c-amber-light);color:var(--c-amber);border:0.5px solid rgba(186,117,23,0.2)}
   .credit-empty{background:var(--c-accent-light);color:var(--c-accent);border:0.5px solid rgba(201,79,43,0.2)}
   .review-form-wrap{margin-top:20px;padding-top:20px;border-top:0.5px solid var(--c-border)}
-  .star-pick{font-size:28px;cursor:pointer;letter-spacing:4px;user-select:none;color:var(--c-amber)}
+  .star-pick{font-size:28px;cursor:pointer;letter-spacing:4px;user-select:none;color:var(--c-amber);display:inline-block}
   textarea{width:100%;padding:10px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:14px;font-family:var(--font-body);resize:vertical;min-height:80px;outline:none;transition:border-color 0.12s}
   textarea:focus{border-color:var(--c-accent)}
   .btn-submit{padding:10px 22px;border-radius:var(--radius-sm);background:var(--c-accent);color:#fff;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:var(--font-body);margin-top:10px}
@@ -117,7 +129,7 @@
       <div class="section-title" style="margin-bottom:0"><span data-es>Reseñas</span><span data-en>Reviews</span></div>
       <div id="review-avg" style="font-size:13px;color:var(--c-muted)"></div>
     </div>
-    <div id="reviews-list"></div>
+    <div id="reviews-list" style="max-height:400px;overflow-y:auto"></div>
 
     <!-- Review toggle button (Employer only, after contacting) -->
     <div id="review-section" style="display:none">
@@ -131,7 +143,9 @@
       </div>
 
       <div id="review-form" style="display:none;margin-top:12px">
-        <div class="star-pick" id="star-pick" onclick="pickStar(event)">☆☆☆☆☆</div>
+        <div class="star-pick" id="star-pick">
+          <span onclick="pickStar(1)">☆</span><span onclick="pickStar(2)">☆</span><span onclick="pickStar(3)">☆</span><span onclick="pickStar(4)">☆</span><span onclick="pickStar(5)">☆</span>
+        </div>
         <textarea id="review-text" placeholder="Share your experience..." style="margin-top:10px"></textarea>
         <button class="btn-submit" onclick="submitReview()">
           <span data-es>Enviar reseña</span><span data-en>Submit review</span>
@@ -179,24 +193,124 @@
     </div>
 
     <!-- Description -->
-    <div style="margin-bottom:12px">
+    <div style="margin-bottom:16px">
       <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:4px"><span data-es>Descripción</span><span data-en>Description</span></label>
       <textarea id="wp-desc" rows="3" style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:14px;font-family:var(--font-body);resize:vertical;box-sizing:border-box"></textarea>
     </div>
 
-    <!-- Service Area -->
-    <div style="margin-bottom:12px">
-      <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:4px"><span data-es>Área de servicio</span><span data-en>Service area</span></label>
-      <input type="text" id="wp-area" placeholder="e.g. Atlanta, Duluth, Norcross" style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:14px;font-family:var(--font-body);background:var(--c-bg);box-sizing:border-box">
+    <!-- Worker Types -->
+    <div style="margin-bottom:16px">
+      <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:8px"><span data-es>Tipos de trabajo *</span><span data-en>Job types *</span></label>
+      <div id="wp-types-grid" style="display:flex;flex-wrap:wrap;gap:8px">
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:6px 12px;border:0.5px solid var(--c-border);border-radius:20px;cursor:pointer"><input type="checkbox" id="wp-type-kitchen"      value="kitchen"      style="accent-color:var(--c-green)"> 🍳 <span data-es>Cocina / Restaurante</span><span data-en>Kitchen / Restaurant</span></label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:6px 12px;border:0.5px solid var(--c-border);border-radius:20px;cursor:pointer"><input type="checkbox" id="wp-type-moving"       value="moving"       style="accent-color:var(--c-green)"> 📦 <span data-es>Mudanzas / Carga</span><span data-en>Moving / Loading</span></label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:6px 12px;border:0.5px solid var(--c-border);border-radius:20px;cursor:pointer"><input type="checkbox" id="wp-type-construction" value="construction" style="accent-color:var(--c-green)"> 🏗️ <span data-es>Construcción</span><span data-en>Construction</span></label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:6px 12px;border:0.5px solid var(--c-border);border-radius:20px;cursor:pointer"><input type="checkbox" id="wp-type-warehouse"    value="warehouse"    style="accent-color:var(--c-green)"> 🏭 <span data-es>Producción / Almacén</span><span data-en>Production / Warehouse</span></label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:6px 12px;border:0.5px solid var(--c-border);border-radius:20px;cursor:pointer"><input type="checkbox" id="wp-type-cleaning"     value="cleaning"     style="accent-color:var(--c-green)"> 🧹 <span data-es>Limpieza comercial</span><span data-en>Commercial cleaning</span></label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:6px 12px;border:0.5px solid var(--c-border);border-radius:20px;cursor:pointer"><input type="checkbox" id="wp-type-agriculture"  value="agriculture"  style="accent-color:var(--c-green)"> 🌾 <span data-es>Trabajo agrícola</span><span data-en>Agricultural work</span></label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:6px 12px;border:0.5px solid var(--c-border);border-radius:20px;cursor:pointer"><input type="checkbox" id="wp-type-events"       value="events"       style="accent-color:var(--c-green)"> 🅿️ <span data-es>Eventos / Estacionamiento</span><span data-en>Events / Valet</span></label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:6px 12px;border:0.5px solid var(--c-border);border-radius:20px;cursor:pointer"><input type="checkbox" id="wp-type-general"      value="general"      style="accent-color:var(--c-green)"> 🔧 <span data-es>Otro trabajo general</span><span data-en>General labor</span></label>
+      </div>
+      <div style="margin-top:10px">
+        <div style="font-size:11px;font-weight:600;color:var(--c-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px"><span data-es>Otro tipo (escribe aquí)</span><span data-en>Other type (type here)</span></div>
+        <input type="text" id="wp-type-other" placeholder="e.g. Landscaping, Security guard, Driver..." style="width:100%;padding:7px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-bg);color:var(--c-text);box-sizing:border-box">
+        <div style="font-size:11px;color:var(--c-muted);margin-top:4px;line-height:1.5"><span data-es>Si tu tipo de trabajo no está en la lista, escríbelo aquí — aparecerá en búsquedas de texto.</span><span data-en>If your work type is not listed, type it here — it will appear in text search results.</span></div>
+      </div>
+    </div>
+
+    <!-- Hiring Availability -->
+    <div style="margin-bottom:16px">
+      <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:8px"><span data-es>Disponibilidad</span><span data-en>Availability</span></label>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="wp-avail-day"  value="by_the_day"           style="accent-color:var(--c-green)"> <span data-es>Por día</span><span data-en>By the day</span></label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="wp-avail-week" value="by_the_week"          style="accent-color:var(--c-green)"> <span data-es>Por semana</span><span data-en>By the week</span></label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="wp-avail-perm" value="permanent_placement"  style="accent-color:var(--c-green)"> <span data-es>Contrato permanente</span><span data-en>Permanent placement</span></label>
+      </div>
+    </div>
+
+    <!-- Approximate Rate -->
+    <div style="margin-bottom:16px">
+      <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:4px"><span data-es>Tarifa aproximada</span><span data-en>Approximate rate</span></label>
+      <select id="wp-desired-pay" style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:14px;font-family:var(--font-body);background:var(--c-bg)">
+        <option value=""><span data-es>Selecciona un rango...</span><span data-en>Select a range...</span></option>
+        <option value="15-18">$15 – $18 / hora · hour</option>
+        <option value="18-22">$18 – $22 / hora · hour</option>
+        <option value="22-28">$22 – $28 / hora · hour</option>
+        <option value="28+">$28+ / hora · hour</option>
+        <option value="negotiable">A negociar · Negotiable</option>
+      </select>
+    </div>
+
+    <!-- Service Areas -->
+    <div style="margin-bottom:16px">
+      <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:8px"><span data-es>Áreas de servicio</span><span data-en>Service areas</span></label>
+      <div id="wp-area-grid" style="border:0.5px solid var(--c-border);border-radius:var(--radius-sm);padding:12px;background:var(--c-bg);display:grid;grid-template-columns:1fr 1fr;gap:3px 20px;max-height:260px;overflow-y:auto">
+        <div style="grid-column:1/-1;font-size:11px;font-weight:600;color:var(--c-hint);text-transform:uppercase;padding:4px 0 2px">Atlanta (Fulton)</div>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="atlanta"          style="accent-color:var(--c-green)"> Atlanta</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="alpharetta"       style="accent-color:var(--c-green)"> Alpharetta</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="johns_creek"      style="accent-color:var(--c-green)"> Johns Creek</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="sandy_springs"    style="accent-color:var(--c-green)"> Sandy Springs</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="milton"           style="accent-color:var(--c-green)"> Milton</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="roswell"          style="accent-color:var(--c-green)"> Roswell</label>
+        <div style="grid-column:1/-1;font-size:11px;font-weight:600;color:var(--c-hint);text-transform:uppercase;padding:6px 0 2px">DeKalb</div>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="tucker"           style="accent-color:var(--c-green)"> Tucker</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="chamblee"         style="accent-color:var(--c-green)"> Chamblee</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="brookhaven"       style="accent-color:var(--c-green)"> Brookhaven</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="decatur"          style="accent-color:var(--c-green)"> Decatur</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="doraville"        style="accent-color:var(--c-green)"> Doraville</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="dunwoody"         style="accent-color:var(--c-green)"> Dunwoody</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="lithonia"         style="accent-color:var(--c-green)"> Lithonia</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="stone_mountain"   style="accent-color:var(--c-green)"> Stone Mountain</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="clarkston"        style="accent-color:var(--c-green)"> Clarkston</label>
+        <div style="grid-column:1/-1;font-size:11px;font-weight:600;color:var(--c-hint);text-transform:uppercase;padding:6px 0 2px">Cobb</div>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="marietta"         style="accent-color:var(--c-green)"> Marietta</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="smyrna"           style="accent-color:var(--c-green)"> Smyrna</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="kennesaw"         style="accent-color:var(--c-green)"> Kennesaw</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="acworth"          style="accent-color:var(--c-green)"> Acworth</label>
+        <div style="grid-column:1/-1;font-size:11px;font-weight:600;color:var(--c-hint);text-transform:uppercase;padding:6px 0 2px">Gwinnett</div>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="duluth"           style="accent-color:var(--c-green)"> Duluth</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="norcross"         style="accent-color:var(--c-green)"> Norcross</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="lawrenceville"    style="accent-color:var(--c-green)"> Lawrenceville</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="buford"           style="accent-color:var(--c-green)"> Buford</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="suwanee"          style="accent-color:var(--c-green)"> Suwanee</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="lilburn"          style="accent-color:var(--c-green)"> Lilburn</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="snellville"       style="accent-color:var(--c-green)"> Snellville</label>
+        <div style="grid-column:1/-1;font-size:11px;font-weight:600;color:var(--c-hint);text-transform:uppercase;padding:6px 0 2px">Forsyth / Cherokee</div>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="cumming"          style="accent-color:var(--c-green)"> Cumming</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="canton"           style="accent-color:var(--c-green)"> Canton</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="woodstock"        style="accent-color:var(--c-green)"> Woodstock</label>
+        <div style="grid-column:1/-1;font-size:11px;font-weight:600;color:var(--c-hint);text-transform:uppercase;padding:6px 0 2px">Hall / Barrow / Jackson</div>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="gainesville"      style="accent-color:var(--c-green)"> Gainesville</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="winder"           style="accent-color:var(--c-green)"> Winder</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="jefferson"        style="accent-color:var(--c-green)"> Jefferson</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="commerce"         style="accent-color:var(--c-green)"> Commerce</label>
+        <div style="grid-column:1/-1;font-size:11px;font-weight:600;color:var(--c-hint);text-transform:uppercase;padding:6px 0 2px"><span data-es>Otra área</span><span data-en>Other area</span></div>
+        <div style="grid-column:1/-1">
+          <input type="text" id="wp-area-other" placeholder="e.g. Gainesville, FL · Any area in GA" style="width:100%;padding:7px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-bg);box-sizing:border-box">
+        </div>
+      </div>
     </div>
 
     <!-- Languages -->
-    <div style="margin-bottom:12px">
-      <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:6px"><span data-es>Idiomas</span><span data-en>Languages</span></label>
+    <div style="margin-bottom:16px">
+      <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:8px"><span data-es>Idiomas</span><span data-en>Languages</span></label>
       <div style="display:flex;gap:16px;flex-wrap:wrap">
         <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="wp-lang-es" value="es" style="accent-color:var(--c-green)"> Español</label>
         <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="wp-lang-en" value="en" style="accent-color:var(--c-green)"> English</label>
         <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="wp-lang-pt" value="pt" style="accent-color:var(--c-green)"> Português</label>
+      </div>
+    </div>
+
+    <!-- Payment Methods -->
+    <div style="margin-bottom:16px">
+      <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:8px"><span data-es>Métodos de pago</span><span data-en>Payment methods</span></label>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="wp-pay-cash"        value="cash"        style="accent-color:var(--c-green)"> Cash</label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="wp-pay-zelle"       value="zelle"       style="accent-color:var(--c-green)"> Zelle</label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="wp-pay-venmo"       value="venmo"       style="accent-color:var(--c-green)"> Venmo</label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="wp-pay-check"       value="check"       style="accent-color:var(--c-green)"> Check</label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="wp-pay-credit-card" value="credit_card" style="accent-color:var(--c-green)"> Credit Card</label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="wp-pay-paypal"      value="paypal"      style="accent-color:var(--c-green)"> PayPal</label>
       </div>
     </div>
 
@@ -207,6 +321,21 @@
       <span data-es>✅ Cambios guardados.</span><span data-en>✅ Changes saved.</span>
     </div>
     <div id="wp-save-err" style="display:none;margin-top:8px;font-size:12px;color:var(--c-accent)"></div>
+
+    <!-- Delete Account -->
+    <div style="margin-top:36px;padding-top:24px;border-top:0.5px solid var(--c-border)">
+      <p style="font-size:13px;font-weight:600;color:var(--c-accent);margin:0 0 6px">
+        <span data-es>⚠️ Zona de peligro</span><span data-en>⚠️ Danger zone</span>
+      </p>
+      <p style="font-size:12.5px;color:var(--c-muted);margin:0 0 12px">
+        <span data-es>Al eliminar tu cuenta se borrará tu perfil público de forma permanente. Esta acción no se puede deshacer.</span>
+        <span data-en>Deleting your account permanently removes your public profile. This action cannot be undone.</span>
+      </p>
+      <button onclick="confirmDeleteWorkerAccount()" style="padding:8px 20px;border-radius:var(--radius-sm);background:transparent;color:var(--c-accent);font-size:13px;font-weight:600;border:1.5px solid var(--c-accent);cursor:pointer;font-family:var(--font-body)">
+        <span data-es>Eliminar mi cuenta</span><span data-en>Delete my account</span>
+      </button>
+      <div id="wp-delete-err" style="display:none;margin-top:8px;font-size:12px;color:var(--c-accent)"></div>
+    </div>
   </div>
 
 </div><!-- /profile-content -->
@@ -214,7 +343,7 @@
 <div id="not-found" style="display:none;text-align:center;padding:80px 24px">
   <div style="font-size:40px;margin-bottom:16px">😕</div>
   <h2 style="font-family:var(--font-display);font-size:24px;margin-bottom:8px">
-    <span data-es>Trabajador no encontrado</span><span data-en>Worker not found</span>
+    <span data-es>Trabajador no encontrado</span><span data-en>Job seeker not found</span>
   </h2>
   <a href="worker-search.html" style="color:var(--c-accent);font-size:14px">
     <span data-es>← Ver todos los trabajadores</span><span data-en>← Browse all workers</span>
@@ -287,7 +416,7 @@ async function loadWorker() {
     renderWorker(w);
 
     // 리뷰 로드
-    var revRes = await sb.from('reviews').select('rating, review_text, created_at').eq('biz_id', id).order('created_at', { ascending: false });
+    var revRes = await sb.from('reviews').select('id, rating, review_text, created_at, flagged, removed').eq('biz_id', id).eq('removed', false).order('created_at', { ascending: false });
     renderReviews(revRes.data || []);
 
     // 본인 프로필 여부 확인
@@ -298,7 +427,7 @@ async function loadWorker() {
       renderContactArea('owner', 0, w);
     } else if ((currentUserType === 'employer' || currentUserType === 'business') && currentSession) {
       // Employer 또는 Business 계정: employer_profiles 조회 후 contact 허용 (B안)
-      var epRes = await sb.from('employer_profiles').select('credit_balance').eq('owner_id', currentSession.user.id).single();
+      var epRes = await sb.from('employer_profiles').select('credit_balance, preferred_lang').eq('owner_id', currentSession.user.id).single();
       if (epRes.error || !epRes.data) {
         renderContactArea('employer', 0, w);
       } else {
@@ -355,9 +484,9 @@ function renderWorker(w) {
   var catLabel = (w.categories || []).map(function(c){ return catLabels[c] || c; }).join(' · ');
   document.getElementById('worker-cats').textContent = catLabel;
 
-  // Area
-  var area = w.service_area || '';
-  document.getElementById('worker-area').textContent = area ? '📍 ' + area : '';
+  // Area — show first location only (same as Business Owner profile)
+  var areaFirst = (w.service_area || '').split(',')[0].trim();
+  document.getElementById('worker-area').textContent = areaFirst ? '📍 ' + areaFirst : '';
 
   // Description (언어별)
   var desc = isEn ? (w.description_en || w.description_es || w.description) : (w.description_es || w.description);
@@ -389,9 +518,10 @@ function renderWorker(w) {
   var availLabels = isEn ? AVAIL_LABELS_EN : AVAIL_LABELS_ES;
 
   var detHtml = '';
-  if ((w.staffing_types || []).length > 0) {
-    var tLabels = w.staffing_types.map(function(t) { return typeLabels[t] || t; }).join(' · ');
-    detHtml += '<div class="info-row">👷 <strong>'+(isEn?'Worker types':'Tipos de trabajo')+':</strong> '+tLabels+'</div>';
+  if ((w.staffing_types || []).length > 0 || w.staffing_type_other) {
+    var tLabels = (w.staffing_types || []).map(function(t) { return typeLabels[t] || t; });
+    if (w.staffing_type_other) tLabels.push(w.staffing_type_other);
+    detHtml += '<div class="info-row">👷 <strong>'+(isEn?'Job types':'Tipos de trabajo')+':</strong> '+tLabels.join(' · ')+'</div>';
   }
   if ((w.staffing_availability || []).length > 0) {
     var aLabels = w.staffing_availability.map(function(a) { return availLabels[a] || a; }).join(' · ');
@@ -404,6 +534,12 @@ function renderWorker(w) {
   if ((w.payment_methods || []).length > 0) {
     var pLabels = w.payment_methods.map(function(p) { return PAY_LABELS[p] || p; }).join(', ');
     detHtml += '<div class="info-row">💳 <strong>'+(isEn?'Payment':'Pago')+':</strong> '+pLabels+'</div>';
+  }
+  if (w.service_area) {
+    detHtml += '<div class="info-row">📍 <strong>'+(isEn?'Work area':'Área de trabajo')+':</strong> '+w.service_area+'</div>';
+  }
+  if (w.desired_pay) {
+    detHtml += '<div class="info-row">💰 <strong>'+(isEn?'Desired pay':'Salario deseado')+':</strong> '+w.desired_pay+'</div>';
   }
   document.getElementById('worker-details').innerHTML = detHtml || '<div style="font-size:13px;color:var(--c-hint)">'+(isEn?'No additional details.':'Sin detalles adicionales.')+'</div>';
 }
@@ -463,11 +599,53 @@ function renderContactArea(type, credits, w) {
     f('wp-phone', w.whatsapp_phone);
     f('wp-trade-name', w.trade_name);
     f('wp-desc', w.description_es || w.description || '');
-    f('wp-area', w.service_area);
+
+    // Worker types
+    var types = w.staffing_types || [];
+    ['kitchen','moving','construction','warehouse','cleaning','agriculture','events','general'].forEach(function(t) {
+      var el = document.getElementById('wp-type-' + t);
+      if (el) el.checked = types.includes(t);
+    });
+    var wpTypeOther = document.getElementById('wp-type-other');
+    if (wpTypeOther) wpTypeOther.value = w.staffing_type_other || '';
+
+    // Hiring availability
+    var avail = w.staffing_availability || [];
+    document.getElementById('wp-avail-day').checked  = avail.includes('by_the_day');
+    document.getElementById('wp-avail-week').checked = avail.includes('by_the_week');
+    document.getElementById('wp-avail-perm').checked = avail.includes('permanent_placement');
+
+    // Approximate rate
+    var rateEl = document.getElementById('wp-desired-pay');
+    if (rateEl && w.desired_pay) rateEl.value = w.desired_pay;
+
+    // Service areas — checkbox grid + other text
+    var areaValues = (w.service_area || '').split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+    var knownAreas = ['atlanta','alpharetta','johns_creek','sandy_springs','milton','roswell',
+      'tucker','chamblee','brookhaven','decatur','doraville','dunwoody','lithonia','stone_mountain','clarkston',
+      'marietta','smyrna','kennesaw','acworth','duluth','norcross','lawrenceville','buford','suwanee','lilburn','snellville',
+      'cumming','canton','woodstock','gainesville','winder','jefferson','commerce'];
+    var otherAreas = [];
+    document.querySelectorAll('#wp-area-grid input[type="checkbox"]').forEach(function(cb) {
+      cb.checked = areaValues.includes(cb.value);
+    });
+    areaValues.forEach(function(v) {
+      if (!knownAreas.includes(v)) otherAreas.push(v);
+    });
+    document.getElementById('wp-area-other').value = otherAreas.join(', ');
+
+    // Languages
     var langs = w.languages || ['es'];
     document.getElementById('wp-lang-es').checked = langs.includes('es');
     document.getElementById('wp-lang-en').checked = langs.includes('en');
     document.getElementById('wp-lang-pt').checked = langs.includes('pt');
+
+    // Payment methods
+    var pays = w.payment_methods || [];
+    ['cash','zelle','venmo','check','credit_card','paypal'].forEach(function(p) {
+      var el = document.getElementById('wp-pay-' + p.replace('_', '-'));
+      if (el) el.checked = pays.includes(p);
+    });
     return;
   }
 
@@ -475,8 +653,9 @@ function renderContactArea(type, credits, w) {
   if (credits <= 0) {
     banner.className = 'credit-banner credit-empty';
     banner.style.display = 'block';
-    banner.textContent = isEn ? '🚫 You have 0 credits remaining. Purchase credits to contact workers.' : '🚫 No tienes créditos disponibles. Compra créditos para contactar trabajadores.';
+    banner.textContent = isEn ? '🚫 You have 0 credits remaining. Purchase credits to contact job seekers.' : '🚫 No tienes créditos disponibles. Compra créditos para contactar candidatos.';
     area.innerHTML = '<button class="btn-wa" disabled>💬 WhatsApp</button>' +
+      '<button class="btn-webform" disabled style="margin-top:8px">📝 ' + (isEn ? 'Send Message' : 'Enviar mensaje') + '</button>' +
       '<div class="wa-note">' + (isEn ? 'Visit your dashboard to purchase credits.' : 'Visita tu panel para comprar créditos.') + '</div>';
     return;
   }
@@ -493,14 +672,114 @@ function renderContactArea(type, credits, w) {
 
   var phone = (w.whatsapp_phone || '').replace(/\D/g, '');
   var name = w.business_name || '';
-  var msgEs = 'Hola ' + name + ', vi tu perfil en AmigosNearMe y me gustaría contratarte. ¿Estás disponible?';
-  var msgEn = 'Hi ' + name + ', I saw your profile on AmigosNearMe and would like to hire you. Are you available?';
-  var msg = isEn ? msgEn : msgEs;
+  var msgEs = 'Hola ' + name + ', vi tu perfil en AmigosNearMe y me gustaría hablar contigo. ¿Estás disponible?';
+  var msgEn = 'Hi ' + name + ', I saw your profile on AmigosNearMe and would like to talk with you. Are you available?';
+  var workerLangs = w.languages || [];
+  var workerSpeaksEn = workerLangs.includes('en');
+  var workerSpeaksEs = workerLangs.includes('es');
+  var msg;
+  if (workerSpeaksEn && !workerSpeaksEs) {
+    msg = msgEn;
+  } else if (workerSpeaksEs && !workerSpeaksEn) {
+    msg = msgEs;
+  } else {
+    msg = msgEn + '\n\n' + msgEs;
+  }
   var waUrl = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg);
 
-  area.innerHTML = '<button class="btn-wa" id="btn-wa-worker" onclick="contactWorker(\'' + waUrl + '\')">' +
-    '💬 ' + (isEn ? 'Open WhatsApp' : 'Abrir WhatsApp') + '</button>' +
-    '<div class="wa-note">' + (isEn ? '1 credit will be used.' : 'Se usará 1 crédito.') + '</div>';
+  area.innerHTML =
+    '<button class="btn-wa" id="btn-wa-worker" onclick="contactWorker(\'' + waUrl + '\')">' +
+      '💬 ' + (isEn ? 'Contact via WhatsApp' : 'Contactar por WhatsApp') +
+    '</button>' +
+    '<button class="btn-webform" id="btn-form-worker" onclick="toggleWebForm()" style="margin-top:8px">' +
+      '📝 ' + (isEn ? "Don't use WhatsApp? Send your request here" : '¿Sin WhatsApp? Envía tu solicitud aquí') +
+    '</button>' +
+    '<div class="wa-note">' + (isEn ? '1 credit will be used per contact.' : 'Se usará 1 crédito por contacto.') + '</div>' +
+    '<div id="web-form-wrap" style="display:none;margin-top:14px;padding:14px;background:var(--c-bg);border:0.5px solid var(--c-border);border-radius:var(--radius-md)">' +
+      '<div style="font-size:13px;font-weight:600;margin-bottom:10px">' + (isEn ? 'Send a message to ' + name : 'Enviar mensaje a ' + name) + '</div>' +
+      '<input id="wf-name" type="text" placeholder="' + (isEn ? 'Your name' : 'Tu nombre') + '" style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:13px;font-family:var(--font-body);background:var(--c-surface);color:var(--c-text);box-sizing:border-box;margin-bottom:8px">' +
+      '<input id="wf-phone" type="tel" placeholder="' + (isEn ? 'Your phone number' : 'Tu número de teléfono') + '" style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:13px;font-family:var(--font-body);background:var(--c-surface);color:var(--c-text);box-sizing:border-box;margin-bottom:8px">' +
+      '<textarea id="wf-msg" rows="3" placeholder="' + (isEn ? 'Your message...' : 'Tu mensaje...') + '" style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:13px;font-family:var(--font-body);background:var(--c-surface);color:var(--c-text);box-sizing:border-box;resize:vertical;margin-bottom:10px"></textarea>' +
+      '<div id="wf-err" style="display:none;font-size:12px;color:var(--c-accent);margin-bottom:8px"></div>' +
+      '<div id="wf-ok" style="display:none;font-size:13px;color:var(--c-green);font-weight:600;margin-bottom:8px">✅ ' + (isEn ? 'Message sent!' : '¡Mensaje enviado!') + '</div>' +
+      '<button onclick="submitWebForm()" style="width:100%;padding:10px;border-radius:var(--radius-sm);background:var(--c-accent);color:#fff;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body)">' +
+        (isEn ? 'Send — 1 credit' : 'Enviar — 1 crédito') +
+      '</button>' +
+    '</div>';
+}
+
+function toggleWebForm() {
+  var wrap = document.getElementById('web-form-wrap');
+  if (wrap) wrap.style.display = wrap.style.display === 'none' ? 'block' : 'none';
+}
+
+async function submitWebForm() {
+  var isEn = document.body.classList.contains('en');
+  var nameVal = (document.getElementById('wf-name')?.value || '').trim();
+  var phoneVal = (document.getElementById('wf-phone')?.value || '').trim();
+  var msgVal  = (document.getElementById('wf-msg')?.value || '').trim();
+  var errEl   = document.getElementById('wf-err');
+  var okEl    = document.getElementById('wf-ok');
+
+  if (!nameVal || !msgVal) {
+    if (errEl) { errEl.textContent = isEn ? 'Name and message are required.' : 'Nombre y mensaje son obligatorios.'; errEl.style.display = 'block'; }
+    return;
+  }
+  if (errEl) errEl.style.display = 'none';
+
+  if (!currentSession || !currentWorker) return;
+  var sb = getSupabase();
+
+  // Fresh credit check
+  var epRes = await sb.from('employer_profiles').select('credit_balance, id, preferred_lang').eq('owner_id', currentSession.user.id).single();
+  if (epRes.error || !epRes.data || epRes.data.credit_balance <= 0) {
+    renderContactArea('employer', 0, currentWorker);
+    return;
+  }
+
+  var empId     = currentSession.user.id;
+  var empEmail  = currentSession.user.email;
+  var workerId  = currentWorker.id;
+  var workerEmail = currentWorker.public_email || null;
+  var workerName  = currentWorker.business_name || '';
+  var credits   = epRes.data.credit_balance;
+  var empLang   = epRes.data.preferred_lang || 'es';
+
+  // Deduct credit
+  sb.rpc('decrement_employer_credit', { p_employer_id: empId })
+    .then(function(r){ if (r.error) console.warn('[credit deduct]', r.error.message); });
+
+  // Log contact
+  sb.from('contact_log').insert({
+    biz_id:    workerId,
+    actor_id:  empId,
+    channel:   'form',
+    limit_hit: false
+  }).then(function(r){ if (r.error) console.warn('[contact_log]', r.error.message); });
+
+  // Notify worker by email (W5 = web form contact)
+  var workerLang = (currentWorker && currentWorker.preferred_lang) || 'es';
+  if (workerEmail) {
+    sendEmail('W5', workerEmail, {
+      worker_name:  workerName,
+      sender_name:  nameVal,
+      sender_phone: phoneVal,
+      message:      msgVal
+    }, null, workerLang);
+  }
+
+  // Credit warning emails
+  var remaining = credits - 1;
+  if (remaining === 0) {
+    sendEmail('EM4', empEmail, { credits: '0', name: '' }, empId, empLang);
+  } else if (remaining === 1) {
+    sendEmail('EM3', empEmail, { credits: '1', worker_name: workerName, name: '' }, empId, empLang);
+  }
+
+  if (okEl) { okEl.style.display = 'block'; }
+  setTimeout(function() {
+    renderContactArea('employer', remaining, currentWorker);
+  }, 2000);
 }
 
 async function contactWorker(waUrl) {
@@ -509,15 +788,17 @@ async function contactWorker(waUrl) {
 
   // [1] Re-fetch credit balance (fresh check antes de abrir)
   var sb = getSupabase();
-  var epRes = await sb.from('employer_profiles').select('credit_balance, id').eq('owner_id', currentSession.user.id).single();
+  var epRes = await sb.from('employer_profiles').select('credit_balance, id, preferred_lang').eq('owner_id', currentSession.user.id).single();
   if (epRes.error || !epRes.data || epRes.data.credit_balance <= 0) {
     // EM6: créditos agotados al intentar contactar
-    sendEmail('EM6', currentSession.user.email, { worker_name: currentWorker.business_name || '' });
+    var empLang6 = epRes.data?.preferred_lang || 'es';
+    sendEmail('EM6', currentSession.user.email, { worker_name: currentWorker.business_name || '' }, null, empLang6);
     renderContactArea('employer', 0, currentWorker);
     return;
   }
 
   var credits = epRes.data.credit_balance;
+  var empLang = epRes.data.preferred_lang || 'es';
   var workerId = currentWorker.id;
   var workerEmail = currentWorker.public_email || null;
   var workerName = currentWorker.business_name || '';
@@ -534,20 +815,21 @@ async function contactWorker(waUrl) {
   // [4] contact_log INSERT
   sb.from('contact_log').insert({
     biz_id:    workerId,
-    customer_id:  empId,
+    actor_id:  empId,
     channel:   'whatsapp',
     limit_hit: false
   }).then(function(r){ if (r.error) console.warn('[contact_log]', r.error.message); });
 
   // [5] W2: Worker 알림 이메일
-  if (workerEmail) sendEmail('W2', workerEmail, { worker_name: workerName });
+  var workerLang = (currentWorker && currentWorker.preferred_lang) || 'es';
+  if (workerEmail) sendEmail('W2', workerEmail, { worker_name: workerName }, null, workerLang);
 
   // [6] EM3/EM4: 잔여 크레딧 경고 (dedup: empId를 ref_id로 사용 — is_voided로 사이클 초기화)
   var remaining = credits - 1;
   if (remaining === 0) {
-    sendEmail('EM4', empEmail, { credits: '0', name: '' }, empId);
+    sendEmail('EM4', empEmail, { credits: '0', name: '' }, empId, empLang);
   } else if (remaining === 1) {
-    sendEmail('EM3', empEmail, { credits: '1', worker_name: workerName, name: '' }, empId);
+    sendEmail('EM3', empEmail, { credits: '1', worker_name: workerName, name: '' }, empId, empLang);
   }
 
   // UI 업데이트 (메모리 내)
@@ -574,14 +856,25 @@ function renderReviews(reviews) {
   var avg = reviews.reduce(function(s, r){ return s + r.rating; }, 0) / reviews.length;
   avgEl.textContent = '★ ' + avg.toFixed(1) + ' (' + reviews.length + ')';
 
+  var isOwner = currentSession && currentWorker && currentSession.user.id === currentWorker.owner_id;
   list.innerHTML = reviews.map(function(r) {
     var d = new Date(r.created_at);
     var dateStr = d.toLocaleDateString(isEn ? 'en-US' : 'es-US', { month: 'short', day: 'numeric', year: 'numeric' });
     var stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
-    return '<div class="review-item">' +
+    var flaggedBadge = r.flagged
+      ? '<span style="font-size:11px;color:var(--c-muted);margin-left:8px">' + (isEn ? '⚑ Reported' : '⚑ Reportada') + '</span>'
+      : '';
+    var reportBtn = (isOwner && !r.flagged)
+      ? '<button onclick="flagWorkerReview(\'' + r.id + '\',this)" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--c-muted);padding:0;font-family:var(--font-body)">' + (isEn ? 'Report' : 'Reportar') + '</button>'
+      : '';
+    return '<div class="review-item" data-review-id="' + r.id + '">' +
       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">' +
       '<span style="color:var(--c-amber)">' + stars + '</span>' +
-      '<span style="font-size:12px;color:var(--c-hint)">' + dateStr + '</span>' +
+      '<span style="display:flex;align-items:center;gap:10px">' +
+        flaggedBadge +
+        reportBtn +
+        '<span style="font-size:12px;color:var(--c-hint)">' + dateStr + '</span>' +
+      '</span>' +
       '</div>' +
       (r.review_text ? '<div style="font-size:13px;color:var(--c-muted)">' + r.review_text.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>' : '') +
       '</div>';
@@ -593,7 +886,7 @@ async function checkReviewEligibility(workerId, userId) {
   var res = await sb.from('contact_log')
     .select('id', { count: 'exact', head: true })
     .eq('biz_id', workerId)
-    .eq('customer_id', userId)
+    .eq('actor_id', userId)
     .eq('limit_hit', false);
   if (!res.error && (res.count || 0) > 0) {
     document.getElementById('review-section').style.display = 'block';
@@ -616,7 +909,7 @@ async function toggleReviewForm() {
   var res = await sb.from('contact_log')
     .select('id', { count: 'exact', head: true })
     .eq('biz_id', currentWorker.id)
-    .eq('customer_id', currentSession.user.id)
+    .eq('actor_id', currentSession.user.id)
     .eq('limit_hit', false);
   var eligible = !res.error && (res.count || 0) > 0;
 
@@ -633,7 +926,7 @@ async function toggleReviewForm() {
 async function submitReview() {
   var starEl = document.getElementById('star-pick');
   var textEl = document.getElementById('review-text');
-  var rating = starEl ? (starEl.textContent.match(/★/g) || []).length : 0;
+  var rating = starEl ? starEl.querySelectorAll('span').length - Array.from(starEl.querySelectorAll('span')).filter(function(s){ return s.textContent === '☆'; }).length : 0;
   var text = textEl ? textEl.value.trim() : '';
   var isEn = document.body.classList.contains('en');
 
@@ -651,7 +944,7 @@ async function submitReview() {
   var eligRes = await sb.from('contact_log')
     .select('id', { count: 'exact', head: true })
     .eq('biz_id', workerId)
-    .eq('customer_id', currentSession.user.id)
+    .eq('actor_id', currentSession.user.id)
     .eq('limit_hit', false);
   if (eligRes.error || (eligRes.count || 0) === 0) {
     alert(isEn ? 'You can only review workers you have contacted.' : 'Solo puedes reseñar trabajadores con los que te has contactado.');
@@ -660,28 +953,38 @@ async function submitReview() {
 
   try {
     var { error } = await sb.from('reviews').upsert({
-      biz_id:      workerId,
-      reviewer_id: currentSession.user.id,
-      rating:      rating,
-      review_text: text
+      biz_id:       workerId,
+      reviewer_id:  currentSession.user.id,
+      rating:       rating,
+      review_text:  text,
+      removed:      false,
+      removed_note: null,
+      removed_at:   null,
+      flagged:      false,
+      flagged_at:   null
     }, { onConflict: 'biz_id,reviewer_id' });
     if (error) throw error;
 
-    // AD2: 1점 리뷰 관리자 알림
-    if (rating === 1) sendEmail('AD2', null, { biz_name: workerName, rating: rating, review_text: text }, workerId);
+    // AD2: 낮은 별점(1~2점) 관리자 알림
+    if (rating <= 2) sendEmail('AD2', null, { biz_name: workerName, rating: rating, review_text: text, reviewer_email: currentSession.user.email }, workerId);
 
     // AD3: 스팸 감지
     var spamPattern = /https?:\/\/|www\.|[\+\d][\d\s\-\(\)]{7,}|\b[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}/;
     if (text && spamPattern.test(text)) sendEmail('AD3', null, { biz_name: workerName, rating: rating, review_text: text }, workerId);
+
+    // W6: Worker 리뷰 수신 알림 (public_email = 로그인 이메일)
+    var workerEmail = currentWorker.public_email;
+    var workerLang = currentWorker.preferred_lang || 'es';
+    if (workerEmail) sendEmail('W6', workerEmail, { worker_name: workerName, rating: rating, review_text: text, worker_id: workerId }, workerId, workerLang);
 
     document.getElementById('review-success').style.display = 'block';
     setTimeout(function() {
       document.getElementById('review-success').style.display = 'none';
       document.getElementById('review-form').style.display = 'none';
       if (textEl) textEl.value = '';
-      if (starEl) starEl.textContent = '☆☆☆☆☆';
+      if (starEl) starEl.querySelectorAll('span').forEach(function(s){ s.textContent = '☆'; });
       // Reload reviews
-      sb.from('reviews').select('rating, review_text, created_at').eq('biz_id', workerId).order('created_at', { ascending: false })
+      sb.from('reviews').select('id, rating, review_text, created_at, flagged, removed').eq('biz_id', workerId).eq('removed', false).order('created_at', { ascending: false })
         .then(function(r){ renderReviews(r.data || []); });
     }, 2500);
   } catch(e) {
@@ -689,12 +992,24 @@ async function submitReview() {
   }
 }
 
-function pickStar(e) {
-  var stars = document.getElementById('star-pick');
-  var rect = stars.getBoundingClientRect();
-  var x = e.clientX - rect.left;
-  var n = Math.min(5, Math.max(1, Math.ceil((x / rect.width) * 5)));
-  stars.textContent = '★'.repeat(n) + '☆'.repeat(5 - n);
+async function flagWorkerReview(reviewId, btn) {
+  var isEn = document.body.classList.contains('en');
+  var confirmed = confirm(isEn
+    ? 'Report this review for admin moderation?'
+    : '¿Reportar esta reseña para moderación?');
+  if (!confirmed) return;
+  var sb = getSupabase();
+  var { error } = await sb.rpc('flag_review', { p_review_id: reviewId });
+  if (error) { alert(isEn ? 'Failed to report review.' : 'Error al reportar.'); return; }
+  // 버튼을 "Reported" 뱃지로 교체
+  btn.outerHTML = '<span style="font-size:11px;color:var(--c-muted)">' + (isEn ? '⚑ Reported' : '⚑ Reportada') + '</span>';
+}
+
+function pickStar(n) {
+  var spans = document.querySelectorAll('#star-pick span');
+  var current = Array.from(spans).filter(function(s){ return s.textContent === '★'; }).length;
+  var next = (current === n) ? n - 1 : n;
+  spans.forEach(function(s, i) { s.textContent = i < next ? '★' : '☆'; });
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -711,7 +1026,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       var utype = (sess.user.user_metadata && sess.user.user_metadata.user_type) || '';
       var dashHref = utype === 'employer' ? 'employer-dashboard.html'
                    : utype === 'business' ? 'dashboard.html'
-                   : 'index.html';
+                   : 'login.html';
       if (utype === 'worker') {
         try { var wb = await getMyBusiness(); if (wb && wb.id) dashHref = 'worker-profile.html?id=' + wb.id; } catch(e) {}
       }
@@ -719,11 +1034,33 @@ document.addEventListener('DOMContentLoaded', async function() {
         '<a href="' + dashHref + '" class="btn-nav" style="font-size:12px;color:var(--c-muted)">' +
           (isEn ? 'My Account' : 'Mi Cuenta') +
         '</a>' +
-        '<button onclick="(async function(){try{await signOut();}catch(e){}window.location.href=\'index.html\';})()" class="btn-nav" style="font-size:12px;color:var(--c-muted);background:none;border:none;cursor:pointer">' +
+        '<span style="color:var(--c-muted);opacity:0.4;font-size:11px">|</span>' +
+        '<button onclick="var _c=document.body.classList.contains(\'en\')?\'Log out?\':\'¿Cerrar sesión?\';if(!confirm(_c))return;(async function(){try{await signOut();}catch(e){}window.location.href=\'index.html\';})()" class="btn-nav" style="font-size:12px;color:var(--c-muted);background:none;border:none;cursor:pointer">' +
           (isEn ? 'Log out' : 'Cerrar sesión') +
         '</button>';
     }
   } catch(e) {}
+
+  // Admin이 suspend/delete 시 이미 로그인된 Worker를 강제 로그아웃
+  setInterval(async function() {
+    try {
+      var sb = getSupabase();
+      var sess = await sb.auth.getSession();
+      if (!sess || !sess.data || !sess.data.session) return;
+      var uid = sess.data.session.user.id;
+      var utype = (sess.data.session.user.user_metadata && sess.data.session.user.user_metadata.user_type) || '';
+      if (utype !== 'worker') return;
+      var { data: wb } = await sb.from('businesses').select('account_status').eq('owner_id', uid).maybeSingle();
+      if (wb && (wb.account_status === 'suspended' || wb.account_status === 'deleted')) {
+        await sb.auth.signOut();
+        var isEn = document.body.classList.contains('en');
+        alert(wb.account_status === 'deleted'
+          ? (isEn ? '⛔ This account has been deleted and is no longer active.' : '⛔ Esta cuenta ha sido eliminada y ya no está activa.')
+          : (isEn ? '⛔ Your account has been suspended. Please contact support.' : '⛔ Tu cuenta ha sido suspendida. Por favor contacta a soporte.'));
+        window.location.href = 'index.html';
+      }
+    } catch(e) {}
+  }, 30000); // 30초마다 확인
 });
 
 function toggleEditProfile() {
@@ -731,6 +1068,30 @@ function toggleEditProfile() {
   if (!card) return;
   card.style.display = card.style.display === 'none' ? 'block' : 'none';
   if (card.style.display === 'block') card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function confirmDeleteWorkerAccount() {
+  var isEn = document.body.classList.contains('en');
+  var msg = isEn
+    ? 'Are you sure you want to delete your account? Your public profile will be permanently removed. This cannot be undone.'
+    : '¿Estás seguro de que quieres eliminar tu cuenta? Tu perfil público será eliminado de forma permanente. Esta acción no se puede deshacer.';
+  if (!window.confirm(msg)) return;
+
+  var errEl = document.getElementById('wp-delete-err');
+  errEl.style.display = 'none';
+
+  try {
+    var sb = getSupabase();
+    var { error } = await sb.from('businesses')
+      .update({ account_status: 'deleted' })
+      .eq('id', currentWorker.id);
+    if (error) throw error;
+    await sb.auth.signOut();
+    window.location.href = 'login.html?reason=deleted';
+  } catch(e) {
+    errEl.textContent = isEn ? '❌ Could not delete account. Try again.' : '❌ No se pudo eliminar la cuenta. Intenta de nuevo.';
+    errEl.style.display = 'block';
+  }
 }
 
 async function saveWorkerProfile() {
@@ -747,13 +1108,42 @@ async function saveWorkerProfile() {
     if (document.getElementById('wp-lang-en').checked) langs.push('en');
     if (document.getElementById('wp-lang-pt').checked) langs.push('pt');
 
+    // Collect worker types
+    var staffingTypes = ['kitchen','moving','construction','warehouse','cleaning','agriculture','events','general']
+      .filter(function(t){ var el=document.getElementById('wp-type-'+t); return el && el.checked; });
+
+    // Collect availability
+    var hiringAvail = [];
+    if (document.getElementById('wp-avail-day').checked)  hiringAvail.push('by_the_day');
+    if (document.getElementById('wp-avail-week').checked) hiringAvail.push('by_the_week');
+    if (document.getElementById('wp-avail-perm').checked) hiringAvail.push('permanent_placement');
+
+    // Collect service areas (checkboxes + other text)
+    var checkedAreas = [];
+    document.querySelectorAll('#wp-area-grid input[type="checkbox"]:checked').forEach(function(cb){ checkedAreas.push(cb.value); });
+    var otherText = (document.getElementById('wp-area-other').value || '').trim();
+    if (otherText) otherText.split(',').map(function(s){ return s.trim(); }).filter(Boolean).forEach(function(v){ checkedAreas.push(v); });
+    var serviceArea = checkedAreas.join(',');
+
+    var desiredPay = (document.getElementById('wp-desired-pay').value || '').trim() || null;
+
+    var payMethods = ['cash','zelle','venmo','check','credit_card','paypal'].filter(function(p) {
+      var el = document.getElementById('wp-pay-' + p.replace('_', '-'));
+      return el && el.checked;
+    });
+
     var { error } = await getSupabase()
       .from('businesses')
       .update({
-        trade_name:   (document.getElementById('wp-trade-name').value || '').trim(),
-        description:  (document.getElementById('wp-desc').value || '').trim(),
-        service_area: (document.getElementById('wp-area').value || '').trim(),
-        languages:    langs
+        trade_name:            (document.getElementById('wp-trade-name').value || '').trim(),
+        description:           (document.getElementById('wp-desc').value || '').trim(),
+        staffing_types:        staffingTypes,
+        staffing_type_other:   (document.getElementById('wp-type-other') ? (document.getElementById('wp-type-other').value || '').trim() : ''),
+        staffing_availability: hiringAvail,
+        service_area:          serviceArea,
+        desired_pay:           desiredPay,
+        languages:             langs,
+        payment_methods:       payMethods
       })
       .eq('id', currentWorker.id);
 
@@ -763,7 +1153,8 @@ async function saveWorkerProfile() {
     var newTrade = (document.getElementById('wp-trade-name').value || '').trim();
     if (newTrade) document.getElementById('worker-name').textContent = currentWorker.business_name || newTrade;
   } catch(e) {
-    err.textContent = isEn ? '❌ Could not save. Try again.' : '❌ No se pudo guardar. Intenta de nuevo.';
+    console.error('saveWorkerProfile error:', e);
+    err.textContent = (isEn ? '❌ Could not save. Try again.' : '❌ No se pudo guardar. Intenta de nuevo.') + (e && e.message ? ' (' + e.message + ')' : '');
     err.style.display = 'block';
   } finally {
     btn.disabled = false;

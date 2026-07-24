@@ -249,17 +249,19 @@
     <a class="sb-link" onclick="showPane('profile')"><span class="icon">✏️</span> <span data-es>Editar perfil</span><span data-en>Edit profile</span></a>
     <a class="sb-link" onclick="showPane('photos')"><span class="icon">📸</span> <span data-es>Fotos</span><span data-en>Photos</span></a>
     <a class="sb-link" onclick="showPane('hours')"><span class="icon">🕐</span> <span data-es>Horario</span><span data-en>Hours</span></a>
+    <a class="sb-link" id="nav-verification" onclick="showPane('verification')" style="display:none"><span class="icon">✅</span> <span data-es>Verificación</span><span data-en>Verification</span></a>
 
     <div class="sb-section" style="margin-top:8px" data-es>Cuenta</div>
     <div class="sb-section" style="margin-top:8px" data-en>Account</div>
     <a class="sb-link" onclick="showPane('plan')"><span class="icon">💳</span> <span data-es>Mi plan</span><span data-en>My plan</span></a>
+    <a class="sb-link" onclick="showPane('billing')"><span class="icon">🧾</span> <span data-es>Facturación</span><span data-en>Billing</span></a>
     <a class="sb-link" onclick="showPane('settings')"><span class="icon">⚙️</span> <span data-es>Configuración</span><span data-en>Settings</span></a>
 
     <!-- B안: Business 계정일 때만 JS로 표시 -->
     <div id="hire-workers-section" style="display:none">
       <div class="sb-section" style="margin-top:8px" data-es>Empleador</div>
       <div class="sb-section" style="margin-top:8px" data-en>Employer</div>
-      <a class="sb-link" href="employer-dashboard.html"><span class="icon">🏗️</span> <span data-es>Contratar trabajadores</span><span data-en>Hire Workers</span></a>
+      <a class="sb-link" href="employer-dashboard.html"><span class="icon">🏗️</span> <span data-es>Contratar trabajadores</span><span data-en>Hire Job Seekers</span></a>
     </div>
   </nav>
   <div class="sb-footer">
@@ -395,7 +397,7 @@
       <div class="card">
         <div class="card-title"><span data-es>Historial de contactos</span><span data-en>Contact history</span></div>
 
-        <div id="inq-list">
+        <div id="inq-list" style="max-height:400px;overflow-y:auto">
           <div style="text-align:center;padding:32px;color:var(--c-hint);font-size:13px">
             <div style="font-size:32px;margin-bottom:10px">💬</div>
             <span data-es>Sin contactos aún. Cuando un cliente haga clic en tu WhatsApp, aparecerá aquí.</span>
@@ -424,7 +426,7 @@
       </div>
       <div class="card">
         <div class="card-title"><span data-es>Todas las reseñas</span><span data-en>All reviews</span></div>
-        <div id="reviews-list">
+        <div id="reviews-list" style="max-height:400px;overflow-y:auto">
           <div style="text-align:center;padding:32px;color:var(--c-hint);font-size:13px">
             <div style="font-size:32px;margin-bottom:10px">⭐</div>
             <span data-es>Sin reseñas aún. Las reseñas de clientes aparecerán aquí.</span>
@@ -495,16 +497,20 @@
         <!-- Free -->
         <div style="border:0.5px solid var(--c-border);border-radius:var(--radius-lg);padding:20px;background:var(--c-surface);display:flex;flex-direction:column" id="plan-card-free">
           <div style="font-size:13px;font-weight:600;color:var(--c-muted);margin-bottom:4px">Free</div>
-          <div style="font-size:24px;font-weight:500;margin-bottom:12px">$0<span style="font-size:13px;color:var(--c-muted)" data-es>/mes</span><span style="font-size:13px;color:var(--c-muted)" data-en>/mo</span></div>
-          <button class="btn-sm" style="width:100%" onclick="switchToPlan('free')" id="plan-btn-free-es" data-es>Cambiar a Free</button>
-          <button class="btn-sm" style="width:100%" onclick="switchToPlan('free')" id="plan-btn-free-en" data-en>Switch to Free</button>
+          <div style="font-size:24px;font-weight:500;margin-bottom:4px">$0</div>
+          <div style="font-size:11px;color:var(--c-muted);margin-bottom:12px" data-es>3 créditos de contacto incluidos</div>
+          <div style="font-size:11px;color:var(--c-muted);margin-bottom:12px" data-en>3 contact credits included</div>
+          <button class="btn-sm" style="width:100%;visibility:hidden" id="plan-btn-free-es" data-es>—</button>
+          <button class="btn-sm" style="width:100%;visibility:hidden" id="plan-btn-free-en" data-en>—</button>
           <ul style="margin:14px 0 0;padding:0;list-style:none;font-size:12px;color:var(--c-muted);display:flex;flex-direction:column;gap:6px">
-            <li data-es>✓ 3 contactos de clientes/mes</li>
-            <li data-en>✓ 3 customer contacts/mo</li>
+            <li data-es>✓ 3 contactos de clientes (créditos)</li>
+            <li data-en>✓ 3 customer contacts (credits)</li>
             <li data-es>✓ Perfil público</li>
             <li data-en>✓ Public profile</li>
             <li data-es>✓ Reseñas de clientes</li>
             <li data-en>✓ Customer reviews</li>
+            <li data-es style="color:var(--c-border)">✗ Sin fotos de negocio</li>
+            <li data-en style="color:var(--c-border)">✗ No business photos</li>
             <li data-es style="color:var(--c-border)">✗ Sin insignia de plan</li>
             <li data-en style="color:var(--c-border)">✗ No plan badge</li>
           </ul>
@@ -513,30 +519,36 @@
         <!-- Basic -->
         <div style="border:0.5px solid var(--c-border);border-radius:var(--radius-lg);padding:20px;background:var(--c-surface);display:flex;flex-direction:column" id="plan-card-basic">
           <div style="font-size:13px;font-weight:600;color:var(--c-muted);margin-bottom:4px">Basic</div>
-          <div style="font-size:24px;font-weight:500;margin-bottom:12px">$29<span style="font-size:13px;color:var(--c-muted)" data-es>/mes</span><span style="font-size:13px;color:var(--c-muted)" data-en>/mo</span></div>
+          <div style="font-size:24px;font-weight:500;margin-bottom:4px">$19</div>
+          <div style="font-size:11px;color:var(--c-muted);margin-bottom:12px" data-es>20 créditos de contacto · pago único</div>
+          <div style="font-size:11px;color:var(--c-muted);margin-bottom:12px" data-en>20 contact credits · one-time payment</div>
           <button class="btn-sm primary" style="width:100%" onclick="switchToPlan('basic')" id="plan-btn-basic-es" data-es>Actualizar →</button>
           <button class="btn-sm primary" style="width:100%" onclick="switchToPlan('basic')" id="plan-btn-basic-en" data-en>Upgrade →</button>
           <ul style="margin:14px 0 0;padding:0;list-style:none;font-size:12px;color:var(--c-muted);display:flex;flex-direction:column;gap:6px">
-            <li data-es>✓ 10 contactos de clientes/mes</li>
-            <li data-en>✓ 10 customer contacts/mo</li>
+            <li data-es>✓ 20 contactos de clientes (créditos)</li>
+            <li data-en>✓ 20 customer contacts (credits)</li>
             <li data-es>✓ Insignia ⭐ Basic en tu perfil</li>
             <li data-en>✓ ⭐ Basic badge on your profile</li>
             <li data-es>✓ Perfil público</li>
             <li data-en>✓ Public profile</li>
             <li data-es>✓ Reseñas de clientes</li>
             <li data-en>✓ Customer reviews</li>
+            <li data-es>✓ Hasta <strong>5 fotos</strong> de negocio</li>
+            <li data-en>✓ Up to <strong>5 business photos</strong></li>
           </ul>
         </div>
 
         <!-- Premium -->
         <div style="border:0.5px solid var(--c-border);border-radius:var(--radius-lg);padding:20px;background:var(--c-surface);display:flex;flex-direction:column" id="plan-card-premium">
           <div style="font-size:13px;font-weight:600;color:var(--c-muted);margin-bottom:4px">Premium</div>
-          <div style="font-size:24px;font-weight:500;margin-bottom:12px">$79<span style="font-size:13px;color:var(--c-muted)" data-es>/mes</span><span style="font-size:13px;color:var(--c-muted)" data-en>/mo</span></div>
+          <div style="font-size:24px;font-weight:500;margin-bottom:4px">$39</div>
+          <div style="font-size:11px;color:var(--c-muted);margin-bottom:12px" data-es>50 créditos de contacto · pago único</div>
+          <div style="font-size:11px;color:var(--c-muted);margin-bottom:12px" data-en>50 contact credits · one-time payment</div>
           <button class="btn-sm primary" style="width:100%" onclick="switchToPlan('premium')" id="plan-btn-premium-es" data-es>Actualizar →</button>
           <button class="btn-sm primary" style="width:100%" onclick="switchToPlan('premium')" id="plan-btn-premium-en" data-en>Upgrade →</button>
           <ul style="margin:14px 0 0;padding:0;list-style:none;font-size:12px;color:var(--c-muted);display:flex;flex-direction:column;gap:6px">
-            <li data-es>✓ Contactos de clientes <strong>ilimitados</strong></li>
-            <li data-en>✓ <strong>Unlimited</strong> customer contacts</li>
+            <li data-es>✓ 50 contactos de clientes (créditos)</li>
+            <li data-en>✓ 50 customer contacts (credits)</li>
             <li data-es>✓ Insignia 🌟 Premium en tu perfil</li>
             <li data-en>✓ 🌟 Premium badge on your profile</li>
             <li data-es>✓ <strong>+10 puntos de prioridad</strong> — apareces primero en búsquedas</li>
@@ -545,6 +557,8 @@
             <li data-en>✓ Public profile</li>
             <li data-es>✓ Reseñas de clientes</li>
             <li data-en>✓ Customer reviews</li>
+            <li data-es>✓ Hasta <strong>20 fotos</strong> de negocio</li>
+            <li data-en>✓ Up to <strong>20 business photos</strong></li>
           </ul>
         </div>
 
@@ -657,6 +671,13 @@
             <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="hoschton" style="accent-color:var(--c-green)"> Hoschton</label>
             <label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="maysville" style="accent-color:var(--c-green)"> Maysville</label>
           </div>
+          <div style="margin-top:8px">
+            <div style="font-size:11px;font-weight:600;color:var(--c-hint);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px" data-es>Otra área (escribe aquí)</div>
+            <div style="font-size:11px;font-weight:600;color:var(--c-hint);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px" data-en>Other area (type here)</div>
+            <input type="text" id="ep-area-other" placeholder="e.g. Gainesville, FL · Any area in GA" style="width:100%;padding:7px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-bg);color:var(--c-text);box-sizing:border-box">
+            <div style="font-size:11px;color:var(--c-hint);margin-top:3px;line-height:1.5" data-es>Si tu área no está en la lista, escríbela aquí — aparecerá en búsquedas de texto.</div>
+            <div style="font-size:11px;color:var(--c-hint);margin-top:3px;line-height:1.5" data-en>If your area is not listed, type it here — it will appear in text search results.</div>
+          </div>
         </div>
         <div style="margin-bottom:12px">
           <label class="modal-label" data-es>Categorías <span style="font-size:11px;font-weight:400;color:var(--c-hint)">(máx 3)</span></label>
@@ -675,6 +696,13 @@
             <label style="display:flex;align-items:center;gap:5px;font-size:13px;padding:5px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="painting"> <span data-es>Pintura</span><span data-en>Painting</span></label>
             <label style="display:flex;align-items:center;gap:5px;font-size:13px;padding:5px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="tree_removal"> <span data-es>Árboles</span><span data-en>Tree Removal</span></label>
             <label style="display:flex;align-items:center;gap:5px;font-size:13px;padding:5px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);cursor:pointer;background:var(--c-bg)"><input type="checkbox" value="real_estate"> <span data-es>Bienes Raíces</span><span data-en>Real Estate</span></label>
+          </div>
+          <div style="margin-top:8px">
+            <div style="font-size:11px;font-weight:600;color:var(--c-hint);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px" data-es>Otra categoría (escribe aquí)</div>
+            <div style="font-size:11px;font-weight:600;color:var(--c-hint);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px" data-en>Other category (type here)</div>
+            <input type="text" id="ep-cat-other" placeholder="e.g. Roofing, Pest control, Photography..." style="width:100%;padding:7px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-bg);color:var(--c-text);box-sizing:border-box">
+            <div style="font-size:11px;color:var(--c-hint);margin-top:3px;line-height:1.5" data-es>Si tu categoría no está en la lista, escríbela aquí — aparecerá en búsquedas de texto.</div>
+            <div style="font-size:11px;color:var(--c-hint);margin-top:3px;line-height:1.5" data-en>If your category is not listed, type it here — it will appear in text search results.</div>
           </div>
         </div>
         <div>
@@ -703,6 +731,16 @@
           <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="lang-en"> English</label>
           <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" id="lang-pt"> Português</label>
         </div>
+        <div style="margin-top:16px">
+          <label style="font-size:13px;font-weight:500;display:block;margin-bottom:6px">
+            <span data-es>Idioma preferido para emails</span>
+            <span data-en>Preferred email language</span>
+          </label>
+          <select id="biz-preferred-lang" style="padding:8px 10px;border:0.5px solid var(--c-border);border-radius:8px;font-size:13px;background:var(--c-surface)">
+            <option value="es">Español</option>
+            <option value="en">English</option>
+          </select>
+        </div>
         <div style="margin-top:16px;display:flex;gap:8px">
           <button class="modal-btn-primary" style="margin:0;width:auto;padding:10px 20px" onclick="saveProfileChanges()" data-es>Guardar cambios</button>
           <button class="modal-btn-primary" style="margin:0;width:auto;padding:10px 20px" onclick="saveProfileChanges()" data-en>Save changes</button>
@@ -714,8 +752,8 @@
     <div id="pane-photos" style="display:none">
       <div class="card">
         <div class="card-title"><span data-es>Fotos del negocio</span><span data-en>Business photos</span></div>
-        <p style="font-size:13px;color:var(--c-muted);margin-bottom:4px" data-es>Sube fotos de tu trabajo para atraer más clientes. Plan Basic: hasta 5 fotos. Plan Premium: hasta 30.</p>
-        <p style="font-size:13px;color:var(--c-muted);margin-bottom:4px" data-en>Upload photos of your work to attract more customers. Basic plan: up to 5 photos. Premium: up to 30.</p>
+        <p style="font-size:13px;color:var(--c-muted);margin-bottom:4px" data-es>Sube fotos de tu trabajo para atraer más clientes. Plan Basic: hasta 5 fotos. Plan Premium: hasta 20.</p>
+        <p style="font-size:13px;color:var(--c-muted);margin-bottom:4px" data-en>Upload photos of your work to attract more customers. Basic plan: up to 5 photos. Premium: up to 20.</p>
         <p id="photo-count-label" style="font-size:12px;color:var(--c-muted);margin-bottom:16px"></p>
         <div id="photo-upload-area" style="border:2px dashed var(--c-border);border-radius:var(--radius-md);padding:40px;text-align:center;cursor:pointer;background:var(--c-bg)" onclick="document.getElementById('photo-upload-input').click()">
           <div style="font-size:32px;margin-bottom:8px">📸</div>
@@ -752,6 +790,42 @@
           <button class="modal-btn-primary" style="margin:0;width:auto;padding:10px 20px" onclick="saveHours()" data-es>Guardar horario</button>
           <button class="modal-btn-primary" style="margin:0;width:auto;padding:10px 20px" onclick="saveHours()" data-en>Save hours</button>
         </div>
+      </div>
+    </div>
+
+    <!-- ══ VERIFICATION PANE ══ -->
+    <div id="pane-verification" style="display:none">
+      <div class="card" id="verif-pending-card" style="display:none">
+        <div style="text-align:center;padding:24px">
+          <div style="font-size:32px;margin-bottom:10px">⏳</div>
+          <div style="font-weight:600;margin-bottom:6px" data-es>Verificación en revisión</div>
+          <div style="font-weight:600;margin-bottom:6px" data-en>Verification under review</div>
+          <div style="font-size:13px;color:var(--c-muted)" data-es>Revisaremos tus documentos en un plazo de 2 días hábiles.</div>
+          <div style="font-size:13px;color:var(--c-muted)" data-en>We'll review your documents within 2 business days.</div>
+        </div>
+      </div>
+      <div class="card" id="verif-form-card">
+        <div class="card-title"><span data-es>✅ Solicitar Insignia Verificada</span><span data-en>✅ Apply for Verified Badge</span></div>
+        <p style="font-size:13px;color:var(--c-muted);margin-bottom:20px" data-es>La insignia verificada aumenta la confianza de los clientes y mejora tu posición en los resultados de búsqueda. Proporciona al menos uno de los siguientes documentos.</p>
+        <p style="font-size:13px;color:var(--c-muted);margin-bottom:20px" data-en>The verified badge builds customer trust and improves your position in search results. Provide at least one of the following documents.</p>
+        <div style="margin-bottom:18px">
+          <label style="display:block;font-size:13px;font-weight:500;margin-bottom:6px" data-es>Número EIN (Employer Identification Number)</label>
+          <label style="display:block;font-size:13px;font-weight:500;margin-bottom:6px" data-en>EIN (Employer Identification Number)</label>
+          <input type="text" id="verif-ein" placeholder="XX-XXXXXXX" maxlength="10"
+            style="width:100%;max-width:260px;padding:9px 12px;border:1px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text)">
+        </div>
+        <div style="margin-bottom:20px">
+          <label style="display:block;font-size:13px;font-weight:500;margin-bottom:6px" data-es>Documentos adicionales (licencia comercial, seguro, etc.)</label>
+          <label style="display:block;font-size:13px;font-weight:500;margin-bottom:6px" data-en>Additional documents (business license, insurance, etc.)</label>
+          <input type="file" id="verif-file" accept=".pdf,.jpg,.jpeg,.png" multiple
+            style="font-size:13px;color:var(--c-muted)">
+          <div style="font-size:11px;color:var(--c-muted);margin-top:4px" data-es>PDF, JPG o PNG — máx. 5 MB por archivo</div>
+          <div style="font-size:11px;color:var(--c-muted);margin-top:4px" data-en>PDF, JPG or PNG — max 5 MB per file</div>
+        </div>
+        <div id="verif-error" style="display:none;color:#DC2626;font-size:12px;margin-bottom:12px;padding:8px 12px;background:#FEF2F2;border-radius:6px"></div>
+        <button class="modal-btn-primary" style="margin:0;width:auto;padding:10px 24px" onclick="submitVerification()">
+          <span data-es>Enviar solicitud →</span><span data-en>Submit application →</span>
+        </button>
       </div>
     </div>
 
@@ -831,6 +905,69 @@
       </div>
     </div>
 
+    <!-- ══ BILLING PANE ══ -->
+    <div id="pane-billing" style="display:none">
+
+      <!-- Summary cards -->
+      <div class="metrics" style="margin-bottom:16px">
+        <div class="metric">
+          <div class="metric-label">🗓 <span data-es>Este mes</span><span data-en>This month</span></div>
+          <div class="metric-val" id="bill-month-total">—</div>
+          <div class="metric-delta" style="color:var(--c-muted)" id="bill-month-count">—</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">📅 <span data-es>Este año</span><span data-en>This year</span></div>
+          <div class="metric-val" id="bill-year-total">—</div>
+          <div class="metric-delta" style="color:var(--c-muted)" id="bill-year-count">—</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">🏦 <span data-es>Total histórico</span><span data-en>All-time total</span></div>
+          <div class="metric-val" id="bill-alltime-total">—</div>
+          <div class="metric-delta" style="color:var(--c-muted)" id="bill-alltime-count">—</div>
+        </div>
+      </div>
+
+      <!-- Filter row -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--c-muted)" data-es>Filtrar:</span>
+        <span style="font-size:12px;color:var(--c-muted)" data-en>Filter:</span>
+        <select id="bill-filter-period" onchange="filterBilling()" style="font-size:12px;border:1px solid var(--c-border);border-radius:6px;padding:4px 10px;background:var(--c-bg);color:var(--c-text)">
+          <option value="all" id="bill-opt-all">All history</option>
+          <option value="month" id="bill-opt-month">This month</option>
+          <option value="year" id="bill-opt-year">This year</option>
+        </select>
+        <select id="bill-filter-year" onchange="filterBilling()" style="font-size:12px;border:1px solid var(--c-border);border-radius:6px;padding:4px 10px;background:var(--c-bg);color:var(--c-text);display:none">
+          <option value="">— Year —</option>
+        </select>
+      </div>
+
+      <!-- Table -->
+      <div class="card" style="padding:0;overflow:hidden">
+        <div style="overflow-x:auto;overflow-y:auto;max-height:400px">
+          <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <thead style="position:sticky;top:0;background:var(--c-surface);z-index:1">
+              <tr style="border-bottom:1px solid var(--c-border);color:var(--c-muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em">
+                <th style="text-align:left;padding:10px 14px;font-weight:500"><span data-es>Fecha</span><span data-en>Date</span></th>
+                <th style="text-align:left;padding:10px 14px;font-weight:500"><span data-es>Tipo</span><span data-en>Type</span></th>
+                <th style="text-align:left;padding:10px 14px;font-weight:500"><span data-es>Detalle</span><span data-en>Detail</span></th>
+                <th style="text-align:right;padding:10px 14px;font-weight:500"><span data-es>Monto</span><span data-en>Amount</span></th>
+                <th style="text-align:left;padding:10px 14px;font-weight:500">Ref #</th>
+              </tr>
+            </thead>
+            <tbody id="bill-tbody">
+              <tr><td colspan="5" style="padding:24px;text-align:center;color:var(--c-muted);font-size:12px"><span data-es>Cargando…</span><span data-en>Loading…</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="bill-empty" style="display:none;padding:32px;text-align:center;color:var(--c-muted);font-size:13px">
+          <div style="font-size:28px;margin-bottom:8px">🧾</div>
+          <div data-es>No hay pagos registrados aún.</div>
+          <div data-en>No payments recorded yet.</div>
+        </div>
+      </div>
+
+    </div><!-- /pane-billing -->
+
   </div><!-- /content -->
 </div><!-- /main -->
 
@@ -841,8 +978,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-client.js"></script>
 <script>
-var panes=['overview','inquiries','reviews','analytics','plan','profile','photos','hours','settings'];
-var titles={overview:['Resumen','Overview'],inquiries:['Solicitudes','Inquiries'],reviews:['Reseñas','Reviews'],analytics:['Análisis','Analytics'],plan:['Mi plan','My plan'],profile:['Editar perfil','Edit profile'],photos:['Fotos','Photos'],hours:['Horario','Hours'],settings:['Configuración','Settings']};
+var panes=['overview','inquiries','reviews','analytics','plan','billing','profile','photos','hours','verification','settings'];
+var titles={overview:['Resumen','Overview'],inquiries:['Solicitudes','Inquiries'],reviews:['Reseñas','Reviews'],analytics:['Análisis','Analytics'],plan:['Mi plan','My plan'],billing:['Facturación','Billing'],profile:['Editar perfil','Edit profile'],photos:['Fotos','Photos'],hours:['Horario','Hours'],verification:['Verificación','Verification'],settings:['Configuración','Settings']};
 
 function toggleSidebar() {
   var sb = document.getElementById('sidebar');
@@ -956,57 +1093,152 @@ async function saveProfileChanges() {
 
     var serviceAreas = [];
     document.querySelectorAll('#ep-area-grid input[type="checkbox"]:checked').forEach(function(cb){ if(cb.value) serviceAreas.push(cb.value); });
+    var areaOtherVal = (document.getElementById('ep-area-other')?.value || '').trim();
+    if (areaOtherVal) areaOtherVal.split(',').map(function(s){ return s.trim(); }).filter(Boolean).forEach(function(v){ serviceAreas.push(v); });
 
+    var catOtherVal = (document.getElementById('ep-cat-other')?.value || '').trim();
+
+    var bizPrefLang = document.getElementById('biz-preferred-lang')?.value || 'es';
     await updateBusiness({
       trade_name: document.getElementById('ep-trade-name')?.value.trim() || '',
       service_area: serviceAreas.join(', '),
       description: document.getElementById('ep-desc')?.value.trim() || '',
       payment_methods: paymentMethods,
       languages: languages,
-      categories: categories
+      categories: categories,
+      category_other: catOtherVal,
+      preferred_lang: bizPrefLang
     });
 
     showToast(isEn ? '✅ Changes saved' : '✅ Cambios guardados');
   } catch(err) {
     console.error('Save error:', err);
-    showToast(isEn ? '❌ Could not save. Try again.' : '❌ No se pudo guardar. Intenta de nuevo.');
+    var errDetail = (err && err.message) ? ' [' + err.message + ']' : '';
+    showToast((isEn ? '❌ Could not save. Try again.' : '❌ No se pudo guardar. Intenta de nuevo.') + errDetail);
   } finally {
     btns.forEach(function(b){ b.disabled = false; });
   }
 }
 
 // ── PHOTOS ─────────────────────────────────────────────────
-var PHOTO_LIMIT = { free: 0, basic: 5, premium: 30 };
+var PHOTO_LIMIT = { free: 0, basic: 5, premium: 20 };
+var _currentPhotos = [];   // in-memory photo URL array (source of truth for drag & drop)
+var _photoDragSrcIdx = null;
 
 function renderSavedPhotos(photos) {
+  _currentPhotos = (photos || []).slice();
+  var plan = window._bizPlan || 'free';
+  var limit = PHOTO_LIMIT[plan] || 0;
+  var isEn = document.body.classList.contains('en');
   var grid = document.getElementById('photo-saved-grid');
+  var lbl  = document.getElementById('photo-count-label');
+  var area = document.getElementById('photo-upload-area');
+
+  // Free plan: hide upload area + grid, show upgrade notice
+  if (plan === 'free') {
+    if (area) area.style.display = 'none';
+    if (lbl)  lbl.textContent = '';
+    if (grid) {
+      var savedCount = _currentPhotos.length;
+      var notice = savedCount > 0
+        ? (isEn
+            ? '📷 You have ' + savedCount + ' saved photo(s). They will be visible on your public profile once you upgrade to Basic or Premium.'
+            : '📷 Tienes ' + savedCount + ' foto(s) guardada(s). Se mostrarán en tu perfil público cuando actualices a Plan Basic o Premium.')
+        : (isEn
+            ? '📷 Photos are available on Basic and Premium plans.'
+            : '📷 Las fotos están disponibles en los planes Basic y Premium.');
+      grid.innerHTML = '<p style="font-size:13px;color:var(--c-muted);margin:8px 0 0">' + notice + '</p>';
+    }
+    return;
+  }
+
   if (!grid) return;
   grid.innerHTML = '';
-  (photos || []).forEach(function(url, idx) {
+
+  _currentPhotos.forEach(function(url, idx) {
     var wrap = document.createElement('div');
-    wrap.style.cssText = 'position:relative;display:inline-block';
+    wrap.className = 'photo-drag-item';
+    wrap.draggable = true;
+    wrap.dataset.idx = idx;
+    wrap.style.cssText = 'position:relative;display:inline-block;cursor:grab;touch-action:none';
+
+    // drag handle hint (first photo = thumbnail badge)
+    if (idx === 0) {
+      var badge = document.createElement('div');
+      badge.textContent = isEn ? 'Main' : 'Principal';
+      badge.style.cssText = 'position:absolute;bottom:4px;left:4px;background:rgba(0,0,0,0.55);color:#fff;font-size:9px;padding:2px 5px;border-radius:4px;pointer-events:none;z-index:1';
+      wrap.appendChild(badge);
+    }
+
     var img = document.createElement('img');
     img.src = url;
+    img.alt = '';
+    img.draggable = false;   // prevent native img drag
     img.style.cssText = 'width:100px;height:100px;object-fit:contain;background:var(--c-bg);border-radius:6px;border:0.5px solid var(--c-border);display:block';
     var del = document.createElement('button');
     del.textContent = '×';
-    del.style.cssText = 'position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,0.55);color:#fff;border:none;cursor:pointer;font-size:13px;line-height:1;padding:0';
-    del.onclick = function() { deletePhoto(idx); };
+    del.style.cssText = 'position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,0.55);color:#fff;border:none;cursor:pointer;font-size:13px;line-height:1;padding:0;z-index:1';
+    del.onclick = function(e) { e.stopPropagation(); deletePhoto(parseInt(wrap.dataset.idx)); };
+
     wrap.appendChild(img);
     wrap.appendChild(del);
+
+    // drag events
+    wrap.addEventListener('dragstart', function(e) {
+      _photoDragSrcIdx = parseInt(wrap.dataset.idx);
+      wrap.style.opacity = '0.4';
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    wrap.addEventListener('dragend', function() {
+      wrap.style.opacity = '1';
+      grid.querySelectorAll('.photo-drag-item').forEach(function(el){ el.style.outline = ''; });
+      _photoDragSrcIdx = null;
+    });
+    wrap.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      grid.querySelectorAll('.photo-drag-item').forEach(function(el){ el.style.outline = ''; });
+      wrap.style.outline = '2px solid var(--c-accent)';
+    });
+    wrap.addEventListener('dragleave', function() {
+      wrap.style.outline = '';
+    });
+    wrap.addEventListener('drop', function(e) {
+      e.preventDefault();
+      var destIdx = parseInt(wrap.dataset.idx);
+      if (_photoDragSrcIdx === null || _photoDragSrcIdx === destIdx) return;
+      // reorder _currentPhotos
+      var moved = _currentPhotos.splice(_photoDragSrcIdx, 1)[0];
+      _currentPhotos.splice(destIdx, 0, moved);
+      savePhotoOrder(_currentPhotos);
+      renderSavedPhotos(_currentPhotos);
+    });
+
     grid.appendChild(wrap);
   });
+
   // count label
-  var plan = window._bizPlan || 'free';
-  var limit = PHOTO_LIMIT[plan] || 0;
-  var lbl = document.getElementById('photo-count-label');
-  var isEn = document.body.classList.contains('en');
   if (lbl) lbl.textContent = isEn
-    ? ((photos||[]).length + ' / ' + limit + ' photos')
-    : ((photos||[]).length + ' / ' + limit + ' fotos');
-  // upload area: hide if at limit or free plan
-  var area = document.getElementById('photo-upload-area');
-  if (area) area.style.display = (limit === 0 || (photos||[]).length >= limit) ? 'none' : 'block';
+    ? (_currentPhotos.length + ' / ' + limit + ' photos — ' + (isEn ? 'drag to reorder' : 'arrastra para ordenar'))
+    : (_currentPhotos.length + ' / ' + limit + ' fotos — arrastra para ordenar');
+  // upload area: hide if at limit
+  if (area) area.style.display = (_currentPhotos.length >= limit) ? 'none' : 'block';
+}
+
+async function savePhotoOrder(photos) {
+  var sb = getSupabase();
+  var bizId = window._bizId;
+  if (!bizId) return;
+  await sb.from('businesses').update({ photos: photos }).eq('id', bizId);
+  // update sidebar thumbnail
+  var avatarEl = document.getElementById('sb-avatar');
+  if (avatarEl && photos.length > 0) {
+    avatarEl.innerHTML = '';
+    var thumbImg = document.createElement('img');
+    thumbImg.src = photos[0];
+    thumbImg.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%';
+    avatarEl.appendChild(thumbImg);
+  }
 }
 
 async function uploadPhotos(input) {
@@ -1070,14 +1302,11 @@ async function uploadPhotos(input) {
 }
 
 async function deletePhoto(idx) {
-  var isEn = document.body.classList.contains('en');
   var sb = getSupabase();
   var bizId = window._bizId;
   if (!bizId) return;
-  var { data: current } = await sb.from('businesses').select('photos').eq('id', bizId).single();
-  var photos = (current && current.photos) ? current.photos.slice() : [];
+  var photos = _currentPhotos.slice();
   var url = photos[idx];
-  // Storage에서도 삭제
   try {
     var path = url.split('/business-photos/')[1];
     if (path) await sb.storage.from('business-photos').remove([path]);
@@ -1131,7 +1360,7 @@ async function changePassword() {
     if (updateErr) throw updateErr;
 
     // SEC1: 변경 완료 보안 알림
-    sendEmail('SEC1', user.email, { changed_at: new Date().toUTCString() });
+    sendEmail('SEC1', user.email, { changed_at: new Date().toUTCString() }, null, isEn ? 'en' : 'es');
 
     showMsg(isEn ? '✓ Password updated successfully.' : '✓ Contraseña actualizada correctamente.', true);
     document.getElementById('pw-current').value = '';
@@ -1143,6 +1372,217 @@ async function changePassword() {
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = isEn ? 'Update password' : 'Actualizar contraseña'; }
   }
+}
+
+// ── BILLING ────────────────────────────────────────────────
+var _billingLoaded = false;
+var _billingRows = [];  // [{date, type, detail, amount, ref, ts, year, monthKey}]
+
+// ── VERIFICATION ─────────────────────────────────────────────────────────────
+async function loadVerificationStatus() {
+  var biz = await getMyBusiness();
+  if (!biz) return;
+  var sb = getSupabase();
+  var { data: pending } = await sb
+    .from('verification_queue')
+    .select('id')
+    .eq('business_id', biz.id)
+    .eq('status', 'pending')
+    .limit(1);
+  var hasPending = pending && pending.length > 0;
+  document.getElementById('verif-pending-card').style.display = hasPending ? 'block' : 'none';
+  document.getElementById('verif-form-card').style.display   = hasPending ? 'none'  : 'block';
+}
+
+async function submitVerification() {
+  var isEn = document.body.classList.contains('en');
+  var ein  = (document.getElementById('verif-ein').value || '').trim();
+  var fileInput = document.getElementById('verif-file');
+  var files = fileInput ? Array.from(fileInput.files) : [];
+  var errEl = document.getElementById('verif-error');
+
+  if (!ein && files.length === 0) {
+    errEl.textContent = isEn ? 'Please provide at least an EIN or one document.' : 'Por favor ingresa al menos el EIN o un documento.';
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+
+  var btn = document.querySelector('#pane-verification button[onclick="submitVerification()"]');
+  if (btn) { btn.disabled = true; btn.textContent = isEn ? 'Submitting…' : 'Enviando…'; }
+
+  try {
+    var biz  = await getMyBusiness();
+    var sess = await getSession();
+    if (!biz || !sess) throw new Error('Not authenticated');
+    var sb   = getSupabase();
+    var rows = [];
+
+    if (ein) {
+      rows.push({ business_id: biz.id, document_type: 'ein', document_url: ein, status: 'pending' });
+    }
+    for (var i = 0; i < files.length; i++) {
+      var f = files[i];
+      var ext = f.name.split('.').pop();
+      var path = biz.id + '/verif_' + Date.now() + '_' + i + '.' + ext;
+      var { error: upErr } = await sb.storage.from('business-docs').upload(path, f, { upsert: true });
+      if (upErr) throw new Error('File upload failed: ' + upErr.message);
+      rows.push({ business_id: biz.id, document_type: 'document', document_url: path, status: 'pending' });
+    }
+
+    // 재제출 시 이전 pending 레코드 정리 (누적 방지)
+    await sb.from('verification_queue').delete().eq('business_id', biz.id).eq('status', 'pending');
+
+    var { error } = await sb.from('verification_queue').insert(rows);
+    if (error) throw error;
+
+    var bizName   = biz.trade_name || biz.business_name || '';
+    var ownerEmail = sess.user.email;
+    var lang = isEn ? 'en' : 'es';
+    sendEmail('SB2', ownerEmail, { owner_name: bizName, biz_name: bizName }, biz.id, lang);
+    sendEmail('AD1', null, { biz_name: bizName, owner_email: ownerEmail, submitted_at: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }) }, biz.id);
+
+    document.getElementById('verif-form-card').style.display    = 'none';
+    document.getElementById('verif-pending-card').style.display = 'block';
+  } catch(e) {
+    console.error('[submitVerification]', e);
+    errEl.textContent = isEn ? 'Something went wrong. Please try again.' : 'Algo salió mal. Intenta de nuevo.';
+    errEl.style.display = 'block';
+    if (btn) { btn.disabled = false; btn.innerHTML = isEn ? 'Submit application →' : 'Enviar solicitud →'; }
+  }
+}
+
+async function loadBilling() {
+  if (_billingLoaded) { filterBilling(); return; }
+  var bizId = window._bizId;
+  if (!bizId) return;
+  var isEn = document.body.classList.contains('en');
+  var tbody = document.getElementById('bill-tbody');
+  if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="padding:24px;text-align:center;color:var(--c-muted);font-size:12px">' + (isEn ? 'Loading…' : 'Cargando…') + '</td></tr>';
+
+  try {
+    var sb = getSupabase();
+    var { data: txs, error } = await sb
+      .from('plan_transactions')
+      .select('plan, amount_usd, payment_ref, created_at')
+      .eq('biz_id', bizId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    txs = txs || [];
+
+    var now = new Date();
+    var thisYear  = now.getFullYear();
+    var thisMonth = now.getMonth();
+    var monthStart = new Date(thisYear, thisMonth, 1).getTime();
+    var yearStart  = new Date(thisYear, 0, 1).getTime();
+
+    var monthTotal = 0, monthCount = 0;
+    var yearTotal  = 0, yearCount  = 0;
+    var allTotal   = 0;
+
+    var yearSet = new Set();
+    _billingRows = txs.map(function(t) {
+      var d = new Date(t.created_at);
+      var ts = d.getTime();
+      var mk = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+      var planName = t.plan ? (t.plan.charAt(0).toUpperCase() + t.plan.slice(1)) : '—';
+      var amt = parseFloat(t.amount_usd || 0);
+      yearSet.add(d.getFullYear());
+      allTotal += amt;
+      if (ts >= yearStart)  { yearTotal  += amt; yearCount++;  }
+      if (ts >= monthStart) { monthTotal += amt; monthCount++; }
+      return {
+        date:     d.toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' }),
+        type:     isEn ? 'Plan Upgrade' : 'Actualización de plan',
+        detail:   planName + ' Plan',
+        amount:   amt,
+        ref:      t.payment_ref || '—',
+        ts:       ts,
+        year:     d.getFullYear(),
+        monthKey: mk
+      };
+    });
+
+    // Summary cards
+    var fmt = function(n) { return '$' + n.toFixed(2); };
+    var setEl = function(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
+    setEl('bill-month-total',   fmt(monthTotal));
+    setEl('bill-month-count',   monthCount + (isEn ? ' transaction' : ' transacción') + (monthCount !== 1 ? 's' : ''));
+    setEl('bill-year-total',    fmt(yearTotal));
+    setEl('bill-year-count',    yearCount + (isEn ? ' transaction' : ' transacción') + (yearCount !== 1 ? 's' : ''));
+    setEl('bill-alltime-total', fmt(allTotal));
+    setEl('bill-alltime-count', txs.length + (isEn ? ' transaction' : ' transacción') + (txs.length !== 1 ? 's' : ''));
+
+    // Year filter options
+    var yearSel = document.getElementById('bill-filter-year');
+    if (yearSel) {
+      var years = Array.from(yearSet).sort().reverse();
+      yearSel.innerHTML = '<option value="">' + (isEn ? '— Year —' : '— Año —') + '</option>'
+        + years.map(function(y) { return '<option value="' + y + '">' + y + '</option>'; }).join('');
+    }
+
+    // Localize filter options
+    var optAll   = document.getElementById('bill-opt-all');
+    var optMonth = document.getElementById('bill-opt-month');
+    var optYear  = document.getElementById('bill-opt-year');
+    if (optAll)   optAll.textContent   = isEn ? 'All history'  : 'Todo el historial';
+    if (optMonth) optMonth.textContent = isEn ? 'This month'   : 'Este mes';
+    if (optYear)  optYear.textContent  = isEn ? 'This year'    : 'Este año';
+
+    _billingLoaded = true;
+    filterBilling();
+  } catch(e) {
+    console.error('[billing]', e);
+    var tbody2 = document.getElementById('bill-tbody');
+    if (tbody2) tbody2.innerHTML = '<tr><td colspan="5" style="padding:24px;text-align:center;color:var(--c-muted);font-size:12px">' + (isEn ? 'Failed to load billing data.' : 'Error al cargar datos.') + '</td></tr>';
+  }
+}
+
+function filterBilling() {
+  var periodSel = document.getElementById('bill-filter-period');
+  var yearSel   = document.getElementById('bill-filter-year');
+  var period    = periodSel ? periodSel.value : 'all';
+  var isEn      = document.body.classList.contains('en');
+
+  // Show/hide year dropdown
+  if (yearSel) yearSel.style.display = period === 'year' ? '' : 'none';
+
+  var now        = new Date();
+  var thisYear   = now.getFullYear();
+  var thisMonth  = now.getMonth();
+  var monthStart = new Date(thisYear, thisMonth, 1).getTime();
+  var yearStart  = new Date(thisYear, 0, 1).getTime();
+  var selectedYear = yearSel ? parseInt(yearSel.value) : NaN;
+
+  var filtered = _billingRows.filter(function(r) {
+    if (period === 'month') return r.ts >= monthStart;
+    if (period === 'year' && !isNaN(selectedYear)) return r.year === selectedYear;
+    if (period === 'year') return r.ts >= yearStart;
+    return true;
+  });
+
+  var tbody  = document.getElementById('bill-tbody');
+  var emptyEl = document.getElementById('bill-empty');
+  if (!filtered.length) {
+    if (tbody)  tbody.innerHTML = '';
+    if (emptyEl) emptyEl.style.display = 'block';
+    return;
+  }
+  if (emptyEl) emptyEl.style.display = 'none';
+
+  if (tbody) tbody.innerHTML = filtered.map(function(r) {
+    var typeLabel = isEn ? 'Plan Upgrade' : 'Actualización de plan';
+    return '<tr style="border-bottom:0.5px solid var(--c-border)">'
+      + '<td style="padding:10px 14px;font-size:12px;color:var(--c-muted)">' + r.date + '</td>'
+      + '<td style="padding:10px 14px;font-size:12px">'
+      +   '<span style="background:var(--c-blue-light);color:var(--c-blue);border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600">' + typeLabel + '</span>'
+      + '</td>'
+      + '<td style="padding:10px 14px;font-size:13px;font-weight:500">' + r.detail + '</td>'
+      + '<td style="padding:10px 14px;text-align:right;font-size:13px;font-weight:600;color:var(--c-text)">$' + r.amount.toFixed(2) + '</td>'
+      + '<td style="padding:10px 14px;font-size:11px;color:var(--c-muted);font-family:monospace">' + r.ref + '</td>'
+      + '</tr>';
+  }).join('');
 }
 
 // ── HOURS ──────────────────────────────────────────────────
@@ -1205,6 +1645,9 @@ function showPane(id){
   if (id === 'hours') buildHoursTable();
   // Analytics: 탭 진입 시마다 최신 데이터 로드
   if (id === 'analytics') loadAnalytics();
+  // Billing: 최초 진입 시 로드
+  if (id === 'billing') loadBilling();
+  if (id === 'verification') loadVerificationStatus();
   document.querySelectorAll('.sb-link').forEach(function(l){ l.classList.remove('active'); });
   document.querySelectorAll('.sb-link').forEach(function(l){
     if(l.getAttribute('onclick')&&l.getAttribute('onclick').includes("'"+id+"'")) l.classList.add('active');
@@ -1222,9 +1665,9 @@ function showPane(id){
    one) and sets up/modifies recurring monthly billing via the payment gateway, then the
    backend updates the account's plan once the charge succeeds. */
 var PLAN_INFO = {
-  free:    { name: 'Free',    priceEs: '$0/mes',  priceEn: '$0/mo',  limit: 3 },
-  basic:   { name: 'Basic',   priceEs: '$29/mes', priceEn: '$29/mo', limit: 10 },
-  premium: { name: 'Premium', priceEs: '$79/mes', priceEn: '$79/mo', limit: null } // null = unlimited
+  free:    { name: 'Free',    priceEs: 'Gratis',  priceEn: 'Free',   credits: 3  },
+  basic:   { name: 'Basic',   priceEs: '$19',     priceEn: '$19',    credits: 20 },
+  premium: { name: 'Premium', priceEs: '$39',     priceEn: '$39',    credits: 50 },
 };
 function getCurrentPlan() {
   return window._bizPlan || 'free';
@@ -1232,7 +1675,11 @@ function getCurrentPlan() {
 function setCurrentPlan(plan) {
   window._bizPlan = plan;
   var pb = document.getElementById('sb-plan-badge');
-  if (pb) { var pl = { free: 'Free', basic: '⭐ Basic', premium: '🌟 Premium' }; pb.textContent = pl[plan] || 'Free'; }
+  if (!pb) return;
+  var credits = window._bizContactCredits || 0;
+  if (plan === 'basic' && credits > 0) pb.textContent = '⭐ Basic';
+  else if (plan === 'premium' && credits > 0) pb.textContent = '🌟 Premium';
+  else pb.textContent = 'Free';
 }
 function showPlanToast(msg) {
   var t = document.getElementById('plan-toast');
@@ -1259,11 +1706,9 @@ function renderOverviewBanner() {
     return;
   }
 
-  var used = window._bizContactsUsed !== undefined ? window._bizContactsUsed : 0;
-  var limit = info.limit;
-  var remaining = Math.max(0, limit - used);
+  var remaining = window._bizContactCredits !== undefined ? window._bizContactCredits : 0;
+  var total = info.credits;
 
-  // Thresholds: Free warns at 1 remaining, Basic warns at 2 remaining
   var warnAt = plan === 'free' ? 1 : 2;
   var isWarning = remaining <= warnAt && remaining > 0;
   var isExceeded = remaining === 0;
@@ -1273,27 +1718,34 @@ function renderOverviewBanner() {
   if (isExceeded) {
     bgColor = '#FEF2F2'; borderColor = 'rgba(220,38,38,0.2)'; textColor = '#DC2626';
     icon = '🚫';
-    msgEs = '<strong>Plan ' + info.name + '</strong> — Solicitudes este mes: <strong>' + used + ' / ' + limit + '</strong>. <u>Has alcanzado el límite.</u> Los clientes ya no pueden enviarte mensajes hasta que actualices tu plan o empiece el próximo mes.';
-    msgEn = '<strong>' + info.name + ' Plan</strong> — Requests this month: <strong>' + used + ' / ' + limit + '</strong>. <u>You\'ve reached your limit.</u> Customers can no longer contact you until you upgrade or the next month starts.';
+    msgEs = '<strong>Plan ' + info.name + '</strong> — Créditos de contacto: <strong>0</strong>. <u>Sin créditos disponibles.</u> Los clientes no pueden contactarte. Compra más créditos para seguir recibiendo solicitudes.';
+    msgEn = '<strong>' + info.name + ' Plan</strong> — Contact credits: <strong>0</strong>. <u>No credits remaining.</u> Customers cannot contact you. Purchase more credits to keep receiving inquiries.';
   } else if (isWarning) {
     bgColor = '#FEF6E4'; borderColor = 'rgba(186,117,23,0.25)'; textColor = '#92600E';
     icon = '⚠️';
-    msgEs = '<strong>Plan ' + info.name + '</strong> — Solicitudes este mes: <strong>' + used + ' / ' + limit + '</strong>. Solo te ' + (remaining === 1 ? 'queda <strong>1 solicitud</strong>' : 'quedan <strong>' + remaining + ' solicitudes</strong>') + ' este mes. Actualiza tu plan para no perder clientes.';
-    msgEn = '<strong>' + info.name + ' Plan</strong> — Requests this month: <strong>' + used + ' / ' + limit + '</strong>. You only have <strong>' + remaining + ' request' + (remaining === 1 ? '' : 's') + '</strong> left this month. Upgrade to keep receiving customers.';
+    msgEs = '<strong>Plan ' + info.name + '</strong> — Créditos restantes: <strong>' + remaining + '</strong>. ' + (remaining === 1 ? 'Te queda <strong>1 crédito</strong>.' : 'Te quedan <strong>' + remaining + ' créditos</strong>.') + ' Recarga pronto para no perder clientes.';
+    msgEn = '<strong>' + info.name + ' Plan</strong> — Credits remaining: <strong>' + remaining + '</strong>. You only have <strong>' + remaining + ' credit' + (remaining === 1 ? '' : 's') + '</strong> left. Top up soon to keep receiving customers.';
   } else {
     bgColor = 'var(--c-green-light)'; borderColor = 'rgba(29,158,117,0.2)'; textColor = 'var(--c-green)';
     icon = '⚡';
-    msgEs = '<strong>Plan ' + info.name + '</strong> — Solicitudes este mes: <strong>' + used + ' / ' + limit + '</strong>.';
-    msgEn = '<strong>' + info.name + ' Plan</strong> — Requests this month: <strong>' + used + ' / ' + limit + '</strong>.';
+    msgEs = '<strong>Plan ' + info.name + '</strong> — Créditos de contacto restantes: <strong>' + remaining + '</strong>.';
+    msgEn = '<strong>' + info.name + ' Plan</strong> — Contact credits remaining: <strong>' + remaining + '</strong>.';
   }
 
   var showUpgrade = isWarning || isExceeded;
+  var bannerBtn;
+  if (isExceeded) {
+    bannerBtn = '<button onclick="showPane(\'plan\')" style="background:#DC2626;color:#fff;border-color:transparent">'
+      + (isEn ? 'Buy credits →' : 'Comprar créditos →') + '</button>';
+  } else if (isWarning) {
+    bannerBtn = '<button onclick="showPane(\'plan\')" style="background:var(--c-amber);color:#fff;border-color:transparent">'
+      + (isEn ? 'Upgrade plan →' : 'Actualizar plan →') + '</button>';
+  } else {
+    bannerBtn = '<button onclick="showPane(\'plan\')">' + (isEn ? 'View plans →' : 'Ver planes →') + '</button>';
+  }
   banner.innerHTML = '<div class="plan-banner" style="background:' + bgColor + ';border-color:' + borderColor + '">'
     + '<p style="color:' + textColor + '">' + icon + ' ' + (isEn ? msgEn : msgEs) + '</p>'
-    + (showUpgrade
-        ? '<button onclick="showPane(\'plan\')" style="background:' + (isExceeded ? '#DC2626' : 'var(--c-amber)') + ';color:#fff;border-color:transparent">'
-          + (isEn ? 'Upgrade plan →' : 'Actualizar plan →') + '</button>'
-        : '<button onclick="showPane(\'plan\')">' + (isEn ? 'View plans →' : 'Ver planes →') + '</button>')
+    + bannerBtn
     + '</div>';
 }
 
@@ -1305,8 +1757,10 @@ function renderPlanPane() {
   var pending = window._bizPendingPlan || null;
   var info    = PLAN_INFO[plan];
 
-  document.getElementById('current-plan-summary-es').innerHTML = '✅ Plan actual: <strong>' + info.name + ' ' + info.priceEs + '</strong>';
-  document.getElementById('current-plan-summary-en').innerHTML = '✅ Current plan: <strong>' + info.name + ' ' + info.priceEn + '</strong>';
+  var labelEs = plan === 'free' ? info.name : info.name + ' ' + info.priceEs;
+  var labelEn = plan === 'free' ? info.name : info.name + ' ' + info.priceEn;
+  document.getElementById('current-plan-summary-es').innerHTML = '✅ Plan actual: <strong>' + labelEs + '</strong>';
+  document.getElementById('current-plan-summary-en').innerHTML = '✅ Current plan: <strong>' + labelEn + '</strong>';
 
   // Pending downgrade notice
   var noticeEl = document.getElementById('pending-downgrade-notice');
@@ -1339,12 +1793,25 @@ function renderPlanPane() {
     if (p === plan) {
       card.style.border = '2px solid var(--c-green)';
       card.style.background = 'var(--c-green-light)';
-      btnEs.textContent = 'Plan actual';
-      btnEn.textContent = 'Current plan';
-      btnEs.disabled = true; btnEn.disabled = true;
-      btnEs.style.background = 'var(--c-green)'; btnEn.style.background = 'var(--c-green)';
-      btnEs.style.color = '#fff'; btnEn.style.color = '#fff';
-      btnEs.onclick = null; btnEn.onclick = null;
+      var credits = window._bizContactCredits !== undefined ? window._bizContactCredits : null;
+      var noCredits = (credits !== null && credits <= 0 && p !== 'free');
+      if (noCredits) {
+        btnEs.textContent = 'Comprar créditos →';
+        btnEn.textContent = 'Buy credits →';
+        btnEs.disabled = false; btnEn.disabled = false;
+        btnEs.style.background = '#DC2626'; btnEn.style.background = '#DC2626';
+        btnEs.style.color = '#fff'; btnEn.style.color = '#fff';
+        btnEs.style.visibility = ''; btnEn.style.visibility = '';
+        btnEs.onclick = function(){ openUpgradeModal(p); };
+        btnEn.onclick = function(){ openUpgradeModal(p); };
+      } else {
+        btnEs.textContent = 'Plan actual';
+        btnEn.textContent = 'Current plan';
+        btnEs.disabled = true; btnEn.disabled = true;
+        btnEs.style.background = 'var(--c-green)'; btnEn.style.background = 'var(--c-green)';
+        btnEs.style.color = '#fff'; btnEn.style.color = '#fff';
+        btnEs.onclick = null; btnEn.onclick = null;
+      }
     } else if (isPending) {
       card.style.border = '2px dashed var(--c-warning, #f59e0b)';
       card.style.background = 'var(--c-surface)';
@@ -1358,14 +1825,19 @@ function renderPlanPane() {
       card.style.border = '0.5px solid var(--c-border)';
       card.style.background = 'var(--c-surface)';
       var isDowngrade = PLAN_RANK[p] < PLAN_RANK[plan];
-      var label   = isDowngrade ? (p === 'free' ? 'Cambiar a Free' : 'Reducir plan') : 'Actualizar →';
-      var labelEn = isDowngrade ? (p === 'free' ? 'Switch to Free' : 'Downgrade')    : 'Upgrade →';
-      btnEs.textContent = label;   btnEn.textContent = labelEn;
-      btnEs.disabled = false;      btnEn.disabled = false;
-      btnEs.style.background = ''; btnEn.style.background = '';
-      btnEs.style.color = '';      btnEn.style.color = '';
-      btnEs.onclick = function() { switchToPlan(p); };
-      btnEn.onclick = function() { switchToPlan(p); };
+      if (isDowngrade) {
+        btnEs.style.visibility = 'hidden'; btnEn.style.visibility = 'hidden';
+        btnEs.disabled = true;             btnEn.disabled = true;
+        btnEs.onclick = null;              btnEn.onclick = null;
+      } else {
+        btnEs.style.visibility = '';       btnEn.style.visibility = '';
+        btnEs.textContent = 'Actualizar →'; btnEn.textContent = 'Upgrade →';
+        btnEs.disabled = false;            btnEn.disabled = false;
+        btnEs.style.background = '';       btnEn.style.background = '';
+        btnEs.style.color = '';            btnEn.style.color = '';
+        btnEs.onclick = function() { switchToPlan(p); };
+        btnEn.onclick = function() { switchToPlan(p); };
+      }
     }
   });
 }
@@ -1510,12 +1982,14 @@ function switchUpgTab(method, btn) {
       t.classList.add('selected');
     }
   });
-  ['card','venmo','ach','zelle'].forEach(function(m){
+  ['zelle','ach'].forEach(function(m){
     var p = document.getElementById('upg-panel-' + m);
     if (p) p.style.display = m === method ? 'block' : 'none';
   });
-  var payBtn = document.getElementById('upg-pay-btn');
-  if (payBtn) payBtn.style.display = method === 'zelle' ? 'none' : 'block';
+  var zelleBtn = document.getElementById('upg-zelle-btn');
+  var achBtn = document.getElementById('upg-ach-btn');
+  if (zelleBtn) zelleBtn.style.display = method === 'zelle' ? 'block' : 'none';
+  if (achBtn) achBtn.style.display = method === 'ach' ? 'block' : 'none';
 }
 
 // Braintree tokenization key (client-side publishable key)
@@ -1540,18 +2014,92 @@ function openUpgradeModal(plan) {
   var isEn = document.body.classList.contains('en');
   document.getElementById('upgrade-modal-plan-name').textContent = info.name;
   document.getElementById('upgrade-modal-plan-price').textContent = isEn ? info.priceEn : info.priceEs;
-  var zelleEs = document.getElementById('upg-zelle-plan-es');
-  var zelleEn = document.getElementById('upg-zelle-plan-en');
-  if (zelleEs) zelleEs.textContent = info.name;
-  if (zelleEn) zelleEn.textContent = info.name;
+  var credEl = document.getElementById('upgrade-modal-credits-label');
+  if (credEl) credEl.textContent = isEn ? info.credits + ' contact credits' : info.credits + ' créditos de contacto';
+  ['upg-zelle-plan-es','upg-zelle-plan-en','upg-ach-plan-es','upg-ach-plan-en'].forEach(function(id){
+    var el = document.getElementById(id); if (el) el.textContent = info.name;
+  });
   document.getElementById('upgrade-payment-modal').setAttribute('data-target-plan', plan);
-  switchUpgTab('card', null);
+  switchUpgTab('zelle', null);
   document.getElementById('upgrade-payment-modal').classList.add('open');
-  setTimeout(initBraintreeDropin, 80);
 }
 function closeUpgradeModal() {
   document.getElementById('upgrade-payment-modal').classList.remove('open');
 }
+async function submitZelleUpgrade() {
+  var plan = document.getElementById('upgrade-payment-modal').getAttribute('data-target-plan');
+  var isEn = document.body.classList.contains('en');
+  var btn = document.getElementById('upg-zelle-btn');
+  btn.disabled = true;
+  btn.textContent = isEn ? 'Submitting…' : 'Enviando…';
+  try {
+    var sb = getSupabase();
+    var biz = await getMyBusiness();
+    if (!biz) throw new Error('Business not found');
+    var { error } = await sb.rpc('submit_zelle_upgrade', { p_biz_id: biz.id, p_plan: plan });
+    if (error) throw error;
+    var credits = PLAN_INFO[plan] ? PLAN_INFO[plan].credits : 0;
+    var planLabel = plan === 'premium' ? 'Premium ($39 / ' + credits + ' credits)' : 'Basic ($19 / ' + credits + ' credits)';
+    var sess = await getSession();
+    var ownerEmail = sess && sess.user ? sess.user.email : null;
+    var bizName = biz.trade_name || biz.business_name || '';
+    sendEmail('SB_ZELLE_REQ', ownerEmail, { biz_name: bizName, plan_name: planLabel }, biz.id, isEn ? 'en' : 'es');
+    sendEmail('ADMIN_ZELLE', null, {
+      biz_name: bizName, owner_email: ownerEmail, plan_name: planLabel,
+      amount: plan === 'premium' ? '$39' : '$19',
+      payment_method: 'Zelle',
+      submitted_at: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
+    }, biz.id);
+    closeUpgradeModal();
+    var credits = PLAN_INFO[plan] ? PLAN_INFO[plan].credits : 0;
+    alert(isEn
+      ? '✅ Got it! Your ' + credits + ' contact credits will be added within 24 business hours after we confirm your Zelle payment.'
+      : '✅ ¡Recibido! Tus ' + credits + ' créditos de contacto serán añadidos dentro de 24 horas hábiles al confirmar tu pago Zelle.');
+  } catch(e) {
+    console.error('[Zelle upgrade]', e);
+    btn.disabled = false;
+    btn.innerHTML = isEn ? 'I\'ve sent the payment →' : 'Ya envié el pago →';
+    alert(isEn ? 'Something went wrong. Please try again.' : 'Algo salió mal. Intenta de nuevo.');
+  }
+}
+
+async function submitAchUpgrade() {
+  var plan = document.getElementById('upgrade-payment-modal').getAttribute('data-target-plan');
+  var isEn = document.body.classList.contains('en');
+  var btn = document.getElementById('upg-ach-btn');
+  btn.disabled = true;
+  btn.textContent = isEn ? 'Submitting…' : 'Enviando…';
+  try {
+    var sb = getSupabase();
+    var biz = await getMyBusiness();
+    if (!biz) throw new Error('Business not found');
+    var { error } = await sb.rpc('submit_ach_upgrade', { p_biz_id: biz.id, p_plan: plan });
+    if (error) throw error;
+    var credits = PLAN_INFO[plan] ? PLAN_INFO[plan].credits : 0;
+    var planLabel = plan === 'premium' ? 'Premium ($39 / ' + credits + ' credits)' : 'Basic ($19 / ' + credits + ' credits)';
+    var sess = await getSession();
+    var ownerEmail = sess && sess.user ? sess.user.email : null;
+    var bizName = biz.trade_name || biz.business_name || '';
+    sendEmail('SB_ZELLE_REQ', ownerEmail, { biz_name: bizName, plan_name: planLabel }, biz.id, isEn ? 'en' : 'es');
+    sendEmail('ADMIN_ZELLE', null, {
+      biz_name: bizName, owner_email: ownerEmail, plan_name: planLabel,
+      amount: plan === 'premium' ? '$39' : '$19',
+      payment_method: 'ACH (Wells Fargo)',
+      submitted_at: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
+    }, biz.id);
+    closeUpgradeModal();
+    alert(isEn
+      ? '✅ Got it! Your ' + credits + ' contact credits will be added within 1–3 business days after we confirm your ACH transfer.'
+      : '✅ ¡Recibido! Tus ' + credits + ' créditos de contacto serán añadidos en 1–3 días hábiles al confirmar tu transferencia ACH.');
+  } catch(e) {
+    console.error('[ACH upgrade]', e);
+    btn.disabled = false;
+    btn.innerHTML = isEn ? 'I\'ve sent the transfer →' : 'Ya envié la transferencia →';
+    alert(isEn ? 'Something went wrong. Please try again.' : 'Algo salió mal. Intenta de nuevo.');
+  }
+}
+
+// [HOLD] confirmUpgradePayment — Braintree Card/Venmo (activate when Braintree Production connected)
 function confirmUpgradePayment() {
   var plan = document.getElementById('upgrade-payment-modal').getAttribute('data-target-plan');
   var isEn = document.body.classList.contains('en');
@@ -1651,12 +2199,11 @@ function submitCancelRequest() {
     var meta = sess.user.user_metadata || {};
     var userType = meta.user_type || 'business';
     var reasonText = select.value + (document.getElementById('cancel-notes').value ? ' — ' + document.getElementById('cancel-notes').value : '');
-    getSupabase().from('cancellation_requests').insert({
-      user_id:   uid,
-      user_type: userType,
-      reason:    reasonText
+    getSupabase().rpc('submit_cancellation_request', {
+      p_user_type: userType,
+      p_reason:    reasonText
     }).then(function(res) {
-      if (res.error) console.warn('[cancelRequest] insert error:', res.error.message);
+      if (res.error) console.warn('[cancelRequest] rpc error:', res.error.message);
     });
     // AD4: 관리자 알림 (biz_name + reason)
     getMyBusiness().then(function(biz) {
@@ -1708,7 +2255,7 @@ async function loadOverviewStats(biz) {
   }
 
   if (!bizId) {
-    if (whatsappEl) whatsappEl.textContent = biz.contacts_used_month != null ? biz.contacts_used_month : '0';
+    if (whatsappEl) whatsappEl.textContent = biz.contact_credits != null ? biz.contact_credits : '0';
     return;
   }
 
@@ -1779,8 +2326,9 @@ async function loadReviews() {
 
   var sb = getSupabase();
   var res = await sb.from('reviews')
-    .select('rating, review_text, created_at')
+    .select('id, rating, review_text, reviewer_name, created_at, flagged')
     .eq('biz_id', window._bizId)
+    .eq('removed', false)
     .order('created_at', { ascending: false });
 
   if (res.error || !res.data || res.data.length === 0) return;
@@ -1809,13 +2357,31 @@ async function loadReviews() {
     var d = new Date(row.created_at);
     var dateStr = d.toLocaleDateString(isEn ? 'en-US' : 'es-US', { month: 'short', day: 'numeric', year: 'numeric' });
     var stars = '★'.repeat(row.rating) + '☆'.repeat(5 - row.rating);
+    var name = row.reviewer_name ? '<span style="font-size:12px;font-weight:500;color:var(--c-text)">' + row.reviewer_name.replace(/</g,'&lt;') + '</span> · ' : '';
     var txt = row.review_text ? '<div style="font-size:13px;margin-top:4px">' + row.review_text.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>' : '';
+    var flagBtn = row.flagged
+      ? '<span style="font-size:11px;color:var(--c-amber);padding:3px 8px;border-radius:20px;background:rgba(186,117,23,0.12)">' + (isEn ? '🚩 Flagged' : '🚩 Reportada') + '</span>'
+      : '<button onclick="flagReview(\'' + row.id + '\',this)" style="font-size:11px;color:var(--c-danger,#c0392b);background:none;border:0.5px solid var(--c-danger,#c0392b);border-radius:20px;padding:3px 8px;cursor:pointer">' + (isEn ? 'Report' : 'Reportar') + '</button>';
     return '<div style="padding:12px 0;border-bottom:0.5px solid var(--c-border)">'
-      + '<div style="display:flex;justify-content:space-between;align-items:center">'
-      + '<span style="color:var(--c-amber);font-size:14px">' + stars + '</span>'
-      + '<span style="font-size:12px;color:var(--c-muted)">' + dateStr + '</span>'
+      + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px">'
+      + '<div><span style="color:var(--c-amber);font-size:14px">' + stars + '</span></div>'
+      + '<div style="display:flex;align-items:center;gap:8px;margin-left:auto">'
+      + name + '<span style="font-size:12px;color:var(--c-muted)">' + dateStr + '</span>'
+      + flagBtn + '</div>'
       + '</div>' + txt + '</div>';
   }).join('');
+}
+
+async function flagReview(reviewId, btn) {
+  var isEn = document.body.classList.contains('en');
+  if (!confirm(isEn ? 'Report this review to admin for moderation?' : '이 리뷰를 관리자에게 신고하시겠습니까?')) return;
+  var sb = getSupabase();
+  var { error } = await sb.from('reviews').update({ flagged: true, flagged_at: new Date().toISOString() }).eq('id', reviewId);
+  if (error) {
+    alert(isEn ? 'Failed to report. Please try again.' : '신고에 실패했습니다. 다시 시도해주세요.');
+    return;
+  }
+  btn.outerHTML = '<span style="font-size:11px;color:var(--c-amber);padding:3px 8px;border-radius:20px;background:rgba(186,117,23,0.12)">' + (isEn ? '🚩 Flagged' : '🚩 Reportada') + '</span>';
 }
 
 async function loadAnalytics() {
@@ -1843,21 +2409,20 @@ async function loadAnalytics() {
     if (fmEl)  fmEl.textContent  = fmCount;
     if (totEl) totEl.textContent = total;
 
-    // Plan 한도 프로그레스 바
-    var planLimits = { free: 3, basic: 10, premium: 999 };
+    // 크레딧 잔액 프로그레스 바
+    var planCredits = { free: 3, basic: 20, premium: 50 };
     var plan = window._bizPlan || 'free';
-    var limit = planLimits[plan] || 3;
-    var pct = limit >= 999 ? 100 : Math.min(100, Math.round((total / limit) * 100));
+    var maxCredits = planCredits[plan] || 3;
+    var remaining = window._bizContactCredits != null ? window._bizContactCredits : 0;
+    var pct = maxCredits > 0 ? Math.min(100, Math.round((remaining / maxCredits) * 100)) : 0;
     var barEl = document.getElementById('anl-plan-bar');
     var labelEl = document.getElementById('anl-plan-label');
     if (barEl) {
       barEl.style.width = pct + '%';
-      barEl.style.background = pct >= 90 ? 'var(--c-accent)' : pct >= 60 ? 'var(--c-amber)' : 'var(--c-green)';
+      barEl.style.background = pct <= 10 ? 'var(--c-accent)' : pct <= 40 ? 'var(--c-amber)' : 'var(--c-green)';
     }
     if (labelEl) {
-      labelEl.textContent = limit >= 999
-        ? (isEn ? 'Unlimited' : 'Ilimitado')
-        : total + ' / ' + limit;
+      labelEl.textContent = isEn ? remaining + ' credits left' : remaining + ' créditos restantes';
     }
   }
 
@@ -1950,15 +2515,35 @@ document.addEventListener('DOMContentLoaded', async function(){
 
     const biz = await getMyBusiness();
     if (biz && biz.account_status === 'deleted') {
-      // 삭제된 계정 — 대시보드 진입 차단, 로그아웃 후 안내 페이지로
       await getSupabase().auth.signOut();
       window.location.href = 'login.html?reason=deleted';
+      return;
+    }
+    if (biz && biz.account_status === 'suspended') {
+      document.body.innerHTML = `
+        <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:sans-serif;background:#f9f9f9;">
+          <div style="text-align:center;max-width:460px;padding:40px;background:#fff;border-radius:12px;box-shadow:0 2px 16px rgba(0,0,0,0.08);">
+            <div style="font-size:48px;margin-bottom:16px;">🚫</div>
+            <h2 style="margin:0 0 8px;color:#c0392b;">Account Suspended / Cuenta Suspendida</h2>
+            <p style="color:#555;margin:0 0 24px;line-height:1.6;">
+              Your listing has been temporarily suspended by the AmigosNearMe team.<br>
+              <span style="color:#888;font-size:13px;">Tu listado ha sido suspendido temporalmente por el equipo de AmigosNearMe.</span>
+            </p>
+            <p style="color:#555;font-size:14px;margin:0 0 24px;">
+              Please contact us to resolve this issue:<br>
+              <a href="mailto:support@amigosnearme.com" style="color:#c0392b;">support@amigosnearme.com</a>
+            </p>
+            <button onclick="(async()=>{try{await signOut();}catch(e){}window.location.href='index.html';})()" style="background:#c0392b;color:#fff;border:none;padding:10px 28px;border-radius:6px;cursor:pointer;font-size:15px;">
+              Log out / Cerrar sesión
+            </button>
+          </div>
+        </div>`;
       return;
     }
     if (biz) {
       window._bizPlan = biz.plan || 'free';
       window._bizPendingPlan = biz.pending_plan || null;
-      window._bizContactsUsed = biz.contacts_used_month || 0;
+      window._bizContactCredits = biz.contact_credits != null ? biz.contact_credits : 0;
       window._isWorker = !!biz.is_worker;
       window._bizId = biz.id;
       const meta = user.user_metadata || {};
@@ -2010,7 +2595,11 @@ document.addEventListener('DOMContentLoaded', async function(){
 
       // Service area 체크박스 채우기
       var areas = biz.service_area ? biz.service_area.split(',').map(function(s){ return s.trim(); }) : [];
-      document.querySelectorAll('#ep-area-grid input[type="checkbox"]').forEach(function(cb){ cb.checked = areas.includes(cb.value); });
+      var knownAreaVals = [];
+      document.querySelectorAll('#ep-area-grid input[type="checkbox"]').forEach(function(cb){ knownAreaVals.push(cb.value); cb.checked = areas.includes(cb.value); });
+      var otherAreas = areas.filter(function(a){ return a && knownAreaVals.indexOf(a) === -1; });
+      if (otherAreas.length > 0) { var epAreaOther = document.getElementById('ep-area-other'); if (epAreaOther) epAreaOther.value = otherAreas.join(', '); }
+      var epCatOther = document.getElementById('ep-cat-other'); if (epCatOther) epCatOther.value = biz.category_other || '';
 
       var pm = biz.payment_methods || [];
       if (document.getElementById('pay-cash')) document.getElementById('pay-cash').checked = pm.includes('cash');
@@ -2024,6 +2613,7 @@ document.addEventListener('DOMContentLoaded', async function(){
       if (document.getElementById('lang-es')) document.getElementById('lang-es').checked = langs.includes('es');
       if (document.getElementById('lang-en')) document.getElementById('lang-en').checked = langs.includes('en');
       if (document.getElementById('lang-pt')) document.getElementById('lang-pt').checked = langs.includes('pt');
+      if (document.getElementById('biz-preferred-lang')) document.getElementById('biz-preferred-lang').value = biz.preferred_lang || 'es';
 
       if (biz.hours && Array.isArray(biz.hours) && biz.hours.length > 0) {
         biz.hours.forEach(function(h) {
@@ -2037,6 +2627,12 @@ document.addEventListener('DOMContentLoaded', async function(){
       var pb = document.getElementById('sb-plan-badge');
       if (pb) { var pl = { free: 'Free', basic: '⭐ Basic', premium: '🌟 Premium' }; pb.textContent = pl[biz.plan] || 'Free'; }
 
+      // Verification nav: verified 아니고 Worker가 아닌 Business만 표시
+      if (!biz.verified_badge && !biz.is_worker) {
+        var navVerif = document.getElementById('nav-verification');
+        if (navVerif) navVerif.style.display = 'flex';
+      }
+
       renderProfileCompleteness(biz);
       refreshPlanUI();
       loadOverviewStats(biz);
@@ -2049,7 +2645,7 @@ document.addEventListener('DOMContentLoaded', async function(){
     } else {
       const meta = user.user_metadata || {};
       const newBiz = await createBusiness({ businessName: meta.business_name || user.email.split('@')[0], tradeName: meta.trade_name || '', plan: meta.plan || 'free', publicEmail: user.email, phone: meta.phone || '', description: meta.description || '', categories: meta.categories || [], serviceArea: meta.service_area || '', languages: meta.languages || ['es'], paymentMethods: meta.payment_methods || [], hours: meta.hours || [] });
-      window._bizPlan = newBiz.plan || 'free'; window._bizContactsUsed = newBiz.contacts_used_month || 0; window._bizId = newBiz.id;
+      window._bizPlan = newBiz.plan || 'free'; window._bizContactCredits = newBiz.contact_credits != null ? newBiz.contact_credits : 0; window._bizId = newBiz.id;
       var f2 = function(id, val){ var el = document.getElementById(id); if(el && val) el.value = val; };
       f2('ep-legal-name', meta.business_name); f2('ep-trade-name', meta.trade_name);
       f2('ep-phone', meta.phone);
@@ -2057,7 +2653,10 @@ document.addEventListener('DOMContentLoaded', async function(){
       var cats2 = meta.categories || [];
       document.querySelectorAll('#ep-categories input[type="checkbox"]').forEach(function(cb){ cb.checked = cats2.includes(cb.value); });
       var areas2 = meta.service_area ? meta.service_area.split(',').map(function(s){ return s.trim(); }) : [];
-      document.querySelectorAll('#ep-area-grid input[type="checkbox"]').forEach(function(cb){ cb.checked = areas2.includes(cb.value); });
+      var knownAreaVals2 = [];
+      document.querySelectorAll('#ep-area-grid input[type="checkbox"]').forEach(function(cb){ knownAreaVals2.push(cb.value); cb.checked = areas2.includes(cb.value); });
+      var otherAreas2 = areas2.filter(function(a){ return a && knownAreaVals2.indexOf(a) === -1; });
+      if (otherAreas2.length > 0) { var epAreaOther2 = document.getElementById('ep-area-other'); if (epAreaOther2) epAreaOther2.value = otherAreas2.join(', '); }
       var pm2 = meta.payment_methods || [];
       if (document.getElementById('pay-cash')) document.getElementById('pay-cash').checked = pm2.includes('cash');
       if (document.getElementById('pay-zelle')) document.getElementById('pay-zelle').checked = pm2.includes('zelle');
@@ -2069,88 +2668,118 @@ document.addEventListener('DOMContentLoaded', async function(){
       if (document.getElementById('lang-es')) document.getElementById('lang-es').checked = langs2.includes('es');
       if (document.getElementById('lang-en')) document.getElementById('lang-en').checked = langs2.includes('en');
       if (document.getElementById('lang-pt')) document.getElementById('lang-pt').checked = langs2.includes('pt');
+      var detectedLang2 = (navigator.language || 'es').startsWith('en') ? 'en' : 'es';
+      if (document.getElementById('biz-preferred-lang')) document.getElementById('biz-preferred-lang').value = meta.preferred_lang || detectedLang2;
       document.querySelectorAll('.biz-display-name').forEach(function(el){ el.textContent = meta.business_name || user.email.split('@')[0]; });
       renderProfileCompleteness(newBiz); refreshPlanUI();
     }
   } catch(e) { console.error('Dashboard init error:', e); }
+
+  // Admin이 suspend/delete 시 이미 로그인된 Business를 강제 로그아웃
+  setInterval(async function() {
+    try {
+      var sb = getSupabase();
+      var sess = await sb.auth.getSession();
+      if (!sess || !sess.data || !sess.data.session) return;
+      var uid = sess.data.session.user.id;
+      var { data: biz } = await sb.from('businesses').select('account_status').eq('owner_id', uid).maybeSingle();
+      if (biz && (biz.account_status === 'suspended' || biz.account_status === 'deleted')) {
+        await sb.auth.signOut();
+        var isEn = document.body.classList.contains('en');
+        alert(biz.account_status === 'deleted'
+          ? (isEn ? '⛔ This account has been deleted and is no longer active.' : '⛔ Esta cuenta ha sido eliminada y ya no está activa.')
+          : (isEn ? '⛔ Your account has been suspended. Please contact support.' : '⛔ Tu cuenta ha sido suspendida. Por favor contacta a soporte.'));
+        window.location.href = 'index.html';
+      }
+    } catch(e) {}
+  }, 30000); // 30초마다 확인
 });
 </script>
 
 <!-- PLAN UPGRADE PAYMENT MODAL (Braintree Drop-in UI + process-payment Edge Function) -->
 <div class="modal-overlay" id="upgrade-payment-modal" onclick="if(event.target===this) closeUpgradeModal()">
   <div class="modal-card">
-    <div class="modal-title"><span data-es>Elige cómo pagar</span><span data-en>Choose how to pay</span></div>
+    <div class="modal-title"><span data-es>Comprar créditos de contacto</span><span data-en>Buy Contact Credits</span></div>
     <div class="modal-plan-summary">
       <span class="modal-plan-name" id="upgrade-modal-plan-name">Basic</span>
       <div style="text-align:right">
-        <div class="modal-plan-price" id="upgrade-modal-plan-price">$29/mo</div>
-        <div style="font-size:11px;color:var(--c-accent-dark);margin-top:2px" data-es>🔄 Cobro mensual automático</div>
-        <div style="font-size:11px;color:var(--c-accent-dark);margin-top:2px" data-en>🔄 Recurring monthly charge</div>
+        <div class="modal-plan-price" id="upgrade-modal-plan-price">$19</div>
+        <div style="font-size:11px;color:var(--c-green);margin-top:2px" id="upgrade-modal-credits-label">20 contact credits</div>
       </div>
     </div>
 
-    <!-- Payment method tabs -->
+    <!-- Payment method tabs (Zelle + ACH only; Card/Venmo on hold until Braintree Production) -->
     <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap">
-      <button class="pay-tab upg-tab selected" onclick="switchUpgTab('card',this)" data-es>💳 Tarjeta</button>
-      <button class="pay-tab upg-tab selected" onclick="switchUpgTab('card',this)" data-en>💳 Card</button>
-      <button class="pay-tab upg-tab" onclick="switchUpgTab('venmo',this)">Venmo</button>
+      <button class="pay-tab upg-tab selected" onclick="switchUpgTab('zelle',this)">Zelle</button>
       <button class="pay-tab upg-tab" onclick="switchUpgTab('ach',this)">ACH</button>
-      <button class="pay-tab upg-tab" onclick="switchUpgTab('zelle',this)">Zelle</button>
     </div>
+    <!-- [HOLD] Card/Venmo Braintree tabs — activate when Braintree Production connected
+    <button class="pay-tab upg-tab" onclick="switchUpgTab('card',this)" data-es>💳 Tarjeta</button>
+    <button class="pay-tab upg-tab" onclick="switchUpgTab('card',this)" data-en>💳 Card</button>
+    <button class="pay-tab upg-tab" onclick="switchUpgTab('venmo',this)">Venmo</button>
+    -->
 
-    <!-- Card (Braintree Drop-in UI) -->
-    <div id="upg-panel-card">
+    <!-- [HOLD] Card (Braintree Drop-in UI)
+    <div id="upg-panel-card" style="display:none">
       <div id="bt-dropin-container" style="min-height:64px"></div>
-      <p class="modal-desc" style="font-size:12px;margin-top:8px"><span data-es>Procesado por Braintree. También puedes usar una tarjeta prepagada.</span><span data-en>Processed by Braintree. Prepaid debit cards also accepted.</span></p>
+      <p class="modal-desc" style="font-size:12px;margin-top:8px"><span data-es>Procesado por Braintree.</span><span data-en>Processed by Braintree.</span></p>
     </div>
-
-    <!-- Venmo -->
+    [HOLD] Venmo
     <div id="upg-panel-venmo" style="display:none">
-      <div style="text-align:center;padding:12px 0">
-        <div style="font-size:32px;margin-bottom:8px">💜</div>
-        <p class="modal-desc" data-es>Al hacer clic en "Pagar con Venmo", serás redirigido a la app de Venmo para completar el pago a través de Braintree.</p>
-        <p class="modal-desc" data-en>Clicking "Pay with Venmo" will redirect you to the Venmo app to complete payment through Braintree.</p>
-      </div>
+      <div style="text-align:center;padding:12px 0"><div style="font-size:32px;margin-bottom:8px">💜</div></div>
     </div>
-
-    <!-- ACH -->
-    <div id="upg-panel-ach" style="display:none">
-      <div class="modal-field">
-        <label class="modal-label"><span data-es>Número de cuenta bancaria</span><span data-en>Bank account number</span></label>
-        <input class="modal-input" type="text" placeholder="000123456789">
-      </div>
-      <div class="modal-field">
-        <label class="modal-label"><span data-es>Número de ruta (routing)</span><span data-en>Routing number</span></label>
-        <input class="modal-input" type="text" placeholder="021000021">
-      </div>
-      <p class="modal-desc" style="font-size:12px;margin-top:4px"><span data-es>Débito directo desde tu cuenta bancaria. Procesado por Braintree.</span><span data-en>Direct debit from your bank account. Processed by Braintree.</span></p>
-    </div>
+    -->
 
     <!-- Zelle manual -->
-    <div id="upg-panel-zelle" style="display:none">
+    <div id="upg-panel-zelle">
       <div style="background:var(--c-amber-light);border-radius:var(--radius-md);padding:16px;margin-bottom:12px;border:0.5px solid rgba(186,117,23,0.2)">
         <div style="font-size:13px;font-weight:600;margin-bottom:8px" data-es>📲 Instrucciones para pagar con Zelle</div>
         <div style="font-size:13px;font-weight:600;margin-bottom:8px" data-en>📲 How to pay with Zelle</div>
         <ol style="font-size:13px;color:var(--c-text);line-height:1.8;padding-left:18px" data-es>
           <li>Abre tu app bancaria o la app de Zelle</li>
-          <li>Envía el monto exacto a: <strong>pagos@amigosnearme.com</strong></li>
+          <li>Envía el monto exacto a: Zelle tag: <strong>amigosnearme</strong></li>
           <li>En el memo escribe tu <strong>nombre de negocio</strong> y el plan (<strong id="upg-zelle-plan-es">Basic</strong>)</li>
-          <li>Envía captura de pantalla a <strong>hola@amigosnearme.com</strong></li>
+          <li>Envía captura de pantalla por <strong><a href="https://wa.me/17862388827" style="color:var(--c-accent)">WhatsApp +1 (786) 238-8827</a></strong></li>
         </ol>
         <ol style="font-size:13px;color:var(--c-text);line-height:1.8;padding-left:18px" data-en>
           <li>Open your bank app or the Zelle app</li>
-          <li>Send the exact amount to: <strong>pagos@amigosnearme.com</strong></li>
+          <li>Send the exact amount to: Zelle tag: <strong>amigosnearme</strong></li>
           <li>In the memo write your <strong>business name</strong> and plan (<strong id="upg-zelle-plan-en">Basic</strong>)</li>
-          <li>Email a screenshot to <strong>hola@amigosnearme.com</strong></li>
+          <li>Send a screenshot via <strong><a href="https://wa.me/17862388827" style="color:var(--c-accent)">WhatsApp +1 (786) 238-8827</a></strong></li>
         </ol>
       </div>
       <p style="font-size:12px;color:var(--c-muted)" data-es>⏱ Tu plan será activado manualmente dentro de 24 horas hábiles.</p>
       <p style="font-size:12px;color:var(--c-muted)" data-en>⏱ Your plan will be manually activated within 24 business hours.</p>
     </div>
 
-    <button class="modal-btn-primary" id="upg-pay-btn" onclick="confirmUpgradePayment()"><span data-es>Pagar y cambiar plan →</span><span data-en>Pay & switch plan →</span></button>
+    <!-- ACH bank transfer -->
+    <div id="upg-panel-ach" style="display:none">
+      <div style="background:#EEF2FF;border-radius:var(--radius-md);padding:16px;margin-bottom:12px;border:0.5px solid rgba(99,102,241,0.25)">
+        <div style="font-size:13px;font-weight:600;margin-bottom:10px" data-es>🏦 Instrucciones para transferencia bancaria (ACH)</div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:10px" data-en>🏦 Bank Transfer Instructions (ACH)</div>
+        <table style="font-size:13px;line-height:1.9;border-collapse:collapse;width:100%" data-es>
+          <tr><td style="color:var(--c-muted);padding-right:12px;white-space:nowrap">Banco</td><td><strong>Wells Fargo</strong></td></tr>
+          <tr><td style="color:var(--c-muted);padding-right:12px;white-space:nowrap">Routing #</td><td><strong>061000227</strong></td></tr>
+          <tr><td style="color:var(--c-muted);padding-right:12px;white-space:nowrap">Account #</td><td><strong>8516934588</strong></td></tr>
+          <tr><td style="color:var(--c-muted);padding-right:12px;white-space:nowrap">Memo</td><td>tu nombre de negocio + plan (<strong id="upg-ach-plan-es">Basic</strong>)</td></tr>
+        </table>
+        <table style="font-size:13px;line-height:1.9;border-collapse:collapse;width:100%" data-en>
+          <tr><td style="color:var(--c-muted);padding-right:12px;white-space:nowrap">Bank</td><td><strong>Wells Fargo</strong></td></tr>
+          <tr><td style="color:var(--c-muted);padding-right:12px;white-space:nowrap">Routing #</td><td><strong>061000227</strong></td></tr>
+          <tr><td style="color:var(--c-muted);padding-right:12px;white-space:nowrap">Account #</td><td><strong>8516934588</strong></td></tr>
+          <tr><td style="color:var(--c-muted);padding-right:12px;white-space:nowrap">Memo</td><td>your business name + plan (<strong id="upg-ach-plan-en">Basic</strong>)</td></tr>
+        </table>
+        <p style="font-size:13px;margin-top:10px;margin-bottom:0" data-es>Envía captura de pantalla por <strong><a href="https://wa.me/17862388827" style="color:var(--c-accent)">WhatsApp +1 (786) 238-8827</a></strong></p>
+        <p style="font-size:13px;margin-top:10px;margin-bottom:0" data-en>Send a screenshot via <strong><a href="https://wa.me/17862388827" style="color:var(--c-accent)">WhatsApp +1 (786) 238-8827</a></strong></p>
+      </div>
+      <p style="font-size:12px;color:var(--c-muted)" data-es>⏱ ACH puede tardar 1–3 días hábiles. Tu plan será activado al confirmar el depósito.</p>
+      <p style="font-size:12px;color:var(--c-muted)" data-en>⏱ ACH transfers take 1–3 business days. Your plan will be activated once the deposit is confirmed.</p>
+    </div>
+
+    <button class="modal-btn-primary" id="upg-zelle-btn" style="background:var(--c-amber)" onclick="submitZelleUpgrade()"><span data-es>Ya envié el pago →</span><span data-en>I've sent the payment →</span></button>
+    <button class="modal-btn-primary" id="upg-ach-btn" style="display:none;background:#6366F1" onclick="submitAchUpgrade()"><span data-es>Ya envié la transferencia →</span><span data-en>I've sent the transfer →</span></button>
     <button class="modal-btn-ghost" onclick="closeUpgradeModal()"><span data-es>Cancelar</span><span data-en>Cancel</span></button>
-    <div class="modal-note"><span data-es>Tarjeta, Venmo y ACH procesados por Braintree. Zelle es manual (activación en 24h).</span><span data-en>Card, Venmo, and ACH processed by Braintree. Zelle is manual (activated within 24h).</span></div>
+    <div class="modal-note"><span data-es>Zelle y ACH son pagos manuales. Tu plan se activa dentro de 24h (Zelle) o 1–3 días hábiles (ACH).</span><span data-en>Zelle and ACH are manual payments. Plan activates within 24h (Zelle) or 1–3 business days (ACH).</span></div>
   </div>
 </div>
 

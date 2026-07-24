@@ -9,7 +9,7 @@
   :root {
     --c-bg:#FAFAF7;--c-surface:#FFFFFF;--c-border:rgba(0,0,0,0.09);
     --c-text:#1A1A18;--c-muted:#6B6B66;--c-hint:#A8A8A2;
-    --c-accent:#C94F2B;--c-accent-light:#FAF0EC;
+    --c-accent:#C94F2B;--c-accent-dark:#9C3A1E;--c-accent-light:#FAF0EC;
     --c-green:#1D9E75;--c-green-light:#EBF8F3;
     --c-amber:#BA7517;--c-amber-light:#FEF6E4;
     --c-blue:#185FA5;--c-blue-light:#EEF4FB;
@@ -63,6 +63,16 @@
   .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1000;padding:16px}
   .modal-card{background:var(--c-surface);border-radius:var(--radius-lg);padding:24px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.18)}
   .modal-title{font-family:var(--font-display);font-size:18px;font-weight:700}
+  .modal-plan-summary{background:var(--c-accent-light);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center}
+  .modal-plan-name{font-size:14px;font-weight:600}
+  .modal-plan-price{font-family:var(--font-display);font-size:20px;color:var(--c-accent-dark)}
+  .modal-btn-primary{display:block;width:100%;padding:12px;border-radius:var(--radius-sm);border:none;background:var(--c-accent);color:#fff;font-size:14.5px;font-weight:500;cursor:pointer;font-family:var(--font-body);margin-top:6px;margin-bottom:8px}
+  .modal-btn-primary:hover{background:var(--c-accent-dark)}
+  .modal-btn-ghost{display:block;width:100%;padding:9px;border-radius:var(--radius-sm);border:none;background:transparent;color:var(--c-muted);font-size:13px;cursor:pointer;font-family:var(--font-body)}
+  .modal-btn-ghost:hover{color:var(--c-text)}
+  .modal-note{font-size:11px;color:var(--c-hint);margin-top:8px;text-align:center}
+  .pay-tab{padding:7px 16px;border-radius:var(--radius-sm);border:1.5px solid var(--c-border);background:var(--c-surface);font-size:13px;font-weight:500;cursor:pointer;color:var(--c-muted);font-family:var(--font-body);transition:all .15s}
+  .pay-tab.selected{background:var(--c-accent);color:#fff;border-color:var(--c-accent)}
   #anm-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:12px 24px;border-radius:999px;font-size:13px;font-weight:500;z-index:2000;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
 </style>
 </head>
@@ -85,17 +95,24 @@
 
 <div class="page-wrap">
 
-  <h1 class="page-title">
-    <span data-es>Mi panel de empleador</span>
-    <span data-en>Employer Dashboard</span>
-  </h1>
-  <p class="page-sub" id="emp-email"></p>
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:4px">
+    <div>
+      <h1 class="page-title" id="emp-name-title" style="margin-bottom:4px">Employer Dashboard</h1>
+      <p class="page-sub" id="emp-email"></p>
+    </div>
+    <a href="worker-search.html" style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:var(--c-accent);color:#fff;border-radius:var(--radius-sm);font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;margin-top:6px">
+      👷 <span data-es>Buscar candidatos</span><span data-en>Browse Job Seekers</span>
+    </a>
+  </div>
 
   <!-- Suspended block -->
   <div id="suspended-block" style="display:none" class="alert-block alert-warn">
     <strong><span data-es>⚠️ Cuenta suspendida.</span><span data-en>⚠️ Account suspended.</span></strong>
     <span data-es> Contacta a soporte para más información.</span>
     <span data-en> Please contact support for details.</span>
+    <button onclick="signOut()" style="margin-left:16px;padding:6px 14px;border:1px solid currentColor;border-radius:6px;background:transparent;cursor:pointer;font-size:13px">
+      <span data-es>Cerrar sesión</span><span data-en>Log out</span>
+    </button>
   </div>
 
   <!-- Credit alert -->
@@ -137,6 +154,12 @@
     <button class="tab" onclick="showTab('financial')">
       <span data-es>Créditos</span><span data-en>Credits</span>
     </button>
+    <button class="tab" onclick="showTab('billing')">
+      <span data-es>Facturación</span><span data-en>Billing</span>
+    </button>
+    <button class="tab" onclick="showTab('reviews')">
+      <span data-es>Mis reseñas</span><span data-en>My Reviews</span>
+    </button>
     <button class="tab" onclick="showTab('settings')">
       <span data-es>Configuración</span><span data-en>Settings</span>
     </button>
@@ -150,7 +173,7 @@
           <span data-es>Historial de contactos</span><span data-en>Contact history</span>
         </div>
       </div>
-      <div id="activity-table-wrap">
+      <div id="activity-table-wrap" style="overflow-y:auto;max-height:400px">
         <div class="empty-state"><span data-es>Cargando...</span><span data-en>Loading...</span></div>
       </div>
     </div>
@@ -165,7 +188,11 @@
         <span id="fin-badge"></span>
       </div>
       <!-- Buy credits packages -->
-      <div class="section-title" style="margin-bottom:12px"><span data-es>Comprar créditos</span><span data-en>Buy credits</span></div>
+      <div class="section-title" style="margin-bottom:8px"><span data-es>Comprar créditos</span><span data-en>Buy credits</span></div>
+      <div style="background:var(--c-bg);border:0.5px solid var(--c-border);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--c-muted);line-height:1.6">
+        <span data-es>💡 <strong>1 crédito = 1 contacto con un candidato.</strong> Cada vez que contactas a un candidato (vía WhatsApp o formulario web), se descuenta 1 crédito de tu balance.</span>
+        <span data-en>💡 <strong>1 credit = 1 contact with a job seeker.</strong> Each time you contact a job seeker (via WhatsApp or web form), 1 credit is deducted from your balance.</span>
+      </div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px">
         <!-- Starter -->
         <div class="card" style="flex:1;min-width:140px;padding:16px;text-align:center;border:1px solid var(--c-border)">
@@ -201,7 +228,58 @@
         </div>
       </div>
       <div class="section-title"><span data-es>Historial de transacciones</span><span data-en>Transaction history</span></div>
-      <div id="tx-table-wrap">
+      <div id="tx-table-wrap" style="overflow-y:auto;max-height:400px">
+        <div class="empty-state"><span data-es>Cargando...</span><span data-en>Loading...</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Billing tab -->
+  <div class="tab-panel" id="tab-billing">
+    <!-- Summary cards -->
+    <div class="metric-grid" style="margin-bottom:20px">
+      <div class="metric">
+        <div class="metric-val" id="bl-month-amt">—</div>
+        <div class="metric-label"><span data-es>Gasto este mes</span><span data-en>Spent this month</span></div>
+        <div style="font-size:11px;color:var(--c-muted);margin-top:4px" id="bl-month-cr">—</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val" id="bl-year-amt">—</div>
+        <div class="metric-label"><span data-es>Gasto este año</span><span data-en>Spent this year</span></div>
+        <div style="font-size:11px;color:var(--c-muted);margin-top:4px" id="bl-year-cr">—</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val" id="bl-all-amt">—</div>
+        <div class="metric-label"><span data-es>Total histórico</span><span data-en>All-time total</span></div>
+        <div style="font-size:11px;color:var(--c-muted);margin-top:4px" id="bl-all-cr">—</div>
+      </div>
+    </div>
+
+    <div class="card" style="padding:0;overflow:hidden">
+      <!-- Filter -->
+      <div style="padding:14px 20px;border-bottom:0.5px solid var(--c-border);display:flex;align-items:center;gap:10px">
+        <span style="font-size:12px;font-weight:600;color:var(--c-muted);text-transform:uppercase;letter-spacing:.05em">
+          <span data-es>Historial de pagos</span><span data-en>Payment history</span>
+        </span>
+        <select id="bl-filter" onchange="filterBillingTab()" style="margin-left:auto;font-size:12px;border:0.5px solid var(--c-border);border-radius:6px;padding:4px 10px;background:var(--c-bg)">
+          <option value="all" id="bl-opt-all">All time</option>
+          <option value="month" id="bl-opt-month">This month</option>
+          <option value="year" id="bl-opt-year">This year</option>
+        </select>
+      </div>
+      <div id="bl-table-wrap" style="overflow-y:auto;max-height:400px">
+        <div class="empty-state"><span data-es>Cargando…</span><span data-en>Loading…</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reviews tab -->
+  <div class="tab-panel" id="tab-reviews">
+    <div class="card" style="padding:0;overflow:hidden">
+      <div style="padding:16px 20px;border-bottom:0.5px solid var(--c-border)">
+        <div class="section-title"><span data-es>Mis reseñas</span><span data-en>My Reviews</span></div>
+      </div>
+      <div id="reviews-table-wrap">
         <div class="empty-state"><span data-es>Cargando...</span><span data-en>Loading...</span></div>
       </div>
     </div>
@@ -237,11 +315,7 @@
           <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:4px">
             <span data-es>Teléfono</span><span data-en>Phone</span>
           </label>
-          <input id="settings-phone" type="tel" readonly style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:14px;font-family:var(--font-body);background:var(--c-bg-2,#f5f5f5);color:var(--c-muted);cursor:not-allowed;box-sizing:border-box" placeholder="+1 (555) 000-0000">
-          <div style="font-size:11px;color:var(--c-muted);margin-top:3px">
-            <span data-es>El teléfono no se puede cambiar. <a href="mailto:support@amigosnearme.com" style="color:var(--c-green)">Contacta al soporte</a> para actualizarlo.</span>
-            <span data-en>Phone cannot be changed. <a href="mailto:support@amigosnearme.com" style="color:var(--c-green)">Contact support</a> to update it.</span>
-          </div>
+          <input id="settings-phone" type="tel" style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:14px;font-family:var(--font-body);background:var(--c-surface);color:var(--c-text);box-sizing:border-box" placeholder="+1 (555) 000-0000">
         </div>
         <!-- Language preference -->
         <div>
@@ -359,22 +433,90 @@
 
 <div id="anm-toast"></div>
 
-<!-- Braintree Drop-in UI (credit purchase) -->
+<!-- [HOLD] Braintree Drop-in — activate when Braintree Production connected
 <script src="https://js.braintreegateway.com/web/dropin/1.43.0/js/dropin.min.js"></script>
+-->
 
-<!-- Credit purchase modal -->
+<!-- Credit purchase modal (Zelle + ACH) -->
 <div class="modal-overlay" id="credit-modal" style="display:none" onclick="if(event.target===this) closeCreditModal()">
-  <div class="modal-card" style="max-width:420px">
+  <div class="modal-card" style="max-width:440px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <div class="modal-title" id="cr-title">Comprar créditos</div>
-      <button onclick="closeCreditModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--c-muted)">✕</button>
+      <div class="modal-title" id="cr-title"><span data-es>Comprar créditos</span><span data-en>Buy credits</span></div>
+      <button onclick="closeCreditModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--c-muted);line-height:1">✕</button>
     </div>
-    <div id="cr-summary" style="font-size:13px;color:var(--c-muted);margin-bottom:16px"></div>
-    <div id="cr-dropin-container"></div>
+
+    <!-- Plan summary card -->
+    <div class="modal-plan-summary">
+      <span class="modal-plan-name" id="cr-pkg-name">Starter</span>
+      <div style="text-align:right">
+        <div class="modal-plan-price" id="cr-pkg-price">$10</div>
+        <div id="cr-pkg-credits" style="font-size:11px;color:var(--c-accent-dark);margin-top:2px">5 contact credits</div>
+        <div style="font-size:11px;color:var(--c-accent-dark);margin-top:2px" data-es>💳 Pago único · sin suscripción</div>
+        <div style="font-size:11px;color:var(--c-accent-dark);margin-top:2px" data-en>💳 One-time payment · no subscription</div>
+      </div>
+    </div>
+
+    <!-- Payment method tabs -->
+    <div style="display:flex;gap:6px;margin-bottom:16px">
+      <button class="pay-tab selected" id="cr-tab-zelle" onclick="switchCrTab('zelle',this)">Zelle</button>
+      <button class="pay-tab" id="cr-tab-ach" onclick="switchCrTab('ach',this)">ACH</button>
+    </div>
+
+    <!-- Zelle panel -->
+    <div id="cr-panel-zelle">
+      <div style="background:var(--c-amber-light);border-radius:var(--radius-md);padding:16px;margin-bottom:12px;border:0.5px solid rgba(186,117,23,0.2)">
+        <div style="font-size:13px;font-weight:600;margin-bottom:8px" data-es>📲 Instrucciones para pagar con Zelle</div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:8px" data-en>📲 How to pay with Zelle</div>
+        <ol style="font-size:13px;color:var(--c-text);line-height:1.8;padding-left:18px" data-es>
+          <li>Abre tu app bancaria o la app de Zelle</li>
+          <li>Envía el monto exacto a: Zelle tag: <strong>amigosnearme</strong></li>
+          <li>En el memo escribe: <strong id="cr-zelle-memo-es">Employer credits — starter</strong></li>
+          <li>Envía captura de pantalla por <strong><a href="https://wa.me/17862388827" style="color:var(--c-accent)">WhatsApp +1 (786) 238-8827</a></strong></li>
+        </ol>
+        <ol style="font-size:13px;color:var(--c-text);line-height:1.8;padding-left:18px" data-en>
+          <li>Open your bank app or the Zelle app</li>
+          <li>Send the exact amount to: Zelle tag: <strong>amigosnearme</strong></li>
+          <li>In the memo write: <strong id="cr-zelle-memo-en">Employer credits — starter</strong></li>
+          <li>Send a screenshot via <strong><a href="https://wa.me/17862388827" style="color:var(--c-accent)">WhatsApp +1 (786) 238-8827</a></strong></li>
+        </ol>
+      </div>
+      <p style="font-size:12px;color:var(--c-muted)" data-es>⏱ Los créditos serán añadidos manualmente dentro de 24 horas hábiles.</p>
+      <p style="font-size:12px;color:var(--c-muted)" data-en>⏱ Credits will be added manually within 24 business hours.</p>
+    </div>
+
+    <!-- ACH panel -->
+    <div id="cr-panel-ach" style="display:none">
+      <div style="background:#EEF2FF;border-radius:var(--radius-md);padding:16px;margin-bottom:12px;border:0.5px solid rgba(99,102,241,0.25)">
+        <div style="font-size:13px;font-weight:600;margin-bottom:10px" data-es>🏦 Instrucciones para transferencia bancaria (ACH)</div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:10px" data-en>🏦 Bank Transfer Instructions (ACH)</div>
+        <table style="font-size:13px;line-height:1.9;border-collapse:collapse;width:100%" data-es>
+          <tr><td style="color:var(--c-muted);padding-right:12px;white-space:nowrap">Banco</td><td><strong>Wells Fargo</strong></td></tr>
+          <tr><td style="color:var(--c-muted);padding-right:12px;white-space:nowrap">Routing #</td><td><strong>061000227</strong></td></tr>
+          <tr><td style="color:var(--c-muted);padding-right:12px;white-space:nowrap">Account #</td><td><strong>8516934588</strong></td></tr>
+          <tr><td style="color:var(--c-muted);padding-right:12px;white-space:nowrap">Memo</td><td><strong id="cr-ach-memo-es">Employer credits — starter</strong></td></tr>
+        </table>
+        <table style="font-size:13px;line-height:1.9;border-collapse:collapse;width:100%" data-en>
+          <tr><td style="color:var(--c-muted);padding-right:12px;white-space:nowrap">Bank</td><td><strong>Wells Fargo</strong></td></tr>
+          <tr><td style="color:var(--c-muted);padding-right:12px;white-space:nowrap">Routing #</td><td><strong>061000227</strong></td></tr>
+          <tr><td style="color:var(--c-muted);padding-right:12px;white-space:nowrap">Account #</td><td><strong>8516934588</strong></td></tr>
+          <tr><td style="color:var(--c-muted);padding-right:12px;white-space:nowrap">Memo</td><td><strong id="cr-ach-memo-en">Employer credits — starter</strong></td></tr>
+        </table>
+        <p style="font-size:13px;margin-top:10px;margin-bottom:0" data-es>Envía captura de pantalla por <strong><a href="https://wa.me/17862388827" style="color:var(--c-accent)">WhatsApp +1 (786) 238-8827</a></strong></p>
+        <p style="font-size:13px;margin-top:10px;margin-bottom:0" data-en>Send a screenshot via <strong><a href="https://wa.me/17862388827" style="color:var(--c-accent)">WhatsApp +1 (786) 238-8827</a></strong></p>
+      </div>
+      <p style="font-size:12px;color:var(--c-muted)" data-es>⏱ ACH puede tardar 1–3 días hábiles. Los créditos se añaden al confirmar el depósito.</p>
+      <p style="font-size:12px;color:var(--c-muted)" data-en>⏱ ACH transfers take 1–3 business days. Credits added once the deposit is confirmed.</p>
+    </div>
+
     <div id="cr-error" style="color:#c0392b;font-size:13px;margin-top:10px;display:none"></div>
-    <button id="cr-pay-btn" onclick="submitCreditPayment()" style="width:100%;margin-top:16px;padding:12px;background:var(--c-accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer">
-      <span id="cr-pay-label">Pagar</span>
+    <button class="modal-btn-primary" id="cr-submit-btn" onclick="submitCreditManual(_crCurrentMethod)">
+      <span data-es>Ya envié el pago →</span><span data-en>I've sent the payment →</span>
     </button>
+    <button class="modal-btn-ghost" onclick="closeCreditModal()"><span data-es>Cancelar</span><span data-en>Cancel</span></button>
+    <div class="modal-note">
+      <span data-es>Zelle y ACH son pagos manuales. Los créditos se activan tras confirmar el pago.</span>
+      <span data-en>Zelle and ACH are manual payments. Credits are activated after payment is confirmed.</span>
+    </div>
   </div>
 </div>
 
@@ -393,7 +535,7 @@ function setLang(lang) {
 }
 
 function showTab(name) {
-  var names = ['activity','financial','settings'];
+  var names = ['activity','financial','billing','reviews','settings'];
   document.querySelectorAll('.tab').forEach(function(t, i) {
     t.classList.toggle('active', names[i] === name);
   });
@@ -401,6 +543,56 @@ function showTab(name) {
     p.classList.remove('active');
   });
   document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'billing') loadBillingTab();
+  if (name === 'reviews') loadReviewsTab();
+}
+
+var _reviewsLoaded = false;
+async function loadReviewsTab() {
+  if (_reviewsLoaded) return;
+  var sb = getSupabase();
+  var isEn = document.body.classList.contains('en');
+  var wrap = document.getElementById('reviews-table-wrap');
+  var sess = await sb.auth.getSession();
+  var uid = sess.data.session && sess.data.session.user.id;
+  if (!uid) return;
+
+  var { data: reviews, error } = await sb
+    .from('reviews')
+    .select('biz_id, rating, review_text, created_at, removed, businesses(business_name, trade_name)')
+    .eq('reviewer_id', uid)
+    .order('created_at', { ascending: false });
+
+  if (error || !reviews || !reviews.length) {
+    wrap.innerHTML = '<div class="empty-state">' + (isEn ? 'No reviews yet.' : 'Sin reseñas aún.') + '</div>';
+    _reviewsLoaded = true;
+    return;
+  }
+
+  var rows = reviews.map(function(r) {
+    var biz = r.businesses || {};
+    var name = biz.trade_name || biz.business_name || '—';
+    var stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+    var d = new Date(r.created_at).toLocaleDateString(isEn ? 'en-US' : 'es-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    var removedBadge = r.removed
+      ? '<span style="font-size:11px;background:var(--c-accent-light);color:var(--c-accent);padding:2px 7px;border-radius:99px;margin-left:6px">' + (isEn ? 'Removed' : 'Eliminada') + '</span>'
+      : '';
+    return '<tr>'
+      + '<td><a href="worker-profile.html?id=' + (r.biz_id || '') + '" style="color:var(--c-text);text-decoration:none;font-weight:500">' + name + '</a>' + removedBadge + '</td>'
+      + '<td style="color:var(--c-amber)">' + stars + '</td>'
+      + '<td style="font-size:12px;color:var(--c-muted);max-width:240px">' + (r.review_text ? r.review_text.replace(/</g,'&lt;') : '—') + '</td>'
+      + '<td style="font-size:12px;color:var(--c-muted);white-space:nowrap">' + d + '</td>'
+      + '</tr>';
+  }).join('');
+
+  wrap.innerHTML = '<table>'
+    + '<thead><tr>'
+    + '<th>' + (isEn ? 'Job Seeker' : 'Trabajador') + '</th>'
+    + '<th>' + (isEn ? 'Rating' : 'Calificación') + '</th>'
+    + '<th>' + (isEn ? 'Review' : 'Reseña') + '</th>'
+    + '<th>' + (isEn ? 'Date' : 'Fecha') + '</th>'
+    + '</tr></thead><tbody>' + rows + '</tbody></table>';
+  _reviewsLoaded = true;
 }
 
 function openEmpCancelModal() {
@@ -425,11 +617,11 @@ async function submitEmpCancelRequest() {
   var sb = getSupabase();
 
   var cancelUserType = (_empProfile && _empProfile._userType) || 'employer';
-  await sb.from('cancellation_requests').insert({
-    user_id:   _empUid,
-    user_type: cancelUserType,
-    reason:    reasonText
+  var { error: cancelErr } = await sb.rpc('submit_cancellation_request', {
+    p_user_type: cancelUserType,
+    p_reason:    reasonText
   });
+  if (cancelErr) console.warn('[cancelRequest] rpc error:', cancelErr.message);
 
   // AD4: 관리자 알림
   sendEmail('AD4', null, {
@@ -458,6 +650,7 @@ async function saveProfileSettings() {
   try {
     var name  = (document.getElementById('settings-name').value  || '').trim();
     var lang  = document.getElementById('settings-lang').value;
+    var phone = (document.getElementById('settings-phone').value || '').trim();
 
     var user = await getCurrentUser();
     // Update display name in auth metadata
@@ -468,7 +661,7 @@ async function saveProfileSettings() {
     // Update employer_profiles
     var { error: dbErr } = await getSupabase()
       .from('employer_profiles')
-      .update({ display_name: name || null, preferred_lang: lang })
+      .update({ display_name: name || null, preferred_lang: lang, phone: phone || null })
       .eq('owner_id', user.id);
     if (dbErr) throw dbErr;
 
@@ -524,7 +717,9 @@ async function loadDashboard() {
   if (meta.user_type !== 'employer' && meta.user_type !== 'business') { window.location.href = 'index.html'; return; }
 
   var userEmail = sess.user.email || '';
-  var userName  = sess.user.user_metadata?.full_name || '';
+  var userName  = sess.user.user_metadata?.display_name || sess.user.user_metadata?.full_name || sess.user.user_metadata?.business_name || '';
+  var titleEl = document.getElementById('emp-name-title');
+  if (titleEl) titleEl.textContent = userName || (document.body.classList.contains('en') ? 'Employer Dashboard' : 'Mi panel de empleador');
   document.getElementById('emp-email').textContent = userEmail;
 
   var sb = getSupabase();
@@ -535,7 +730,9 @@ async function loadDashboard() {
 
   if (epRes.error || !epRes.data) {
     console.warn('[employer-dash] employer_profiles not found, backfilling...');
-    await sb.from('employer_profiles').insert({ owner_id: uid });
+    var metaLang = (sess.user.user_metadata?.preferred_lang) ||
+                   ((navigator.language || 'es').startsWith('en') ? 'en' : 'es');
+    await sb.from('employer_profiles').insert({ owner_id: uid, preferred_lang: metaLang });
     epRes = await sb.from('employer_profiles').select('id, credit_balance, account_status, display_name, phone, preferred_lang').eq('owner_id', uid).single();
   }
 
@@ -561,7 +758,15 @@ async function loadDashboard() {
   var credits = _empProfile.credit_balance;
   var status  = _empProfile.account_status;
 
-  if (status === 'deleted') { window.location.href = 'index.html'; return; }
+  if (status === 'deleted') {
+    await getSupabase().auth.signOut();
+    var isEnDel = document.body.classList.contains('en');
+    alert(isEnDel
+      ? '⛔ This account has been deleted and is no longer active.'
+      : '⛔ Esta cuenta ha sido eliminada y ya no está activa.');
+    window.location.href = 'index.html';
+    return;
+  }
   if (status === 'suspended') document.getElementById('suspended-block').style.display = 'block';
 
   // Credit alert
@@ -609,7 +814,7 @@ async function loadDashboard() {
   var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
   var contactRes = await sb.from('contact_log')
     .select('id', { count: 'exact', head: true })
-    .eq('customer_id', uid)
+    .eq('actor_id', uid)
     .gte('created_at', monthStart);
   document.getElementById('m-contacts').textContent = contactRes.error ? '—' : (contactRes.count || 0);
 
@@ -633,7 +838,7 @@ async function loadActivityTable(uid) {
 
   var res = await sb.from('contact_log')
     .select('biz_id, channel, limit_hit, created_at, businesses(business_name)')
-    .eq('customer_id', uid)
+    .eq('actor_id', uid)
     .order('created_at', { ascending: false })
     .limit(50);
 
@@ -660,8 +865,8 @@ async function loadActivityTable(uid) {
   }).join('');
 
   wrap.innerHTML = '<table>' +
-    '<thead><tr>' +
-    '<th>' + (isEn ? 'Worker' : 'Trabajador') + '</th>' +
+    '<thead style="position:sticky;top:0;background:var(--c-surface);z-index:1"><tr>' +
+    '<th>' + (isEn ? 'Job Seeker' : 'Trabajador') + '</th>' +
     '<th>' + (isEn ? 'Channel' : 'Canal') + '</th>' +
     '<th>' + (isEn ? 'Date' : 'Fecha') + '</th>' +
     '</tr></thead><tbody>' + rows + '</tbody></table>';
@@ -706,7 +911,7 @@ async function loadTxTable(uid) {
   }).join('');
 
   wrap.innerHTML = '<table>' +
-    '<thead><tr>' +
+    '<thead style="position:sticky;top:0;background:var(--c-surface);z-index:1"><tr>' +
     '<th>' + (isEn ? 'Credits' : 'Créditos') + '</th>' +
     '<th>' + (isEn ? 'Amount' : 'Monto') + '</th>' +
     '<th>Ref</th>' +
@@ -714,11 +919,135 @@ async function loadTxTable(uid) {
     '</tr></thead><tbody>' + rows + '</tbody></table>';
 }
 
+/* ===== BILLING TAB ===== */
+var _blLoaded = false;
+var _blRows = [];
+
+async function loadBillingTab() {
+  if (_blLoaded) { filterBillingTab(); return; }
+  var isEn = document.body.classList.contains('en');
+  var wrap = document.getElementById('bl-table-wrap');
+  if (wrap) wrap.innerHTML = '<div class="empty-state"><span>' + (isEn ? 'Loading…' : 'Cargando…') + '</span></div>';
+
+  try {
+    var sb = getSupabase();
+    var empProfileId = _empProfile && _empProfile.id;
+    if (!empProfileId) {
+      var { data: sess } = await sb.auth.getSession();
+      var uid = sess && sess.session && sess.session.user && sess.session.user.id;
+      if (!uid) return;
+      var epRes = await sb.from('employer_profiles').select('id').eq('owner_id', uid).single();
+      empProfileId = epRes.data && epRes.data.id;
+    }
+    if (!empProfileId) {
+      if (wrap) wrap.innerHTML = '<div class="empty-state">' + (isEn ? 'No payment records yet.' : 'Sin pagos registrados aún.') + '</div>';
+      return;
+    }
+
+    var { data: txs } = await sb.from('credit_transactions')
+      .select('credits_added, amount_usd, payment_ref, created_at')
+      .eq('employer_id', empProfileId)
+      .order('created_at', { ascending: false });
+    txs = txs || [];
+
+    var now = new Date();
+    var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    var yearStart  = new Date(now.getFullYear(), 0, 1).getTime();
+    var mAmt = 0, mCr = 0, yAmt = 0, yCr = 0, aAmt = 0, aCr = 0;
+
+    _blRows = txs.map(function(t) {
+      var d   = new Date(t.created_at);
+      var ts  = d.getTime();
+      var amt = parseFloat(t.amount_usd || 0);
+      var cr  = t.credits_added || 0;
+      aAmt += amt; aCr += cr;
+      if (ts >= yearStart)  { yAmt += amt; yCr += cr; }
+      if (ts >= monthStart) { mAmt += amt; mCr += cr; }
+      return { date: d.toLocaleDateString(isEn ? 'en-US' : 'es-US', { year:'numeric', month:'short', day:'numeric' }),
+               credits: cr, amount: amt, ref: t.payment_ref || '—', ts: ts, year: d.getFullYear() };
+    });
+
+    var fmt = function(n) { return n > 0 ? '$' + n.toFixed(2) : '$0.00'; };
+    var crLabel = function(n) { return n + (isEn ? ' credit' : ' crédito') + (n !== 1 ? 's' : ''); };
+    var setEl = function(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
+    setEl('bl-month-amt', fmt(mAmt)); setEl('bl-month-cr', crLabel(mCr));
+    setEl('bl-year-amt',  fmt(yAmt)); setEl('bl-year-cr',  crLabel(yCr));
+    setEl('bl-all-amt',   fmt(aAmt)); setEl('bl-all-cr',   crLabel(aCr));
+
+    var optAll   = document.getElementById('bl-opt-all');
+    var optMonth = document.getElementById('bl-opt-month');
+    var optYear  = document.getElementById('bl-opt-year');
+    if (optAll)   optAll.textContent   = isEn ? 'All time'   : 'Todo el historial';
+    if (optMonth) optMonth.textContent = isEn ? 'This month' : 'Este mes';
+    if (optYear)  optYear.textContent  = isEn ? 'This year'  : 'Este año';
+
+    _blLoaded = true;
+    filterBillingTab();
+  } catch(e) {
+    console.error('[billing]', e);
+    var wrap2 = document.getElementById('bl-table-wrap');
+    if (wrap2) wrap2.innerHTML = '<div class="empty-state">' + (isEn ? 'Failed to load.' : 'Error al cargar.') + '</div>';
+  }
+}
+
+function filterBillingTab() {
+  var period = (document.getElementById('bl-filter') || {}).value || 'all';
+  var isEn   = document.body.classList.contains('en');
+  var now    = new Date();
+  var mStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+  var yStart = new Date(now.getFullYear(), 0, 1).getTime();
+  var rows   = _blRows.filter(function(r) {
+    if (period === 'month') return r.ts >= mStart;
+    if (period === 'year')  return r.ts >= yStart;
+    return true;
+  });
+  var wrap = document.getElementById('bl-table-wrap');
+  if (!wrap) return;
+  if (!rows.length) {
+    wrap.innerHTML = '<div class="empty-state">' + (isEn ? '📭 No records for this period.' : '📭 Sin registros para este período.') + '</div>';
+    return;
+  }
+  var hdr = '<thead style="position:sticky;top:0;background:var(--c-surface);z-index:1"><tr>'
+    + '<th>' + (isEn ? 'Date'    : 'Fecha')    + '</th>'
+    + '<th>' + (isEn ? 'Credits' : 'Créditos') + '</th>'
+    + '<th>' + (isEn ? 'Amount'  : 'Monto')    + '</th>'
+    + '<th>Ref #</th>'
+    + '</tr></thead>';
+  var body = '<tbody>' + rows.map(function(r) {
+    return '<tr>'
+      + '<td style="color:var(--c-muted)">' + r.date + '</td>'
+      + '<td><span style="background:var(--c-green-light);color:var(--c-green);border-radius:4px;padding:2px 8px;font-size:12px;font-weight:600">+' + r.credits + '</span></td>'
+      + '<td style="font-weight:600">$' + r.amount.toFixed(2) + '</td>'
+      + '<td style="color:var(--c-muted);font-size:12px;font-family:monospace">' + r.ref + '</td>'
+      + '</tr>';
+  }).join('') + '</tbody>';
+  wrap.innerHTML = '<table>' + hdr + body + '</table>';
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   var saved = ''; try { saved = localStorage.getItem('anm-lang'); } catch(e) {}
   var browser = (navigator.language || 'es').toLowerCase();
   setLang(saved || (browser.startsWith('en') ? 'en' : 'es'));
   loadDashboard();
+
+  // Admin이 suspend/delete 시 이미 로그인된 Employer를 강제 로그아웃
+  setInterval(async function() {
+    try {
+      var sb = getSupabase();
+      var sess = await sb.auth.getSession();
+      if (!sess || !sess.data || !sess.data.session) return;
+      var uid = sess.data.session.user.id;
+      var { data: ep } = await sb.from('employer_profiles').select('account_status').eq('owner_id', uid).maybeSingle();
+      if (ep && (ep.account_status === 'suspended' || ep.account_status === 'deleted')) {
+        await sb.auth.signOut();
+        var isEn = document.body.classList.contains('en');
+        alert(ep.account_status === 'deleted'
+          ? (isEn ? '⛔ This account has been deleted and is no longer active.' : '⛔ Esta cuenta ha sido eliminada y ya no está activa.')
+          : (isEn ? '⛔ Your account has been suspended. Please contact support.' : '⛔ Tu cuenta ha sido suspendida. Por favor contacta a soporte.'));
+        window.location.href = 'index.html';
+      }
+    } catch(e) {}
+  }, 30000); // 30초마다 확인
 });
 
 // ── Toast 메시지 ─────────────────────────────────────────────────────
@@ -731,8 +1060,9 @@ function showToast(msg, duration) {
 }
 
 // ── Credit purchase ──────────────────────────────────────────────────
-var BT_TOKENIZATION_KEY = 'sandbox_wswbqjvj_qch7682mvs2m4ym5';
-var _crDropin = null;
+// [HOLD] Braintree vars — reactivate when Braintree Production connected
+// var BT_TOKENIZATION_KEY = 'sandbox_wswbqjvj_qch7682mvs2m4ym5';
+// var _crDropin = null;
 var _crPackageId = null;
 
 var CR_PACKAGES = {
@@ -741,124 +1071,89 @@ var CR_PACKAGES = {
   pro:     { credits: 30, amount: '$30' },
 };
 
+var _crCurrentMethod = 'zelle';
+
+function switchCrTab(method, btn) {
+  _crCurrentMethod = method;
+  document.querySelectorAll('#credit-modal .pay-tab').forEach(function(t){ t.classList.remove('selected'); });
+  if (btn) btn.classList.add('selected');
+  document.getElementById('cr-panel-zelle').style.display = method === 'zelle' ? 'block' : 'none';
+  document.getElementById('cr-panel-ach').style.display = method === 'ach' ? 'block' : 'none';
+}
+
 function openCreditModal(packageId) {
   _crPackageId = packageId;
   var pkg = CR_PACKAGES[packageId];
   var isEn = document.body.classList.contains('en');
+  var memoText = 'Employer credits — ' + packageId + ' (' + pkg.amount + ')';
+  var pkgLabel = packageId.charAt(0).toUpperCase() + packageId.slice(1);
 
-  document.getElementById('cr-title').textContent =
-    isEn ? 'Buy credits' : 'Comprar créditos';
-  document.getElementById('cr-summary').textContent =
-    isEn
-      ? pkg.credits + ' contact credits — ' + pkg.amount
-      : pkg.credits + ' créditos de contacto — ' + pkg.amount;
-  document.getElementById('cr-pay-label').textContent =
-    isEn ? 'Pay ' + pkg.amount : 'Pagar ' + pkg.amount;
-  document.getElementById('cr-error').style.display = 'none';
-  document.getElementById('credit-modal').style.display = 'flex';
-
-  // init Braintree drop-in
-  var container = document.getElementById('cr-dropin-container');
-  container.innerHTML = '';
-  if (_crDropin) { _crDropin.teardown(function(){}); _crDropin = null; }
-  braintree.dropin.create({
-    authorization: BT_TOKENIZATION_KEY,
-    container: '#cr-dropin-container',
-  }, function(err, instance) {
-    if (err) { console.error('[credit dropin]', err); return; }
-    _crDropin = instance;
+  document.getElementById('cr-pkg-name').textContent = pkgLabel;
+  document.getElementById('cr-pkg-price').textContent = pkg.amount;
+  document.getElementById('cr-pkg-credits').textContent = isEn
+    ? pkg.credits + ' contact credits'
+    : pkg.credits + ' créditos de contacto';
+  ['cr-zelle-memo-es','cr-zelle-memo-en','cr-ach-memo-es','cr-ach-memo-en'].forEach(function(id){
+    var el = document.getElementById(id); if (el) el.textContent = memoText;
   });
+  document.getElementById('cr-error').style.display = 'none';
+  _crCurrentMethod = 'zelle';
+  switchCrTab('zelle', document.getElementById('cr-tab-zelle'));
+  document.getElementById('credit-modal').style.display = 'flex';
 }
 
 function closeCreditModal() {
   document.getElementById('credit-modal').style.display = 'none';
-  if (_crDropin) { _crDropin.teardown(function(){}); _crDropin = null; }
 }
 
-async function submitCreditPayment() {
-  if (!_crDropin) return;
-  var btn = document.getElementById('cr-pay-btn');
-  var errEl = document.getElementById('cr-error');
+async function submitCreditManual(method) {
   var isEn = document.body.classList.contains('en');
+  var btn = document.getElementById('cr-submit-btn');
+  var errEl = document.getElementById('cr-error');
   errEl.style.display = 'none';
   btn.disabled = true;
-  document.getElementById('cr-pay-label').textContent = isEn ? 'Processing…' : 'Procesando…';
+  btn.textContent = isEn ? 'Submitting…' : 'Enviando…';
 
   try {
-    var payload = await new Promise(function(resolve, reject) {
-      _crDropin.requestPaymentMethod(function(err, p) {
-        if (err) reject(err); else resolve(p);
-      });
-    });
-
     var user = await getCurrentUser();
-    var sess = await getSession();
-
-    // fetch employer profile id
     var { data: empRow } = await getSupabase()
-      .from('employer_profiles')
-      .select('id, preferred_lang')
-      .eq('owner_id', user.id)
-      .single();
-
-    // 신규 계정은 employer_profiles 행이 없을 수 있음 → 자동 생성
-    if (!empRow) {
-      await getSupabase().from('employer_profiles').insert({ owner_id: user.id });
-      var { data: empRow2 } = await getSupabase()
-        .from('employer_profiles').select('id, preferred_lang').eq('owner_id', user.id).single();
-      empRow = empRow2;
-    }
+      .from('employer_profiles').select('id').eq('owner_id', user.id).single();
     if (!empRow) throw new Error('employer_profiles row not found');
 
-    var { data: result, error: fnErr } = await getSupabase().functions.invoke('process-payment', {
-      body: {
-        action:      'buy-credits',
-        nonce:       payload.nonce,
-        package_id:  _crPackageId,
-        employer_id: empRow.id,
-        owner_email: sess.user.email,
-        owner_name:  user.user_metadata?.full_name || '',
-      },
+    var { error } = await getSupabase().rpc('submit_employer_credit_manual', {
+      p_employer_id: empRow.id,
+      p_package_id: _crPackageId,
+      p_payment_method: method,
     });
+    if (error) throw error;
 
-    if (fnErr || (result && result.error)) {
-      throw new Error((result && result.error) || fnErr.message);
-    }
+    var pkg = CR_PACKAGES[_crPackageId];
+    var sess = await getSession();
+    var ownerEmail = sess && sess.user ? sess.user.email : null;
+    // notify admin
+    sendEmail('ADMIN_ZELLE', null, {
+      biz_name: 'Employer: ' + (ownerEmail || ''),
+      owner_email: ownerEmail,
+      plan_name: 'Credits — ' + _crPackageId + ' (' + pkg.credits + ' credits)',
+      amount: pkg.amount,
+      payment_method: method === 'ach' ? 'ACH (Wells Fargo)' : 'Zelle',
+      submitted_at: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
+    }, null);
 
-    var addedCredits = CR_PACKAGES[_crPackageId].credits;
     closeCreditModal();
-    // refresh credit balance display (Overview + Credits tab)
-    var { data: refreshed } = await getSupabase()
-      .from('employer_profiles').select('credit_balance').eq('id', empRow.id).single();
-    if (refreshed) {
-      var newBal = refreshed.credit_balance;
-      document.getElementById('fin-balance').textContent = newBal;
-      document.getElementById('m-credits').textContent = newBal;
-      var creditBadgeHtml = newBal === 0
-        ? '<span class="credit-badge credit-empty">🚫 Empty</span>'
-        : newBal === 1
-          ? '<span class="credit-badge credit-warn">⚠️ Low</span>'
-          : '<span class="credit-badge credit-ok">✅ OK</span>';
-      document.getElementById('fin-badge').innerHTML = creditBadgeHtml;
-      if (newBal > 1) document.getElementById('credit-alert').style.display = 'none';
-    }
-    // refresh total credits purchased
-    var txRefresh = await getSupabase().from('credit_transactions').select('credits_added').eq('employer_id', empRow.id);
-    var newTotal = txRefresh.error ? '—'
-      : (txRefresh.data || []).reduce(function(s, r){ return s + (r.credits_added || 0); }, 0);
-    document.getElementById('m-credits-total').textContent = newTotal || '—';
-    loadTxTable(user.id);
-    showToast(isEn
-      ? '✅ ' + addedCredits + ' credits added to your account!'
-      : '✅ ' + addedCredits + ' créditos agregados a tu cuenta!');
-
-  } catch (e) {
-    console.error('[submitCreditPayment]', e);
-    errEl.textContent = isEn ? 'Payment failed: ' + e.message : 'Pago fallido: ' + e.message;
+    var msg = method === 'zelle'
+      ? (isEn ? '✅ Got it! Your ' + pkg.credits + ' credits will be added within 24 business hours after we confirm your Zelle payment.'
+               : '✅ ¡Recibido! Tus ' + pkg.credits + ' créditos serán agregados dentro de 24 horas hábiles al confirmar tu pago Zelle.')
+      : (isEn ? '✅ Got it! Your ' + pkg.credits + ' credits will be added within 1–3 business days after we confirm your ACH transfer.'
+               : '✅ ¡Recibido! Tus ' + pkg.credits + ' créditos serán agregados en 1–3 días hábiles al confirmar tu transferencia ACH.');
+    alert(msg);
+  } catch(e) {
+    console.error('[submitCreditManual]', e);
+    errEl.textContent = isEn ? 'Something went wrong: ' + e.message : 'Algo salió mal: ' + e.message;
     errEl.style.display = 'block';
     btn.disabled = false;
-    document.getElementById('cr-pay-label').textContent =
-      isEn ? 'Pay ' + CR_PACKAGES[_crPackageId].amount : 'Pagar ' + CR_PACKAGES[_crPackageId].amount;
+    btn.innerHTML = '<span data-es>Ya envié el pago →</span><span data-en>I\'ve sent the payment →</span>';
+    applyLang();
   }
 }
 </script>

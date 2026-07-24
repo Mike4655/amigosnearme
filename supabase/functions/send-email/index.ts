@@ -218,12 +218,12 @@ function templates(
       return es ? {
         subject: `⚠️ Perdiste un contacto de cliente — ${d.biz_name}`,
         html: `<p>Hola ${d.biz_name},</p>
-<p>Un cliente intentó contactar a <strong>${d.biz_name}</strong>, pero no pudo porque alcanzaste el límite mensual.</p>
+<p>Un cliente intentó contactar a <strong>${d.biz_name}</strong>, pero no pudo porque los créditos de tu <strong>${d.plan || 'plan actual'}</strong> se han agotado.</p>
 <p><a href="https://amigosnearme.com/dashboard.html#plan">Actualiza ahora para no perder más clientes →</a></p>`,
       } : {
         subject: `⚠️ You missed a customer contact — ${d.biz_name}`,
         html: `<p>Hi ${d.biz_name},</p>
-<p>A customer tried to contact <strong>${d.biz_name}</strong> but could not because your monthly limit is reached.</p>
+<p>A customer tried to contact <strong>${d.biz_name}</strong> but could not because your <strong>${d.plan || 'current plan'}</strong> credits have been used up.</p>
 <p><a href="https://amigosnearme.com/dashboard.html#plan">Upgrade now to avoid missing more →</a></p>`,
       };
 
@@ -252,6 +252,50 @@ function templates(
         html: `<p>Hi ${d.biz_name},</p>
 <p>Your plan for <strong>${d.biz_name}</strong> will change to <strong>${d.plan}</strong> on <strong>${d.effective_date}</strong>.</p>
 <p>Until then, you'll keep your current plan. You can cancel this change anytime from your <a href="https://amigosnearme.com/dashboard.html">dashboard</a>.</p>`,
+      };
+
+    case 'SB16':
+      return es ? {
+        subject: `⭐ Nueva reseña en ${d.biz_name} — AmigosNearMe`,
+        html: `<p>Hola ${d.biz_name},</p>
+<p>Un cliente dejó una nueva reseña en tu perfil:</p>
+<ul>
+  <li><strong>Calificación:</strong> ${'★'.repeat(d.rating || 0)}${'☆'.repeat(5 - (d.rating || 0))} (${d.rating}/5)</li>
+  <li><strong>Comentario:</strong> ${d.review_text || '(sin comentario)'}</li>
+</ul>
+<p>Si consideras que esta reseña viola nuestras políticas, puedes reportarla desde tu panel de control.</p>
+<p><a href="https://amigosnearme.com/dashboard.html" style="display:inline-block;padding:10px 20px;background:#2d7a4f;color:#fff;border-radius:6px;text-decoration:none;font-weight:600">Ver en mi panel →</a></p>`,
+      } : {
+        subject: `⭐ New review on ${d.biz_name} — AmigosNearMe`,
+        html: `<p>Hi ${d.biz_name},</p>
+<p>A customer left a new review on your profile:</p>
+<ul>
+  <li><strong>Rating:</strong> ${'★'.repeat(d.rating || 0)}${'☆'.repeat(5 - (d.rating || 0))} (${d.rating}/5)</li>
+  <li><strong>Comment:</strong> ${d.review_text || '(no comment)'}</li>
+</ul>
+<p>If you believe this review violates our policies, you can report it from your dashboard.</p>
+<p><a href="https://amigosnearme.com/dashboard.html" style="display:inline-block;padding:10px 20px;background:#2d7a4f;color:#fff;border-radius:6px;text-decoration:none;font-weight:600">View in my dashboard →</a></p>`,
+      };
+
+    case 'SB17':
+      return es ? {
+        subject: `🗑️ Reseña eliminada en ${d.biz_name} — AmigosNearMe`,
+        html: `<p>Hola ${d.biz_name},</p>
+<p>Una reseña que reportaste ha sido revisada y <strong>eliminada</strong> por nuestro equipo de moderación.</p>
+<ul>
+  <li><strong>Calificación original:</strong> ${d.rating}/5</li>
+  <li><strong>Motivo de eliminación:</strong> ${d.reason || 'Violación de políticas de la plataforma'}</li>
+</ul>
+<p>Gracias por ayudarnos a mantener la calidad de las reseñas en AmigosNearMe.</p>`,
+      } : {
+        subject: `🗑️ Review removed on ${d.biz_name} — AmigosNearMe`,
+        html: `<p>Hi ${d.biz_name},</p>
+<p>A review you reported has been reviewed and <strong>removed</strong> by our moderation team.</p>
+<ul>
+  <li><strong>Original rating:</strong> ${d.rating}/5</li>
+  <li><strong>Reason for removal:</strong> ${d.reason || 'Violation of platform policies'}</li>
+</ul>
+<p>Thank you for helping us maintain the quality of reviews on AmigosNearMe.</p>`,
       };
 
     case 'SB15':
@@ -293,6 +337,50 @@ function templates(
         subject: '📲 An employer wants to hire you — AmigosNearMe',
         html: `<p>Hi ${d.worker_name},</p>
 <p>A business found your profile on AmigosNearMe and is reaching out to you via WhatsApp. Check your messages!</p>`,
+      };
+
+    case 'W5':
+      return es ? {
+        subject: '📩 Un empleador te ha enviado un mensaje — AmigosNearMe',
+        html: `<p>Hola ${d.worker_name},</p>
+<p>Un empleador encontró tu perfil en AmigosNearMe y te envió el siguiente mensaje:</p>
+<blockquote style="border-left:3px solid #ccc;padding:8px 16px;margin:12px 0;color:#444">
+  <p><strong>Nombre:</strong> ${d.sender_name || 'N/A'}</p>
+  <p><strong>Teléfono:</strong> ${d.sender_phone || 'N/A'}</p>
+  <p><strong>Mensaje:</strong> ${d.message || ''}</p>
+</blockquote>
+<p>Responde directamente a este empleador para coordinar los detalles.</p>`,
+      } : {
+        subject: '📩 An employer sent you a message — AmigosNearMe',
+        html: `<p>Hi ${d.worker_name},</p>
+<p>An employer found your profile on AmigosNearMe and sent you the following message:</p>
+<blockquote style="border-left:3px solid #ccc;padding:8px 16px;margin:12px 0;color:#444">
+  <p><strong>Name:</strong> ${d.sender_name || 'N/A'}</p>
+  <p><strong>Phone:</strong> ${d.sender_phone || 'N/A'}</p>
+  <p><strong>Message:</strong> ${d.message || ''}</p>
+</blockquote>
+<p>Reply directly to this employer to coordinate details.</p>`,
+      };
+
+    case 'W7':
+      return es ? {
+        subject: 'Una reseña en tu perfil fue eliminada — AmigosNearMe',
+        html: `<p>Hola ${d.worker_name},</p>
+<p>Una reseña en tu perfil de AmigosNearMe fue eliminada por nuestro equipo de moderación.</p>
+<ul>
+  <li><strong>Calificación eliminada:</strong> ${'★'.repeat(d.rating)}${'☆'.repeat(5 - d.rating)} (${d.rating}/5)</li>
+  <li><strong>Motivo:</strong> ${d.reason}</li>
+</ul>
+<p>Si tienes preguntas, contáctanos en <a href="mailto:support@amigosnearme.com">support@amigosnearme.com</a>.</p>`,
+      } : {
+        subject: 'A review on your profile was removed — AmigosNearMe',
+        html: `<p>Hi ${d.worker_name},</p>
+<p>A review on your AmigosNearMe profile has been removed by our moderation team.</p>
+<ul>
+  <li><strong>Removed rating:</strong> ${'★'.repeat(d.rating)}${'☆'.repeat(5 - d.rating)} (${d.rating}/5)</li>
+  <li><strong>Reason:</strong> ${d.reason}</li>
+</ul>
+<p>If you have questions, contact us at <a href="mailto:support@amigosnearme.com">support@amigosnearme.com</a>.</p>`,
       };
 
     case 'W3':
@@ -344,16 +432,15 @@ function templates(
       };
 
     case 'CU4':
-      return es ? {
-        subject: `Cuenta ${d.action} — AmigosNearMe`,
-        html: `<p>Hola ${d.name || 'ahí'},</p>
-<p>Tu cuenta de AmigosNearMe ha sido <strong>${d.action}</strong>.</p>
-${d.reason ? `<p><strong>Motivo:</strong> ${d.reason}</p>` : ''}`,
-      } : {
-        subject: `Account ${d.action} — AmigosNearMe`,
+      return {
+        subject: `Account ${d.action} / Cuenta ${d.action} — AmigosNearMe`,
         html: `<p>Hi ${d.name || 'there'},</p>
 <p>Your AmigosNearMe account has been <strong>${d.action}</strong>.</p>
-${d.reason ? `<p><strong>Reason:</strong> ${d.reason}</p>` : ''}`,
+${d.reason ? `<p><strong>Reason:</strong> ${d.reason}</p>` : ''}
+<hr style="margin:24px 0;border:none;border-top:1px solid #eee">
+<p>Hola ${d.name || 'ahí'},</p>
+<p>Tu cuenta de AmigosNearMe ha sido <strong>${d.action}</strong>.</p>
+${d.reason ? `<p><strong>Motivo:</strong> ${d.reason}</p>` : ''}`,
       };
 
     // ══ Employer ══════════════════════════════════════════════
@@ -421,6 +508,19 @@ ${d.reason ? `<p><strong>Motivo:</strong> ${d.reason}</p>` : ''}`,
 ${d.reason ? `<p><strong>Reason:</strong> ${d.reason}</p>` : ''}`,
       };
 
+    case 'EM7':
+      return es ? {
+        subject: 'Cuenta eliminada — AmigosNearMe',
+        html: `<p>Hola ${d.name || 'ahí'},</p>
+<p>Tu cuenta de empleador para <strong>${d.email || ''}</strong> ha sido eliminada permanentemente según tu solicitud.</p>
+<p>Gracias por usar AmigosNearMe.</p>`,
+      } : {
+        subject: 'Account deleted — AmigosNearMe',
+        html: `<p>Hi ${d.name || 'there'},</p>
+<p>Your employer account for <strong>${d.email || ''}</strong> has been permanently deleted as requested.</p>
+<p>Thank you for using AmigosNearMe.</p>`,
+      };
+
     case 'EM6':
       return es ? {
         subject: 'Necesitas créditos para contactar este trabajador — AmigosNearMe',
@@ -433,6 +533,40 @@ ${d.reason ? `<p><strong>Reason:</strong> ${d.reason}</p>` : ''}`,
 <p>You tried to contact a worker but have no credits left. Purchase a package to continue.</p>
 <p><a href="https://amigosnearme.com/search.html?mode=workers">Buy credits →</a></p>`,
       };
+
+    case 'SB_ZELLE_REQ':
+      return es ? {
+        subject: 'Recibimos tu solicitud de pago Zelle — AmigosNearMe',
+        html: `<p>Hola ${d.biz_name || 'ahí'},</p>
+<p>Recibimos tu solicitud de activación de plan <strong>${d.plan_name || ''}</strong> vía Zelle.</p>
+<p>Nuestro equipo verificará tu pago y activará tu plan dentro de las próximas <strong>24 horas hábiles</strong>.</p>
+<p>Si ya enviaste el pago a <strong>pagos@amigosnearme.com</strong>, no necesitas hacer nada más.</p>
+<p>¿Preguntas? Contáctanos por <a href="https://wa.me/17862388827">WhatsApp +1 (786) 238-8827</a>.</p>`,
+      } : {
+        subject: 'We received your Zelle payment request — AmigosNearMe',
+        html: `<p>Hi ${d.biz_name || 'there'},</p>
+<p>We received your <strong>${d.plan_name || ''}</strong> plan activation request via Zelle.</p>
+<p>Our team will verify your payment and activate your plan within <strong>24 business hours</strong>.</p>
+<p>If you already sent the payment to <strong>pagos@amigosnearme.com</strong>, no further action is needed.</p>
+<p>Questions? Contact us on <a href="https://wa.me/17862388827">WhatsApp +1 (786) 238-8827</a>.</p>`,
+      };
+
+    case 'ADMIN_ZELLE': {
+      const payMethod = d.payment_method || 'Zelle';
+      return {
+        subject: `[Admin] ${payMethod} payment pending — ${d.biz_name} (${d.plan_name})`,
+        html: `<p>A business has submitted a manual payment and is awaiting confirmation.</p>
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;font-size:14px">
+  <tr><td><strong>Name</strong></td><td>${d.biz_name || '—'}</td></tr>
+  <tr><td><strong>Email</strong></td><td>${d.owner_email || '—'}</td></tr>
+  <tr><td><strong>Plan</strong></td><td>${d.plan_name || '—'}</td></tr>
+  <tr><td><strong>Amount</strong></td><td>${d.amount || '—'}</td></tr>
+  <tr><td><strong>Payment Method</strong></td><td>${payMethod}</td></tr>
+  <tr><td><strong>Submitted</strong></td><td>${d.submitted_at || '—'}</td></tr>
+</table>
+<p style="margin-top:16px">Please verify the payment and confirm in the <a href="https://amigosnearme.com/admin.html">Admin console → Payment Pending</a>.</p>`,
+      };
+    }
 
     // ══ Admin (항상 영문) ══════════════════════════════════════
 
@@ -450,14 +584,36 @@ ${d.reason ? `<p><strong>Reason:</strong> ${d.reason}</p>` : ''}`,
 
     case 'AD2':
       return {
-        subject: `[Admin] ⭐ 1-star review posted — ${d.biz_name}`,
-        html: `<p>A 1-star review was posted:</p>
+        subject: `[Admin] ⭐ ${d.rating}-star review posted — ${d.biz_name}`,
+        html: `<p>A low-rating review was posted:</p>
 <ul>
   <li><strong>Business:</strong> ${d.biz_name}</li>
+  <li><strong>Rating:</strong> ${d.rating} / 5</li>
   <li><strong>Reviewer:</strong> ${d.reviewer_email || 'Anonymous'}</li>
   <li><strong>Review:</strong> "${d.review_text}"</li>
 </ul>
 <p><a href="https://amigosnearme.com/admin.html#reviews">Review in admin console →</a></p>`,
+      };
+
+    case 'W6':
+      return es ? {
+        subject: '⭐ Recibiste una nueva reseña — AmigosNearMe',
+        html: `<p>Hola ${d.worker_name},</p>
+<p>Alguien dejó una reseña en tu perfil de AmigosNearMe.</p>
+<ul>
+  <li><strong>Calificación:</strong> ${'★'.repeat(d.rating)}${'☆'.repeat(5 - d.rating)} (${d.rating}/5)</li>
+  ${d.review_text ? `<li><strong>Comentario:</strong> "${d.review_text}"</li>` : ''}
+</ul>
+<p><a href="https://amigosnearme.com/worker-profile.html?id=${d.worker_id}">Ver mi perfil →</a></p>`,
+      } : {
+        subject: '⭐ You received a new review — AmigosNearMe',
+        html: `<p>Hi ${d.worker_name},</p>
+<p>Someone left a review on your AmigosNearMe profile.</p>
+<ul>
+  <li><strong>Rating:</strong> ${'★'.repeat(d.rating)}${'☆'.repeat(5 - d.rating)} (${d.rating}/5)</li>
+  ${d.review_text ? `<li><strong>Comment:</strong> "${d.review_text}"</li>` : ''}
+</ul>
+<p><a href="https://amigosnearme.com/worker-profile.html?id=${d.worker_id}">View my profile →</a></p>`,
       };
 
     case 'AD3':
@@ -490,25 +646,31 @@ ${d.reason ? `<p><strong>Reason:</strong> ${d.reason}</p>` : ''}`,
         subject: '🔒 Tu contraseña fue cambiada — AmigosNearMe',
         html: `<p>Hola,</p>
 <p>Tu contraseña de AmigosNearMe fue cambiada el <strong>${d.changed_at || new Date().toUTCString()}</strong>.</p>
-<p>Si no realizaste este cambio, contáctanos de inmediato en <a href="mailto:hola@amigosnearme.com">hola@amigosnearme.com</a>.</p>`,
+<p>Si no realizaste este cambio, contáctanos de inmediato por <a href="https://wa.me/17862388827">WhatsApp +1 (786) 238-8827</a>.</p>`,
       } : {
         subject: '🔒 Your password was changed — AmigosNearMe',
         html: `<p>Hi,</p>
 <p>Your AmigosNearMe password was successfully changed on <strong>${d.changed_at || new Date().toUTCString()}</strong>.</p>
-<p>If you did not make this change, contact us immediately at <a href="mailto:hola@amigosnearme.com">hola@amigosnearme.com</a>.</p>`,
+<p>If you did not make this change, contact us immediately on <a href="https://wa.me/17862388827">WhatsApp +1 (786) 238-8827</a>.</p>`,
       };
 
     case 'SEC2':
       return es ? {
-        subject: '🔒 Restablecimiento de contraseña solicitado — AmigosNearMe',
+        subject: '🔒 Restablece tu contraseña — AmigosNearMe',
         html: `<p>Hola,</p>
-<p>Se solicitó un restablecimiento de contraseña para tu cuenta de AmigosNearMe.</p>
-<p>Si fuiste tú, revisa tu correo para el enlace de restablecimiento. Si no lo solicitaste, contáctanos en <a href="mailto:hola@amigosnearme.com">hola@amigosnearme.com</a>.</p>`,
+<p>Recibimos una solicitud para restablecer la contraseña de tu cuenta de AmigosNearMe.</p>
+${d.reset_link ? `<p style="margin:20px 0"><a href="${d.reset_link}" style="background:#C94F2B;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600">Restablecer contraseña →</a></p>
+<p style="font-size:12px;color:#888">Si el botón no funciona, copia y pega este enlace en tu navegador:<br>${d.reset_link}</p>` : ''}
+<p>Si no solicitaste este cambio, puedes ignorar este correo. Tu contraseña no cambiará.</p>
+<p>¿Necesitas ayuda? Contáctanos por <a href="https://wa.me/17862388827">WhatsApp +1 (786) 238-8827</a>.</p>`,
       } : {
-        subject: '🔒 Password reset requested — AmigosNearMe',
+        subject: '🔒 Reset your password — AmigosNearMe',
         html: `<p>Hi,</p>
-<p>A password reset was requested for your AmigosNearMe account.</p>
-<p>If this was you, check your email for the reset link. If you did not request this, contact us at <a href="mailto:hola@amigosnearme.com">hola@amigosnearme.com</a>.</p>`,
+<p>We received a request to reset the password for your AmigosNearMe account.</p>
+${d.reset_link ? `<p style="margin:20px 0"><a href="${d.reset_link}" style="background:#C94F2B;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600">Reset password →</a></p>
+<p style="font-size:12px;color:#888">If the button doesn't work, copy and paste this link into your browser:<br>${d.reset_link}</p>` : ''}
+<p>If you didn't request this, you can safely ignore this email. Your password won't change.</p>
+<p>Need help? Contact us on <a href="https://wa.me/17862388827">WhatsApp +1 (786) 238-8827</a>.</p>`,
       };
 
     // ══ 7-Day Upgrade Nudge ════════════════════════════════════
@@ -562,7 +724,7 @@ serve(async (req: Request) => {
       lang?: string;       // 'es' | 'en' — 없으면 'es' 기본값
     };
 
-    const isAdminScenario = ['AD1','AD2','AD3','AD4'].includes(scenario);
+    const isAdminScenario = ['AD1','AD2','AD3','AD4','ADMIN_ZELLE'].includes(scenario);
 
     // `to` 없고 ref_id가 UUID이면 auth.users에서 이메일 조회
     let resolvedTo = to;
