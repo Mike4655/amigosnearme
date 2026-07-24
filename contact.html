@@ -149,8 +149,8 @@
         <input class="form-input" type="text" id="f-name" placeholder="Maria G.">
       </div>
       <div class="form-field">
-        <label class="form-label" data-es>Correo electrónico</label>
-        <label class="form-label" data-en>Email</label>
+        <label class="form-label" data-es>Correo electrónico <span style="font-weight:400;color:var(--c-muted)">(opcional si ingresas WhatsApp)</span></label>
+        <label class="form-label" data-en>Email <span style="font-weight:400;color:var(--c-muted)">(optional if you enter WhatsApp)</span></label>
         <input class="form-input" type="email" id="f-email" placeholder="tu@correo.com">
       </div>
       <div class="form-field">
@@ -251,8 +251,9 @@ async function submitContactForm() {
   var subjectEl = document.getElementById('f-subject');
   var subject = subjectEl ? subjectEl.options[subjectEl.selectedIndex].getAttribute(isEn ? 'data-en' : 'data-es') : '';
 
-  if (!name || !email || !message) {
-    alert(isEn ? 'Please fill in your name, email, and message.' : 'Por favor completa tu nombre, correo y mensaje.');
+  var whatsapp = document.getElementById('f-whatsapp').value.trim();
+  if (!name || (!email && !whatsapp) || !message) {
+    alert(isEn ? 'Please fill in your name, message, and at least one contact method (email or WhatsApp).' : 'Por favor completa tu nombre, mensaje y al menos un medio de contacto (correo o WhatsApp).');
     return;
   }
 
@@ -263,7 +264,7 @@ async function submitContactForm() {
     var res = await fetch('https://itlcbqecqmenfolexkuj.supabase.co/functions/v1/send-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bGNicWVjcW1lbmZvbGV4a3VqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEzODMyOTAsImV4cCI6MjA2Njk1OTI5MH0.QDx9SWNQmDy2TCpXn8v_jwO1QNWsUYUFN7x79FfX1D0' },
-      body: JSON.stringify({ scenario: 'CONTACT', data: { name: name, email: email, whatsapp: (document.getElementById('f-whatsapp').value.trim() || null), subject: subject, message: message }, lang: 'en' })
+      body: JSON.stringify({ scenario: 'CONTACT', data: { name: name, email: email || null, whatsapp: whatsapp || null, subject: subject, message: message }, lang: 'en' })
     });
     if (!res.ok) throw new Error('send failed');
     document.getElementById('form-success').classList.add('show');
