@@ -653,6 +653,42 @@ ${d.reason ? `<p><strong>Reason:</strong> ${d.reason}</p>` : ''}`,
 <p><a href="https://amigosnearme.com/admin.html#cancellations">Review in admin console →</a></p>`,
       };
 
+    case 'RESEND_ALERT': {
+      const dailyPct  = Math.round((parseInt(d.daily_count)  / 100)  * 100);
+      const monthPct  = Math.round((parseInt(d.month_count)  / 3000) * 100);
+      const isDailyCrit  = parseInt(d.daily_count)  >= 80;
+      const isMonthCrit  = parseInt(d.month_count)  >= 2400;
+      return {
+        subject: `[Alert] Resend usage warning — ${d.daily_count}/day, ${d.month_count}/mo`,
+        html: `<h2 style="color:#C94F2B">⚠️ Resend Email Usage Warning</h2>
+<table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse;font-size:14px;margin-bottom:16px">
+  <tr>
+    <th style="background:#f5f5f5">Metric</th>
+    <th style="background:#f5f5f5">Used</th>
+    <th style="background:#f5f5f5">Limit</th>
+    <th style="background:#f5f5f5">Usage</th>
+    <th style="background:#f5f5f5">Status</th>
+  </tr>
+  <tr>
+    <td>Today (${d.today_date})</td>
+    <td><strong>${d.daily_count}</strong></td>
+    <td>100</td>
+    <td>${dailyPct}%</td>
+    <td>${isDailyCrit ? '🔴 <strong>CRITICAL</strong>' : '🟡 WARNING'}</td>
+  </tr>
+  <tr>
+    <td>This month (${d.month_label})</td>
+    <td><strong>${d.month_count}</strong></td>
+    <td>3,000</td>
+    <td>${monthPct}%</td>
+    <td>${isMonthCrit ? '🔴 <strong>CRITICAL</strong>' : '🟡 WARNING'}</td>
+  </tr>
+</table>
+<p><strong>Action required:</strong> Consider upgrading Resend to a paid plan ($20/month) to avoid email delivery failures.</p>
+<p><a href="https://resend.com/settings/billing" style="display:inline-block;padding:10px 20px;background:#C94F2B;color:#fff;border-radius:6px;text-decoration:none;font-weight:600">Upgrade Resend now →</a></p>`,
+      };
+    }
+
     // ══ Security ══════════════════════════════════════════════
 
     case 'SEC1':
@@ -738,7 +774,7 @@ serve(async (req: Request) => {
       lang?: string;       // 'es' | 'en' — 없으면 'es' 기본값
     };
 
-    const isAdminScenario = ['AD1','AD2','AD3','AD4','ADMIN_ZELLE','CONTACT'].includes(scenario);
+    const isAdminScenario = ['AD1','AD2','AD3','AD4','ADMIN_ZELLE','CONTACT','RESEND_ALERT'].includes(scenario);
 
     // `to` 없고 ref_id가 UUID이면 auth.users에서 이메일 조회
     let resolvedTo = to;
