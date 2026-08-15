@@ -165,14 +165,29 @@
   .admin-member{display:flex;align-items:center;gap:10px;padding:8px 0}
   .btn-add-admin{margin-top:10px;padding:8px 14px;border-radius:var(--radius-sm);background:var(--c-bg);border:0.5px solid var(--c-border);font-size:12px;font-weight:500;color:var(--c-text);cursor:pointer;font-family:var(--font-body)}
 
+  /* Hamburger — desktop hidden, mobile shown */
+  .ham-btn{display:none;align-items:center;justify-content:center;width:36px;height:36px;border-radius:var(--radius-sm);border:0.5px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);cursor:pointer;flex-shrink:0;margin-right:10px}
+  .ham-btn span{display:block;width:16px;height:1.5px;background:#fff;border-radius:2px;position:relative}
+  .ham-btn span::before,.ham-btn span::after{content:'';display:block;width:16px;height:1.5px;background:#fff;border-radius:2px;position:absolute}
+  .ham-btn span::before{top:-5px}
+  .ham-btn span::after{top:5px}
+
+  /* Mobile overlay */
+  .sb-overlay{display:none;position:fixed;inset:0;background:rgba(26,26,24,0.45);z-index:110;backdrop-filter:blur(2px)}
+  .sb-overlay.open{display:block}
+
   @media (max-width:900px){
-    .sidebar{display:none}
+    .sidebar{transform:translateX(-100%);transition:transform 0.25s ease;z-index:120;overflow-y:auto}
+    .sidebar.open{transform:translateX(0)}
     .main{margin-left:0}
+    .top-bar{padding:0 16px}
+    .ham-btn{display:flex}
     .stats-row{grid-template-columns:1fr 1fr}
     table{font-size:12px}
     .priority-cell{min-width:160px}
     .analytics-grid{grid-template-columns:1fr}
     .doc-chips,.review-quote,.review-card .queue-actions{margin-left:0}
+    .content{padding:16px}
   }
 
   /* ===== REJECT MODAL ===== */
@@ -200,8 +215,11 @@
 </head>
 <body>
 
+<!-- Mobile overlay -->
+<div class="sb-overlay" id="sb-overlay" onclick="closeSidebar()"></div>
+
 <!-- SIDEBAR -->
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
   <div class="sb-logo">
     <a href="#">Amigos<span>NearMe</span></a>
     <div class="sb-tag">Admin Console</div>
@@ -225,6 +243,7 @@
 <!-- MAIN -->
 <div class="main">
   <div class="top-bar">
+    <button class="ham-btn" onclick="toggleSidebar()" aria-label="Menu"><span></span></button>
     <div>
       <div class="top-bar-title" id="top-bar-title">Businesses</div>
       <div class="top-bar-sub" id="top-bar-sub">Manage listings, verification, and search priority</div>
@@ -1802,7 +1821,19 @@ function hideError(id) { var el = document.getElementById(id); if (el) el.classL
 function markInvalid(el) { if (el) el.classList.add('input-error'); }
 function clearInvalid(el) { if (el) el.classList.remove('input-error'); }
 
+function toggleSidebar() {
+  var sb = document.getElementById('sidebar');
+  var ov = document.getElementById('sb-overlay');
+  var open = sb.classList.toggle('open');
+  ov.classList.toggle('open', open);
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sb-overlay').classList.remove('open');
+}
+
 function showAdminPane(pane) {
+  closeSidebar();
   var panes = ['businesses','customers','verification','reviews','cancellations','zelle','employers','workers','analytics','settings','billing'];
   panes.forEach(function(p) {
     var el = document.getElementById('pane-' + p);
