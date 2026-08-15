@@ -44,8 +44,9 @@
   .badge-verified{background:var(--c-green-light);color:var(--c-green)}
   .badge-insured{background:#EEF6FF;color:var(--c-blue)}
   .section-title{font-size:13px;font-weight:600;color:var(--c-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:12px}
-  .info-row{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--c-muted);margin-bottom:8px}
-  .info-row strong{color:var(--c-text)}
+  .info-row{display:flex;gap:8px;align-items:flex-start;font-size:14px;color:var(--c-muted);margin-bottom:8px}
+  .info-row strong{color:var(--c-text);flex-shrink:0}
+  .info-row .info-val{word-break:break-word;min-width:0}
   .btn-wa{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:var(--radius-md);background:var(--c-green);color:#fff;font-size:15px;font-weight:600;border:none;cursor:pointer;font-family:var(--font-body);transition:opacity 0.15s}
   .btn-wa:hover{opacity:0.9}
   .btn-wa:disabled{opacity:0.45;cursor:not-allowed}
@@ -542,10 +543,10 @@ function renderWorker(w) {
     detHtml += '<div class="info-row">💳 <strong>'+(isEn?'Payment':'Pago')+':</strong> '+pLabels+'</div>';
   }
   if (w.service_area) {
-    detHtml += '<div class="info-row">📍 <strong>'+(isEn?'Work area':'Área de trabajo')+':</strong> '+w.service_area+'</div>';
+    detHtml += '<div class="info-row">📍 <strong>'+(isEn?'Work area':'Área de trabajo')+':</strong> <span class="info-val">'+w.service_area+'</span></div>';
   }
   if (w.desired_pay) {
-    detHtml += '<div class="info-row">💰 <strong>'+(isEn?'Desired pay':'Salario deseado')+':</strong> '+w.desired_pay+'</div>';
+    detHtml += '<div class="info-row">💰 <strong>'+(isEn?'Desired pay':'Salario deseado')+':</strong> <span class="info-val">$'+w.desired_pay+' '+(isEn?'/ hr':'/ hora')+'</span></div>';
   }
   document.getElementById('worker-details').innerHTML = detHtml || '<div style="font-size:13px;color:var(--c-hint)">'+(isEn?'No additional details.':'Sin detalles adicionales.')+'</div>';
 }
