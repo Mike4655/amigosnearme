@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <script>
@@ -70,6 +70,9 @@
   body.en [data-es]{display:none}
   body.en [data-en]{display:revert}
   @media(max-width:600px){.page-wrap{padding:16px 12px}}
+
+  /* iOS auto-zoom prevention */
+  @media(max-width:900px){input,select,textarea{font-size:16px!important}}
 </style>
 </head>
 <body>

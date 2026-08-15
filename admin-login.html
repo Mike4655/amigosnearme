@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -70,6 +70,9 @@
 
   .step-back{font-size:12px;color:var(--c-muted);cursor:pointer;display:inline-flex;align-items:center;gap:4px;margin-bottom:14px}
   .step-back:hover{color:var(--c-text)}
+
+  /* iOS auto-zoom prevention */
+  @media(max-width:900px){input,select,textarea{font-size:16px!important}}
 </style>
 </head>
 <body>

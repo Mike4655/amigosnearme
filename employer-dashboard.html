@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -82,6 +82,9 @@
   .pay-tab{padding:7px 16px;border-radius:var(--radius-sm);border:1.5px solid var(--c-border);background:var(--c-surface);font-size:13px;font-weight:500;cursor:pointer;color:var(--c-muted);font-family:var(--font-body);transition:all .15s}
   .pay-tab.selected{background:var(--c-accent);color:#fff;border-color:var(--c-accent)}
   #anm-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:12px 24px;border-radius:999px;font-size:13px;font-weight:500;z-index:2000;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+
+  /* iOS auto-zoom prevention */
+  @media(max-width:900px){input,select,textarea{font-size:16px!important}}
 </style>
 </head>
 <body>

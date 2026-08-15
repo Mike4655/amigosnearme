@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <script>if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
@@ -345,12 +345,18 @@ if (new URLSearchParams(window.location.search).get('type') === 'staffing') docu
   .pay-tab { padding: 7px 13px; border-radius: var(--radius-sm); border: 0.5px solid var(--c-border); background: var(--c-bg); font-size: 12.5px; font-weight: 500; color: var(--c-muted); cursor: pointer; font-family: var(--font-body); transition: all 0.15s; }
   .pay-tab:hover { border-color: var(--c-accent); color: var(--c-accent); }
   .pay-tab.selected { background: var(--c-accent); color: #fff; border-color: var(--c-accent); }
+
+  /* iOS auto-zoom prevention */
+  @media(max-width:900px){input,select,textarea{font-size:16px!important}}
 </style>
 
 <!-- Toast for upgrade confirmation -->
 <style>
   .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--c-text); color: #fff; padding: 12px 20px; border-radius: var(--radius-sm); font-size: 13px; opacity: 0; pointer-events: none; transition: all 0.25s; z-index: 300; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* iOS auto-zoom prevention */
+  @media(max-width:900px){input,select,textarea{font-size:16px!important}}
 </style>
 </head>
 <body>
