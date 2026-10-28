@@ -1430,6 +1430,21 @@ async function goSuccess(isZelle, isAch) {
           p_category_other: (document.getElementById('f-cat-other') || {}).value ? document.getElementById('f-cat-other').value.trim() : ''
         });
         console.log('✅ businesses record pre-created via RPC (before email confirmation)');
+        // Worker만 이메일 인증 자동 완료 (business/employer는 수동 인증 유지)
+        if (isWorkerRegPre) {
+          try {
+            var confirmResp = await getSupabase().functions.invoke('auto-confirm-worker', {
+              body: { user_id: signedUpUserId, email: email }
+            });
+            if (confirmResp.error) {
+              console.warn('[register] auto-confirm-worker error:', confirmResp.error);
+            } else {
+              console.log('✅ Worker email auto-confirmed');
+            }
+          } catch(confirmErr) {
+            console.warn('[register] auto-confirm-worker failed:', confirmErr);
+          }
+        }
       } catch(preCreateErr) {
         console.warn('[register] create_business_after_signup failed:', preCreateErr);
       }
