@@ -1370,7 +1370,7 @@ async function goSuccess(isZelle, isAch) {
   try {
     console.log('=== goSuccess ===', { email, bizName, serviceArea, languages, paymentMethods, categories });
 
-    // 삭제된 이메일 사전 체크
+    // 삭제된 이메일 사전 체크 (중복 체크는 validateStep2에서 이미 완료)
     try {
       var { data: isDeletedPre } = await getSupabase().rpc('is_deleted_business_email', { p_email: email });
       console.log('[register] pre-check is_deleted_business_email:', isDeletedPre);
@@ -2127,7 +2127,7 @@ function validateStep1() {
 }
 
 // ── STEP 2 VALIDATION ──
-function validateStep2() {
+async function validateStep2() {
   var valid = true;
 
   // 1. Legal name OR trade name (business) / full name (worker)
@@ -2243,6 +2243,35 @@ function validateStep2() {
     }
     return;
   }
+
+  // 이미 가입된 이메일인지 DB에서 확인 후 다음 단계로 이동
+  var emailVal = accountEmail.value.trim();
+  var isEn2 = document.body.classList.contains('en');
+  try {
+    var { data: alreadyRegistered } = await getSupabase().rpc('is_email_already_registered', { p_email: emailVal });
+    if (alreadyRegistered) {
+      var { data: isDeleted2 } = await getSupabase().rpc('is_deleted_business_email', { p_email: emailVal });
+      var msg = isDeleted2
+        ? (isEn2 ? '⛔ This email has been deleted and cannot be used to register again.' : '⛔ Este correo fue eliminado y no puede usarse para registrarse nuevamente.')
+        : (isEn2 ? '⛔ This email is already registered. Please log in or use a different email address.' : '⛔ Este correo ya está registrado. Por favor inicia sesión o usa otro correo electrónico.');
+      showError('err-account');
+      markInvalid(accountEmail);
+      var errEl = document.getElementById('err-account');
+      if (errEl) errEl.textContent = msg;
+      accountEmail.scrollIntoView({behavior:'smooth', block:'center'});
+      return;
+    }
+  } catch(e) {
+    console.error('[validateStep2] email duplicate check error:', e);
+    // RPC 실패 시 안전하게 차단 (알 수 없는 에러를 통과시키지 않음)
+    showError('err-account');
+    markInvalid(accountEmail);
+    var errEl2 = document.getElementById('err-account');
+    if (errEl2) errEl2.textContent = isEn2 ? '⛔ Unable to verify email. Please try again.' : '⛔ No se pudo verificar el correo. Intenta de nuevo.';
+    accountEmail.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+
   goStep(3);
 }
 
