@@ -1383,7 +1383,7 @@ async function goSuccess(isZelle, isAch) {
 
     var normalizedPhone = normalizePhone(phoneEl ? phoneEl.value.trim() : '');
     try { var es = await getSession(); if (es) { await signOut(); } } catch(e) {}
-    await signUp({ email, password,
+    var signUpResult = await signUp({ email, password,
       userType: isStaffingSelected() ? 'worker' : 'business',
       businessName: bizName, tradeName: tradeNameEl ? tradeNameEl.value.trim() : '',
       phone: normalizedPhone, publicEmail: email,
@@ -1393,6 +1393,47 @@ async function goSuccess(isZelle, isAch) {
       categories: categories, serviceArea: serviceArea,
       languages: languages, paymentMethods: paymentMethods, hours: hoursData
     });
+    // signUp 직후 세션 없어도(이메일 인증 대기 중) RPC로 businesses 레코드 선생성
+    // Confirm email ON 상태에서도 로그인이 가능하도록 보장
+    var signedUpUserId = signUpResult && signUpResult.user && signUpResult.user.id;
+    if (signedUpUserId) {
+      try {
+        var bizTypeElPre = document.getElementById('biz-type-select');
+        var insuredElPre = document.getElementById('f-insured');
+        var isWorkerRegPre = isStaffingSelected();
+        var detectedLangPre = document.body.classList.contains('en') ? 'en' : 'es';
+        var effectivePlanPre = isAch ? 'pending_ach' : (isZelle ? 'pending_zelle' : (selectedPlan || 'free'));
+        var pendingPlanValPre = (isZelle || isAch) ? (selectedPlan || 'basic') : null;
+        await getSupabase().rpc('create_business_after_signup', {
+          p_user_id: signedUpUserId,
+          p_email: email,
+          p_business_name: bizName || email.split('@')[0],
+          p_is_worker: isWorkerRegPre,
+          p_plan: effectivePlanPre,
+          p_pending_plan: pendingPlanValPre,
+          p_whatsapp_phone: normalizedPhone || '',
+          p_description: descEl ? descEl.value.trim() : '',
+          p_description_es: descEl ? descEl.value.trim() : '',
+          p_description_en: descEnEl ? descEnEl.value.trim() : '',
+          p_preferred_lang: detectedLangPre,
+          p_trade_name: tradeNameEl ? tradeNameEl.value.trim() : '',
+          p_business_type: bizTypeElPre ? bizTypeElPre.value : null,
+          p_insured: insuredElPre ? insuredElPre.checked : false,
+          p_categories: JSON.stringify(categories || []),
+          p_service_area: typeof serviceArea === 'string' ? serviceArea : JSON.stringify(serviceArea || ''),
+          p_languages: JSON.stringify(languages && languages.length > 0 ? languages : ['es']),
+          p_payment_methods: JSON.stringify(paymentMethods || []),
+          p_hours: JSON.stringify(hoursData || []),
+          p_staffing_types: JSON.stringify(staffingTypes || []),
+          p_staffing_availability: JSON.stringify(staffingAvailability || []),
+          p_staffing_type_other: (document.getElementById('staffing-type-other') || {}).value ? document.getElementById('staffing-type-other').value.trim() : '',
+          p_category_other: (document.getElementById('f-cat-other') || {}).value ? document.getElementById('f-cat-other').value.trim() : ''
+        });
+        console.log('✅ businesses record pre-created via RPC (before email confirmation)');
+      } catch(preCreateErr) {
+        console.warn('[register] create_business_after_signup failed:', preCreateErr);
+      }
+    }
     try {
       var cs = await getSession();
       if (!cs) { var ld = await signIn({ email, password }); cs = ld.session; }
