@@ -183,6 +183,24 @@
       <div class="auth-sub" data-en style="margin-bottom:20px">Choose your account type to continue.</div>
 
       <div style="display:flex;flex-direction:column;gap:12px">
+        <button class="type-btn" onclick="selectUserType('customer')">
+          <span style="font-size:22px">🔍</span>
+          <div style="text-align:left">
+            <div style="font-weight:600;font-size:14px" data-es>Soy cliente — busco servicios</div>
+            <div style="font-weight:600;font-size:14px" data-en>I'm a customer — looking for services</div>
+            <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-es>Guarda favoritos, deja reseñas, contacta negocios</div>
+            <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-en>Save favorites, leave reviews, contact businesses</div>
+          </div>
+        </button>
+        <button class="type-btn" onclick="selectUserType('business')">
+          <span style="font-size:22px">🏢</span>
+          <div style="text-align:left">
+            <div style="font-weight:600;font-size:14px" data-es>Soy dueño de negocio</div>
+            <div style="font-weight:600;font-size:14px" data-en>I'm a business owner</div>
+            <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-es>Accede a tu panel, gestiona solicitudes y tu perfil</div>
+            <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-en>Access your dashboard, manage requests and profile</div>
+          </div>
+        </button>
         <button class="type-btn" onclick="selectUserType('employer')">
           <span style="font-size:22px">🏗️</span>
           <div style="text-align:left">
@@ -310,8 +328,8 @@
     </a>
 
     <div class="biz-link-box">
-      <span data-es>¿Eres trabajador o empleador nuevo? </span>
-      <span data-en>New worker or employer? </span>
+      <span data-es>¿Quieres registrar tu negocio o trabajo? </span>
+      <span data-en>Want to list your business or work? </span>
       <a href="register-type.html" data-es>Regístrate aquí →</a>
       <a href="register-type.html" data-en>Register here →</a>
     </div>
