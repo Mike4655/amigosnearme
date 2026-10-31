@@ -1448,6 +1448,25 @@ async function goSuccess(isZelle, isAch) {
       } catch(preCreateErr) {
         console.warn('[register] create_business_after_signup failed:', preCreateErr);
       }
+
+      // 이메일 인증 대기 중 사진 유실 방지: localStorage에 base64로 임시 저장
+      // dashboard 첫 로그인 시 복구됨 (동일 기기/브라우저 기준)
+      try {
+        var _pendingForSave = isWorkerRegPre
+          ? (_workerPhotoFile ? [_workerPhotoFile] : [])
+          : _pendingPhotos.filter(Boolean);
+        if (_pendingForSave.length > 0) {
+          var _b64Photos = await Promise.all(_pendingForSave.map(function(f) {
+            return new Promise(function(resolve) {
+              var reader = new FileReader();
+              reader.onload = function(e) { resolve({ data: e.target.result, name: f.name }); };
+              reader.readAsDataURL(f);
+            });
+          }));
+          localStorage.setItem('handal_pending_photos_' + signedUpUserId,
+            JSON.stringify({ photos: _b64Photos, isWorker: isWorkerRegPre }));
+        }
+      } catch(e) { console.warn('[register] pending photos localStorage save failed:', e); }
     }
     try {
       var cs = await getSession();
@@ -1553,9 +1572,16 @@ async function goSuccess(isZelle, isAch) {
             submitted_at: new Date().toLocaleString('en-US', {timeZone:'America/New_York'})
           }, zelBiz ? zelBiz.id : null);
         } else {
-          // SB1 / W1: 가입 완료 환영 이메일
+          // SB1 / W1: 가입 완료 환영 이메일 (session 있는 경우 — Worker 또는 이메일 인증 OFF)
           var scenario = isWorkerReg ? 'W1' : 'SB1';
           sendEmail(scenario, email, { owner_name: ownerName, worker_name: ownerName, biz_name: bizName }, null, detectedLang);
+          // SB1/W1 발송됐으므로 welcome_sent=true 표시 (dashboard 첫 로그인 중복 방지)
+          try {
+            var _regBizForWelcome = await getMyBusiness();
+            if (_regBizForWelcome && _regBizForWelcome.id) {
+              await getSupabase().from('businesses').update({ welcome_sent: true }).eq('id', _regBizForWelcome.id);
+            }
+          } catch(e) {}
           // Verified Badge 신청 서류는 Business 전용 (Worker는 Badge 신청 없음)
           if (!isWorkerReg) {
             var biz = await getMyBusiness();

@@ -183,24 +183,6 @@
       <div class="auth-sub" data-en style="margin-bottom:20px">Choose your account type to continue.</div>
 
       <div style="display:flex;flex-direction:column;gap:12px">
-        <button class="type-btn" onclick="selectUserType('customer')">
-          <span style="font-size:22px">🔍</span>
-          <div style="text-align:left">
-            <div style="font-weight:600;font-size:14px" data-es>Soy cliente — busco servicios</div>
-            <div style="font-weight:600;font-size:14px" data-en>I'm a customer — looking for services</div>
-            <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-es>Guarda favoritos, deja reseñas, contacta negocios</div>
-            <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-en>Save favorites, leave reviews, contact businesses</div>
-          </div>
-        </button>
-        <button class="type-btn" onclick="selectUserType('business')">
-          <span style="font-size:22px">🏢</span>
-          <div style="text-align:left">
-            <div style="font-weight:600;font-size:14px" data-es>Soy dueño de negocio</div>
-            <div style="font-weight:600;font-size:14px" data-en>I'm a business owner</div>
-            <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-es>Accede a tu panel, gestiona solicitudes y tu perfil</div>
-            <div style="font-size:12px;color:var(--c-muted);margin-top:2px" data-en>Access your dashboard, manage requests and profile</div>
-          </div>
-        </button>
         <button class="type-btn" onclick="selectUserType('employer')">
           <span style="font-size:22px">🏗️</span>
           <div style="text-align:left">
@@ -328,8 +310,8 @@
     </a>
 
     <div class="biz-link-box">
-      <span data-es>¿Quieres registrar tu negocio o trabajo? </span>
-      <span data-en>Want to list your business or work? </span>
+      <span data-es>¿Eres trabajador o empleador nuevo? </span>
+      <span data-en>New worker or employer? </span>
       <a href="register-type.html" data-es>Regístrate aquí →</a>
       <a href="register-type.html" data-en>Register here →</a>
     </div>
@@ -733,6 +715,13 @@ async function doLogin() {
             : (isEnEp ? '⛔ Your account has been suspended. Please contact support.' : '⛔ Tu cuenta ha sido suspendida. Por favor contacta a soporte.'));
           return;
         }
+        if (!epLogin) {
+          // 이메일 인증 후 첫 로그인 — signup 시 session=null이어서 생성 못 한 프로필 생성 + Welcome 이메일 발송
+          var epName = data.user.user_metadata?.display_name || emailEl.value.split('@')[0];
+          await sb0.from('employer_profiles').insert({ owner_id: data.user.id, display_name: epName });
+          var epLang = data.user.user_metadata?.preferred_lang || (document.body.classList.contains('en') ? 'en' : 'es');
+          sendEmail('EM1', emailEl.value.trim(), { name: epName }, null, epLang);
+        }
       } catch(e) {}
       window.location.href = _returnTo ? decodeURIComponent(_returnTo) : 'employer-dashboard.html';
     } else if (userType === 'worker') {
@@ -758,6 +747,14 @@ async function doLogin() {
           ? (isEnL ? '⛔ This account has been deleted.' : '⛔ Esta cuenta ha sido eliminada.')
           : (isEnL ? '⛔ Your account has been suspended. Please contact support.' : '⛔ Tu cuenta ha sido suspendida. Por favor contacta a soporte.'));
         return;
+      }
+      if (custStatus === null) {
+        // 이메일 인증 후 첫 로그인 — customer_profiles 없음 → 생성 + Welcome 이메일 발송
+        try {
+          await getSupabase().from('customer_profiles').insert({ owner_id: data.user.id });
+          var cuLang = data.user.user_metadata?.preferred_lang || (document.body.classList.contains('en') ? 'en' : 'es');
+          sendEmail('CU1', emailEl.value.trim(), { name: displayName }, null, cuLang);
+        } catch(e) {}
       }
       enterAccount(displayName, emailEl.value.trim());
     }
@@ -789,24 +786,27 @@ async function doSignup() {
     var resolvedType = (urlType === 'employer' || selectedUserType === 'employer' || selectedUserType === 'staffing') ? 'employer' : 'customer';
     var detectedLang = document.body.classList.contains('en') ? 'en' : 'es';
     await signUp({ email: emailEl.value.trim(), password: passwordEl.value, userType: resolvedType, businessName: nameEl.value.trim(), preferredLang: detectedLang });
-    // CU1 / EM1: 가입 완료 이메일 — 감지된 언어로 발송
     var uiLang = detectedLang;
-    sendEmail(resolvedType === 'employer' ? 'EM1' : 'CU1', emailEl.value.trim(), { name: nameEl.value.trim() }, null, uiLang);
     // 세션 확인: 이메일 확인 비활성화 시 즉시 세션 생성됨
     var newSess = await getSession();
     if (newSess && newSess.user) {
       var newUid = newSess.user.id;
       if (resolvedType === 'employer') {
-        await getSupabase().from('employer_profiles').insert({ owner_id: newUid });
+        await getSupabase().from('employer_profiles').insert({ owner_id: newUid, display_name: nameEl.value.trim() });
+        // 세션 즉시 생성 = 이메일 인증 불필요 → Welcome 이메일 바로 발송
+        sendEmail('EM1', emailEl.value.trim(), { name: nameEl.value.trim() }, null, uiLang);
         var _returnToSU = (new URLSearchParams(window.location.search)).get('returnTo');
         window.location.href = _returnToSU ? decodeURIComponent(_returnToSU) : 'employer-dashboard.html';
         return;
       } else {
         await getSupabase().from('customer_profiles').insert({ owner_id: newUid });
+        // 세션 즉시 생성 = 이메일 인증 불필요 → Welcome 이메일 바로 발송
+        sendEmail('CU1', emailEl.value.trim(), { name: nameEl.value.trim() }, null, uiLang);
         enterAccount(nameEl.value.trim(), emailEl.value.trim());
         return;
       }
     }
+    // 세션 없음 = 이메일 인증 필요 → Welcome 이메일은 인증 후 로그인 시 발송 (doLogin 참조)
     // 세션 없음 = 이메일 확인 필요 (Supabase 설정에서 Confirm email ON 상태)
     document.getElementById('auth-wrap').innerHTML =
       '<div style="text-align:center;padding:48px 24px;max-width:440px;margin:0 auto">' +
@@ -1313,7 +1313,8 @@ document.addEventListener('DOMContentLoaded', async function() {
 
       // ?type=employer로 접근했으나 employer_profiles 없는 경우 → 자동 생성 후 대시보드로
       if (typeParam === 'employer') {
-        await getSupabase().from('employer_profiles').insert({ owner_id: user.id });
+        var _epNameFallback = user.user_metadata?.display_name || user.email?.split('@')[0] || '';
+        await getSupabase().from('employer_profiles').insert({ owner_id: user.id, display_name: _epNameFallback });
         window.location.href = _empDest;
         return;
       }

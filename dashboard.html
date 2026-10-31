@@ -2563,6 +2563,49 @@ document.addEventListener('DOMContentLoaded', async function(){
       if ((!biz.hours || biz.hours.length === 0) && meta.hours && meta.hours.length > 0) needsUpdate.hours = meta.hours;
       if (Object.keys(needsUpdate).length > 0) { try { await updateBusiness(needsUpdate); Object.assign(biz, needsUpdate); } catch(e) {} }
 
+      // 첫 로그인 감지: welcome_sent=false이면 SB1 환영 이메일 발송
+      // (이메일 인증 후 첫 로그인 시 — register.html에서 session=null로 발송 못한 경우)
+      if (!biz.welcome_sent) {
+        try {
+          var _ownerName = biz.business_name || user.email.split('@')[0];
+          var _dashLang = (user.user_metadata?.preferred_lang) || (document.body.classList.contains('en') ? 'en' : 'es');
+          sendEmail('SB1', user.email, { owner_name: _ownerName, biz_name: biz.business_name || '' }, biz.id, _dashLang);
+          await getSupabase().from('businesses').update({ welcome_sent: true }).eq('id', biz.id);
+        } catch(e) { console.warn('[dashboard] SB1 welcome email error:', e); }
+      }
+
+      // 이메일 인증 대기 중 유실된 사진 복구 (register.html에서 localStorage에 저장한 경우)
+      var _lsPhotoKey = 'handal_pending_photos_' + user.id;
+      var _lsPhotosRaw = null;
+      try { _lsPhotosRaw = localStorage.getItem(_lsPhotoKey); } catch(e) {}
+      if (_lsPhotosRaw && (!biz.photos || biz.photos.length === 0)) {
+        try {
+          var _lsPhotos = JSON.parse(_lsPhotosRaw);
+          if (_lsPhotos.photos && _lsPhotos.photos.length > 0) {
+            var _sbPh = getSupabase();
+            var _photoUrls = [];
+            var _photoTs = Date.now();
+            for (var _pi = 0; _pi < _lsPhotos.photos.length; _pi++) {
+              var _ph = _lsPhotos.photos[_pi];
+              var _phExt = _ph.name.split('.').pop();
+              var _phPath = biz.id + '/' + _photoTs + '_' + _pi + '.' + _phExt;
+              var _phBlob = await fetch(_ph.data).then(function(r){ return r.blob(); });
+              var _phUp = await _sbPh.storage.from('business-photos').upload(_phPath, _phBlob, { upsert: true });
+              if (!_phUp.error) {
+                var _phPub = _sbPh.storage.from('business-photos').getPublicUrl(_phPath);
+                if (_phPub.data && _phPub.data.publicUrl) _photoUrls.push(_phPub.data.publicUrl);
+              }
+            }
+            if (_photoUrls.length > 0) {
+              await _sbPh.from('businesses').update({ photos: _photoUrls }).eq('id', biz.id);
+              biz.photos = _photoUrls;
+              console.log('✅ Pending photos restored:', _photoUrls.length);
+            }
+          }
+        } catch(e) { console.warn('[dashboard] pending photos restore failed:', e); }
+        try { localStorage.removeItem(_lsPhotoKey); } catch(e) {}
+      }
+
       // B안: Business 계정 → Hire Workers 사이드바 섹션 표시
       var hireSection = document.getElementById('hire-workers-section');
       if (hireSection) hireSection.style.display = 'block';
