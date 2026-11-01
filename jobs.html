@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Openings — AmigosNearMe</title>
+<meta name="description" content="Browse open jobs for Hispanic workers in Atlanta. Kitchen, construction, moving, and more.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+  :root {
+    --c-bg:#FAFAF7; --c-surface:#fff; --c-border:rgba(0,0,0,0.09);
+    --c-text:#1A1A18; --c-muted:#6B6B66; --c-hint:#A8A8A2;
+    --c-accent:#C94F2B; --c-accent-light:#FAF0EC;
+    --c-green:#1D9E75; --c-green-light:#EBF8F3;
+    --c-amber:#BA7517; --c-amber-light:#FEF6E4;
+    --radius-sm:8px; --radius-md:12px; --radius-lg:18px;
+    --shadow:0 1px 3px rgba(0,0,0,0.07),0 4px 12px rgba(0,0,0,0.05);
+    --font-body:'DM Sans',system-ui,sans-serif;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  nav{position:sticky;top:0;z-index:100;background:rgba(250,250,247,0.92);backdrop-filter:blur(12px);border-bottom:0.5px solid var(--c-border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+  .nav-logo{font-family:var(--font-body);font-size:20px;font-weight:800;color:var(--c-text);text-decoration:none}
+  .nav-logo span{color:var(--c-accent)}
+  .lang-switch{display:flex;gap:4px}
+  .lang-btn{padding:5px 10px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);background:var(--c-surface);font-size:12px;font-weight:500;color:var(--c-muted);cursor:pointer;font-family:var(--font-body)}
+  .lang-btn.active{background:var(--c-text);color:#fff;border-color:var(--c-text)}
+  .page-wrap{max-width:860px;margin:0 auto;padding:48px 24px 80px}
+  .page-header{margin-bottom:32px}
+  .eyebrow{font-size:12px;font-weight:600;color:var(--c-accent);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+  h1{font-size:clamp(28px,4vw,38px);font-weight:800;letter-spacing:-0.5px;margin-bottom:10px}
+  .lede{font-size:15px;color:var(--c-muted);max-width:480px}
+  .filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px}
+  .filter-btn{padding:7px 14px;border-radius:99px;border:0.5px solid var(--c-border);background:var(--c-surface);font-size:13px;font-weight:500;color:var(--c-muted);cursor:pointer;font-family:var(--font-body);transition:all .15s}
+  .filter-btn:hover,.filter-btn.active{border-color:var(--c-accent);color:var(--c-accent);background:var(--c-accent-light)}
+  .jobs-list{display:flex;flex-direction:column;gap:14px}
+  .job-card{background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius-lg);padding:22px 24px;cursor:pointer;text-decoration:none;color:inherit;display:block;transition:border-color .15s,transform .15s,box-shadow .15s}
+  .job-card:hover{border-color:var(--c-accent);transform:translateY(-1px);box-shadow:var(--shadow)}
+  .job-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+  .job-title{font-size:16px;font-weight:700;letter-spacing:-0.2px}
+  .job-badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:99px;background:var(--c-green-light);color:var(--c-green);white-space:nowrap}
+  .job-meta{display:flex;flex-wrap:wrap;gap:10px;font-size:13px;color:var(--c-muted)}
+  .job-meta-item{display:flex;align-items:center;gap:4px}
+  .job-desc{margin-top:10px;font-size:13px;color:var(--c-muted);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .job-footer{margin-top:14px;display:flex;align-items:center;justify-content:space-between}
+  .apply-link{font-size:13px;font-weight:600;color:var(--c-accent)}
+  .empty-state{text-align:center;padding:60px 20px;color:var(--c-muted)}
+  body.en [data-es]{display:none}
+  body:not(.en) [data-en]{display:none}
+  @media(max-width:600px){.page-wrap{padding:32px 16px 60px}.job-top{flex-direction:column}.job-badge{align-self:flex-start}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Amigos<span>NearMe</span></a>
+  <div style="display:flex;align-items:center;gap:8px">
+    <div class="lang-switch">
+      <button class="lang-btn active" id="btn-es" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+    <a href="register-type.html" style="font-size:13px;font-weight:600;background:var(--c-accent);color:#fff;text-decoration:none;padding:8px 14px;border-radius:var(--radius-sm)" data-es>Registrarse</a>
+    <a href="register-type.html" style="font-size:13px;font-weight:600;background:var(--c-accent);color:#fff;text-decoration:none;padding:8px 14px;border-radius:var(--radius-sm)" data-en>Register →</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="page-header">
+    <div class="eyebrow" data-es>Empleos disponibles</div>
+    <div class="eyebrow" data-en>Open positions</div>
+    <h1 data-es>Trabajos disponibles ahora</h1>
+    <h1 data-en>Jobs available now</h1>
+    <p class="lede" data-es>Envía tu solicitud con tu número de teléfono y te contactamos.</p>
+    <p class="lede" data-en>Apply with your phone number and we'll get in touch.</p>
+  </div>
+
+  <div class="filter-row" id="filter-row">
+    <button class="filter-btn active" onclick="filterJobs('all')" data-cat="all" data-es>Todos</button>
+    <button class="filter-btn active" onclick="filterJobs('all')" data-cat="all" data-en>All</button>
+    <button class="filter-btn" onclick="filterJobs('kitchen')" data-cat="kitchen" data-es>Cocina</button>
+    <button class="filter-btn" onclick="filterJobs('kitchen')" data-cat="kitchen" data-en>Kitchen</button>
+    <button class="filter-btn" onclick="filterJobs('construction')" data-cat="construction" data-es>Construcción</button>
+    <button class="filter-btn" onclick="filterJobs('construction')" data-cat="construction" data-en>Construction</button>
+    <button class="filter-btn" onclick="filterJobs('moving')" data-cat="moving" data-es>Mudanzas</button>
+    <button class="filter-btn" onclick="filterJobs('moving')" data-cat="moving" data-en>Moving</button>
+    <button class="filter-btn" onclick="filterJobs('cleaning')" data-cat="cleaning" data-es>Limpieza</button>
+    <button class="filter-btn" onclick="filterJobs('cleaning')" data-cat="cleaning" data-en>Cleaning</button>
+    <button class="filter-btn" onclick="filterJobs('landscaping')" data-cat="landscaping">Landscaping</button>
+    <button class="filter-btn" onclick="filterJobs('other_general_labor')" data-cat="other_general_labor" data-es>Mano de obra</button>
+    <button class="filter-btn" onclick="filterJobs('other_general_labor')" data-cat="other_general_labor" data-en>General Labor</button>
+  </div>
+
+  <div class="jobs-list" id="jobs-list">
+    <div class="empty-state" data-es>Cargando empleos…</div>
+    <div class="empty-state" data-en>Loading jobs…</div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase-client.js"></script>
+<script>
+var _allJobs = [];
+var _activeFilter = 'all';
+
+var CAT_ES = { kitchen:'Cocina', construction:'Construcción', moving:'Mudanzas', cleaning:'Limpieza', landscaping:'Landscaping', painting:'Pintura', plumbing:'Plomería', electrical:'Electricidad', other_general_labor:'Mano de obra', other:'Otro' };
+var CAT_EN = { kitchen:'Kitchen', construction:'Construction', moving:'Moving', cleaning:'Cleaning', landscaping:'Landscaping', painting:'Painting', plumbing:'Plumbing', electrical:'Electrical', other_general_labor:'General Labor', other:'Other' };
+var WORK_ES = { gig:'Eventual', part_time:'Medio tiempo', full_time:'Tiempo completo' };
+var WORK_EN = { gig:'Gig / One-time', part_time:'Part-time', full_time:'Full-time' };
+
+function isEn(){ return document.body.classList.contains('en'); }
+
+function renderJobs(jobs) {
+  var container = document.getElementById('jobs-list');
+  if (!jobs.length) {
+    container.innerHTML = isEn()
+      ? '<div class="empty-state">No open jobs at the moment. Check back soon!</div>'
+      : '<div class="empty-state">No hay empleos disponibles en este momento. ¡Vuelve pronto!</div>';
+    return;
+  }
+  var en = isEn();
+  container.innerHTML = '';
+  jobs.forEach(function(j) {
+    var cat = en ? (CAT_EN[j.category]||j.category) : (CAT_ES[j.category]||j.category);
+    var wt = en ? (WORK_EN[j.work_type]||j.work_type) : (WORK_ES[j.work_type]||j.work_type);
+    var date = new Date(j.created_at).toLocaleDateString(en?'en-US':'es-US',{month:'short',day:'numeric'});
+    var a = document.createElement('a');
+    a.href = 'job-detail.html?id=' + j.id;
+    a.className = 'job-card';
+    a.innerHTML =
+      '<div class="job-top">' +
+        '<div class="job-title">' + j.title + '</div>' +
+        '<span class="job-badge">' + (en ? 'Open' : 'Disponible') + '</span>' +
+      '</div>' +
+      '<div class="job-meta">' +
+        '<span class="job-meta-item">📂 ' + cat + '</span>' +
+        '<span class="job-meta-item">📍 ' + j.city + '</span>' +
+        (j.pay_range ? '<span class="job-meta-item">💰 ' + j.pay_range + '</span>' : '') +
+        '<span class="job-meta-item">🕐 ' + wt + '</span>' +
+      '</div>' +
+      (j.description ? '<div class="job-desc">' + j.description + '</div>' : '') +
+      '<div class="job-footer">' +
+        '<span style="font-size:12px;color:var(--c-hint)">' + (en?'Posted':'Publicado') + ' ' + date + '</span>' +
+        '<span class="apply-link">' + (en?'Apply now →':'Aplicar →') + '</span>' +
+      '</div>';
+    container.appendChild(a);
+  });
+}
+
+function filterJobs(cat) {
+  _activeFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(function(btn){
+    btn.classList.toggle('active', btn.dataset.cat === cat);
+  });
+  var filtered = cat === 'all' ? _allJobs : _allJobs.filter(function(j){ return j.category === cat; });
+  renderJobs(filtered);
+}
+
+async function loadJobs() {
+  var { data } = await getSupabase()
+    .from('jobs')
+    .select('*')
+    .eq('status','open')
+    .order('created_at',{ascending:false});
+  _allJobs = data || [];
+  filterJobs(_activeFilter);
+}
+
+function setLang(lang) {
+  document.body.classList.toggle('en', lang === 'en');
+  document.getElementById('btn-es').classList.toggle('active', lang !== 'en');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  try { localStorage.setItem('anm-lang', lang); } catch(e) {}
+  renderJobs(_activeFilter === 'all' ? _allJobs : _allJobs.filter(function(j){ return j.category === _activeFilter; }));
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var saved = ''; try { saved = localStorage.getItem('anm-lang'); } catch(e) {}
+  var browser = (navigator.language || 'es').toLowerCase();
+  setLang(saved || (browser.startsWith('en') ? 'en' : 'es'));
+  loadJobs();
+});
+</script>
+<script src="/pwa-banner.js" defer></script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/service-worker.js");}</script>
+</body>
+</html>

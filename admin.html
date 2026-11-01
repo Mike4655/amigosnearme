@@ -238,6 +238,7 @@
     <a class="sb-link" id="nav-cancellations" onclick="showAdminPane('cancellations')"><span>🚪</span> Cancellation Requests<span class="nav-badge" id="badge-cancellations"></span></a>
     <a class="sb-link" id="nav-reviews" onclick="showAdminPane('reviews')"><span>💬</span> Reviews Moderation<span class="nav-badge" id="badge-reviews"></span></a>
     <a class="sb-link" id="nav-billing" onclick="showAdminPane('billing')"><span>🧾</span> Billing</a>
+    <a class="sb-link" id="nav-jobs" onclick="showAdminPane('jobs')"><span>📋</span> Job Postings</a>
     <a class="sb-link" id="nav-settings" onclick="showAdminPane('settings')"><span>⚙️</span> Settings</a>
   </nav>
   <div class="sb-foot">Logged in as <span id="sb-user-email">…</span><br><a href="#" onclick="adminSignOut();return false" style="color:rgba(255,255,255,0.45);text-decoration:none">Sign out →</a></div>
@@ -1000,6 +1001,90 @@
 
   </div>
   <!-- ===== END BILLING PANE ===== -->
+
+  <!-- ===== JOBS PANE ===== -->
+  <div id="pane-jobs" style="display:none">
+
+    <!-- New Job Form -->
+    <div class="settings-card-admin" style="margin-bottom:24px">
+      <div class="settings-title" id="jobs-form-title">New Job Posting</div>
+      <input type="hidden" id="job-edit-id">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px">
+        <div>
+          <label style="font-size:12px;font-weight:500;color:var(--c-muted);display:block;margin-bottom:4px">Title *</label>
+          <input id="job-title" type="text" placeholder="e.g. Kitchen Helper Needed" style="width:100%;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);outline:none">
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:500;color:var(--c-muted);display:block;margin-bottom:4px">Category *</label>
+          <select id="job-category" style="width:100%;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);outline:none">
+            <option value="">Select…</option>
+            <option value="kitchen">Kitchen</option>
+            <option value="construction">Construction</option>
+            <option value="moving">Moving</option>
+            <option value="cleaning">Cleaning</option>
+            <option value="landscaping">Landscaping</option>
+            <option value="painting">Painting</option>
+            <option value="plumbing">Plumbing</option>
+            <option value="electrical">Electrical</option>
+            <option value="other_general_labor">General Labor</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:500;color:var(--c-muted);display:block;margin-bottom:4px">City *</label>
+          <input id="job-city" type="text" value="Atlanta" style="width:100%;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);outline:none">
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:500;color:var(--c-muted);display:block;margin-bottom:4px">Pay Range</label>
+          <input id="job-pay" type="text" placeholder="e.g. $15–$18/hr or $120/day" style="width:100%;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);outline:none">
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:500;color:var(--c-muted);display:block;margin-bottom:4px">Work Type *</label>
+          <select id="job-worktype" style="width:100%;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);outline:none">
+            <option value="gig">Gig / One-time</option>
+            <option value="part_time">Part-time</option>
+            <option value="full_time">Full-time</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:500;color:var(--c-muted);display:block;margin-bottom:4px">Requirements</label>
+          <input id="job-requirements" type="text" placeholder="e.g. Experience required, English a plus" style="width:100%;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);outline:none">
+        </div>
+      </div>
+      <div style="margin-top:12px">
+        <label style="font-size:12px;font-weight:500;color:var(--c-muted);display:block;margin-bottom:4px">Description</label>
+        <textarea id="job-description" rows="3" placeholder="Job details, schedule, location address, etc." style="width:100%;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);outline:none;resize:vertical"></textarea>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:16px">
+        <button onclick="saveJob()" style="padding:9px 20px;background:var(--c-accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body)">Post Job</button>
+        <button onclick="clearJobForm()" style="padding:9px 16px;background:var(--c-bg);border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-body)">Clear</button>
+        <div id="job-save-msg" style="display:none;align-items:center;font-size:13px;color:var(--c-green);font-weight:500;margin-left:8px"></div>
+      </div>
+    </div>
+
+    <!-- Jobs List -->
+    <div class="table-card" style="overflow-y:auto;max-height:520px">
+      <table>
+        <thead style="position:sticky;top:0;background:var(--c-surface);z-index:1">
+          <tr>
+            <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--c-muted);letter-spacing:.04em">TITLE</th>
+            <th style="padding:12px 8px;text-align:left;font-size:11px;font-weight:600;color:var(--c-muted);letter-spacing:.04em">CATEGORY</th>
+            <th style="padding:12px 8px;text-align:left;font-size:11px;font-weight:600;color:var(--c-muted);letter-spacing:.04em">CITY</th>
+            <th style="padding:12px 8px;text-align:left;font-size:11px;font-weight:600;color:var(--c-muted);letter-spacing:.04em">PAY</th>
+            <th style="padding:12px 8px;text-align:left;font-size:11px;font-weight:600;color:var(--c-muted);letter-spacing:.04em">TYPE</th>
+            <th style="padding:12px 8px;text-align:left;font-size:11px;font-weight:600;color:var(--c-muted);letter-spacing:.04em">STATUS</th>
+            <th style="padding:12px 8px;text-align:left;font-size:11px;font-weight:600;color:var(--c-muted);letter-spacing:.04em">POSTED</th>
+            <th style="padding:12px 8px;text-align:left;font-size:11px;font-weight:600;color:var(--c-muted);letter-spacing:.04em">ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody id="jobs-table-body">
+          <tr><td colspan="8" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+  <!-- ===== END JOBS PANE ===== -->
 
   </div>
 </div>
@@ -1837,7 +1922,7 @@ function closeSidebar() {
 
 function showAdminPane(pane) {
   closeSidebar();
-  var panes = ['businesses','customers','verification','reviews','cancellations','zelle','employers','workers','analytics','settings','billing'];
+  var panes = ['businesses','customers','verification','reviews','cancellations','zelle','employers','workers','analytics','settings','billing','jobs'];
   panes.forEach(function(p) {
     var el = document.getElementById('pane-' + p);
     if (el) el.style.display = (p === pane) ? 'block' : 'none';
@@ -1856,7 +1941,8 @@ function showAdminPane(pane) {
     workers:      ['Workers', 'Manage worker profiles, verification, and priority'],
     analytics:    ['Platform Analytics', 'Growth, plan mix, and category trends across AmigosNearMe'],
     settings:     ['Settings', 'Platform-wide defaults and admin team access'],
-    billing:      ['Billing', 'Payment history and revenue breakdown by business']
+    billing:      ['Billing', 'Payment history and revenue breakdown by business'],
+    jobs:         ['Job Postings', 'Post, edit, and manage open job listings']
   };
   document.getElementById('top-bar-title').textContent = titles[pane][0];
   document.getElementById('top-bar-sub').textContent = titles[pane][1];
@@ -1870,6 +1956,7 @@ function showAdminPane(pane) {
   if (pane === 'verification')  { setNavBadge('badge-verification', 0); }
   if (pane === 'reviews')       { loadFlaggedReviews(); setNavBadge('badge-reviews', 0); }
   if (pane === 'billing')       loadAdminBilling();
+  if (pane === 'jobs')          loadJobs();
 }
 
 function setNavBadge(id, count) {
@@ -3300,6 +3387,115 @@ function filterWorkerTable() {
 async function adminSignOut() {
   try { await getSupabase().auth.signOut(); } catch(e) {}
   window.location.href = 'admin-login.html';
+}
+
+// ===== JOBS =====
+var _jobsList = [];
+var CAT_LABELS = {
+  kitchen:'Kitchen', construction:'Construction', moving:'Moving', cleaning:'Cleaning',
+  landscaping:'Landscaping', painting:'Painting', plumbing:'Plumbing', electrical:'Electrical',
+  other_general_labor:'General Labor', other:'Other'
+};
+var WORK_LABELS = { gig:'Gig', part_time:'Part-time', full_time:'Full-time' };
+
+async function loadJobs() {
+  var tbody = document.getElementById('jobs-table-body');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>';
+  var { data, error } = await getSupabase()
+    .from('jobs')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error || !data) { tbody.innerHTML = '<tr><td colspan="8" style="padding:20px;color:var(--c-muted)">Error loading jobs.</td></tr>'; return; }
+  _jobsList = data;
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--c-muted);padding:20px">No job postings yet.</td></tr>'; return; }
+  tbody.innerHTML = '';
+  data.forEach(function(j) {
+    var tr = document.createElement('tr');
+    tr.style.borderTop = '0.5px solid var(--c-border)';
+    var date = new Date(j.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric' });
+    var statusColor = j.status === 'open' ? 'var(--c-green)' : 'var(--c-muted)';
+    tr.innerHTML =
+      '<td style="padding:11px 16px;font-size:13px;font-weight:500">' + (j.title||'—') + '</td>' +
+      '<td style="padding:11px 8px;font-size:12px;color:var(--c-muted)">' + (CAT_LABELS[j.category]||j.category) + '</td>' +
+      '<td style="padding:11px 8px;font-size:12px;color:var(--c-muted)">' + (j.city||'—') + '</td>' +
+      '<td style="padding:11px 8px;font-size:12px">' + (j.pay_range||'—') + '</td>' +
+      '<td style="padding:11px 8px;font-size:12px;color:var(--c-muted)">' + (WORK_LABELS[j.work_type]||j.work_type) + '</td>' +
+      '<td style="padding:11px 8px"><span style="font-size:11px;font-weight:600;color:' + statusColor + '">' + j.status.toUpperCase() + '</span></td>' +
+      '<td style="padding:11px 8px;font-size:12px;color:var(--c-muted)">' + date + '</td>' +
+      '<td style="padding:11px 8px">' +
+        '<button onclick="editJob(\'' + j.id + '\')" style="font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid var(--c-border);background:var(--c-bg);cursor:pointer;margin-right:4px">Edit</button>' +
+        '<button onclick="toggleJobStatus(\'' + j.id + '\',\'' + j.status + '\')" style="font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid var(--c-border);background:var(--c-bg);cursor:pointer;margin-right:4px">' + (j.status==='open'?'Close':'Reopen') + '</button>' +
+        '<button onclick="deleteJob(\'' + j.id + '\')" style="font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid rgba(201,79,43,0.3);background:var(--c-accent-light);color:var(--c-accent);cursor:pointer">Delete</button>' +
+      '</td>';
+    tbody.appendChild(tr);
+  });
+}
+
+async function saveJob() {
+  var id = document.getElementById('job-edit-id').value;
+  var title = document.getElementById('job-title').value.trim();
+  var category = document.getElementById('job-category').value;
+  var city = document.getElementById('job-city').value.trim();
+  var pay_range = document.getElementById('job-pay').value.trim();
+  var work_type = document.getElementById('job-worktype').value;
+  var requirements = document.getElementById('job-requirements').value.trim();
+  var description = document.getElementById('job-description').value.trim();
+  if (!title || !category || !city) { alert('Title, category, and city are required.'); return; }
+  var payload = { title, category, city, pay_range, work_type, requirements, description };
+  var sb = getSupabase();
+  var error;
+  if (id) {
+    ({ error } = await sb.from('jobs').update(payload).eq('id', id));
+  } else {
+    ({ error } = await sb.from('jobs').insert(payload));
+  }
+  if (error) { alert('Error: ' + error.message); return; }
+  var msg = document.getElementById('job-save-msg');
+  msg.textContent = id ? '✓ Updated' : '✓ Posted';
+  msg.style.display = 'flex';
+  setTimeout(function(){ msg.style.display = 'none'; }, 2500);
+  clearJobForm();
+  loadJobs();
+}
+
+function editJob(id) {
+  var j = _jobsList.find(function(x){ return x.id === id; });
+  if (!j) return;
+  document.getElementById('job-edit-id').value = j.id;
+  document.getElementById('job-title').value = j.title || '';
+  document.getElementById('job-category').value = j.category || '';
+  document.getElementById('job-city').value = j.city || '';
+  document.getElementById('job-pay').value = j.pay_range || '';
+  document.getElementById('job-worktype').value = j.work_type || 'gig';
+  document.getElementById('job-requirements').value = j.requirements || '';
+  document.getElementById('job-description').value = j.description || '';
+  document.getElementById('jobs-form-title').textContent = 'Edit Job Posting';
+  document.querySelector('#pane-jobs .settings-card-admin').scrollIntoView({ behavior: 'smooth' });
+}
+
+function clearJobForm() {
+  document.getElementById('job-edit-id').value = '';
+  document.getElementById('job-title').value = '';
+  document.getElementById('job-category').value = '';
+  document.getElementById('job-city').value = 'Atlanta';
+  document.getElementById('job-pay').value = '';
+  document.getElementById('job-worktype').value = 'gig';
+  document.getElementById('job-requirements').value = '';
+  document.getElementById('job-description').value = '';
+  document.getElementById('jobs-form-title').textContent = 'New Job Posting';
+}
+
+async function toggleJobStatus(id, current) {
+  var next = current === 'open' ? 'closed' : 'open';
+  var { error } = await getSupabase().from('jobs').update({ status: next }).eq('id', id);
+  if (!error) loadJobs();
+}
+
+async function deleteJob(id) {
+  if (!confirm('Delete this job posting?')) return;
+  var { error } = await getSupabase().from('jobs').delete().eq('id', id);
+  if (!error) loadJobs();
 }
 </script>
 <script src="/pwa-banner.js" defer></script>

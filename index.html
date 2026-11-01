@@ -493,6 +493,21 @@
   </div>
 </section>
 
+<!-- LATEST JOBS -->
+<section class="section" id="jobs-section" style="display:none">
+  <div class="section-inner">
+    <div class="section-eyebrow" data-es>Empleos disponibles</div>
+    <div class="section-eyebrow" data-en>Open positions</div>
+    <h2 class="section-title" data-es>Trabajos disponibles ahora</h2>
+    <h2 class="section-title" data-en>Jobs available now</h2>
+    <div id="home-jobs-list" style="display:flex;flex-direction:column;gap:12px;margin-top:24px"></div>
+    <div style="margin-top:20px">
+      <a href="jobs.html" style="display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--c-accent);text-decoration:none" data-es>Ver todos los empleos →</a>
+      <a href="jobs.html" style="display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--c-accent);text-decoration:none" data-en>See all jobs →</a>
+    </div>
+  </div>
+</section>
+
 <!-- CATEGORIES -->
 <section class="section categories-section feature-business">
   <div class="section-inner">
@@ -740,6 +755,8 @@
         <div class="footer-links">
           <a href="register-type.html" class="feature-business" data-es>Registrar Negocio</a>
           <a href="register-type.html" class="feature-business" data-en>List Your Business</a>
+          <a href="jobs.html" data-es>Empleos disponibles</a>
+          <a href="jobs.html" data-en>Browse Jobs</a>
           <a href="register.html?type=staffing" data-es>Registrarse como Trabajador</a>
           <a href="register.html?type=staffing" data-en>Register as a Worker</a>
           <a href="login.html?type=employer" data-es>Portal Empleador</a>
@@ -787,6 +804,7 @@ function setLang(lang) {
   if (srch) srch.textContent = lang === 'en' ? 'Find Businesses' : 'Buscar Negocios';
   try { localStorage.setItem('anm-lang', lang); } catch(e) {}
   if (_searchType === 'worker') loadFeaturedWorkers(); else loadFeaturedBusinesses();
+  loadHomeJobs();
 }
 var AV_COLORS = ['av-coral','av-teal','av-blue','av-coral','av-teal','av-blue'];
 
@@ -947,11 +965,50 @@ async function loadCategoryCounts() {
 document.addEventListener('DOMContentLoaded', function() {
   loadFeaturedWorkers();
   loadCategoryCounts();
+  loadHomeJobs();
 });
 
 function setSearch(val) {
   document.getElementById('hero-search').value = val;
 }
+var HOME_CAT_ES = { kitchen:'Cocina', construction:'Construcción', moving:'Mudanzas', cleaning:'Limpieza', landscaping:'Landscaping', painting:'Pintura', plumbing:'Plomería', electrical:'Electricidad', other_general_labor:'Mano de obra', other:'Otro' };
+var HOME_CAT_EN = { kitchen:'Kitchen', construction:'Construction', moving:'Moving', cleaning:'Cleaning', landscaping:'Landscaping', painting:'Painting', plumbing:'Plumbing', electrical:'Electrical', other_general_labor:'General Labor', other:'Other' };
+var HOME_WORK_ES = { gig:'Eventual', part_time:'Medio tiempo', full_time:'Tiempo completo' };
+var HOME_WORK_EN = { gig:'Gig / One-time', part_time:'Part-time', full_time:'Full-time' };
+
+async function loadHomeJobs() {
+  var { data } = await getSupabase()
+    .from('jobs').select('id,title,category,city,pay_range,work_type,created_at')
+    .eq('status','open').order('created_at',{ascending:false}).limit(3);
+  if (!data || !data.length) return;
+  var section = document.getElementById('jobs-section');
+  var container = document.getElementById('home-jobs-list');
+  if (!section || !container) return;
+  section.style.display = '';
+  var en = document.body.classList.contains('en');
+  container.innerHTML = '';
+  data.forEach(function(j) {
+    var cat = en ? (HOME_CAT_EN[j.category]||j.category) : (HOME_CAT_ES[j.category]||j.category);
+    var wt = en ? (HOME_WORK_EN[j.work_type]||j.work_type) : (HOME_WORK_ES[j.work_type]||j.work_type);
+    var a = document.createElement('a');
+    a.href = 'job-detail.html?id=' + j.id;
+    a.style.cssText = 'display:block;background:#fff;border:1px solid var(--c-border);border-radius:var(--radius-md);padding:16px 18px;text-decoration:none;color:inherit;transition:border-color .15s';
+    a.onmouseover = function(){ this.style.borderColor='var(--c-accent)'; };
+    a.onmouseout  = function(){ this.style.borderColor='var(--c-border)'; };
+    a.innerHTML =
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">' +
+        '<span style="font-size:14px;font-weight:700">' + j.title + '</span>' +
+        '<span style="font-size:11px;font-weight:600;color:var(--c-green);background:var(--c-green-light);padding:3px 9px;border-radius:99px;white-space:nowrap">' + (en?'Open':'Disponible') + '</span>' +
+      '</div>' +
+      '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:7px;font-size:12px;color:var(--c-muted)">' +
+        '<span>📂 ' + cat + '</span><span>📍 ' + j.city + '</span>' +
+        (j.pay_range ? '<span>💰 ' + j.pay_range + '</span>' : '') +
+        '<span>🕐 ' + wt + '</span>' +
+      '</div>';
+    container.appendChild(a);
+  });
+}
+
 var _searchType = 'worker';
 function setSearchType(type) {
   _searchType = type;

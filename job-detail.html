@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Detail — AmigosNearMe</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+  :root {
+    --c-bg:#FAFAF7; --c-surface:#fff; --c-border:rgba(0,0,0,0.09);
+    --c-text:#1A1A18; --c-muted:#6B6B66; --c-hint:#A8A8A2;
+    --c-accent:#C94F2B; --c-accent-light:#FAF0EC;
+    --c-green:#1D9E75; --c-green-light:#EBF8F3;
+    --radius-sm:8px; --radius-md:12px; --radius-lg:18px;
+    --shadow:0 1px 3px rgba(0,0,0,0.07),0 4px 12px rgba(0,0,0,0.05);
+    --font-body:'DM Sans',system-ui,sans-serif;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  nav{position:sticky;top:0;z-index:100;background:rgba(250,250,247,0.92);backdrop-filter:blur(12px);border-bottom:0.5px solid var(--c-border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+  .nav-logo{font-family:var(--font-body);font-size:20px;font-weight:800;color:var(--c-text);text-decoration:none}
+  .nav-logo span{color:var(--c-accent)}
+  .lang-switch{display:flex;gap:4px}
+  .lang-btn{padding:5px 10px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);background:var(--c-surface);font-size:12px;font-weight:500;color:var(--c-muted);cursor:pointer;font-family:var(--font-body)}
+  .lang-btn.active{background:var(--c-text);color:#fff;border-color:var(--c-text)}
+  .page-wrap{max-width:700px;margin:0 auto;padding:48px 24px 80px}
+  .back-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--c-muted);text-decoration:none;margin-bottom:28px}
+  .back-link:hover{color:var(--c-accent)}
+  .job-header{margin-bottom:28px}
+  .job-badge{display:inline-flex;font-size:11px;font-weight:600;padding:4px 12px;border-radius:99px;background:var(--c-green-light);color:var(--c-green);margin-bottom:12px}
+  h1{font-size:clamp(24px,4vw,34px);font-weight:800;letter-spacing:-0.5px;margin-bottom:16px}
+  .meta-grid{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:24px}
+  .meta-chip{display:flex;align-items:center;gap:6px;font-size:13px;background:var(--c-bg);border:0.5px solid var(--c-border);border-radius:99px;padding:6px 14px}
+  .section-label{font-size:11px;font-weight:700;color:var(--c-muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+  .detail-block{background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius-lg);padding:22px 24px;margin-bottom:20px;font-size:14px;line-height:1.7;color:var(--c-text)}
+  /* Apply form */
+  .apply-card{background:var(--c-surface);border:1.5px solid var(--c-accent);border-radius:var(--radius-lg);padding:28px 24px;margin-top:32px}
+  .apply-title{font-size:19px;font-weight:800;margin-bottom:4px}
+  .apply-sub{font-size:13px;color:var(--c-muted);margin-bottom:22px}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+  .form-field{display:flex;flex-direction:column;gap:5px}
+  .form-label{font-size:12px;font-weight:600;color:var(--c-muted)}
+  .form-label .req{color:var(--c-accent)}
+  .form-input{padding:10px 13px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:14px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);outline:none;transition:border-color .15s}
+  .form-input:focus{border-color:var(--c-accent)}
+  .form-input.error{border-color:var(--c-accent);background:var(--c-accent-light)}
+  textarea.form-input{resize:vertical;min-height:80px}
+  .phone-note{font-size:11px;color:var(--c-accent);font-weight:500;margin-top:3px}
+  .btn-apply{width:100%;padding:13px;background:var(--c-accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font-body);margin-top:16px;transition:opacity .15s}
+  .btn-apply:hover{opacity:.88}
+  .btn-apply:disabled{opacity:.5;cursor:not-allowed}
+  .success-msg{display:none;text-align:center;padding:24px;background:var(--c-green-light);border-radius:var(--radius-md);color:var(--c-green);font-weight:600;margin-top:16px}
+  body.en [data-es]{display:none}
+  body:not(.en) [data-en]{display:none}
+  @media(max-width:560px){.form-row{grid-template-columns:1fr}.page-wrap{padding:28px 16px 60px}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Amigos<span>NearMe</span></a>
+  <div style="display:flex;align-items:center;gap:8px">
+    <div class="lang-switch">
+      <button class="lang-btn active" id="btn-es" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <a href="jobs.html" class="back-link">← <span data-es>Ver todos los empleos</span><span data-en>All jobs</span></a>
+
+  <div id="job-content">
+    <div style="color:var(--c-muted);font-size:14px" data-es>Cargando…</div>
+    <div style="color:var(--c-muted);font-size:14px" data-en>Loading…</div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase-client.js"></script>
+<script>
+var _job = null;
+
+var CAT_ES = { kitchen:'Cocina', construction:'Construcción', moving:'Mudanzas', cleaning:'Limpieza', landscaping:'Landscaping', painting:'Pintura', plumbing:'Plomería', electrical:'Electricidad', other_general_labor:'Mano de obra', other:'Otro' };
+var CAT_EN = { kitchen:'Kitchen', construction:'Construction', moving:'Moving', cleaning:'Cleaning', landscaping:'Landscaping', painting:'Painting', plumbing:'Plumbing', electrical:'Electrical', other_general_labor:'General Labor', other:'Other' };
+var WORK_ES = { gig:'Eventual', part_time:'Medio tiempo', full_time:'Tiempo completo' };
+var WORK_EN = { gig:'Gig / One-time', part_time:'Part-time', full_time:'Full-time' };
+
+function isEn(){ return document.body.classList.contains('en'); }
+
+function renderJob(j) {
+  var en = isEn();
+  var cat = en ? (CAT_EN[j.category]||j.category) : (CAT_ES[j.category]||j.category);
+  var wt = en ? (WORK_EN[j.work_type]||j.work_type) : (WORK_ES[j.work_type]||j.work_type);
+  var date = new Date(j.created_at).toLocaleDateString(en?'en-US':'es-US',{year:'numeric',month:'long',day:'numeric'});
+
+  document.getElementById('job-content').innerHTML =
+    '<div class="job-header">' +
+      '<span class="job-badge">' + (en?'Open':'Disponible') + '</span>' +
+      '<h1>' + j.title + '</h1>' +
+      '<div class="meta-grid">' +
+        '<span class="meta-chip">📂 ' + cat + '</span>' +
+        '<span class="meta-chip">📍 ' + j.city + '</span>' +
+        (j.pay_range ? '<span class="meta-chip">💰 ' + j.pay_range + '</span>' : '') +
+        '<span class="meta-chip">🕐 ' + wt + '</span>' +
+      '</div>' +
+    '</div>' +
+    (j.description ?
+      '<div class="detail-block"><div class="section-label">' + (en?'Description':'Descripción') + '</div>' + j.description + '</div>' : '') +
+    (j.requirements ?
+      '<div class="detail-block"><div class="section-label">' + (en?'Requirements':'Requisitos') + '</div>' + j.requirements + '</div>' : '') +
+    '<div class="detail-block"><div class="section-label">' + (en?'Posted':'Publicado') + '</div>' + date + '</div>' +
+
+    // Apply form
+    '<div class="apply-card">' +
+      '<div class="apply-title">' + (en?'Apply for this job':'Solicitar este empleo') + '</div>' +
+      '<div class="apply-sub">' + (en
+        ? 'We\'ll forward your application to <strong>hola@amigosnearme.com</strong>. Include your phone number — it\'s required.'
+        : 'Enviaremos tu solicitud a <strong>hola@amigosnearme.com</strong>. Incluye tu teléfono — es obligatorio.') + '</div>' +
+      '<div class="form-row">' +
+        '<div class="form-field">' +
+          '<label class="form-label">' + (en?'Full Name':'Nombre completo') + ' <span class="req">*</span></label>' +
+          '<input class="form-input" id="app-name" type="text" placeholder="' + (en?'Your name':'Tu nombre') + '">' +
+        '</div>' +
+        '<div class="form-field">' +
+          '<label class="form-label">' + (en?'Phone Number':'Número de teléfono') + ' <span class="req">*</span></label>' +
+          '<input class="form-input" id="app-phone" type="tel" placeholder="(404) 000-0000">' +
+          '<div class="phone-note">' + (en?'Required — we\'ll contact you here':'Obligatorio — te contactaremos aquí') + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="form-field" style="margin-bottom:12px">' +
+        '<label class="form-label">Email ' + (en?'(optional)':'(opcional)') + '</label>' +
+        '<input class="form-input" id="app-email" type="email" placeholder="tu@email.com">' +
+      '</div>' +
+      '<div class="form-field">' +
+        '<label class="form-label">' + (en?'Message (optional)':'Mensaje (opcional)') + '</label>' +
+        '<textarea class="form-input" id="app-message" placeholder="' + (en?'Tell us about your experience…':'Cuéntanos sobre tu experiencia…') + '"></textarea>' +
+      '</div>' +
+      '<button class="btn-apply" id="btn-apply" onclick="submitApplication()">' + (en?'Send Application →':'Enviar solicitud →') + '</button>' +
+      '<div class="success-msg" id="success-msg">' +
+        (en ? '✓ Application sent! We\'ll be in touch.' : '✓ ¡Solicitud enviada! Nos pondremos en contacto.') +
+      '</div>' +
+    '</div>';
+}
+
+async function submitApplication() {
+  var name = document.getElementById('app-name').value.trim();
+  var phone = document.getElementById('app-phone').value.trim();
+  var email = document.getElementById('app-email').value.trim();
+  var message = document.getElementById('app-message').value.trim();
+  var en = isEn();
+
+  var nameEl = document.getElementById('app-name');
+  var phoneEl = document.getElementById('app-phone');
+  nameEl.classList.remove('error');
+  phoneEl.classList.remove('error');
+
+  if (!name) { nameEl.classList.add('error'); nameEl.focus(); return; }
+  if (!phone) { phoneEl.classList.add('error'); phoneEl.focus(); return; }
+
+  var btn = document.getElementById('btn-apply');
+  btn.disabled = true;
+  btn.textContent = en ? 'Sending…' : 'Enviando…';
+
+  try {
+    var body = [
+      'Job: ' + (_job ? _job.title : 'Unknown'),
+      'Job ID: ' + (_job ? _job.id : ''),
+      'Name: ' + name,
+      'Phone: ' + phone,
+      (email ? 'Email: ' + email : ''),
+      (message ? 'Message: ' + message : '')
+    ].filter(Boolean).join('\n');
+
+    var resp = await fetch('/api/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        to: 'hola@amigosnearme.com',
+        subject: 'Job Application: ' + (_job ? _job.title : '') + ' — ' + name,
+        text: body
+      })
+    });
+
+    if (!resp.ok) throw new Error('send failed');
+    document.getElementById('success-msg').style.display = 'block';
+    btn.style.display = 'none';
+  } catch(e) {
+    // Fallback: mailto link
+    var mailto = 'mailto:hola@amigosnearme.com'
+      + '?subject=' + encodeURIComponent('Job Application: ' + (_job ? _job.title : '') + ' — ' + name)
+      + '&body=' + encodeURIComponent(
+          'Job: ' + (_job ? _job.title : '') + '\n' +
+          'Name: ' + name + '\n' +
+          'Phone: ' + phone + '\n' +
+          (email ? 'Email: ' + email + '\n' : '') +
+          (message ? '\n' + message : '')
+        );
+    window.location.href = mailto;
+    btn.disabled = false;
+    btn.textContent = en ? 'Send Application →' : 'Enviar solicitud →';
+  }
+}
+
+async function loadJob() {
+  var params = new URLSearchParams(window.location.search);
+  var id = params.get('id');
+  if (!id) { window.location.href = 'jobs.html'; return; }
+  var { data, error } = await getSupabase()
+    .from('jobs').select('*').eq('id', id).single();
+  if (error || !data) { window.location.href = 'jobs.html'; return; }
+  _job = data;
+  document.title = data.title + ' — AmigosNearMe';
+  renderJob(data);
+}
+
+function setLang(lang) {
+  document.body.classList.toggle('en', lang === 'en');
+  document.getElementById('btn-es').classList.toggle('active', lang !== 'en');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  try { localStorage.setItem('anm-lang', lang); } catch(e) {}
+  if (_job) renderJob(_job);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var saved = ''; try { saved = localStorage.getItem('anm-lang'); } catch(e) {}
+  var browser = (navigator.language || 'es').toLowerCase();
+  setLang(saved || (browser.startsWith('en') ? 'en' : 'es'));
+  loadJob();
+});
+</script>
+<script src="/pwa-banner.js" defer></script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/service-worker.js");}</script>
+</body>
+</html>
