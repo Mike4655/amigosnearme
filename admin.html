@@ -215,6 +215,7 @@
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-client.js"></script>
+<script src="job-config.js"></script>
 </head>
 <body>
 
@@ -1018,16 +1019,6 @@
           <label style="font-size:12px;font-weight:500;color:var(--c-muted);display:block;margin-bottom:4px">Category *</label>
           <select id="job-category" style="width:100%;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);outline:none">
             <option value="">Select…</option>
-            <option value="kitchen">Kitchen</option>
-            <option value="construction">Construction</option>
-            <option value="moving">Moving</option>
-            <option value="cleaning">Cleaning</option>
-            <option value="landscaping">Landscaping</option>
-            <option value="painting">Painting</option>
-            <option value="plumbing">Plumbing</option>
-            <option value="electrical">Electrical</option>
-            <option value="other_general_labor">General Labor</option>
-            <option value="other">Other</option>
           </select>
         </div>
         <div>
@@ -3391,14 +3382,19 @@ async function adminSignOut() {
 
 // ===== JOBS =====
 var _jobsList = [];
-var CAT_LABELS = {
-  kitchen:'Kitchen', construction:'Construction', moving:'Moving', cleaning:'Cleaning',
-  landscaping:'Landscaping', painting:'Painting', plumbing:'Plumbing', electrical:'Electrical',
-  other_general_labor:'General Labor', other:'Other'
-};
-var WORK_LABELS = { gig:'Gig', part_time:'Part-time', full_time:'Full-time' };
+
+function buildJobCategorySelect() {
+  var sel = document.getElementById('job-category');
+  if (!sel || sel.options.length > 1) return;
+  JOB_CATEGORIES.forEach(function(c) {
+    var opt = document.createElement('option');
+    opt.value = c.value; opt.textContent = c.en;
+    sel.appendChild(opt);
+  });
+}
 
 async function loadJobs() {
+  buildJobCategorySelect();
   var tbody = document.getElementById('jobs-table-body');
   if (!tbody) return;
   tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>';
@@ -3417,10 +3413,10 @@ async function loadJobs() {
     var statusColor = j.status === 'open' ? 'var(--c-green)' : 'var(--c-muted)';
     tr.innerHTML =
       '<td style="padding:11px 16px;font-size:13px;font-weight:500">' + (j.title||'—') + '</td>' +
-      '<td style="padding:11px 8px;font-size:12px;color:var(--c-muted)">' + (CAT_LABELS[j.category]||j.category) + '</td>' +
+      '<td style="padding:11px 8px;font-size:12px;color:var(--c-muted)">' + jobCatLabel(j.category,'en') + '</td>' +
       '<td style="padding:11px 8px;font-size:12px;color:var(--c-muted)">' + (j.city||'—') + '</td>' +
       '<td style="padding:11px 8px;font-size:12px">' + (j.pay_range||'—') + '</td>' +
-      '<td style="padding:11px 8px;font-size:12px;color:var(--c-muted)">' + (WORK_LABELS[j.work_type]||j.work_type) + '</td>' +
+      '<td style="padding:11px 8px;font-size:12px;color:var(--c-muted)">' + jobWorkLabel(j.work_type,'en') + '</td>' +
       '<td style="padding:11px 8px"><span style="font-size:11px;font-weight:600;color:' + statusColor + '">' + j.status.toUpperCase() + '</span></td>' +
       '<td style="padding:11px 8px;font-size:12px;color:var(--c-muted)">' + date + '</td>' +
       '<td style="padding:11px 8px">' +

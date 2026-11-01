@@ -74,21 +74,7 @@
     <p class="lede" data-en>Apply with your phone number and we'll get in touch.</p>
   </div>
 
-  <div class="filter-row" id="filter-row">
-    <button class="filter-btn active" onclick="filterJobs('all')" data-cat="all" data-es>Todos</button>
-    <button class="filter-btn active" onclick="filterJobs('all')" data-cat="all" data-en>All</button>
-    <button class="filter-btn" onclick="filterJobs('kitchen')" data-cat="kitchen" data-es>Cocina</button>
-    <button class="filter-btn" onclick="filterJobs('kitchen')" data-cat="kitchen" data-en>Kitchen</button>
-    <button class="filter-btn" onclick="filterJobs('construction')" data-cat="construction" data-es>Construcción</button>
-    <button class="filter-btn" onclick="filterJobs('construction')" data-cat="construction" data-en>Construction</button>
-    <button class="filter-btn" onclick="filterJobs('moving')" data-cat="moving" data-es>Mudanzas</button>
-    <button class="filter-btn" onclick="filterJobs('moving')" data-cat="moving" data-en>Moving</button>
-    <button class="filter-btn" onclick="filterJobs('cleaning')" data-cat="cleaning" data-es>Limpieza</button>
-    <button class="filter-btn" onclick="filterJobs('cleaning')" data-cat="cleaning" data-en>Cleaning</button>
-    <button class="filter-btn" onclick="filterJobs('landscaping')" data-cat="landscaping">Landscaping</button>
-    <button class="filter-btn" onclick="filterJobs('other_general_labor')" data-cat="other_general_labor" data-es>Mano de obra</button>
-    <button class="filter-btn" onclick="filterJobs('other_general_labor')" data-cat="other_general_labor" data-en>General Labor</button>
-  </div>
+  <div class="filter-row" id="filter-row"></div>
 
   <div class="jobs-list" id="jobs-list">
     <div class="empty-state" data-es>Cargando empleos…</div>
@@ -98,14 +84,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="supabase-client.js"></script>
+<script src="job-config.js"></script>
 <script>
 var _allJobs = [];
 var _activeFilter = 'all';
-
-var CAT_ES = { kitchen:'Cocina', construction:'Construcción', moving:'Mudanzas', cleaning:'Limpieza', landscaping:'Landscaping', painting:'Pintura', plumbing:'Plomería', electrical:'Electricidad', other_general_labor:'Mano de obra', other:'Otro' };
-var CAT_EN = { kitchen:'Kitchen', construction:'Construction', moving:'Moving', cleaning:'Cleaning', landscaping:'Landscaping', painting:'Painting', plumbing:'Plumbing', electrical:'Electrical', other_general_labor:'General Labor', other:'Other' };
-var WORK_ES = { gig:'Eventual', part_time:'Medio tiempo', full_time:'Tiempo completo' };
-var WORK_EN = { gig:'Gig / One-time', part_time:'Part-time', full_time:'Full-time' };
 
 function isEn(){ return document.body.classList.contains('en'); }
 
@@ -120,8 +102,8 @@ function renderJobs(jobs) {
   var en = isEn();
   container.innerHTML = '';
   jobs.forEach(function(j) {
-    var cat = en ? (CAT_EN[j.category]||j.category) : (CAT_ES[j.category]||j.category);
-    var wt = en ? (WORK_EN[j.work_type]||j.work_type) : (WORK_ES[j.work_type]||j.work_type);
+    var cat = jobCatLabel(j.category, en ? 'en' : 'es');
+    var wt = jobWorkLabel(j.work_type, en ? 'en' : 'es');
     var date = new Date(j.created_at).toLocaleDateString(en?'en-US':'es-US',{month:'short',day:'numeric'});
     var a = document.createElement('a');
     a.href = 'job-detail.html?id=' + j.id;
@@ -146,11 +128,30 @@ function renderJobs(jobs) {
   });
 }
 
+function buildFilterButtons() {
+  var row = document.getElementById('filter-row');
+  if (!row) return;
+  var en = isEn();
+  row.innerHTML = '';
+  var allBtn = document.createElement('button');
+  allBtn.className = 'filter-btn' + (_activeFilter === 'all' ? ' active' : '');
+  allBtn.textContent = en ? 'All' : 'Todos';
+  allBtn.dataset.cat = 'all';
+  allBtn.onclick = function(){ filterJobs('all'); };
+  row.appendChild(allBtn);
+  JOB_CATEGORIES.forEach(function(c) {
+    var btn = document.createElement('button');
+    btn.className = 'filter-btn' + (_activeFilter === c.value ? ' active' : '');
+    btn.textContent = en ? c.en : c.es;
+    btn.dataset.cat = c.value;
+    btn.onclick = function(){ filterJobs(c.value); };
+    row.appendChild(btn);
+  });
+}
+
 function filterJobs(cat) {
   _activeFilter = cat;
-  document.querySelectorAll('.filter-btn').forEach(function(btn){
-    btn.classList.toggle('active', btn.dataset.cat === cat);
-  });
+  buildFilterButtons();
   var filtered = cat === 'all' ? _allJobs : _allJobs.filter(function(j){ return j.category === cat; });
   renderJobs(filtered);
 }
@@ -170,6 +171,7 @@ function setLang(lang) {
   document.getElementById('btn-es').classList.toggle('active', lang !== 'en');
   document.getElementById('btn-en').classList.toggle('active', lang === 'en');
   try { localStorage.setItem('anm-lang', lang); } catch(e) {}
+  buildFilterButtons();
   renderJobs(_activeFilter === 'all' ? _allJobs : _allJobs.filter(function(j){ return j.category === _activeFilter; }));
 }
 
@@ -177,6 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var saved = ''; try { saved = localStorage.getItem('anm-lang'); } catch(e) {}
   var browser = (navigator.language || 'es').toLowerCase();
   setLang(saved || (browser.startsWith('en') ? 'en' : 'es'));
+  buildFilterButtons();
   loadJobs();
 });
 </script>

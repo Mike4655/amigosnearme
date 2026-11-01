@@ -795,6 +795,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="supabase-client.js"></script>
+<script src="job-config.js"></script>
 <script>
 function setLang(lang) {
   document.body.classList.toggle('en', lang === 'en');
@@ -973,10 +974,6 @@ document.addEventListener('DOMContentLoaded', function() {
 function setSearch(val) {
   document.getElementById('hero-search').value = val;
 }
-var HOME_CAT_ES = { kitchen:'Cocina', construction:'Construcción', moving:'Mudanzas', cleaning:'Limpieza', landscaping:'Landscaping', painting:'Pintura', plumbing:'Plomería', electrical:'Electricidad', other_general_labor:'Mano de obra', other:'Otro' };
-var HOME_CAT_EN = { kitchen:'Kitchen', construction:'Construction', moving:'Moving', cleaning:'Cleaning', landscaping:'Landscaping', painting:'Painting', plumbing:'Plumbing', electrical:'Electrical', other_general_labor:'General Labor', other:'Other' };
-var HOME_WORK_ES = { gig:'Eventual', part_time:'Medio tiempo', full_time:'Tiempo completo' };
-var HOME_WORK_EN = { gig:'Gig / One-time', part_time:'Part-time', full_time:'Full-time' };
 
 async function loadHomeJobs() {
   var { data } = await getSupabase()
@@ -990,8 +987,8 @@ async function loadHomeJobs() {
   var en = document.body.classList.contains('en');
   container.innerHTML = '';
   data.forEach(function(j) {
-    var cat = en ? (HOME_CAT_EN[j.category]||j.category) : (HOME_CAT_ES[j.category]||j.category);
-    var wt = en ? (HOME_WORK_EN[j.work_type]||j.work_type) : (HOME_WORK_ES[j.work_type]||j.work_type);
+    var cat = jobCatLabel(j.category, en ? 'en' : 'es');
+    var wt = jobWorkLabel(j.work_type, en ? 'en' : 'es');
     var a = document.createElement('a');
     a.href = 'job-detail.html?id=' + j.id;
     a.style.cssText = 'display:block;background:#fff;border:1px solid var(--c-border);border-radius:var(--radius-md);padding:16px 18px;text-decoration:none;color:inherit;transition:border-color .15s';

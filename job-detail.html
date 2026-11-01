@@ -78,20 +78,16 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="supabase-client.js"></script>
+<script src="job-config.js"></script>
 <script>
 var _job = null;
-
-var CAT_ES = { kitchen:'Cocina', construction:'Construcción', moving:'Mudanzas', cleaning:'Limpieza', landscaping:'Landscaping', painting:'Pintura', plumbing:'Plomería', electrical:'Electricidad', other_general_labor:'Mano de obra', other:'Otro' };
-var CAT_EN = { kitchen:'Kitchen', construction:'Construction', moving:'Moving', cleaning:'Cleaning', landscaping:'Landscaping', painting:'Painting', plumbing:'Plumbing', electrical:'Electrical', other_general_labor:'General Labor', other:'Other' };
-var WORK_ES = { gig:'Eventual', part_time:'Medio tiempo', full_time:'Tiempo completo' };
-var WORK_EN = { gig:'Gig / One-time', part_time:'Part-time', full_time:'Full-time' };
 
 function isEn(){ return document.body.classList.contains('en'); }
 
 function renderJob(j) {
   var en = isEn();
-  var cat = en ? (CAT_EN[j.category]||j.category) : (CAT_ES[j.category]||j.category);
-  var wt = en ? (WORK_EN[j.work_type]||j.work_type) : (WORK_ES[j.work_type]||j.work_type);
+  var cat = jobCatLabel(j.category, en ? 'en' : 'es');
+  var wt = jobWorkLabel(j.work_type, en ? 'en' : 'es');
   var date = new Date(j.created_at).toLocaleDateString(en?'en-US':'es-US',{year:'numeric',month:'long',day:'numeric'});
 
   document.getElementById('job-content').innerHTML =
