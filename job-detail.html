@@ -159,42 +159,29 @@ async function submitApplication() {
   btn.textContent = en ? 'Sending…' : 'Enviando…';
 
   try {
-    var body = [
-      'Job: ' + (_job ? _job.title : 'Unknown'),
-      'Job ID: ' + (_job ? _job.id : ''),
-      'Name: ' + name,
-      'Phone: ' + phone,
-      (email ? 'Email: ' + email : ''),
-      (message ? 'Message: ' + message : '')
-    ].filter(Boolean).join('\n');
-
-    var resp = await fetch('/api/send-email', {
+    var jobRef = _job ? (_job.title + ' (Ref: ' + _job.id.slice(0,8).toUpperCase() + ')') : 'Unknown';
+    var resp = await fetch('https://formspree.io/f/mzeejqql', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({
-        to: 'hola@amigosnearme.com',
-        subject: 'Job Application: ' + (_job ? _job.title : '') + ' — ' + name,
-        text: body
+        _subject: 'Job Application: ' + jobRef + ' — ' + name,
+        job_title: _job ? _job.title : '',
+        job_ref: _job ? _job.id.slice(0,8).toUpperCase() : '',
+        job_id: _job ? _job.id : '',
+        applicant_name: name,
+        phone: phone,
+        email: email || '',
+        message: message || ''
       })
     });
-
-    if (!resp.ok) throw new Error('send failed');
+    var data = await resp.json();
+    if (!resp.ok || data.error) throw new Error(data.error || 'send failed');
     document.getElementById('success-msg').style.display = 'block';
     btn.style.display = 'none';
   } catch(e) {
-    // Fallback: mailto link
-    var mailto = 'mailto:hola@amigosnearme.com'
-      + '?subject=' + encodeURIComponent('Job Application: ' + (_job ? _job.title : '') + ' — ' + name)
-      + '&body=' + encodeURIComponent(
-          'Job: ' + (_job ? _job.title : '') + '\n' +
-          'Name: ' + name + '\n' +
-          'Phone: ' + phone + '\n' +
-          (email ? 'Email: ' + email + '\n' : '') +
-          (message ? '\n' + message : '')
-        );
-    window.location.href = mailto;
     btn.disabled = false;
     btn.textContent = en ? 'Send Application →' : 'Enviar solicitud →';
+    alert(en ? 'Failed to send. Please try again.' : 'Error al enviar. Por favor intenta de nuevo.');
   }
 }
 
