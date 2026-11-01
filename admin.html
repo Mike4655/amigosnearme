@@ -1012,7 +1012,7 @@
       <input type="hidden" id="job-edit-id">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px">
         <div>
-          <label style="font-size:12px;font-weight:500;color:var(--c-muted);display:block;margin-bottom:4px">Title *</label>
+          <label style="font-size:12px;font-weight:500;color:var(--c-muted);display:block;margin-bottom:4px">Title (EN) 🇺🇸 *</label>
           <input id="job-title" type="text" placeholder="e.g. Kitchen Helper Needed" style="width:100%;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);outline:none">
         </div>
         <div>
@@ -1037,20 +1037,39 @@
             <option value="full_time">Full-time</option>
           </select>
         </div>
-        <div>
-          <label style="font-size:12px;font-weight:500;color:var(--c-muted);display:block;margin-bottom:4px">Requirements (EN) 🇺🇸</label>
-          <input id="job-requirements-en" type="text" placeholder="e.g. Experience required, English a plus" style="width:100%;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);outline:none">
-        </div>
       </div>
+      <!-- Title ES -->
+      <div style="margin-top:8px;display:flex;align-items:center;gap:8px">
+        <button onclick="translateField('job-title','job-title-es','en','es',this)" style="padding:5px 12px;background:var(--c-blue-light);color:var(--c-blue);border:0.5px solid rgba(24,95,165,0.25);border-radius:var(--radius-sm);font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font-body)">Traducir título al español 🔄</button>
+        <span id="job-title-es-status" style="font-size:12px;color:var(--c-muted)"></span>
+      </div>
+      <div style="margin-top:4px">
+        <label style="font-size:12px;font-weight:500;color:var(--c-muted);display:block;margin-bottom:4px">Title (ES) 🇲🇽</label>
+        <input id="job-title-es" type="text" placeholder="ej. Se necesita ayudante de cocina" style="width:100%;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);outline:none">
+      </div>
+      <!-- Requirements EN + Convert -->
       <div style="margin-top:12px">
+        <label style="font-size:12px;font-weight:500;color:var(--c-muted);display:block;margin-bottom:4px">Requirements (EN) 🇺🇸</label>
+        <input id="job-requirements-en" type="text" placeholder="e.g. Experience required, English a plus" style="width:100%;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);outline:none">
+      </div>
+      <div style="margin-top:6px;display:flex;align-items:center;gap:8px">
+        <button onclick="translateField('job-requirements-en','job-requirements-es','en','es',this)" style="padding:5px 12px;background:var(--c-blue-light);color:var(--c-blue);border:0.5px solid rgba(24,95,165,0.25);border-radius:var(--radius-sm);font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font-body)">Traducir requisitos 🔄</button>
+        <span id="job-requirements-es-status" style="font-size:12px;color:var(--c-muted)"></span>
+      </div>
+      <div style="margin-top:4px">
         <label style="font-size:12px;font-weight:500;color:var(--c-muted);display:block;margin-bottom:4px">Requirements (ES) 🇲🇽</label>
         <input id="job-requirements-es" type="text" placeholder="ej. Se requiere experiencia, inglés es una ventaja" style="width:100%;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);outline:none">
       </div>
+      <!-- Description EN + Convert -->
       <div style="margin-top:12px">
         <label style="font-size:12px;font-weight:500;color:var(--c-muted);display:block;margin-bottom:4px">Description (EN) 🇺🇸</label>
         <textarea id="job-description-en" rows="3" placeholder="Job details, schedule, location address, etc." style="width:100%;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);outline:none;resize:vertical"></textarea>
       </div>
-      <div style="margin-top:12px">
+      <div style="margin-top:6px;display:flex;align-items:center;gap:8px">
+        <button onclick="translateField('job-description-en','job-description-es','en','es',this)" style="padding:5px 12px;background:var(--c-blue-light);color:var(--c-blue);border:0.5px solid rgba(24,95,165,0.25);border-radius:var(--radius-sm);font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font-body)">Traducir descripción 🔄</button>
+        <span id="job-description-es-status" style="font-size:12px;color:var(--c-muted)"></span>
+      </div>
+      <div style="margin-top:4px">
         <label style="font-size:12px;font-weight:500;color:var(--c-muted);display:block;margin-bottom:4px">Description (ES) 🇲🇽</label>
         <textarea id="job-description-es" rows="3" placeholder="Detalles del trabajo, horario, dirección, etc." style="width:100%;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);outline:none;resize:vertical"></textarea>
       </div>
@@ -3439,6 +3458,7 @@ async function loadJobs() {
 async function saveJob() {
   var id = document.getElementById('job-edit-id').value;
   var title = document.getElementById('job-title').value.trim();
+  var title_es = document.getElementById('job-title-es').value.trim();
   var category = document.getElementById('job-category').value;
   var city = document.getElementById('job-city').value.trim();
   var pay_range = document.getElementById('job-pay').value.trim();
@@ -3448,7 +3468,7 @@ async function saveJob() {
   var description_en = document.getElementById('job-description-en').value.trim();
   var description_es = document.getElementById('job-description-es').value.trim();
   if (!title || !category || !city) { alert('Title, category, and city are required.'); return; }
-  var payload = { title, category, city, pay_range, work_type, requirements_en, requirements_es, description_en, description_es };
+  var payload = { title, title_es, category, city, pay_range, work_type, requirements_en, requirements_es, description_en, description_es };
   var sb = getSupabase();
   var error;
   if (id) {
@@ -3470,6 +3490,7 @@ function editJob(id) {
   if (!j) return;
   document.getElementById('job-edit-id').value = j.id;
   document.getElementById('job-title').value = j.title || '';
+  document.getElementById('job-title-es').value = j.title_es || '';
   document.getElementById('job-category').value = j.category || '';
   document.getElementById('job-city').value = j.city || '';
   document.getElementById('job-pay').value = j.pay_range || '';
@@ -3485,6 +3506,7 @@ function editJob(id) {
 function clearJobForm() {
   document.getElementById('job-edit-id').value = '';
   document.getElementById('job-title').value = '';
+  document.getElementById('job-title-es').value = '';
   document.getElementById('job-category').value = '';
   document.getElementById('job-city').value = 'Atlanta';
   document.getElementById('job-pay').value = '';
@@ -3494,6 +3516,31 @@ function clearJobForm() {
   document.getElementById('job-description-en').value = '';
   document.getElementById('job-description-es').value = '';
   document.getElementById('jobs-form-title').textContent = 'New Job Posting';
+}
+
+async function translateField(srcId, dstId, srcLang, dstLang, btn) {
+  var srcEl = document.getElementById(srcId);
+  var dstEl = document.getElementById(dstId);
+  var statusId = dstId + '-status';
+  var statusEl = document.getElementById(statusId);
+  var text = (srcEl.tagName === 'TEXTAREA' ? srcEl.value : srcEl.value).trim();
+  if (!text) { if (statusEl) statusEl.textContent = '⚠ 먼저 원문을 입력하세요'; return; }
+  if (btn) { btn._origText = btn.textContent; btn.disabled = true; btn.textContent = '번역 중…'; }
+  if (statusEl) statusEl.textContent = '';
+  try {
+    var url = 'https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=' + srcLang + '|' + dstLang;
+    var resp = await fetch(url);
+    var data = await resp.json();
+    if (data.responseStatus === 200 && data.responseData && data.responseData.translatedText) {
+      dstEl.value = data.responseData.translatedText;
+      if (statusEl) statusEl.textContent = '✅';
+    } else {
+      if (statusEl) statusEl.textContent = '❌ 번역 실패 — 직접 입력해 주세요';
+    }
+  } catch(e) {
+    if (statusEl) statusEl.textContent = '❌ 네트워크 오류 — 직접 입력해 주세요';
+  }
+  if (btn) { btn.disabled = false; btn.textContent = btn._origText || btn.textContent; }
 }
 
 async function toggleJobStatus(id, current) {

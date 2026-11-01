@@ -93,7 +93,7 @@ function renderJob(j) {
   document.getElementById('job-content').innerHTML =
     '<div class="job-header">' +
       '<span class="job-badge">' + (en?'Open':'Disponible') + '</span>' +
-      '<h1>' + j.title + '</h1>' +
+      '<h1>' + (en ? j.title : (j.title_es || j.title)) + '</h1>' +
       '<div class="meta-grid">' +
         '<span class="meta-chip">📂 ' + cat + '</span>' +
         '<span class="meta-chip">📍 ' + j.city + '</span>' +
@@ -101,10 +101,10 @@ function renderJob(j) {
         '<span class="meta-chip">🕐 ' + wt + '</span>' +
       '</div>' +
     '</div>' +
-    ((en ? j.description_en : j.description_es) ?
-      '<div class="detail-block"><div class="section-label">' + (en?'Description':'Descripción') + '</div>' + (en ? j.description_en : j.description_es) + '</div>' : '') +
-    ((en ? j.requirements_en : j.requirements_es) ?
-      '<div class="detail-block"><div class="section-label">' + (en?'Requirements':'Requisitos') + '</div>' + (en ? j.requirements_en : j.requirements_es) + '</div>' : '') +
+    ((en ? (j.description_en || j.description) : (j.description_es || j.description)) ?
+      '<div class="detail-block"><div class="section-label">' + (en?'Description':'Descripción') + '</div>' + (en ? (j.description_en || j.description) : (j.description_es || j.description)) + '</div>' : '') +
+    ((en ? (j.requirements_en || j.requirements) : (j.requirements_es || j.requirements)) ?
+      '<div class="detail-block"><div class="section-label">' + (en?'Requirements':'Requisitos') + '</div>' + (en ? (j.requirements_en || j.requirements) : (j.requirements_es || j.requirements)) + '</div>' : '') +
     '<div class="detail-block"><div class="section-label">' + (en?'Posted':'Publicado') + '</div>' + date + '</div>' +
 
     // Apply form
