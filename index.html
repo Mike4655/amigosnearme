@@ -484,8 +484,8 @@
         <button class="search-btn" onclick="doSearch()" data-en>Search</button>
       </div>
       <div class="featured-biz">
-        <div class="featured-label" id="featured-label-es">Trabajadores destacados</div>
-        <div class="featured-label" id="featured-label-en">Featured workers</div>
+        <div class="featured-label" id="featured-label-es" data-es>Trabajadores destacados</div>
+        <div class="featured-label" id="featured-label-en" data-en>Featured workers</div>
         <div id="featured-biz-list"></div>
       </div>
     </div>
@@ -848,7 +848,20 @@ async function loadFeaturedWorkers() {
     data.forEach(function(w, i) {
       var displayName = w.trade_name || w.business_name || '?';
       var initials = displayName.split(' ').slice(0,2).map(function(w){ return w[0]||''; }).join('').toUpperCase() || '?';
-      var type = Array.isArray(w.staffing_types) ? w.staffing_types[0] : '';
+      var typeRaw = Array.isArray(w.staffing_types) ? w.staffing_types[0] : '';
+      var typeMap = {
+        kitchen: { en: 'Kitchen', es: 'Cocina' },
+        moving: { en: 'Moving', es: 'Mudanzas' },
+        construction: { en: 'Construction', es: 'Construcción' },
+        cleaning: { en: 'Cleaning', es: 'Limpieza' },
+        landscaping: { en: 'Landscaping', es: 'Landscaping' },
+        painting: { en: 'Painting', es: 'Pintura' },
+        plumbing: { en: 'Plumbing', es: 'Plomería' },
+        electrical: { en: 'Electrical', es: 'Electricidad' },
+        other_general_labor: { en: 'General Labor', es: 'Mano de obra' },
+        other: { en: 'Other', es: 'Otro' },
+      };
+      var type = typeRaw ? ((typeMap[typeRaw] || {})[isEn ? 'en' : 'es'] || typeRaw) : '';
       var thumbUrl = Array.isArray(w.photos) && w.photos[0] ? w.photos[0] : null;
       var avatarHtml = thumbUrl
         ? '<img src="' + thumbUrl + '" class="biz-mini-thumb" alt="">'
