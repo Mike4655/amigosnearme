@@ -101,10 +101,10 @@ function renderJob(j) {
         '<span class="meta-chip">🕐 ' + wt + '</span>' +
       '</div>' +
     '</div>' +
-    (j.description ?
-      '<div class="detail-block"><div class="section-label">' + (en?'Description':'Descripción') + '</div>' + j.description + '</div>' : '') +
-    (j.requirements ?
-      '<div class="detail-block"><div class="section-label">' + (en?'Requirements':'Requisitos') + '</div>' + j.requirements + '</div>' : '') +
+    ((en ? j.description_en : j.description_es) ?
+      '<div class="detail-block"><div class="section-label">' + (en?'Description':'Descripción') + '</div>' + (en ? j.description_en : j.description_es) + '</div>' : '') +
+    ((en ? j.requirements_en : j.requirements_es) ?
+      '<div class="detail-block"><div class="section-label">' + (en?'Requirements':'Requisitos') + '</div>' + (en ? j.requirements_en : j.requirements_es) + '</div>' : '') +
     '<div class="detail-block"><div class="section-label">' + (en?'Posted':'Publicado') + '</div>' + date + '</div>' +
 
     // Apply form

@@ -1038,13 +1038,21 @@
           </select>
         </div>
         <div>
-          <label style="font-size:12px;font-weight:500;color:var(--c-muted);display:block;margin-bottom:4px">Requirements</label>
-          <input id="job-requirements" type="text" placeholder="e.g. Experience required, English a plus" style="width:100%;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);outline:none">
+          <label style="font-size:12px;font-weight:500;color:var(--c-muted);display:block;margin-bottom:4px">Requirements (EN) 🇺🇸</label>
+          <input id="job-requirements-en" type="text" placeholder="e.g. Experience required, English a plus" style="width:100%;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);outline:none">
         </div>
       </div>
       <div style="margin-top:12px">
-        <label style="font-size:12px;font-weight:500;color:var(--c-muted);display:block;margin-bottom:4px">Description</label>
-        <textarea id="job-description" rows="3" placeholder="Job details, schedule, location address, etc." style="width:100%;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);outline:none;resize:vertical"></textarea>
+        <label style="font-size:12px;font-weight:500;color:var(--c-muted);display:block;margin-bottom:4px">Requirements (ES) 🇲🇽</label>
+        <input id="job-requirements-es" type="text" placeholder="ej. Se requiere experiencia, inglés es una ventaja" style="width:100%;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);outline:none">
+      </div>
+      <div style="margin-top:12px">
+        <label style="font-size:12px;font-weight:500;color:var(--c-muted);display:block;margin-bottom:4px">Description (EN) 🇺🇸</label>
+        <textarea id="job-description-en" rows="3" placeholder="Job details, schedule, location address, etc." style="width:100%;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);outline:none;resize:vertical"></textarea>
+      </div>
+      <div style="margin-top:12px">
+        <label style="font-size:12px;font-weight:500;color:var(--c-muted);display:block;margin-bottom:4px">Description (ES) 🇲🇽</label>
+        <textarea id="job-description-es" rows="3" placeholder="Detalles del trabajo, horario, dirección, etc." style="width:100%;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);outline:none;resize:vertical"></textarea>
       </div>
       <div style="display:flex;gap:8px;margin-top:16px">
         <button onclick="saveJob()" style="padding:9px 20px;background:var(--c-accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body)">Post Job</button>
@@ -3435,10 +3443,12 @@ async function saveJob() {
   var city = document.getElementById('job-city').value.trim();
   var pay_range = document.getElementById('job-pay').value.trim();
   var work_type = document.getElementById('job-worktype').value;
-  var requirements = document.getElementById('job-requirements').value.trim();
-  var description = document.getElementById('job-description').value.trim();
+  var requirements_en = document.getElementById('job-requirements-en').value.trim();
+  var requirements_es = document.getElementById('job-requirements-es').value.trim();
+  var description_en = document.getElementById('job-description-en').value.trim();
+  var description_es = document.getElementById('job-description-es').value.trim();
   if (!title || !category || !city) { alert('Title, category, and city are required.'); return; }
-  var payload = { title, category, city, pay_range, work_type, requirements, description };
+  var payload = { title, category, city, pay_range, work_type, requirements_en, requirements_es, description_en, description_es };
   var sb = getSupabase();
   var error;
   if (id) {
@@ -3464,8 +3474,10 @@ function editJob(id) {
   document.getElementById('job-city').value = j.city || '';
   document.getElementById('job-pay').value = j.pay_range || '';
   document.getElementById('job-worktype').value = j.work_type || 'gig';
-  document.getElementById('job-requirements').value = j.requirements || '';
-  document.getElementById('job-description').value = j.description || '';
+  document.getElementById('job-requirements-en').value = j.requirements_en || '';
+  document.getElementById('job-requirements-es').value = j.requirements_es || '';
+  document.getElementById('job-description-en').value = j.description_en || '';
+  document.getElementById('job-description-es').value = j.description_es || '';
   document.getElementById('jobs-form-title').textContent = 'Edit Job Posting';
   document.querySelector('#pane-jobs .settings-card-admin').scrollIntoView({ behavior: 'smooth' });
 }
@@ -3477,8 +3489,10 @@ function clearJobForm() {
   document.getElementById('job-city').value = 'Atlanta';
   document.getElementById('job-pay').value = '';
   document.getElementById('job-worktype').value = 'gig';
-  document.getElementById('job-requirements').value = '';
-  document.getElementById('job-description').value = '';
+  document.getElementById('job-requirements-en').value = '';
+  document.getElementById('job-requirements-es').value = '';
+  document.getElementById('job-description-en').value = '';
+  document.getElementById('job-description-es').value = '';
   document.getElementById('jobs-form-title').textContent = 'New Job Posting';
 }
 
