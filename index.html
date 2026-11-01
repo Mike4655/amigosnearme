@@ -421,12 +421,18 @@
 <section style="background: var(--c-surface);">
   <div class="hero">
     <div>
-      <div class="hero-eyebrow" data-es>Atlanta, Georgia · Negocios latinos · Verificados · Precio justo</div>
-      <div class="hero-eyebrow" data-en>Atlanta, Georgia · Hispanic-owned · Verified · Fair Priced</div>
-      <h1 data-es>Negocios latinos verificados. <em>Precio justo, vecinos de confianza.</em></h1>
-      <h1 data-en>Hispanic-owned businesses. <em>Fair prices, trusted neighbors.</em></h1>
-      <p class="hero-sub" data-es>Descubre negocios latinos verificados en Atlanta — trabajo de calidad a precios justos y honestos.</p>
-      <p class="hero-sub" data-en>Discover verified Hispanic-owned businesses in Atlanta — quality work at fair, honest prices.</p>
+      <div class="hero-eyebrow feature-business" data-es>Atlanta, Georgia · Negocios latinos · Verificados · Precio justo</div>
+      <div class="hero-eyebrow feature-business" data-en>Atlanta, Georgia · Hispanic-owned · Verified · Fair Priced</div>
+      <div class="hero-eyebrow" data-es>Atlanta, Georgia · Trabajadores latinos · Disponibles · Confiables</div>
+      <div class="hero-eyebrow" data-en>Atlanta, Georgia · Hispanic workers · Available · Trusted</div>
+      <h1 class="feature-business" data-es>Negocios latinos verificados. <em>Precio justo, vecinos de confianza.</em></h1>
+      <h1 class="feature-business" data-en>Hispanic-owned businesses. <em>Fair prices, trusted neighbors.</em></h1>
+      <h1 data-es>Trabajadores latinos listos. <em>Confiables, disponibles, cerca de ti.</em></h1>
+      <h1 data-en>Hispanic workers, ready to work. <em>Trusted, available, near you.</em></h1>
+      <p class="hero-sub feature-business" data-es>Descubre negocios latinos verificados en Atlanta — trabajo de calidad a precios justos y honestos.</p>
+      <p class="hero-sub feature-business" data-en>Discover verified Hispanic-owned businesses in Atlanta — quality work at fair, honest prices.</p>
+      <p class="hero-sub" data-es>Conecta con trabajadores latinos disponibles en Atlanta — cocina, construcción, mudanzas y más.</p>
+      <p class="hero-sub" data-en>Connect with available Hispanic workers in Atlanta — kitchen, construction, moving, and more.</p>
       <div class="hero-actions">
         <a href="search.html" class="btn-primary feature-business" data-es>Buscar Negocios →</a>
         <a href="search.html" class="btn-primary feature-business" data-en>Find Businesses →</a>
@@ -450,7 +456,7 @@
           <div class="hero-stat-label" data-es>Categorías de servicio</div>
           <div class="hero-stat-label" data-en>Service categories</div>
         </div>
-        <div>
+        <div class="feature-business">
           <div class="hero-stat-num">4.8★</div>
           <div class="hero-stat-label" data-es>Calificación promedio</div>
           <div class="hero-stat-label" data-en>Average rating</div>
@@ -472,14 +478,14 @@
       </div>
       <div class="search-wrap">
         <input class="search-input" id="hero-search" type="text"
-          placeholder="Landscaping, cleaning, construction..."
+          placeholder="Kitchen, construction, moving..."
           onkeydown="if(event.key==='Enter') doSearch()">
         <button class="search-btn" onclick="doSearch()" data-es>Buscar</button>
         <button class="search-btn" onclick="doSearch()" data-en>Search</button>
       </div>
       <div class="featured-biz">
-        <div class="featured-label" id="featured-label-es">Negocios destacados</div>
-        <div class="featured-label" id="featured-label-en">Featured businesses</div>
+        <div class="featured-label" id="featured-label-es">Trabajadores destacados</div>
+        <div class="featured-label" id="featured-label-en">Featured workers</div>
         <div id="featured-biz-list"></div>
       </div>
     </div>
@@ -701,8 +707,10 @@
     <div class="footer-top">
       <div>
         <span class="footer-logo">Amigos<span>NearMe</span></span>
-        <p class="footer-tagline" data-es>Negocios latinos verificados. Precios justos. Vecinos de confianza. Georgia.</p>
-        <p class="footer-tagline" data-en>Hispanic-owned businesses. Fair prices. Trusted neighbors. Georgia.</p>
+        <p class="footer-tagline feature-business" data-es>Negocios latinos verificados. Precios justos. Vecinos de confianza. Georgia.</p>
+        <p class="footer-tagline feature-business" data-en>Hispanic-owned businesses. Fair prices. Trusted neighbors. Georgia.</p>
+        <p class="footer-tagline" data-es>Trabajadores latinos disponibles. Empleadores que confían. Georgia.</p>
+        <p class="footer-tagline" data-en>Hispanic workers available. Employers that trust. Georgia.</p>
         <div style="display:flex;gap:10px;margin-top:12px">
           <a href="#" style="font-size:12px;color:rgba(255,255,255,0.4);text-decoration:none">WhatsApp</a>
           <a href="#" style="font-size:12px;color:rgba(255,255,255,0.4);text-decoration:none">Instagram</a>
