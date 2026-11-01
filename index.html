@@ -785,6 +785,7 @@ function setLang(lang) {
   var srch = document.getElementById('nav-search');
   if (srch) srch.textContent = lang === 'en' ? 'Find Businesses' : 'Buscar Negocios';
   try { localStorage.setItem('anm-lang', lang); } catch(e) {}
+  if (_searchType === 'worker') loadFeaturedWorkers(); else loadFeaturedBusinesses();
 }
 var AV_COLORS = ['av-coral','av-teal','av-blue','av-coral','av-teal','av-blue'];
 
