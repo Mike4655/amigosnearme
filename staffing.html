@@ -540,23 +540,32 @@ async function submitRequest() {
     (notes ? 'Notes: ' + notes : ''),
   ].filter(Boolean).join('\n');
 
+  var FORMSPREE_ID = 'YOUR_FORM_ID'; // ← formspree.io에서 발급받은 ID로 교체
+
   try {
-    var resp = await fetch('/api/send-email', {
+    var resp = await fetch('https://formspree.io/f/' + FORMSPREE_ID, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({
-        to: 'hola@amigosnearme.com',
-        subject: 'Staffing Request: ' + industry + ' — ' + business,
-        text: body
+        business:  business,
+        contact:   name,
+        phone:     phone,
+        email:     email || '(not provided)',
+        industry:  industry,
+        headcount: headcount,
+        duration:  duration,
+        city:      city,
+        notes:     notes || '(none)',
+        _subject:  'Staffing Request: ' + industry + ' — ' + business
       })
     });
-    if (!resp.ok) throw new Error();
+    var json = await resp.json();
+    if (!resp.ok || json.errors) throw new Error((json.errors||[{message:''}])[0].message);
   } catch(e) {
-    // Fallback: mailto
-    window.location.href = 'mailto:hola@amigosnearme.com'
-      + '?subject=' + encodeURIComponent('Staffing Request: ' + industry + ' — ' + business)
-      + '&body=' + encodeURIComponent(body);
     btn.disabled = false;
+    alert(isEn()
+      ? 'Could not send. Please email us at hola@amigosnearme.com'
+      : 'No se pudo enviar. Por favor escríbanos a hola@amigosnearme.com');
     return;
   }
 
