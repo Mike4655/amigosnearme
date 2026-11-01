@@ -540,7 +540,7 @@ async function submitRequest() {
     (notes ? 'Notes: ' + notes : ''),
   ].filter(Boolean).join('\n');
 
-  var FORMSPREE_ID = 'YOUR_FORM_ID'; // ← formspree.io에서 발급받은 ID로 교체
+  var FORMSPREE_ID = 'xbdegpdb';
 
   try {
     var resp = await fetch('https://formspree.io/f/' + FORMSPREE_ID, {
