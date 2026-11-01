@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- FEATURE FLAG: Business/Customer 기능 비활성화 시 이 블록을 제거하면 복구됨 -->
+<style>.feature-business { display: none !important; }</style>
+<!-- /FEATURE FLAG -->
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#C94F2B">
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
@@ -113,7 +116,7 @@
   <p class="lede" data-en>This helps us show you the right form. You can change this later by contacting support.</p>
 
   <div class="choice-grid">
-    <a href="register.html?type=business" class="choice-card">
+    <a href="register.html?type=business" class="choice-card feature-business">
       <span class="choice-arrow">→</span>
       <div class="choice-icon">🏢</div>
       <span class="choice-tag tag-biz" data-es>Negocio</span>

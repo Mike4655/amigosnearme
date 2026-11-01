@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- FEATURE FLAG: Business/Customer 기능 비활성화 시 이 블록을 제거하면 복구됨 -->
+<style>.feature-business { display: none !important; }</style>
+<!-- /FEATURE FLAG -->
 <meta charset="UTF-8">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#C94F2B">
@@ -399,15 +402,17 @@
       <button class="lang-btn active" id="btn-es" onclick="setLang('es')">ES</button>
       <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
     </div>
-    <div class="nav-links">
+    <div class="nav-links feature-business">
       <a href="search.html" id="nav-search" data-es>Buscar Negocios</a>
       <a href="search.html" id="nav-search-en" data-en>Find Businesses</a>
     </div>
     <span id="nav-auth-area" style="display:flex;align-items:center;gap:4px">
       <a href="login.html" class="btn-nav" id="nav-login-es" style="font-size:13px;color:var(--c-muted)" data-es>Iniciar sesión</a>
       <a href="login.html" class="btn-nav" id="nav-login-en" style="font-size:13px;color:var(--c-muted)" data-en>Log in</a>
-      <a href="register-type.html" class="btn-nav primary" id="nav-cta" data-es>Registrar Negocio</a>
-      <a href="register-type.html" class="btn-nav primary" id="nav-cta-en" data-en>List Your Business</a>
+      <a href="register-type.html" class="btn-nav primary feature-business" id="nav-cta" data-es>Registrar Negocio</a>
+      <a href="register-type.html" class="btn-nav primary feature-business" id="nav-cta-en" data-en>List Your Business</a>
+      <a href="register.html?type=staffing" class="btn-nav primary" data-es>Registrarse →</a>
+      <a href="register.html?type=staffing" class="btn-nav primary" data-en>Register →</a>
     </span>
   </div>
 </nav>
@@ -423,22 +428,24 @@
       <p class="hero-sub" data-es>Descubre negocios latinos verificados en Atlanta — trabajo de calidad a precios justos y honestos.</p>
       <p class="hero-sub" data-en>Discover verified Hispanic-owned businesses in Atlanta — quality work at fair, honest prices.</p>
       <div class="hero-actions">
-        <a href="search.html" class="btn-primary" data-es>Buscar Negocios →</a>
-        <a href="search.html" class="btn-primary" data-en>Find Businesses →</a>
+        <a href="search.html" class="btn-primary feature-business" data-es>Buscar Negocios →</a>
+        <a href="search.html" class="btn-primary feature-business" data-en>Find Businesses →</a>
         <a href="worker-search.html" class="btn-primary" data-es>Buscar Trabajadores →</a>
         <a href="worker-search.html" class="btn-primary" data-en>Find Job Seekers →</a>
-        <a href="register-type.html" class="btn-secondary" data-es>Registrar tu Negocio</a>
-        <a href="register-type.html" class="btn-secondary" data-en>List Your Business</a>
+        <a href="register-type.html" class="btn-secondary feature-business" data-es>Registrar tu Negocio</a>
+        <a href="register-type.html" class="btn-secondary feature-business" data-en>List Your Business</a>
         <a href="register.html?type=staffing" class="btn-secondary" data-es>Registrarte como Trabajador</a>
         <a href="register.html?type=staffing" class="btn-secondary" data-en>Register as a Job Seeker</a>
       </div>
       <div class="hero-stats">
         <div>
           <div class="hero-stat-num">175+</div>
-          <div class="hero-stat-label" data-es>Negocios verificados</div>
-          <div class="hero-stat-label" data-en>Verified businesses</div>
+          <div class="hero-stat-label feature-business" data-es>Negocios verificados</div>
+          <div class="hero-stat-label feature-business" data-en>Verified businesses</div>
+          <div class="hero-stat-label" data-es>Trabajadores registrados</div>
+          <div class="hero-stat-label" data-en>Registered workers</div>
         </div>
-        <div>
+        <div class="feature-business">
           <div class="hero-stat-num">13</div>
           <div class="hero-stat-label" data-es>Categorías de servicio</div>
           <div class="hero-stat-label" data-en>Service categories</div>
@@ -453,13 +460,15 @@
 
     <!-- Search card -->
     <div class="hero-card">
-      <p class="hero-card-title" data-es>¿Qué servicio necesitas?</p>
-      <p class="hero-card-title" data-en>What service do you need?</p>
+      <p class="hero-card-title feature-business" data-es>¿Qué servicio necesitas?</p>
+      <p class="hero-card-title feature-business" data-en>What service do you need?</p>
+      <p class="hero-card-title" data-es>Busca trabajadores disponibles</p>
+      <p class="hero-card-title" data-en>Find available workers</p>
       <div class="search-type-toggle">
-        <button class="search-type-btn active" id="toggle-biz" onclick="setSearchType('biz')" data-es>🏪 Negocios</button>
-        <button class="search-type-btn active" id="toggle-biz-en" onclick="setSearchType('biz')" data-en>🏪 Businesses</button>
-        <button class="search-type-btn" id="toggle-worker" onclick="setSearchType('worker')" data-es>👷 Trabajadores</button>
-        <button class="search-type-btn" id="toggle-worker-en" onclick="setSearchType('worker')" data-en>👷 Job Seekers</button>
+        <button class="search-type-btn feature-business" id="toggle-biz" onclick="setSearchType('biz')" data-es>🏪 Negocios</button>
+        <button class="search-type-btn feature-business" id="toggle-biz-en" onclick="setSearchType('biz')" data-en>🏪 Businesses</button>
+        <button class="search-type-btn active" id="toggle-worker" onclick="setSearchType('worker')" data-es>👷 Trabajadores</button>
+        <button class="search-type-btn active" id="toggle-worker-en" onclick="setSearchType('worker')" data-en>👷 Job Seekers</button>
       </div>
       <div class="search-wrap">
         <input class="search-input" id="hero-search" type="text"
@@ -478,7 +487,7 @@
 </section>
 
 <!-- CATEGORIES -->
-<section class="section categories-section">
+<section class="section categories-section feature-business">
   <div class="section-inner">
     <div class="section-eyebrow" data-es>Categorías</div>
     <div class="section-eyebrow" data-en>Categories</div>
@@ -590,7 +599,7 @@
 </section>
 
 <!-- HOW IT WORKS -->
-<section class="section">
+<section class="section feature-business">
   <div class="section-inner">
     <div class="section-eyebrow" data-es>¿Cómo funciona?</div>
     <div class="section-eyebrow" data-en>How it works</div>
@@ -623,7 +632,7 @@
 </section>
 
 <!-- TRUST -->
-<section class="section trust-section">
+<section class="section trust-section feature-business">
   <div class="section-inner">
     <div class="section-eyebrow" style="color:rgba(255,255,255,0.5)" data-es>Por qué confiar en nosotros</div>
     <div class="section-eyebrow" style="color:rgba(255,255,255,0.5)" data-en>Why trust us</div>
@@ -666,16 +675,22 @@
 <section class="cta-band">
   <div class="cta-inner">
     <div>
-      <h2 class="cta-title" data-es>¿Tienes un negocio latino?<br>Regístralo gratis hoy.</h2>
-      <h2 class="cta-title" data-en>Own a Hispanic-owned business?<br>List it for free today.</h2>
-      <p class="cta-sub" data-es>Llega a miles de clientes en tu área. Muestra tus precios justos. Empieza gratis — sin tarjeta de crédito.</p>
-      <p class="cta-sub" data-en>Reach thousands of customers in your area. Showcase your fair pricing. Start free — no credit card required.</p>
+      <h2 class="cta-title feature-business" data-es>¿Tienes un negocio latino?<br>Regístralo gratis hoy.</h2>
+      <h2 class="cta-title feature-business" data-en>Own a Hispanic-owned business?<br>List it for free today.</h2>
+      <h2 class="cta-title" data-es>¿Buscas trabajo?<br>Crea tu perfil gratis hoy.</h2>
+      <h2 class="cta-title" data-en>Looking for work?<br>Create your free profile today.</h2>
+      <p class="cta-sub feature-business" data-es>Llega a miles de clientes en tu área. Muestra tus precios justos. Empieza gratis — sin tarjeta de crédito.</p>
+      <p class="cta-sub feature-business" data-en>Reach thousands of customers in your area. Showcase your fair pricing. Start free — no credit card required.</p>
+      <p class="cta-sub" data-es>Empleadores buscan trabajadores como tú. Regístrate gratis y empieza a recibir contactos.</p>
+      <p class="cta-sub" data-en>Employers are looking for workers like you. Register free and start getting contacts.</p>
     </div>
     <div class="cta-actions">
-      <a href="register-type.html" class="btn-primary" data-es>Registrar tu Negocio →</a>
-      <a href="register-type.html" class="btn-primary" data-en>List Your Business →</a>
-      <a href="register.html?type=staffing" class="btn-secondary" data-es>Registrarte como Trabajador</a>
-      <a href="register.html?type=staffing" class="btn-secondary" data-en>Register as a Job Seeker</a>
+      <a href="register-type.html" class="btn-primary feature-business" data-es>Registrar tu Negocio →</a>
+      <a href="register-type.html" class="btn-primary feature-business" data-en>List Your Business →</a>
+      <a href="register.html?type=staffing" class="btn-primary" data-es>Registrarte como Trabajador →</a>
+      <a href="register.html?type=staffing" class="btn-primary" data-en>Register as a Job Seeker →</a>
+      <a href="login.html?type=employer" class="btn-secondary" data-es>Soy Empleador →</a>
+      <a href="login.html?type=employer" class="btn-secondary" data-en>I'm an Employer →</a>
     </div>
   </div>
 </section>
@@ -694,7 +709,7 @@
           <a href="#" style="font-size:12px;color:rgba(255,255,255,0.4);text-decoration:none">Facebook</a>
         </div>
       </div>
-      <div>
+      <div class="feature-business">
         <div class="footer-col-title" data-es>Para Clientes</div>
         <div class="footer-col-title" data-en>For Customers</div>
         <div class="footer-links">
@@ -709,15 +724,19 @@
         </div>
       </div>
       <div>
-        <div class="footer-col-title" data-es>Para Negocios</div>
-        <div class="footer-col-title" data-en>For Businesses</div>
+        <div class="footer-col-title feature-business" data-es>Para Negocios</div>
+        <div class="footer-col-title feature-business" data-en>For Businesses</div>
+        <div class="footer-col-title" data-es>Para Trabajadores</div>
+        <div class="footer-col-title" data-en>For Workers</div>
         <div class="footer-links">
-          <a href="register-type.html" data-es>Registrar Negocio</a>
-          <a href="register-type.html" data-en>List Your Business</a>
-          <a href="register.html#pricing" data-es>Precios</a>
-          <a href="register.html#pricing" data-en>Pricing</a>
-          <a href="login.html?type=business" data-es>Acceder al Dashboard</a>
-          <a href="login.html?type=business" data-en>Owner Dashboard</a>
+          <a href="register-type.html" class="feature-business" data-es>Registrar Negocio</a>
+          <a href="register-type.html" class="feature-business" data-en>List Your Business</a>
+          <a href="register.html?type=staffing" data-es>Registrarse como Trabajador</a>
+          <a href="register.html?type=staffing" data-en>Register as a Worker</a>
+          <a href="login.html?type=employer" data-es>Portal Empleador</a>
+          <a href="login.html?type=employer" data-en>Employer Portal</a>
+          <a href="login.html?type=worker" data-es>Portal Trabajador</a>
+          <a href="login.html?type=worker" data-en>Worker Portal</a>
         </div>
       </div>
       <div>
