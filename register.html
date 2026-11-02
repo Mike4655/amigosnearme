@@ -1655,6 +1655,13 @@ async function goSuccess(isZelle, isAch) {
           var wBiz = await getMyBusiness();
           if (wBiz && wBiz.id) { _workerProfileBiz = wBiz; }
         } catch(e) {}
+        document.getElementById('step-4').style.display = 'none';
+        document.getElementById('step-success').style.display = 'block';
+        document.querySelector('.progress-bar').style.display = 'none';
+        var waBlock = document.getElementById('success-whatsapp-block');
+        if (waBlock) waBlock.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
       } else {
         window.location.href = 'dashboard.html';
         return;
