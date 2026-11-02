@@ -1063,14 +1063,21 @@ if (new URLSearchParams(window.location.search).get('type') === 'staffing') docu
       <!-- WhatsApp group join — workers only -->
       <div id="success-whatsapp-block" style="display:none;margin:20px auto 24px;max-width:400px;background:#e9fbe9;border:1px solid #b2dfb2;border-radius:12px;padding:20px 24px;text-align:center">
         <div style="font-size:28px;margin-bottom:8px">💬</div>
-        <div style="font-size:15px;font-weight:700;color:#1a5c1a;margin-bottom:6px" data-es>Únete al grupo de WhatsApp</div>
-        <div style="font-size:15px;font-weight:700;color:#1a5c1a;margin-bottom:6px" data-en>Join our WhatsApp Group</div>
-        <div style="font-size:13px;color:#3a7a3a;margin-bottom:14px" data-es>Recibe alertas de nuevos empleos al instante</div>
-        <div style="font-size:13px;color:#3a7a3a;margin-bottom:14px" data-en>Get instant alerts when new jobs are posted</div>
-        <a href="https://chat.whatsapp.com/FT9d0LkbVlZ8fcvUjY4PSz" target="_blank" rel="noopener"
-           style="display:inline-block;background:#25D366;color:#fff;font-size:14px;font-weight:700;padding:11px 24px;border-radius:8px;text-decoration:none;font-family:var(--font-body)">
-          📱 <span data-es>Unirse ahora →</span><span data-en>Join now →</span>
-        </a>
+        <div style="font-size:15px;font-weight:700;color:#1a5c1a;margin-bottom:6px" data-es>¿Te unes al grupo de WhatsApp?</div>
+        <div style="font-size:15px;font-weight:700;color:#1a5c1a;margin-bottom:6px" data-en>Join our WhatsApp Group?</div>
+        <div style="font-size:13px;color:#3a7a3a;margin-bottom:16px" data-es>Recibe alertas de nuevos empleos al instante. ¡Es gratis!</div>
+        <div style="font-size:13px;color:#3a7a3a;margin-bottom:16px" data-en>Get instant alerts when new jobs are posted. It's free!</div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          <a href="https://chat.whatsapp.com/FT9d0LkbVlZ8fcvUjY4PSz" target="_blank" rel="noopener"
+             onclick="setTimeout(function(){ goWorkerProfile(); }, 500)"
+             style="display:inline-block;background:#25D366;color:#fff;font-size:14px;font-weight:700;padding:11px 24px;border-radius:8px;text-decoration:none;font-family:var(--font-body)">
+            📱 <span data-es>Sí, unirme →</span><span data-en>Yes, join →</span>
+          </a>
+          <button onclick="goWorkerProfile()"
+             style="background:#fff;color:#3a7a3a;font-size:13px;font-weight:600;padding:11px 20px;border-radius:8px;border:1px solid #b2dfb2;cursor:pointer;font-family:var(--font-body)">
+            <span data-es>Ahora no</span><span data-en>Not now</span>
+          </button>
+        </div>
       </div>
       <div class="success-actions">
         <a href="login.html" class="btn-secondary" data-es>Ya confirmé — Iniciar sesión →</a>
@@ -1642,13 +1649,16 @@ async function goSuccess(isZelle, isAch) {
     var ns = await getSession();
     if (ns) {
       if (isWorkerReg) {
+        // Worker: show success screen with WhatsApp prompt first (no auto-redirect)
+        _workerProfileBiz = null;
         try {
           var wBiz = await getMyBusiness();
-          if (wBiz && wBiz.id) { window.location.href = 'worker-profile.html?id=' + wBiz.id; return; }
+          if (wBiz && wBiz.id) { _workerProfileBiz = wBiz; }
         } catch(e) {}
+      } else {
+        window.location.href = 'dashboard.html';
+        return;
       }
-      window.location.href = 'dashboard.html';
-      return;
     }
   } catch(e) {}
   document.getElementById('step-4').style.display = 'none';
@@ -1658,12 +1668,21 @@ async function goSuccess(isZelle, isAch) {
   var dispEn = document.getElementById('confirm-email-display-en');
   if (dispEs) dispEs.textContent = email;
   if (dispEn) dispEn.textContent = email;
-  // Show WhatsApp group button for workers only
+  // Show WhatsApp group prompt for workers only
   if (isWorkerReg) {
     var waBlock = document.getElementById('success-whatsapp-block');
     if (waBlock) waBlock.style.display = 'block';
   }
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+var _workerProfileBiz = null;
+function goWorkerProfile() {
+  if (_workerProfileBiz && _workerProfileBiz.id) {
+    window.location.href = 'worker-profile.html?id=' + _workerProfileBiz.id;
+  } else {
+    window.location.href = 'dashboard.html';
+  }
 }
 
 // Braintree Drop-in state
