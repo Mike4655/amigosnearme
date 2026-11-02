@@ -878,17 +878,21 @@ async function loadFeaturedWorkers() {
       var initials = displayName.split(' ').slice(0,2).map(function(w){ return w[0]||''; }).join('').toUpperCase() || '?';
       var typeRaw = Array.isArray(w.staffing_types) ? w.staffing_types[0] : '';
       var typeMap = {
-        kitchen: { en: 'Kitchen', es: 'Cocina' },
-        kitchen_restaurant: { en: 'Kitchen', es: 'Cocina' },
-        moving: { en: 'Moving', es: 'Mudanzas' },
-        construction: { en: 'Construction', es: 'Construcción' },
-        cleaning: { en: 'Cleaning', es: 'Limpieza' },
-        landscaping: { en: 'Landscaping', es: 'Landscaping' },
-        painting: { en: 'Painting', es: 'Pintura' },
-        plumbing: { en: 'Plumbing', es: 'Plomería' },
-        electrical: { en: 'Electrical', es: 'Electricidad' },
-        other_general_labor: { en: 'General Labor', es: 'Mano de obra' },
-        other: { en: 'Other', es: 'Otro' },
+        kitchen: { en: '🍳 Kitchen / Restaurant', es: '🍳 Cocina / Restaurante' },
+        kitchen_restaurant: { en: '🍳 Kitchen / Restaurant', es: '🍳 Cocina / Restaurante' },
+        moving: { en: '📦 Moving / Loading', es: '📦 Mudanzas / Carga' },
+        moving_loading: { en: '📦 Moving / Loading', es: '📦 Mudanzas / Carga' },
+        construction: { en: '🏗️ Construction (day labor)', es: '🏗️ Construcción (jornaleros)' },
+        production_warehouse: { en: '🏭 Production / Warehouse', es: '🏭 Producción / Almacén' },
+        cleaning: { en: '🧹 Commercial Cleaning', es: '🧹 Limpieza comercial' },
+        agriculture: { en: '🌾 Agricultural Work', es: '🌾 Trabajo agrícola' },
+        events_parking: { en: '🅿️ Events / Parking', es: '🅿️ Eventos / Estacionamiento' },
+        landscaping: { en: '🌿 Landscaping', es: '🌿 Landscaping' },
+        painting: { en: '🎨 Painting', es: '🎨 Pintura' },
+        plumbing: { en: '🔧 Plumbing', es: '🔧 Plomería' },
+        electrical: { en: '⚡ Electrical', es: '⚡ Electricidad' },
+        other_general_labor: { en: '🔨 Other General Labor', es: '🔨 Otro trabajo general' },
+        other: { en: '🔨 Other General Labor', es: '🔨 Otro trabajo general' },
       };
       var type = typeRaw ? ((typeMap[typeRaw] || {})[isEn ? 'en' : 'es'] || typeRaw) : '';
       var thumbUrl = Array.isArray(w.photos) && w.photos[0] ? w.photos[0] : null;
