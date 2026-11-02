@@ -61,7 +61,7 @@ BEGIN
     ep.owner_id,
     u.email::text,
     ep.phone,
-    ep.display_name,
+    COALESCE(ep.display_name, u.raw_user_meta_data->>'display_name'),
     ep.credit_balance,
     ep.account_status,
     ep.created_at,
@@ -100,7 +100,7 @@ BEGIN
   SELECT
     ct.employer_id,
     u.email::text,
-    ep.display_name,
+    COALESCE(ep.display_name, u.raw_user_meta_data->>'display_name'),
     ct.credits_added,
     ct.amount_usd,
     ct.payment_ref,
