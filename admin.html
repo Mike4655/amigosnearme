@@ -1097,6 +1097,7 @@
         <thead style="position:sticky;top:0;background:var(--c-surface);z-index:1">
           <tr>
             <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--c-muted);letter-spacing:.04em">TITLE</th>
+            <th style="padding:12px 8px;text-align:left;font-size:11px;font-weight:600;color:var(--c-muted);letter-spacing:.04em">REF</th>
             <th style="padding:12px 8px;text-align:left;font-size:11px;font-weight:600;color:var(--c-muted);letter-spacing:.04em">CATEGORY</th>
             <th style="padding:12px 8px;text-align:left;font-size:11px;font-weight:600;color:var(--c-muted);letter-spacing:.04em">CITY</th>
             <th style="padding:12px 8px;text-align:left;font-size:11px;font-weight:600;color:var(--c-muted);letter-spacing:.04em">PAY</th>
@@ -1107,7 +1108,7 @@
           </tr>
         </thead>
         <tbody id="jobs-table-body">
-          <tr><td colspan="8" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>
+          <tr><td colspan="9" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>
         </tbody>
       </table>
     </div>
@@ -3440,9 +3441,9 @@ async function loadJobs() {
     .from('jobs')
     .select('*')
     .order('created_at', { ascending: false });
-  if (error || !data) { tbody.innerHTML = '<tr><td colspan="8" style="padding:20px;color:var(--c-muted)">Error loading jobs.</td></tr>'; return; }
+  if (error || !data) { tbody.innerHTML = '<tr><td colspan="9" style="padding:20px;color:var(--c-muted)">Error loading jobs.</td></tr>'; return; }
   _jobsList = data;
-  if (!data.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--c-muted);padding:20px">No job postings yet.</td></tr>'; return; }
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--c-muted);padding:20px">No job postings yet.</td></tr>'; return; }
   tbody.innerHTML = '';
   data.forEach(function(j) {
     var tr = document.createElement('tr');
@@ -3451,6 +3452,7 @@ async function loadJobs() {
     var statusColor = j.status === 'open' ? 'var(--c-green)' : 'var(--c-muted)';
     tr.innerHTML =
       '<td style="padding:11px 16px;font-size:13px;font-weight:500">' + (j.title||'—') + '</td>' +
+      '<td style="padding:11px 8px;font-size:11px;font-family:monospace;color:var(--c-muted)">' + j.id.slice(0,8).toUpperCase() + '</td>' +
       '<td style="padding:11px 8px;font-size:12px;color:var(--c-muted)">' + jobCatLabel(j.category,'en') + '</td>' +
       '<td style="padding:11px 8px;font-size:12px;color:var(--c-muted)">' + (j.city||'—') + '</td>' +
       '<td style="padding:11px 8px;font-size:12px">' + (j.pay_range||'—') + '</td>' +
