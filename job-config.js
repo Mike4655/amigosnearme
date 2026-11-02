@@ -3,6 +3,7 @@
 
 var JOB_CATEGORIES = [
   { value: 'kitchen',            en: 'Kitchen',       es: 'Cocina' },
+  { value: 'kitchen_restaurant', en: 'Kitchen',       es: 'Cocina' },  // legacy alias
   { value: 'construction',       en: 'Construction',  es: 'Construcción' },
   { value: 'moving',             en: 'Moving',        es: 'Mudanzas' },
   { value: 'cleaning',           en: 'Cleaning',      es: 'Limpieza' },
