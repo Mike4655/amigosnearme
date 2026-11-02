@@ -1053,33 +1053,57 @@ if (new URLSearchParams(window.location.search).get('type') === 'staffing') docu
   <div id="step-success" class="success-screen">
     <!-- Normal (card/free) success -->
     <div id="success-normal">
-      <div class="success-icon">📧</div>
-      <h2 class="success-title" data-es>¡Casi listo! Confirma tu correo</h2>
-      <h2 class="success-title" data-en>Almost there! Confirm your email</h2>
-      <p class="success-sub" data-es>Te enviamos un enlace de confirmación a <strong id="confirm-email-display"></strong>. Haz clic en el enlace para activar tu cuenta.</p>
-      <p class="success-sub" data-en>We sent a confirmation link to <strong id="confirm-email-display-en"></strong>. Click the link to activate your account.</p>
-      <p class="success-sub" style="font-size:13px;margin-top:8px" data-es>¿No lo ves? Revisa tu carpeta de spam.</p>
-      <p class="success-sub" style="font-size:13px;margin-top:8px" data-en>Don't see it? Check your spam folder.</p>
+      <!-- Worker success header (shown instead of email confirmation) -->
+      <div id="success-worker-header" style="display:none">
+        <div class="success-icon">🎉</div>
+        <h2 class="success-title" data-es>¡Ya eres parte de AmigosNearMe!</h2>
+        <h2 class="success-title" data-en>You're in! Welcome to AmigosNearMe</h2>
+        <p class="success-sub" data-es>Tu cuenta fue activada al instante. Ya puedes recibir ofertas de trabajo.</p>
+        <p class="success-sub" data-en>Your account is active. You can now receive job offers.</p>
+      </div>
+      <!-- Default email confirmation header (non-workers) -->
+      <div id="success-email-header">
+        <div class="success-icon">📧</div>
+        <h2 class="success-title" data-es>¡Casi listo! Confirma tu correo</h2>
+        <h2 class="success-title" data-en>Almost there! Confirm your email</h2>
+        <p class="success-sub" data-es>Te enviamos un enlace de confirmación a <strong id="confirm-email-display"></strong>. Haz clic en el enlace para activar tu cuenta.</p>
+        <p class="success-sub" data-en>We sent a confirmation link to <strong id="confirm-email-display-en"></strong>. Click the link to activate your account.</p>
+        <p class="success-sub" style="font-size:13px;margin-top:8px" data-es>¿No lo ves? Revisa tu carpeta de spam.</p>
+        <p class="success-sub" style="font-size:13px;margin-top:8px" data-en>Don't see it? Check your spam folder.</p>
+      </div>
       <!-- WhatsApp group join — workers only -->
-      <div id="success-whatsapp-block" style="display:none;margin:20px auto 24px;max-width:400px;background:#e9fbe9;border:1px solid #b2dfb2;border-radius:12px;padding:20px 24px;text-align:center">
-        <div style="font-size:28px;margin-bottom:8px">💬</div>
-        <div style="font-size:15px;font-weight:700;color:#1a5c1a;margin-bottom:6px" data-es>¿Te unes al grupo de WhatsApp?</div>
-        <div style="font-size:15px;font-weight:700;color:#1a5c1a;margin-bottom:6px" data-en>Join our WhatsApp Group?</div>
-        <div style="font-size:13px;color:#3a7a3a;margin-bottom:16px" data-es>Recibe alertas de nuevos empleos al instante. ¡Es gratis!</div>
-        <div style="font-size:13px;color:#3a7a3a;margin-bottom:16px" data-en>Get instant alerts when new jobs are posted. It's free!</div>
+      <div id="success-whatsapp-block" style="display:none;margin:20px auto 24px;max-width:440px;background:#e9fbe9;border:1.5px solid #25D366;border-radius:14px;padding:24px;text-align:center">
+        <div style="font-size:32px;margin-bottom:8px">💬</div>
+        <div style="font-size:16px;font-weight:800;color:#1a5c1a;margin-bottom:4px" data-es>Únete a nuestro grupo de WhatsApp</div>
+        <div style="font-size:16px;font-weight:800;color:#1a5c1a;margin-bottom:12px" data-en>Join our WhatsApp Group</div>
+        <!-- Benefits list -->
+        <div style="text-align:left;background:#fff;border-radius:10px;padding:14px 16px;margin-bottom:16px">
+          <div style="font-size:13px;font-weight:700;color:#1a5c1a;margin-bottom:8px" data-es>✅ Lo que recibes al unirte:</div>
+          <div style="font-size:13px;font-weight:700;color:#1a5c1a;margin-bottom:8px" data-en>✅ What you get when you join:</div>
+          <ul style="margin:0;padding-left:18px;font-size:13px;color:#2d6b2d;line-height:1.85">
+            <li data-es>📢 Alertas inmediatas de nuevos empleos</li>
+            <li data-en>📢 Instant alerts for new job postings</li>
+            <li data-es>💼 Acceso exclusivo a ofertas antes que nadie</li>
+            <li data-en>💼 Exclusive early access to job offers</li>
+            <li data-es>🤝 Comunidad de trabajadores como tú</li>
+            <li data-en>🤝 Community of workers like you</li>
+            <li data-es>📲 Directo en tu WhatsApp — sin apps extra</li>
+            <li data-en>📲 Straight to your WhatsApp — no extra apps</li>
+          </ul>
+        </div>
         <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
           <a href="https://chat.whatsapp.com/FT9d0LkbVlZ8fcvUjY4PSz" target="_blank" rel="noopener"
              onclick="setTimeout(function(){ goWorkerProfile(); }, 500)"
-             style="display:inline-block;background:#25D366;color:#fff;font-size:14px;font-weight:700;padding:11px 24px;border-radius:8px;text-decoration:none;font-family:var(--font-body)">
+             style="display:inline-block;background:#25D366;color:#fff;font-size:14px;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;font-family:var(--font-body)">
             📱 <span data-es>Sí, unirme →</span><span data-en>Yes, join →</span>
           </a>
           <button onclick="goWorkerProfile()"
-             style="background:#fff;color:#3a7a3a;font-size:13px;font-weight:600;padding:11px 20px;border-radius:8px;border:1px solid #b2dfb2;cursor:pointer;font-family:var(--font-body)">
+             style="background:#fff;color:#3a7a3a;font-size:13px;font-weight:600;padding:12px 20px;border-radius:8px;border:1px solid #b2dfb2;cursor:pointer;font-family:var(--font-body)">
             <span data-es>Ahora no</span><span data-en>Not now</span>
           </button>
         </div>
       </div>
-      <div class="success-actions">
+      <div class="success-actions" id="success-actions-normal">
         <a href="login.html" class="btn-secondary" data-es>Ya confirmé — Iniciar sesión →</a>
         <a href="login.html" class="btn-secondary" data-en>I confirmed — Log in →</a>
         <a href="search.html" class="btn-secondary" data-es>Ver la plataforma</a>
@@ -1658,6 +1682,13 @@ async function goSuccess(isZelle, isAch) {
         document.getElementById('step-4').style.display = 'none';
         document.getElementById('step-success').style.display = 'block';
         document.querySelector('.progress-bar').style.display = 'none';
+        // Worker: show worker header, hide email header and bottom buttons
+        var wHdr = document.getElementById('success-worker-header');
+        var eHdr = document.getElementById('success-email-header');
+        var acts = document.getElementById('success-actions-normal');
+        if (wHdr) wHdr.style.display = 'block';
+        if (eHdr) eHdr.style.display = 'none';
+        if (acts) acts.style.display = 'none';
         var waBlock = document.getElementById('success-whatsapp-block');
         if (waBlock) waBlock.style.display = 'block';
         window.scrollTo({ top: 0, behavior: 'smooth' });
