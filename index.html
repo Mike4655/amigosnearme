@@ -358,6 +358,9 @@
   [data-en] { display: none; }
   body.en [data-es] { display: none; }
   body.en [data-en] { display: revert; }
+  .see-all-jobs-link { display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--c-accent);text-decoration:none; }
+  body.en .see-all-jobs-link[data-en] { display:inline-flex; }
+  body:not(.en) .see-all-jobs-link[data-es] { display:inline-flex; }
 
   /* ── MOBILE ── */
   @media (max-width: 768px) {
@@ -507,8 +510,8 @@
     <h2 class="section-title" data-en>Jobs available now</h2>
     <div id="home-jobs-list" style="display:flex;flex-direction:column;gap:12px;margin-top:24px"></div>
     <div style="margin-top:20px">
-      <a href="jobs.html" style="display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--c-accent);text-decoration:none" data-es>Ver todos los empleos →</a>
-      <a href="jobs.html" style="display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--c-accent);text-decoration:none" data-en>See all jobs →</a>
+      <a href="jobs.html" class="see-all-jobs-link" data-es>Ver todos los empleos →</a>
+      <a href="jobs.html" class="see-all-jobs-link" data-en>See all jobs →</a>
     </div>
   </div>
 </section>
