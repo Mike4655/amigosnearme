@@ -358,9 +358,9 @@
   [data-en] { display: none; }
   body.en [data-es] { display: none; }
   body.en [data-en] { display: revert; }
-  .see-all-jobs-link { display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--c-accent);text-decoration:none; }
-  body.en .see-all-jobs-link[data-en] { display:inline-flex; }
-  body:not(.en) .see-all-jobs-link[data-es] { display:inline-flex; }
+  body.en a.see-all-jobs-link[data-en] { display: inline-flex; }
+  body:not(.en) a.see-all-jobs-link[data-en] { display: none !important; }
+  .see-all-jobs-link { align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--c-accent);text-decoration:none; }
 
   /* ── MOBILE ── */
   @media (max-width: 768px) {
