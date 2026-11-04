@@ -293,6 +293,8 @@ var currentSort = 'recommended';
 
 var CAT_LABELS_ES = { staffing:'👷 Personal', landscaping:'🌿 Landscaping', cleaning:'🧹 Limpieza', construction:'🏗️ Construcción', painting:'🪟 Pintura', moving:'📦 Mudanzas', plumbing:'🔧 Plomería', electrical:'⚡ Electricidad', tree_removal:'🌳 Árboles', food:'🍽️ Comida', auto:'🚗 Autos', translation:'🗣️ Traducción', real_estate:'🏠 Bienes Raíces' };
 var CAT_LABELS_EN = { staffing:'👷 Staffing', landscaping:'🌿 Landscaping', cleaning:'🧹 Cleaning', construction:'🏗️ Construction', painting:'🪟 Painting', moving:'📦 Moving', plumbing:'🔧 Plumbing', electrical:'⚡ Electrical', tree_removal:'🌳 Tree Removal', food:'🍽️ Food & Catering', auto:'🚗 Auto Repair', translation:'🗣️ Translation', real_estate:'🏠 Real Estate' };
+var STAFFING_LABELS_ES = { kitchen:'🍳 Cocina / Restaurante', kitchen_restaurant:'🍳 Cocina / Restaurante', moving:'📦 Mudanzas / Carga', moving_loading:'📦 Mudanzas / Carga', construction:'🏗️ Construcción', production_warehouse:'🏭 Producción / Almacén', cleaning:'🧹 Limpieza comercial', agriculture:'🌾 Trabajo agrícola', events_parking:'🅿️ Eventos / Estacionamiento', landscaping:'🌿 Landscaping', painting:'🎨 Pintura', plumbing:'🔧 Plomería', electrical:'⚡ Electricidad', other_general_labor:'🔨 Mano de obra general', other:'🔨 Mano de obra general' };
+var STAFFING_LABELS_EN = { kitchen:'🍳 Kitchen / Restaurant', kitchen_restaurant:'🍳 Kitchen / Restaurant', moving:'📦 Moving / Loading', moving_loading:'📦 Moving / Loading', construction:'🏗️ Construction', production_warehouse:'🏭 Production / Warehouse', cleaning:'🧹 Commercial Cleaning', agriculture:'🌾 Agricultural Work', events_parking:'🅿️ Events / Parking', landscaping:'🌿 Landscaping', painting:'🎨 Painting', plumbing:'🔧 Plumbing', electrical:'⚡ Electrical', other_general_labor:'🔨 General Labor', other:'🔨 General Labor' };
 var COLORS = ['av-coral','av-teal','av-amber','av-blue','av-gray'];
 
 function setLang(lang) {
@@ -453,10 +455,21 @@ function renderPage(filtered) {
   }
 
   list.innerHTML = page.map(function(w, idx) {
-    var initials = (w.business_name || '').split(' ').slice(0,2).map(function(w){ return w[0]||''; }).join('').toUpperCase() || '??';
+    // Display name: convert "Carlos Martinez" → "Carlos M." if stored as full name
+    var rawName = w.business_name || '';
+    var nameParts = rawName.trim().split(/\s+/);
+    var displayName = nameParts.length >= 2 && nameParts[nameParts.length-1].length > 1
+      ? nameParts[0] + ' ' + nameParts[nameParts.length-1].charAt(0).toUpperCase() + '.'
+      : rawName;
+    var initials = nameParts.slice(0,2).map(function(p){ return p[0]||''; }).join('').toUpperCase() || '??';
     var color = COLORS[(start + idx) % COLORS.length];
-    var catLabel = (w.categories || []).map(function(c){ return catLabels[c] || c; }).join(' · ') || '';
-    var area = (w.service_area || '').split(',')[0].trim();
+    var staffingLabels = isEn ? STAFFING_LABELS_EN : STAFFING_LABELS_ES;
+    var staffTypes = w.staffing_types || [];
+    var catLabel = staffTypes.length
+      ? staffTypes.map(function(c){ return staffingLabels[c] || c; }).join(' · ')
+      : (w.categories || []).map(function(c){ return catLabels[c] || c; }).join(' · ');
+    var areaRaw = (w.service_area || '').split(',')[0].trim();
+    var area = areaRaw ? areaRaw.charAt(0).toUpperCase() + areaRaw.slice(1) : '';
     var rating = w.rating ? parseFloat(w.rating).toFixed(1) : '';
     var verBadge = w.verified ? '<span style="background:var(--c-green-light);color:var(--c-green);font-size:11px;padding:2px 8px;border-radius:99px;font-weight:500">✓ Verified</span>' : '';
     var insBadge = w.insured ? '<span style="background:#EEF6FF;color:#2563EB;font-size:11px;padding:2px 8px;border-radius:99px;font-weight:500">🛡️ '+(isEn?'Insured':'Asegurado')+'</span>' : '';
@@ -472,7 +485,7 @@ function renderPage(filtered) {
       avatarHtml +
       '<div style="flex:1;min-width:0">' +
       '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px">' +
-      '<div style="font-size:15px;font-weight:600">' + (w.business_name || '') + '</div>' +
+      '<div style="font-size:15px;font-weight:600">' + displayName + '</div>' +
       verBadge + insBadge + '</div>' +
       '<div style="font-size:12px;color:var(--c-muted)">' + catLabel + (area ? ' · ' + area : '') + '</div>' +
       (rating ? '<div style="font-size:12px;color:var(--c-muted);margin-top:2px"><span style="color:var(--c-amber)">★</span> ' + rating + '</div>' : '') +
