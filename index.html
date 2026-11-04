@@ -875,8 +875,12 @@ async function loadFeaturedWorkers() {
     var isEn = document.body.classList.contains('en');
     container.innerHTML = '';
     data.forEach(function(w, i) {
-      var displayName = w.trade_name || w.business_name || '?';
-      var initials = displayName.split(' ').slice(0,2).map(function(w){ return w[0]||''; }).join('').toUpperCase() || '?';
+      var rawName = w.trade_name || w.business_name || '?';
+      var nameParts = rawName.trim().split(/\s+/);
+      var displayName = nameParts.length >= 2 && nameParts[nameParts.length-1].length > 1
+        ? nameParts[0] + ' ' + nameParts[nameParts.length-1].charAt(0).toUpperCase() + '.'
+        : rawName;
+      var initials = nameParts.slice(0,2).map(function(p){ return p[0]||''; }).join('').toUpperCase() || '?';
       var typeRaw = Array.isArray(w.staffing_types) ? w.staffing_types[0] : '';
       var typeMap = {
         kitchen: { en: '🍳 Kitchen / Restaurant', es: '🍳 Cocina / Restaurante' },
