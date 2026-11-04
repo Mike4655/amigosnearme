@@ -657,11 +657,21 @@ if (new URLSearchParams(window.location.search).get('type') === 'staffing') docu
     <div class="form-card">
       <div class="form-card-title"><span>📞</span> <span data-es>Contacto</span><span data-en>Contact</span></div>
 
-      <!-- Worker full name — shown only in worker mode -->
-      <div class="field-row" id="wkr-name-row" style="display:none">
-        <div id="label-legal-wkr-es" class="field-label" data-es>Tu nombre completo <span class="req">*</span></div>
-        <div id="label-legal-wkr-en" class="field-label" data-en>Your full name <span class="req">*</span></div>
-        <input type="text" id="f-legal-name-wkr" oninput="clearNameError()" placeholder="e.g. Jose Garcia">
+      <!-- Worker name — shown only in worker mode -->
+      <div id="wkr-name-row" style="display:none">
+        <div class="two-col">
+          <div class="field-row">
+            <div class="field-label" data-es>Nombre <span class="req">*</span></div>
+            <div class="field-label" data-en>First Name <span class="req">*</span></div>
+            <input type="text" id="f-wkr-first-name" oninput="clearNameError();buildWkrDisplayName()" placeholder="e.g. Jose">
+          </div>
+          <div class="field-row">
+            <div class="field-label" data-es>Apellido <span class="req">*</span></div>
+            <div class="field-label" data-en>Last Name <span class="req">*</span></div>
+            <input type="text" id="f-wkr-last-name" oninput="buildWkrDisplayName()" placeholder="e.g. Garcia">
+          </div>
+        </div>
+        <input type="hidden" id="f-legal-name-wkr">
       </div>
 
       <div class="two-col">
@@ -1316,6 +1326,7 @@ async function goSuccess(isZelle, isAch) {
   var emailEl = document.getElementById('f-account-email');
   var passwordEl = document.getElementById('f-password');
   var isWorker = document.getElementById('wkr-name-row') && document.getElementById('wkr-name-row').style.display !== 'none';
+  if (isWorker) buildWkrDisplayName();
   var bizNameEl = document.getElementById(isWorker ? 'f-legal-name-wkr' : 'f-legal-name');
   var tradeNameEl = isWorker ? null : document.getElementById('f-trade-name');
   var phoneEl = document.getElementById('f-phone');
@@ -2202,9 +2213,18 @@ function markInvalid(el) {
 function clearInvalid(el) {
   if (el) el.classList.remove('input-error');
 }
+function buildWkrDisplayName() {
+  var first = (document.getElementById('f-wkr-first-name') || {}).value || '';
+  var last  = (document.getElementById('f-wkr-last-name')  || {}).value || '';
+  first = first.trim(); last = last.trim();
+  var display = first + (last ? ' ' + last.charAt(0).toUpperCase() + '.' : '');
+  var hidden = document.getElementById('f-legal-name-wkr');
+  if (hidden) hidden.value = display;
+}
+
 function clearNameError() {
   var isWorker = document.getElementById('wkr-name-row') && document.getElementById('wkr-name-row').style.display !== 'none';
-  var legalName = document.getElementById(isWorker ? 'f-legal-name-wkr' : 'f-legal-name');
+  var legalName = document.getElementById(isWorker ? 'f-wkr-first-name' : 'f-legal-name');
   var tradeName = isWorker ? null : document.getElementById('f-trade-name');
   var hasValue = legalName && legalName.value.trim() !== '';
   if (!isWorker && tradeName) hasValue = hasValue || tradeName.value.trim() !== '';
@@ -2286,11 +2306,11 @@ function validateStep1() {
 async function validateStep2() {
   var valid = true;
 
-  // 1. Legal name OR trade name (business) / full name (worker)
+  // 1. Legal name OR trade name (business) / first+last name (worker)
   var isWorker = document.getElementById('wkr-name-row') && document.getElementById('wkr-name-row').style.display !== 'none';
-  var legalName = document.getElementById(isWorker ? 'f-legal-name-wkr' : 'f-legal-name');
+  var legalName = document.getElementById(isWorker ? 'f-wkr-first-name' : 'f-legal-name');
   var tradeName = document.getElementById('f-trade-name');
-  var hasName = isWorker ? (legalName.value.trim() !== '') : ((legalName.value.trim() !== '') || (tradeName && tradeName.value.trim() !== ''));
+  var hasName = isWorker ? (legalName && legalName.value.trim() !== '') : ((legalName && legalName.value.trim() !== '') || (tradeName && tradeName.value.trim() !== ''));
   if (!hasName) {
     showError('err-name');
     markInvalid(legalName);
@@ -2582,6 +2602,10 @@ function closePaymentModal() {
 
 function prefillWorkerForm(biz) {
   var set = function(id, val) { var el = document.getElementById(id); if (el) el.value = val || ''; };
+  // Split "Carlos M." back into first / last initial for display
+  var nameParts = (biz.business_name || '').trim().split(' ');
+  set('f-wkr-first-name', nameParts[0] || '');
+  set('f-wkr-last-name', nameParts[1] ? nameParts[1].replace('.','') : '');
   set('f-legal-name-wkr', biz.business_name);
   set('f-owner-name', biz.business_name);
   set('f-phone', biz.whatsapp_phone);
