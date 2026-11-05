@@ -288,29 +288,18 @@ async function checkAuth() {
       return;
     }
 
-    // Find employer business — try owner_id first, fallback to user_id
+    // Find employer profile
     var uid = sess.data.session.user.id;
-    var { data: bizRows, error: bizErr } = await sb.from('businesses')
-      .select('id, business_name')
+    var { data: epRow, error: epErr } = await sb.from('employer_profiles')
+      .select('id, display_name')
       .eq('owner_id', uid)
-      .eq('is_worker', false)
-      .limit(1);
+      .maybeSingle();
 
-    // If owner_id column doesn't exist, try user_id
-    if (bizErr && bizErr.code === '42703') {
-      var res2 = await sb.from('businesses')
-        .select('id, business_name')
-        .eq('user_id', uid)
-        .eq('is_worker', false)
-        .limit(1);
-      bizRows = res2.data;
-    }
-
-    if (!bizRows || !bizRows.length) {
+    if (!epRow) {
       window.location.href = 'employer-dashboard.html';
       return;
     }
-    _bizId = bizRows[0].id;
+    _bizId = epRow.id;
 
     document.getElementById('auth-check').style.display = 'none';
     document.getElementById('main-form').style.display = 'block';
