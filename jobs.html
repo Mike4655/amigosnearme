@@ -97,13 +97,16 @@ async function handlePostJob() {
   var sb = getSupabase();
   var { data: { session } } = await sb.auth.getSession();
   if (session) {
-    // 로그인 상태 — employer 여부 확인
     var { data: biz } = await sb.from('businesses').select('id,is_worker').eq('owner_id', session.user.id).maybeSingle();
     if (biz && biz.is_worker === false) {
+      // Employer 계정 — 바로 이동
       window.location.href = 'employer-job-post.html';
     } else {
-      // 워커 계정이거나 businesses 없음 — employer 등록 유도
-      window.location.href = 'register-type.html';
+      // Worker 계정 — 별도 Employer 계정 필요 안내
+      var en = document.body.classList.contains('en');
+      alert(en
+        ? 'Job postings are for employers only.\nPlease create a separate employer account with a different email address.'
+        : 'Las publicaciones de trabajo son solo para empleadores.\nPor favor crea una cuenta de empleador con un correo diferente.');
     }
   } else {
     // 비로그인 — 회원가입 페이지로
