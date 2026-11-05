@@ -610,10 +610,29 @@ async function loadMyJobsTab() {
       : '<span class="badge" style="background:var(--c-border);color:var(--c-muted)">' + (isEn ? 'Closed' : 'Cerrada') + '</span>';
     var city = (j.city ? j.city.charAt(0).toUpperCase() + j.city.slice(1) : '') + (j.state ? ', ' + j.state : '');
     var date = new Date(j.created_at).toLocaleDateString(isEn ? 'en-US' : 'es-US', { month: 'short', day: 'numeric' });
-    return '<tr><td style="font-weight:500">' + (title || '—') + '</td><td>' + (city || '—') + '</td><td>' + statusBadge + '</td><td style="color:var(--c-muted)">' + date + '</td><td><a href="employer-job-post.html?edit=' + j.id + '" style="font-size:12px;color:var(--c-accent);text-decoration:none">' + (isEn ? 'Edit' : 'Editar') + '</a></td></tr>';
+    var actions = '<a href="employer-job-post.html?edit=' + j.id + '" style="font-size:12px;color:var(--c-accent);text-decoration:none">' + (isEn ? 'Edit' : 'Editar') + '</a>'
+      + '&nbsp;·&nbsp;<button onclick="deleteJob(\'' + j.id + '\',this)" style="font-size:12px;color:#c0392b;background:none;border:none;cursor:pointer;padding:0">' + (isEn ? 'Delete' : 'Eliminar') + '</button>';
+    return '<tr><td style="font-weight:500">' + (title || '—') + '</td><td>' + (city || '—') + '</td><td>' + statusBadge + '</td><td style="color:var(--c-muted)">' + date + '</td><td style="white-space:nowrap">' + actions + '</td></tr>';
   }).join('');
 
   wrap.innerHTML = '<table><thead><tr><th>' + (isEn ? 'Title' : 'Puesto') + '</th><th>' + (isEn ? 'Location' : 'Ubicación') + '</th><th>' + (isEn ? 'Status' : 'Estado') + '</th><th>' + (isEn ? 'Posted' : 'Publicado') + '</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+async function deleteJob(jobId, btn) {
+  var isEn = document.body.classList.contains('en');
+  var confirm1 = confirm(isEn ? 'Delete this job posting?' : '¿Eliminar esta oferta?');
+  if (!confirm1) return;
+  btn.disabled = true;
+  btn.textContent = '...';
+  var sb = getSupabase();
+  var { error } = await sb.from('jobs').delete().eq('id', jobId);
+  if (error) {
+    alert(isEn ? 'Error: ' + error.message : 'Error: ' + error.message);
+    btn.disabled = false;
+    btn.textContent = isEn ? 'Delete' : 'Eliminar';
+  } else {
+    btn.closest('tr').remove();
+  }
 }
 
 var _reviewsLoaded = false;
