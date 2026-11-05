@@ -597,7 +597,7 @@ async function loadMyJobsTab() {
   }
   var bizId = epRows[0].id;
 
-  var { data: jobs, error } = await sb.from('jobs').select('id, title, title_es, category, city, state, status, created_at').eq('employer_biz_id', bizId).order('created_at', { ascending: false });
+  var { data: jobs, error } = await sb.from('jobs').select('id, title, title_es, category, city, state, status, created_at, expires_at').eq('employer_biz_id', bizId).order('created_at', { ascending: false });
   if (error || !jobs || !jobs.length) {
     wrap.innerHTML = '<div class="empty-state">' + (isEn ? 'No job postings yet. <a href="employer-job-post.html" style="color:var(--c-accent)">Post your first job →</a>' : 'Sin ofertas aún. <a href="employer-job-post.html" style="color:var(--c-accent)">Publicar primera oferta →</a>') + '</div>';
     return;

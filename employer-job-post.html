@@ -496,7 +496,7 @@ async function submitJob() {
       var dur = val('f-duration') || '30';
       if (dur === 'custom') {
         var cv = document.getElementById('f-custom-date').value;
-        return cv ? new Date(cv + 'T23:59:59').toISOString() : null;
+        return cv ? new Date(cv + 'T12:00:00').toISOString() : null;
       }
       var d = new Date();
       d.setDate(d.getDate() + parseInt(dur));
