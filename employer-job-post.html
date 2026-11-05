@@ -389,16 +389,9 @@ async function loadJobForEdit(jobId) {
   document.getElementById('f-contact-email').value = j.contact_email || '';
   // restore duration selector (best-effort: pick closest option)
   if (j.expires_at) {
-    var daysLeft = Math.round((new Date(j.expires_at) - new Date()) / 86400000);
-    var sel = document.getElementById('f-duration');
-    if (daysLeft <= 35) sel.value = '30';
-    else if (daysLeft <= 65) sel.value = '60';
-    else if (daysLeft <= 95) sel.value = '90';
-    else {
-      sel.value = 'custom';
-      document.getElementById('f-custom-date').value = j.expires_at.slice(0, 10);
-      document.getElementById('row-custom-date').style.display = '';
-    }
+    document.getElementById('f-duration').value = 'custom';
+    document.getElementById('f-custom-date').value = j.expires_at.slice(0, 10);
+    document.getElementById('row-custom-date').style.display = '';
   }
 
   var isEn = document.body.classList.contains('en');
