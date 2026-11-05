@@ -109,8 +109,8 @@ async function handlePostJob() {
         : 'Las publicaciones de trabajo son solo para empleadores.\nPor favor crea una cuenta de empleador con un correo diferente.');
     }
   } else {
-    // 비로그인 — 회원가입 페이지로
-    window.location.href = 'register-type.html';
+    // 비로그인 — 로그인 페이지로 (로그인 후 job posting으로 복귀)
+    window.location.href = 'login.html?returnTo=' + encodeURIComponent('employer-job-post.html');
   }
 }
 
