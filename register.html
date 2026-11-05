@@ -1629,6 +1629,21 @@ async function goSuccess(isZelle, isAch) {
           // SB1 / W1: 가입 완료 환영 이메일 (session 있는 경우 — Worker 또는 이메일 인증 OFF)
           var scenario = isWorkerReg ? 'W1' : 'SB1';
           sendEmail(scenario, email, { owner_name: ownerName, worker_name: ownerName, biz_name: bizName }, null, detectedLang);
+          // Admin 알림
+          var regAt = new Date().toLocaleString('en-US', {timeZone:'America/New_York'});
+          if (isWorkerReg) {
+            var catLabels = (categories || []).join(', ') || '—';
+            sendEmail('AD_NEW_WORKER', null, {
+              worker_name: ownerName, email: email,
+              whatsapp: normalizedPhone || '—',
+              categories: catLabels, registered_at: regAt
+            });
+          } else {
+            sendEmail('AD_NEW_EMPLOYER', null, {
+              biz_name: bizName, email: email,
+              plan: effectivePlan || 'free', registered_at: regAt
+            });
+          }
           // SB1/W1 발송됐으므로 welcome_sent=true 표시 (dashboard 첫 로그인 중복 방지)
           try {
             var _regBizForWelcome = await getMyBusiness();

@@ -658,6 +658,33 @@ ${d.reason ? `<p><strong>Reason:</strong> ${d.reason}</p>` : ''}`,
 <p><a href="https://amigosnearme.com/admin.html#jobs">View in admin console →</a></p>`,
       };
 
+    case 'AD_NEW_WORKER':
+      return {
+        subject: `[Admin] New Worker registered — ${d.worker_name}`,
+        html: `<p>A new worker has completed registration:</p>
+<ul>
+  <li><strong>Name:</strong> ${d.worker_name}</li>
+  <li><strong>Email:</strong> ${d.email}</li>
+  <li><strong>WhatsApp:</strong> ${d.whatsapp || '—'}</li>
+  <li><strong>Categories:</strong> ${d.categories || '—'}</li>
+  <li><strong>Registered at:</strong> ${d.registered_at}</li>
+</ul>
+<p><a href="https://amigosnearme.com/admin.html#workers">View in admin console →</a></p>`,
+      };
+
+    case 'AD_NEW_EMPLOYER':
+      return {
+        subject: `[Admin] New Employer registered — ${d.biz_name}`,
+        html: `<p>A new employer has completed registration:</p>
+<ul>
+  <li><strong>Business:</strong> ${d.biz_name}</li>
+  <li><strong>Email:</strong> ${d.email}</li>
+  <li><strong>Plan:</strong> ${d.plan}</li>
+  <li><strong>Registered at:</strong> ${d.registered_at}</li>
+</ul>
+<p><a href="https://amigosnearme.com/admin.html#employers">View in admin console →</a></p>`,
+      };
+
     case 'AD4':
       return {
         subject: `[Admin] Cancellation request — ${d.biz_name}`,
@@ -790,7 +817,7 @@ serve(async (req: Request) => {
       lang?: string;       // 'es' | 'en' — 없으면 'es' 기본값
     };
 
-    const isAdminScenario = ['AD1','AD2','AD3','AD4','AD_JOB','ADMIN_ZELLE','CONTACT','RESEND_ALERT'].includes(scenario);
+    const isAdminScenario = ['AD1','AD2','AD3','AD4','AD_JOB','AD_NEW_WORKER','AD_NEW_EMPLOYER','ADMIN_ZELLE','CONTACT','RESEND_ALERT'].includes(scenario);
 
     // `to` 없고 ref_id가 UUID이면 auth.users에서 이메일 조회
     let resolvedTo = to;
