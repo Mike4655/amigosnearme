@@ -110,15 +110,16 @@
           data-placeholder-es="ej. Ayudante de cocina"
           placeholder="e.g. Kitchen Helper">
         <div class="err-msg" id="err-title" style="display:none">
-          <span data-en>Required</span><span data-es>Requerido</span>
+          <span data-en>Both English and Spanish titles are required</span>
+          <span data-es>Se requieren los títulos en español e inglés</span>
         </div>
       </div>
       <!-- Secondary title field: translate button flips direction by mode -->
       <div class="field-row">
         <div class="field-label" style="display:flex;justify-content:space-between;align-items:center">
           <span>
-            <span data-en>Job title (Spanish)</span>
-            <span data-es>Título del puesto (inglés)</span>
+            <span data-en>Job title (Spanish) <span class="req">*</span></span>
+            <span data-es>Título del puesto (inglés) <span class="req">*</span></span>
           </span>
           <button type="button" id="btn-translate-title" onclick="translateTitle()" style="font-size:11px;padding:2px 10px;border:1px solid var(--c-border);border-radius:999px;background:transparent;cursor:pointer;color:var(--c-accent)">
             <span data-en>Auto-translate →</span><span data-es>Auto-traducir →</span>
@@ -415,12 +416,13 @@ async function submitJob() {
     var el = document.getElementById(id); if (el) el.classList.remove('error');
   });
 
-  // EN mode: f-title=EN required, f-title-es=ES optional
-  // ES mode: f-title-es=ES required, f-title=EN optional
+  // Both titles required (EN + ES)
   var titleEn = val('f-title').trim();
   var titleEs = val('f-title-es').trim();
-  if (en && !titleEn) { show('err-title'); document.getElementById('f-title').classList.add('error'); return; }
-  if (!en && !titleEs) { show('err-title'); document.getElementById('f-title-es').classList.add('error'); return; }
+  var titleOk = true;
+  if (!titleEn) { document.getElementById('f-title').classList.add('error'); titleOk = false; }
+  if (!titleEs) { document.getElementById('f-title-es').classList.add('error'); titleOk = false; }
+  if (!titleOk) { show('err-title'); return; }
 
   var descEn = val('f-desc-en').trim() || null;
   var descEs = val('f-desc-es').trim() || null;
