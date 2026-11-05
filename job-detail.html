@@ -107,36 +107,62 @@ function renderJob(j) {
       '<div class="detail-block"><div class="section-label">' + (en?'Requirements':'Requisitos') + '</div>' + (en ? (j.requirements_en || j.requirements) : (j.requirements_es || j.requirements)) + '</div>' : '') +
     '<div class="detail-block"><div class="section-label">' + (en?'Posted':'Publicado') + '</div>' + date + '</div>' +
 
-    // Apply form
-    '<div class="apply-card">' +
-      '<div class="apply-title">' + (en?'Apply for this job':'Solicitar este empleo') + '</div>' +
-      '<div class="apply-sub">' + (en
-        ? 'We\'ll forward your application to <strong>hola@amigosnearme.com</strong>. Include your phone number — it\'s required.'
-        : 'Enviaremos tu solicitud a <strong>hola@amigosnearme.com</strong>. Incluye tu teléfono — es obligatorio.') + '</div>' +
-      '<div class="form-row">' +
-        '<div class="form-field">' +
-          '<label class="form-label">' + (en?'Full Name':'Nombre completo') + ' <span class="req">*</span></label>' +
-          '<input class="form-input" id="app-name" type="text" placeholder="' + (en?'Your name':'Tu nombre') + '">' +
-        '</div>' +
-        '<div class="form-field">' +
-          '<label class="form-label">' + (en?'Phone Number':'Número de teléfono') + ' <span class="req">*</span></label>' +
-          '<input class="form-input" id="app-phone" type="tel" placeholder="(404) 000-0000">' +
-          '<div class="phone-note">' + (en?'Required — we\'ll contact you here':'Obligatorio — te contactaremos aquí') + '</div>' +
-        '</div>' +
-      '</div>' +
-      '<div class="form-field" style="margin-bottom:12px">' +
-        '<label class="form-label">Email ' + (en?'(optional)':'(opcional)') + '</label>' +
-        '<input class="form-input" id="app-email" type="email" placeholder="tu@email.com">' +
-      '</div>' +
-      '<div class="form-field">' +
-        '<label class="form-label">' + (en?'Message (optional)':'Mensaje (opcional)') + '</label>' +
-        '<textarea class="form-input" id="app-message" placeholder="' + (en?'Tell us about your experience…':'Cuéntanos sobre tu experiencia…') + '"></textarea>' +
-      '</div>' +
-      '<button class="btn-apply" id="btn-apply" onclick="submitApplication()">' + (en?'Send Application →':'Enviar solicitud →') + '</button>' +
-      '<div class="success-msg" id="success-msg">' +
-        (en ? '✓ Application sent! We\'ll be in touch.' : '✓ ¡Solicitud enviada! Nos pondremos en contacto.') +
-      '</div>' +
-    '</div>';
+    // Apply form or direct contact info
+    (j.posted_by_employer
+      ? buildContactBlock(j, en)
+      : '<div class="apply-card">' +
+          '<div class="apply-title">' + (en?'Apply for this job':'Solicitar este empleo') + '</div>' +
+          '<div class="apply-sub">' + (en
+            ? 'We\'ll forward your application to <strong>hola@amigosnearme.com</strong>. Include your phone number — it\'s required.'
+            : 'Enviaremos tu solicitud a <strong>hola@amigosnearme.com</strong>. Incluye tu teléfono — es obligatorio.') + '</div>' +
+          '<div class="form-row">' +
+            '<div class="form-field">' +
+              '<label class="form-label">' + (en?'Full Name':'Nombre completo') + ' <span class="req">*</span></label>' +
+              '<input class="form-input" id="app-name" type="text" placeholder="' + (en?'Your name':'Tu nombre') + '">' +
+            '</div>' +
+            '<div class="form-field">' +
+              '<label class="form-label">' + (en?'Phone Number':'Número de teléfono') + ' <span class="req">*</span></label>' +
+              '<input class="form-input" id="app-phone" type="tel" placeholder="(404) 000-0000">' +
+              '<div class="phone-note">' + (en?'Required — we\'ll contact you here':'Obligatorio — te contactaremos aquí') + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="form-field" style="margin-bottom:12px">' +
+            '<label class="form-label">Email ' + (en?'(optional)':'(opcional)') + '</label>' +
+            '<input class="form-input" id="app-email" type="email" placeholder="tu@email.com">' +
+          '</div>' +
+          '<div class="form-field">' +
+            '<label class="form-label">' + (en?'Message (optional)':'Mensaje (opcional)') + '</label>' +
+            '<textarea class="form-input" id="app-message" placeholder="' + (en?'Tell us about your experience…':'Cuéntanos sobre tu experiencia…') + '"></textarea>' +
+          '</div>' +
+          '<button class="btn-apply" id="btn-apply" onclick="submitApplication()">' + (en?'Send Application →':'Enviar solicitud →') + '</button>' +
+          '<div class="success-msg" id="success-msg">' +
+            (en ? '✓ Application sent! We\'ll be in touch.' : '✓ ¡Solicitud enviada! Nos pondremos en contacto.') +
+          '</div>' +
+        '</div>');
+}
+
+function buildContactBlock(j, en) {
+  var items = '';
+  if (j.contact_phone) {
+    items += '<a href="tel:' + j.contact_phone + '" style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--c-bg);border:0.5px solid var(--c-border);border-radius:var(--radius-sm);text-decoration:none;color:var(--c-text);font-size:14px;font-weight:500"><span style="font-size:18px">📞</span><div><div style="font-size:12px;color:var(--c-muted);margin-bottom:1px">' + (en?'Phone':'Teléfono') + '</div>' + j.contact_phone + '</div></a>';
+  }
+  if (j.contact_whatsapp) {
+    var waNum = j.contact_whatsapp.replace(/\D/g,'');
+    var waMsg = encodeURIComponent(en ? 'Hi, I saw your job posting on AmigosNearMe and I\'m interested.' : 'Hola, vi tu oferta en AmigosNearMe y me interesa.');
+    items += '<a href="https://wa.me/' + waNum + '?text=' + waMsg + '" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:#E8F8F1;border:0.5px solid #B2DFCF;border-radius:var(--radius-sm);text-decoration:none;color:#12774A;font-size:14px;font-weight:500"><span style="font-size:18px">💬</span><div><div style="font-size:12px;color:#12774A;opacity:.7;margin-bottom:1px">WhatsApp</div>' + j.contact_whatsapp + '</div></a>';
+  }
+  if (j.contact_email) {
+    var subj = encodeURIComponent(en ? 'Job application' : 'Solicitud de empleo');
+    items += '<a href="mailto:' + j.contact_email + '?subject=' + subj + '" style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--c-bg);border:0.5px solid var(--c-border);border-radius:var(--radius-sm);text-decoration:none;color:var(--c-text);font-size:14px;font-weight:500"><span style="font-size:18px">✉️</span><div><div style="font-size:12px;color:var(--c-muted);margin-bottom:1px">Email</div>' + j.contact_email + '</div></a>';
+  }
+  if (!items) {
+    items = '<div style="font-size:13px;color:var(--c-muted)">' + (en ? 'Contact info not provided.' : 'Sin información de contacto.') + '</div>';
+  }
+  return '<div class="apply-card">' +
+    '<div class="apply-title">' + (en ? 'How to apply' : 'Cómo aplicar') + '</div>' +
+    '<div class="apply-sub">' + (en ? 'Contact the employer directly using the information below.' : 'Contacta directamente al empleador con la información de abajo.') + '</div>' +
+    '<div style="display:flex;flex-direction:column;gap:10px">' + items + '</div>' +
+  '</div>';
 }
 
 async function submitApplication() {

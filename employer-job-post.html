@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C94F2B">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Post a Job — AmigosNearMe</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
+  :root {
+    --c-bg:#FAFAF7;--c-surface:#FFFFFF;--c-border:rgba(0,0,0,0.09);
+    --c-text:#1A1A18;--c-muted:#6B6B66;--c-hint:#A8A8A2;
+    --c-accent:#C94F2B;--c-accent-dark:#9C3A1E;--c-accent-light:#FAF0EC;
+    --c-green:#1D9E75;--c-green-light:#EBF8F3;
+    --c-amber:#BA7517;--c-amber-light:#FEF6E4;
+    --radius-sm:8px;--radius-md:12px;--radius-lg:18px;--radius-xl:22px;
+    --shadow:0 1px 3px rgba(0,0,0,0.07),0 4px 12px rgba(0,0,0,0.05);
+    --font-display:'DM Serif Display',Georgia,serif;
+    --font-body:'DM Sans',system-ui,sans-serif;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font-body);background:var(--c-bg);color:var(--c-text);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  nav{position:sticky;top:0;z-index:100;background:rgba(250,250,247,0.92);backdrop-filter:blur(12px);border-bottom:0.5px solid var(--c-border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+  .nav-logo{font-family:var(--font-body);font-weight:800;font-size:22px;color:var(--c-text);text-decoration:none}
+  .nav-logo span{color:var(--c-accent)}
+  .btn-nav{font-size:13px;font-weight:500;padding:7px 16px;border-radius:var(--radius-sm);text-decoration:none;cursor:pointer;border:0.5px solid var(--c-border);background:var(--c-surface);color:var(--c-text);font-family:var(--font-body)}
+  .lang-btn{padding:3px 8px;border-radius:99px;font-size:12px;cursor:pointer;border:0.5px solid var(--c-border);background:transparent;color:var(--c-muted);font-family:var(--font-body)}
+  .lang-btn.active{background:var(--c-accent-light);color:var(--c-accent);border-color:var(--c-accent)}
+  .page-wrap{max-width:720px;margin:0 auto;padding:32px 24px}
+  .page-title{font-family:var(--font-display);font-size:28px;font-weight:400;margin-bottom:4px}
+  .page-sub{font-size:13px;color:var(--c-muted);margin-bottom:28px}
+  .card{background:var(--c-surface);border:0.5px solid var(--c-border);border-radius:var(--radius-xl);padding:24px;margin-bottom:20px;box-shadow:var(--shadow)}
+  .section-title{font-size:12px;font-weight:600;color:var(--c-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px}
+  .field-row{margin-bottom:16px}
+  .field-label{font-size:13px;font-weight:500;color:var(--c-text);margin-bottom:5px}
+  .field-label .req{color:var(--c-accent)}
+  .field-hint{font-size:11px;color:var(--c-hint);margin-top:3px}
+  .form-input{width:100%;padding:10px 13px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:14px;font-family:var(--font-body);background:var(--c-surface);color:var(--c-text);outline:none;transition:border-color .15s}
+  .form-input:focus{border-color:var(--c-accent)}
+  .form-input.error{border-color:var(--c-accent)}
+  textarea.form-input{resize:vertical;min-height:90px}
+  select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B6B66' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .btn-primary{display:inline-flex;align-items:center;justify-content:center;padding:11px 28px;background:var(--c-accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14.5px;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:opacity .15s}
+  .btn-primary:hover{opacity:.88}
+  .btn-primary:disabled{opacity:.5;cursor:not-allowed}
+  .btn-ghost{display:inline-flex;align-items:center;justify-content:center;padding:10px 22px;background:transparent;color:var(--c-muted);border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font-body);text-decoration:none}
+  .err-msg{font-size:12px;color:var(--c-accent);margin-top:6px;display:none}
+  .success-banner{background:var(--c-green-light);border:0.5px solid var(--c-green);border-radius:var(--radius-md);padding:18px 20px;margin-bottom:20px;color:var(--c-green);font-weight:600;display:none}
+  [data-en]{display:none}
+  body.en [data-es]{display:none}
+  body.en [data-en]{display:revert}
+  #anm-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:12px 24px;border-radius:999px;font-size:13px;font-weight:500;z-index:2000;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+  @media(max-width:600px){
+    .page-wrap{padding:16px 12px}
+    .two-col{grid-template-columns:1fr}
+  }
+  @media(max-width:900px){input,select,textarea{font-size:16px!important}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Amigos<span>NearMe</span></a>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="lang-btn active" id="btn-es" onclick="setLang('es')">ES</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    <a href="employer-dashboard.html" class="btn-nav">
+      <span data-es>← Dashboard</span><span data-en>← Dashboard</span>
+    </a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+
+  <div id="auth-check" style="text-align:center;padding:60px 20px;color:var(--c-muted)">
+    <span data-es>Verificando sesión...</span><span data-en>Checking session...</span>
+  </div>
+
+  <div id="main-form" style="display:none">
+
+    <h1 class="page-title">
+      <span data-es id="form-title-es">Publicar oferta de trabajo</span>
+      <span data-en id="form-title-en">Post a Job</span>
+    </h1>
+    <p class="page-sub">
+      <span data-es>Los candidatos te contactarán directamente — no se cobra por candidatos.</span>
+      <span data-en>Job seekers will contact you directly — no per-candidate fee.</span>
+    </p>
+
+    <div id="success-banner" class="success-banner">
+      <span data-es>✅ ¡Oferta publicada! <a href="employer-dashboard.html#myjobs" style="color:var(--c-green)">Ver mis ofertas →</a></span>
+      <span data-en>✅ Job posted! <a href="employer-dashboard.html#myjobs" style="color:var(--c-green)">View my jobs →</a></span>
+    </div>
+
+    <!-- Job Info -->
+    <div class="card">
+      <div class="section-title"><span data-es>Información del puesto</span><span data-en>Job information</span></div>
+
+      <div class="field-row">
+        <div class="field-label">
+          <span data-es>Título del puesto (inglés) <span class="req">*</span></span>
+          <span data-en>Job title (English) <span class="req">*</span></span>
+        </div>
+        <input type="text" id="f-title" class="form-input" placeholder="e.g. Kitchen Helper">
+        <div class="err-msg" id="err-title">
+          <span data-es>Requerido</span><span data-en>Required</span>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-label">
+          <span data-es>Título del puesto (español)</span>
+          <span data-en>Job title (Spanish)</span>
+        </div>
+        <input type="text" id="f-title-es" class="form-input" placeholder="ej. Ayudante de cocina">
+      </div>
+
+      <div class="two-col">
+        <div class="field-row">
+          <div class="field-label">
+            <span data-es>Categoría <span class="req">*</span></span>
+            <span data-en>Category <span class="req">*</span></span>
+          </div>
+          <select id="f-category" class="form-input">
+            <option value="">—</option>
+            <option value="kitchen">Kitchen / Cocina</option>
+            <option value="construction">Construction / Construcción</option>
+            <option value="moving">Moving / Mudanzas</option>
+            <option value="cleaning">Cleaning / Limpieza</option>
+            <option value="landscaping">Landscaping</option>
+            <option value="painting">Painting / Pintura</option>
+            <option value="plumbing">Plumbing / Plomería</option>
+            <option value="electrical">Electrical / Electricidad</option>
+            <option value="other_general_labor">General Labor / Mano de obra</option>
+            <option value="other">Other / Otro</option>
+          </select>
+          <div class="err-msg" id="err-category">
+            <span data-es>Requerido</span><span data-en>Required</span>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-label">
+            <span data-es>Tipo de trabajo <span class="req">*</span></span>
+            <span data-en>Work type <span class="req">*</span></span>
+          </div>
+          <select id="f-work-type" class="form-input">
+            <option value="">—</option>
+            <option value="gig">Gig / Eventual</option>
+            <option value="part_time">Part-time / Medio tiempo</option>
+            <option value="full_time">Full-time / Tiempo completo</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="field-row">
+          <div class="field-label">
+            <span data-es>Ciudad <span class="req">*</span></span>
+            <span data-en>City <span class="req">*</span></span>
+          </div>
+          <input type="text" id="f-city" class="form-input" placeholder="e.g. Atlanta">
+          <div class="err-msg" id="err-city">
+            <span data-es>Requerido</span><span data-en>Required</span>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-label">
+            <span data-es>Estado</span><span data-en>State</span>
+          </div>
+          <input type="text" id="f-state" class="form-input" placeholder="e.g. GA" maxlength="2">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-label">
+          <span data-es>Salario / rango de pago</span>
+          <span data-en>Pay range</span>
+        </div>
+        <input type="text" id="f-pay" class="form-input" placeholder="e.g. $15-18/hr">
+      </div>
+
+      <div class="field-row">
+        <div class="field-label">
+          <span data-es>Descripción (inglés)</span>
+          <span data-en>Description (English)</span>
+        </div>
+        <textarea id="f-desc-en" class="form-input" placeholder="Describe the job responsibilities, schedule, etc."></textarea>
+      </div>
+
+      <div class="field-row">
+        <div class="field-label">
+          <span data-es>Descripción (español)</span>
+          <span data-en>Description (Spanish)</span>
+        </div>
+        <textarea id="f-desc-es" class="form-input" placeholder="Describa las responsabilidades, horario, etc."></textarea>
+      </div>
+    </div>
+
+    <!-- Contact Info -->
+    <div class="card">
+      <div class="section-title"><span data-es>Información de contacto</span><span data-en>Contact information</span></div>
+      <p style="font-size:13px;color:var(--c-muted);margin-bottom:16px">
+        <span data-es>Los candidatos te contactarán directamente. Proporciona al menos un método de contacto.</span>
+        <span data-en>Job seekers will contact you directly. Provide at least one contact method.</span>
+      </p>
+
+      <div class="field-row">
+        <div class="field-label">
+          <span data-es>Teléfono</span><span data-en>Phone</span>
+        </div>
+        <input type="tel" id="f-contact-phone" class="form-input" placeholder="+1 (404) 000-0000">
+      </div>
+
+      <div class="field-row">
+        <div class="field-label">WhatsApp</div>
+        <input type="tel" id="f-contact-wa" class="form-input" placeholder="+1 (404) 000-0000">
+        <div class="field-hint">
+          <span data-es>Si tu WhatsApp es igual al teléfono, puedes dejarlo en blanco.</span>
+          <span data-en>If same as phone, you can leave this blank.</span>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-label">Email</div>
+        <input type="email" id="f-contact-email" class="form-input" placeholder="you@email.com">
+      </div>
+
+      <div class="err-msg" id="err-contact" style="display:none">
+        <span data-es>Proporciona al menos un método de contacto.</span>
+        <span data-en>Please provide at least one contact method.</span>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+      <button class="btn-primary" id="btn-submit" onclick="submitJob()">
+        <span data-es>Publicar oferta →</span><span data-en>Post Job →</span>
+      </button>
+      <a href="employer-dashboard.html" class="btn-ghost">
+        <span data-es>Cancelar</span><span data-en>Cancel</span>
+      </a>
+    </div>
+    <div class="err-msg" id="err-general" style="display:none;margin-top:12px"></div>
+
+  </div><!-- /main-form -->
+
+</div><!-- /page-wrap -->
+
+<div id="anm-toast"></div>
+
+<script src="supabase-client.js"></script>
+<script src="job-config.js"></script>
+<script>
+var _bizId = null;
+
+function isEn(){ return document.body.classList.contains('en'); }
+
+function setLang(l) {
+  document.body.classList.toggle('en', l === 'en');
+  document.getElementById('btn-es').classList.toggle('active', l !== 'en');
+  document.getElementById('btn-en').classList.toggle('active', l === 'en');
+  try { localStorage.setItem('anm-lang', l); } catch(e) {}
+}
+
+function showToast(msg) {
+  var t = document.getElementById('anm-toast');
+  t.textContent = msg; t.style.opacity = '1';
+  setTimeout(function(){ t.style.opacity='0'; }, 3000);
+}
+
+function val(id){ return (document.getElementById(id)||{}).value||''; }
+function show(id){ document.getElementById(id).style.display='block'; }
+function hide(id){ document.getElementById(id).style.display='none'; }
+
+async function checkAuth() {
+  var sb = getSupabase();
+  var lang = 'es';
+  try { lang = localStorage.getItem('anm-lang') || 'es'; } catch(e){}
+  setLang(lang);
+
+  var sess = await sb.auth.getSession();
+  if (!sess.data.session) {
+    window.location.href = 'login.html?next=employer-job-post.html';
+    return;
+  }
+
+  // Find employer business
+  var { data: bizRows } = await sb.from('businesses')
+    .select('id, business_name')
+    .eq('user_id', sess.data.session.user.id)
+    .eq('is_worker', false)
+    .limit(1);
+
+  if (!bizRows || !bizRows.length) {
+    window.location.href = 'employer-dashboard.html';
+    return;
+  }
+  _bizId = bizRows[0].id;
+
+  document.getElementById('auth-check').style.display = 'none';
+  document.getElementById('main-form').style.display = 'block';
+
+  // Check for edit mode
+  var params = new URLSearchParams(window.location.search);
+  var editId = params.get('edit');
+  if (editId) loadJobForEdit(editId);
+}
+
+async function loadJobForEdit(jobId) {
+  var sb = getSupabase();
+  var { data: j } = await sb.from('jobs').select('*').eq('id', jobId).eq('employer_biz_id', _bizId).single();
+  if (!j) return;
+
+  document.getElementById('f-title').value = j.title || '';
+  document.getElementById('f-title-es').value = j.title_es || '';
+  document.getElementById('f-category').value = j.category || '';
+  document.getElementById('f-work-type').value = j.work_type || '';
+  document.getElementById('f-city').value = j.city || '';
+  document.getElementById('f-state').value = j.state || '';
+  document.getElementById('f-pay').value = j.pay_range || '';
+  document.getElementById('f-desc-en').value = j.description_en || j.description || '';
+  document.getElementById('f-desc-es').value = j.description_es || '';
+  document.getElementById('f-contact-phone').value = j.contact_phone || '';
+  document.getElementById('f-contact-wa').value = j.contact_whatsapp || '';
+  document.getElementById('f-contact-email').value = j.contact_email || '';
+
+  var isEn = document.body.classList.contains('en');
+  document.getElementById('form-title-es').textContent = 'Editar oferta';
+  document.getElementById('form-title-en').textContent = 'Edit Job';
+  document.getElementById('btn-submit').dataset.editId = jobId;
+  document.querySelector('#btn-submit [data-es]').textContent = 'Guardar cambios →';
+  document.querySelector('#btn-submit [data-en]').textContent = 'Save changes →';
+}
+
+async function submitJob() {
+  var en = isEn();
+  // Clear errors
+  ['err-title','err-category','err-city','err-contact','err-general'].forEach(function(id){
+    document.getElementById(id).style.display = 'none';
+  });
+  ['f-title','f-category','f-city'].forEach(function(id){
+    document.getElementById(id).classList.remove('error');
+  });
+
+  var title = val('f-title').trim();
+  var category = val('f-category');
+  var city = val('f-city').trim();
+  var phone = val('f-contact-phone').trim();
+  var wa = val('f-contact-wa').trim();
+  var email = val('f-contact-email').trim();
+
+  var ok = true;
+  if (!title) { show('err-title'); document.getElementById('f-title').classList.add('error'); ok = false; }
+  if (!category) { show('err-category'); document.getElementById('f-category').classList.add('error'); ok = false; }
+  if (!city) { show('err-city'); document.getElementById('f-city').classList.add('error'); ok = false; }
+  if (!phone && !wa && !email) { show('err-contact'); ok = false; }
+  if (!ok) return;
+
+  var btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+
+  var payload = {
+    title: title,
+    title_es: val('f-title-es').trim() || null,
+    category: category,
+    work_type: val('f-work-type') || null,
+    city: city.toLowerCase(),
+    state: val('f-state').trim().toUpperCase() || null,
+    pay_range: val('f-pay').trim() || null,
+    description_en: val('f-desc-en').trim() || null,
+    description_es: val('f-desc-es').trim() || null,
+    contact_phone: phone || null,
+    contact_whatsapp: wa || null,
+    contact_email: email || null,
+    posted_by_employer: true,
+    employer_biz_id: _bizId,
+    is_active: true,
+  };
+
+  var sb = getSupabase();
+  var editId = btn.dataset.editId;
+  var error;
+
+  if (editId) {
+    var res = await sb.from('jobs').update(payload).eq('id', editId).eq('employer_biz_id', _bizId);
+    error = res.error;
+  } else {
+    var res = await sb.from('jobs').insert(payload);
+    error = res.error;
+  }
+
+  btn.disabled = false;
+  if (error) {
+    var errEl = document.getElementById('err-general');
+    errEl.textContent = error.message;
+    errEl.style.display = 'block';
+    return;
+  }
+
+  document.getElementById('success-banner').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  showToast(en ? 'Job posted!' : '¡Oferta publicada!');
+}
+
+checkAuth();
+</script>
+</body>
+</html>

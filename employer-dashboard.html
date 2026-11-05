@@ -174,6 +174,9 @@
     <button class="tab" onclick="showTab('settings')">
       <span data-es>Configuración</span><span data-en>Settings</span>
     </button>
+    <button class="tab" onclick="showTab('myjobs')">
+      <span data-es>Mis ofertas</span><span data-en>My Jobs</span>
+    </button>
   </div>
 
   <!-- Activity tab -->
@@ -291,6 +294,23 @@
         <div class="section-title"><span data-es>Mis reseñas</span><span data-en>My Reviews</span></div>
       </div>
       <div id="reviews-table-wrap">
+        <div class="empty-state"><span data-es>Cargando...</span><span data-en>Loading...</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- My Jobs tab -->
+  <div class="tab-panel" id="tab-myjobs">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+      <div class="section-title" style="margin-bottom:0">
+        <span data-es>Mis ofertas de trabajo</span><span data-en>My job postings</span>
+      </div>
+      <a href="employer-job-post.html" style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:var(--c-accent);color:#fff;border-radius:var(--radius-sm);font-size:13px;font-weight:600;text-decoration:none">
+        <span data-es>+ Publicar oferta</span><span data-en>+ Post a Job</span>
+      </a>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div id="myjobs-table-wrap">
         <div class="empty-state"><span data-es>Cargando...</span><span data-en>Loading...</span></div>
       </div>
     </div>
@@ -546,7 +566,7 @@ function setLang(lang) {
 }
 
 function showTab(name) {
-  var names = ['activity','financial','billing','reviews','settings'];
+  var names = ['activity','financial','billing','reviews','settings','myjobs'];
   document.querySelectorAll('.tab').forEach(function(t, i) {
     t.classList.toggle('active', names[i] === name);
   });
@@ -556,6 +576,44 @@ function showTab(name) {
   document.getElementById('tab-' + name).classList.add('active');
   if (name === 'billing') loadBillingTab();
   if (name === 'reviews') loadReviewsTab();
+  if (name === 'myjobs') loadMyJobsTab();
+}
+
+var _myJobsLoaded = false;
+async function loadMyJobsTab() {
+  if (_myJobsLoaded) return;
+  _myJobsLoaded = true;
+  var sb = getSupabase();
+  var isEn = document.body.classList.contains('en');
+  var wrap = document.getElementById('myjobs-table-wrap');
+  var sess = await sb.auth.getSession();
+  if (!sess.data.session) return;
+
+  // Find employer's business
+  var { data: bizRows } = await sb.from('businesses').select('id').eq('user_id', sess.data.session.user.id).eq('is_worker', false).limit(1);
+  if (!bizRows || !bizRows.length) {
+    wrap.innerHTML = '<div class="empty-state">' + (isEn ? 'No employer profile found.' : 'No se encontró perfil de empleador.') + '</div>';
+    return;
+  }
+  var bizId = bizRows[0].id;
+
+  var { data: jobs, error } = await sb.from('jobs').select('id, title, title_es, industry, city, state, is_active, created_at').eq('employer_biz_id', bizId).order('created_at', { ascending: false });
+  if (error || !jobs || !jobs.length) {
+    wrap.innerHTML = '<div class="empty-state">' + (isEn ? 'No job postings yet. <a href="employer-job-post.html" style="color:var(--c-accent)">Post your first job →</a>' : 'Sin ofertas aún. <a href="employer-job-post.html" style="color:var(--c-accent)">Publicar primera oferta →</a>') + '</div>';
+    return;
+  }
+
+  var rows = jobs.map(function(j) {
+    var title = isEn ? (j.title || j.title_es) : (j.title_es || j.title);
+    var statusBadge = j.is_active
+      ? '<span class="badge" style="background:var(--c-green-light);color:var(--c-green)">' + (isEn ? 'Active' : 'Activa') + '</span>'
+      : '<span class="badge" style="background:var(--c-border);color:var(--c-muted)">' + (isEn ? 'Closed' : 'Cerrada') + '</span>';
+    var city = (j.city ? j.city.charAt(0).toUpperCase() + j.city.slice(1) : '') + (j.state ? ', ' + j.state : '');
+    var date = new Date(j.created_at).toLocaleDateString(isEn ? 'en-US' : 'es-US', { month: 'short', day: 'numeric' });
+    return '<tr><td style="font-weight:500">' + (title || '—') + '</td><td>' + (city || '—') + '</td><td>' + statusBadge + '</td><td style="color:var(--c-muted)">' + date + '</td><td><a href="employer-job-post.html?edit=' + j.id + '" style="font-size:12px;color:var(--c-accent);text-decoration:none">' + (isEn ? 'Edit' : 'Editar') + '</a></td></tr>';
+  }).join('');
+
+  wrap.innerHTML = '<table><thead><tr><th>' + (isEn ? 'Title' : 'Puesto') + '</th><th>' + (isEn ? 'Location' : 'Ubicación') + '</th><th>' + (isEn ? 'Status' : 'Estado') + '</th><th>' + (isEn ? 'Posted' : 'Publicado') + '</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
 }
 
 var _reviewsLoaded = false;
