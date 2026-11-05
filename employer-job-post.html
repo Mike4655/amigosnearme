@@ -210,9 +210,8 @@
           <span data-en>Posting duration</span>
         </div>
         <select id="f-duration" class="form-input" onchange="onDurationChange()">
-          <option value="">— No expiry / Sin vencimiento —</option>
-          <option value="custom">Custom date / Fecha específica</option>
           <option value="30">30 days / 30 días</option>
+          <option value="custom">Custom date / Fecha específica</option>
         </select>
       </div>
       <div class="field-row" id="row-custom-date" style="display:none">
@@ -501,8 +500,7 @@ async function submitJob() {
     employer_biz_id: _bizId,
     employer_name: _empName || null,
     expires_at: (function() {
-      var dur = val('f-duration');
-      if (!dur) return null;
+      var dur = val('f-duration') || '30';
       if (dur === 'custom') {
         var cv = document.getElementById('f-custom-date').value;
         return cv ? new Date(cv + 'T23:59:59').toISOString() : null;
