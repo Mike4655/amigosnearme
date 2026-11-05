@@ -1151,6 +1151,11 @@ document.addEventListener('DOMContentLoaded', function() {
   setLang(saved || (browser.startsWith('en') ? 'en' : 'es'));
   loadDashboard();
 
+  // URL 해시로 탭 직접 이동 (예: #myjobs)
+  var hash = window.location.hash.replace('#', '');
+  var validTabs = ['activity','financial','billing','reviews','settings','myjobs'];
+  if (hash && validTabs.includes(hash)) showTab(hash);
+
   // Admin이 suspend/delete 시 이미 로그인된 Employer를 강제 로그아웃
   setInterval(async function() {
     try {
