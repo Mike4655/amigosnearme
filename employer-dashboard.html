@@ -589,15 +589,15 @@ async function loadMyJobsTab() {
   var sess = await sb.auth.getSession();
   if (!sess.data.session) return;
 
-  // Find employer's business
-  var { data: bizRows } = await sb.from('businesses').select('id').eq('owner_id', sess.data.session.user.id).eq('is_worker', false).limit(1);
-  if (!bizRows || !bizRows.length) {
+  // Find employer's profile
+  var { data: epRows } = await sb.from('employer_profiles').select('id').eq('owner_id', sess.data.session.user.id).limit(1);
+  if (!epRows || !epRows.length) {
     wrap.innerHTML = '<div class="empty-state">' + (isEn ? 'No employer profile found.' : 'No se encontró perfil de empleador.') + '</div>';
     return;
   }
-  var bizId = bizRows[0].id;
+  var bizId = epRows[0].id;
 
-  var { data: jobs, error } = await sb.from('jobs').select('id, title, title_es, industry, city, state, is_active, created_at').eq('employer_biz_id', bizId).order('created_at', { ascending: false });
+  var { data: jobs, error } = await sb.from('jobs').select('id, title, title_es, category, city, state, status, created_at').eq('employer_biz_id', bizId).order('created_at', { ascending: false });
   if (error || !jobs || !jobs.length) {
     wrap.innerHTML = '<div class="empty-state">' + (isEn ? 'No job postings yet. <a href="employer-job-post.html" style="color:var(--c-accent)">Post your first job →</a>' : 'Sin ofertas aún. <a href="employer-job-post.html" style="color:var(--c-accent)">Publicar primera oferta →</a>') + '</div>';
     return;
@@ -605,7 +605,7 @@ async function loadMyJobsTab() {
 
   var rows = jobs.map(function(j) {
     var title = isEn ? (j.title || j.title_es) : (j.title_es || j.title);
-    var statusBadge = j.is_active
+    var statusBadge = j.status === 'open'
       ? '<span class="badge" style="background:var(--c-green-light);color:var(--c-green)">' + (isEn ? 'Active' : 'Activa') + '</span>'
       : '<span class="badge" style="background:var(--c-border);color:var(--c-muted)">' + (isEn ? 'Closed' : 'Cerrada') + '</span>';
     var city = (j.city ? j.city.charAt(0).toUpperCase() + j.city.slice(1) : '') + (j.state ? ', ' + j.state : '');
