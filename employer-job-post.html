@@ -411,12 +411,30 @@ async function loadJobForEdit(jobId) {
 }
 
 async function translateText(text, fromLang) {
-  // fromLang: 'en' or 'es'
   var toLang = fromLang === 'en' ? 'es' : 'en';
+  var CHUNK = 490;
+  // Split on sentence boundaries to avoid cutting mid-word
+  var sentences = text.match(/[^.!?\n]+[.!?\n]*/g) || [text];
+  var chunks = [];
+  var current = '';
+  for (var i = 0; i < sentences.length; i++) {
+    if ((current + sentences[i]).length > CHUNK && current) {
+      chunks.push(current.trim());
+      current = sentences[i];
+    } else {
+      current += sentences[i];
+    }
+  }
+  if (current.trim()) chunks.push(current.trim());
+
   try {
-    var r = await fetch('https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=' + fromLang + '|' + toLang);
-    var d = await r.json();
-    return d.responseData?.translatedText || '';
+    var parts = [];
+    for (var j = 0; j < chunks.length; j++) {
+      var r = await fetch('https://api.mymemory.translated.net/get?q=' + encodeURIComponent(chunks[j]) + '&langpair=' + fromLang + '|' + toLang);
+      var d = await r.json();
+      parts.push(d.responseData?.translatedText || chunks[j]);
+    }
+    return parts.join(' ');
   } catch(e) { return ''; }
 }
 
