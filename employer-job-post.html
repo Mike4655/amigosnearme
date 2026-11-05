@@ -275,37 +275,52 @@ function show(id){ document.getElementById(id).style.display='block'; }
 function hide(id){ document.getElementById(id).style.display='none'; }
 
 async function checkAuth() {
-  var sb = getSupabase();
-  var lang = 'es';
-  try { lang = localStorage.getItem('anm-lang') || 'es'; } catch(e){}
-  setLang(lang);
+  try {
+    var sb = getSupabase();
+    var lang = 'es';
+    try { lang = localStorage.getItem('anm-lang') || 'es'; } catch(e){}
+    setLang(lang);
 
-  var sess = await sb.auth.getSession();
-  if (!sess.data.session) {
-    window.location.href = 'login.html?next=employer-job-post.html';
-    return;
+    var sess = await sb.auth.getSession();
+    if (!sess.data.session) {
+      window.location.href = 'login.html?next=employer-job-post.html';
+      return;
+    }
+
+    // Find employer business — try owner_id first, fallback to user_id
+    var uid = sess.data.session.user.id;
+    var { data: bizRows, error: bizErr } = await sb.from('businesses')
+      .select('id, business_name')
+      .eq('owner_id', uid)
+      .eq('is_worker', false)
+      .limit(1);
+
+    // If owner_id column doesn't exist, try user_id
+    if (bizErr && bizErr.code === '42703') {
+      var res2 = await sb.from('businesses')
+        .select('id, business_name')
+        .eq('user_id', uid)
+        .eq('is_worker', false)
+        .limit(1);
+      bizRows = res2.data;
+    }
+
+    if (!bizRows || !bizRows.length) {
+      window.location.href = 'employer-dashboard.html';
+      return;
+    }
+    _bizId = bizRows[0].id;
+
+    document.getElementById('auth-check').style.display = 'none';
+    document.getElementById('main-form').style.display = 'block';
+
+    // Check for edit mode
+    var params = new URLSearchParams(window.location.search);
+    var editId = params.get('edit');
+    if (editId) loadJobForEdit(editId);
+  } catch(e) {
+    document.getElementById('auth-check').innerHTML = '<div style="color:var(--c-accent);font-size:13px">오류: ' + e.message + '</div>';
   }
-
-  // Find employer business
-  var { data: bizRows } = await sb.from('businesses')
-    .select('id, business_name')
-    .eq('owner_id', sess.data.session.user.id)
-    .eq('is_worker', false)
-    .limit(1);
-
-  if (!bizRows || !bizRows.length) {
-    window.location.href = 'employer-dashboard.html';
-    return;
-  }
-  _bizId = bizRows[0].id;
-
-  document.getElementById('auth-check').style.display = 'none';
-  document.getElementById('main-form').style.display = 'block';
-
-  // Check for edit mode
-  var params = new URLSearchParams(window.location.search);
-  var editId = params.get('edit');
-  if (editId) loadJobForEdit(editId);
 }
 
 async function loadJobForEdit(jobId) {
