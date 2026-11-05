@@ -157,10 +157,12 @@ function filterJobs(cat) {
 }
 
 async function loadJobs() {
+  var now = new Date().toISOString();
   var { data } = await getSupabase()
     .from('jobs')
     .select('*')
     .eq('status','open')
+    .or('expires_at.is.null,expires_at.gt.' + now)
     .order('created_at',{ascending:false});
   _allJobs = data || [];
   filterJobs(_activeFilter);
