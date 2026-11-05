@@ -230,10 +230,10 @@
   </div>
   <nav class="sb-nav">
     <a class="sb-link" id="nav-analytics" onclick="showAdminPane('analytics')"><span>📊</span> Platform Analytics</a>
-    <a class="sb-link active" id="nav-businesses" onclick="showAdminPane('businesses')"><span>🏢</span> Businesses</a>
-    <a class="sb-link" id="nav-customers" onclick="showAdminPane('customers')"><span>👥</span> Customers</a>
+    <a class="sb-link active" id="nav-workers" onclick="showAdminPane('workers')"><span>👷</span> Workers</a>
     <a class="sb-link" id="nav-employers" onclick="showAdminPane('employers')"><span>🏗️</span> Employers</a>
-    <a class="sb-link" id="nav-workers" onclick="showAdminPane('workers')"><span>👷</span> Workers</a>
+    <a class="sb-link" id="nav-businesses" onclick="showAdminPane('businesses')"><span>🏢</span> Businesses</a>
+    <a class="sb-link" id="nav-customers" onclick="showAdminPane('customers')"><span>👥</span> Customers</a>
     <a class="sb-link" id="nav-verification" onclick="showAdminPane('verification')"><span>✅</span> Verification Queue<span class="nav-badge" id="badge-verification"></span></a>
     <a class="sb-link" id="nav-zelle" onclick="showAdminPane('zelle')"><span>💸</span> Payment Pending<span class="nav-badge" id="badge-zelle"></span></a>
     <a class="sb-link" id="nav-cancellations" onclick="showAdminPane('cancellations')"><span>🚪</span> Cancellation Requests<span class="nav-badge" id="badge-cancellations"></span></a>
@@ -258,7 +258,7 @@
   <div class="content">
 
   <!-- ===== BUSINESSES PANE ===== -->
-  <div id="pane-businesses">
+  <div id="pane-businesses" style="display:none">
 
     <div class="info-banner">
       <span>ℹ️</span>
@@ -716,7 +716,7 @@
   <!-- ===== END EMPLOYERS PANE ===== -->
 
   <!-- ===== WORKERS PANE ===== -->
-  <div id="pane-workers" style="display:none">
+  <div id="pane-workers">
 
     <div class="info-banner">
       <span>ℹ️</span>
