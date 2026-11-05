@@ -590,7 +590,7 @@ async function loadMyJobsTab() {
   if (!sess.data.session) return;
 
   // Find employer's business
-  var { data: bizRows } = await sb.from('businesses').select('id').eq('user_id', sess.data.session.user.id).eq('is_worker', false).limit(1);
+  var { data: bizRows } = await sb.from('businesses').select('id').eq('owner_id', sess.data.session.user.id).eq('is_worker', false).limit(1);
   if (!bizRows || !bizRows.length) {
     wrap.innerHTML = '<div class="empty-state">' + (isEn ? 'No employer profile found.' : 'No se encontró perfil de empleador.') + '</div>';
     return;

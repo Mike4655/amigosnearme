@@ -289,7 +289,7 @@ async function checkAuth() {
   // Find employer business
   var { data: bizRows } = await sb.from('businesses')
     .select('id, business_name')
-    .eq('user_id', sess.data.session.user.id)
+    .eq('owner_id', sess.data.session.user.id)
     .eq('is_worker', false)
     .limit(1);
 
