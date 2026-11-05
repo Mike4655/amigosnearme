@@ -1103,6 +1103,7 @@
             <th style="padding:12px 8px;text-align:left;font-size:11px;font-weight:600;color:var(--c-muted);letter-spacing:.04em">CITY</th>
             <th style="padding:12px 8px;text-align:left;font-size:11px;font-weight:600;color:var(--c-muted);letter-spacing:.04em">PAY</th>
             <th style="padding:12px 8px;text-align:left;font-size:11px;font-weight:600;color:var(--c-muted);letter-spacing:.04em">TYPE</th>
+            <th style="padding:12px 8px;text-align:left;font-size:11px;font-weight:600;color:var(--c-muted);letter-spacing:.04em">SOURCE</th>
             <th style="padding:12px 8px;text-align:left;font-size:11px;font-weight:600;color:var(--c-muted);letter-spacing:.04em">STATUS</th>
             <th style="padding:12px 8px;text-align:left;font-size:11px;font-weight:600;color:var(--c-muted);letter-spacing:.04em">POSTED</th>
             <th style="padding:12px 8px;text-align:left;font-size:11px;font-weight:600;color:var(--c-muted);letter-spacing:.04em">ACTIONS</th>
@@ -3465,10 +3466,11 @@ async function loadJobs() {
   buildJobCategorySelect();
   var tbody = document.getElementById('jobs-table-body');
   if (!tbody) return;
-  tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>';
-  var { data, error } = await getSupabase()
+  tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--c-muted);padding:20px">Loading…</td></tr>';
+  var sb = getSupabase();
+  var { data, error } = await sb
     .from('jobs')
-    .select('*')
+    .select('*, employer_profiles(id, display_name, owner_id)')
     .order('created_at', { ascending: false });
   if (error || !data) { tbody.innerHTML = '<tr><td colspan="9" style="padding:20px;color:var(--c-muted)">Error loading jobs.</td></tr>'; return; }
   _jobsList = data;
@@ -3479,6 +3481,14 @@ async function loadJobs() {
     tr.style.borderTop = '0.5px solid var(--c-border)';
     var date = new Date(j.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric' });
     var statusColor = j.status === 'open' ? 'var(--c-green)' : 'var(--c-muted)';
+    var ep = j.employer_profiles;
+    var sourceCell;
+    if (j.posted_by_employer && ep) {
+      sourceCell = '<span style="font-size:11px;font-weight:600;color:var(--c-blue);background:var(--c-blue-light);padding:2px 7px;border-radius:4px">Employer</span>'
+        + '<div style="font-size:11px;color:var(--c-muted);margin-top:3px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + (ep.display_name||'') + '">' + (ep.display_name||ep.id.slice(0,8)) + '</div>';
+    } else {
+      sourceCell = '<span style="font-size:11px;font-weight:600;color:var(--c-accent);background:var(--c-accent-light);padding:2px 7px;border-radius:4px">Admin</span>';
+    }
     tr.innerHTML =
       '<td style="padding:11px 16px;font-size:13px;font-weight:500">' + (j.title||'—') + '</td>' +
       '<td style="padding:11px 8px;font-size:11px;font-family:monospace;color:var(--c-muted)">' + j.id.slice(0,8).toUpperCase() + '</td>' +
@@ -3486,9 +3496,10 @@ async function loadJobs() {
       '<td style="padding:11px 8px;font-size:12px;color:var(--c-muted)">' + (j.city||'—') + '</td>' +
       '<td style="padding:11px 8px;font-size:12px">' + (j.pay_range||'—') + '</td>' +
       '<td style="padding:11px 8px;font-size:12px;color:var(--c-muted)">' + jobWorkLabel(j.work_type,'en') + '</td>' +
+      '<td style="padding:11px 8px">' + sourceCell + '</td>' +
       '<td style="padding:11px 8px"><span style="font-size:11px;font-weight:600;color:' + statusColor + '">' + j.status.toUpperCase() + '</span></td>' +
       '<td style="padding:11px 8px;font-size:12px;color:var(--c-muted)">' + date + '</td>' +
-      '<td style="padding:11px 8px">' +
+      '<td style="padding:11px 8px;white-space:nowrap">' +
         '<button onclick="editJob(\'' + j.id + '\')" style="font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid var(--c-border);background:var(--c-bg);cursor:pointer;margin-right:4px">Edit</button>' +
         '<button onclick="toggleJobStatus(\'' + j.id + '\',\'' + j.status + '\')" style="font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid var(--c-border);background:var(--c-bg);cursor:pointer;margin-right:4px">' + (j.status==='open'?'Close':'Reopen') + '</button>' +
         '<button onclick="deleteJob(\'' + j.id + '\')" style="font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid rgba(201,79,43,0.3);background:var(--c-accent-light);color:var(--c-accent);cursor:pointer">Delete</button>' +
