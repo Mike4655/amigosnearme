@@ -209,12 +209,20 @@
           <span data-es>Duración del anuncio</span>
           <span data-en>Posting duration</span>
         </div>
-        <select id="f-duration" class="form-input">
-          <option value="">— <span data-en>No expiry</span><span data-es>Sin vencimiento</span> —</option>
+        <select id="f-duration" class="form-input" onchange="onDurationChange()">
+          <option value="">— No expiry / Sin vencimiento —</option>
+          <option value="custom">Custom date / Fecha específica</option>
           <option value="30">30 days / 30 días</option>
           <option value="60">60 days / 60 días</option>
           <option value="90">90 days / 90 días</option>
         </select>
+      </div>
+      <div class="field-row" id="row-custom-date" style="display:none">
+        <div class="field-label">
+          <span data-es>Fecha de vencimiento</span>
+          <span data-en>Expiry date</span>
+        </div>
+        <input type="date" id="f-custom-date" class="form-input">
       </div>
 
       <!-- desc: f-desc-en=ALWAYS English, f-desc-es=ALWAYS Spanish; order swaps by mode -->
@@ -320,6 +328,10 @@ function showToast(msg) {
 
 function val(id){ return (document.getElementById(id)||{}).value||''; }
 function show(id){ document.getElementById(id).style.display='block'; }
+function onDurationChange() {
+  var v = document.getElementById('f-duration').value;
+  document.getElementById('row-custom-date').style.display = v === 'custom' ? '' : 'none';
+}
 function hide(id){ document.getElementById(id).style.display='none'; }
 
 async function checkAuth() {
@@ -384,7 +396,12 @@ async function loadJobForEdit(jobId) {
     var sel = document.getElementById('f-duration');
     if (daysLeft <= 35) sel.value = '30';
     else if (daysLeft <= 65) sel.value = '60';
-    else sel.value = '90';
+    else if (daysLeft <= 95) sel.value = '90';
+    else {
+      sel.value = 'custom';
+      document.getElementById('f-custom-date').value = j.expires_at.slice(0, 10);
+      document.getElementById('row-custom-date').style.display = '';
+    }
   }
 
   var isEn = document.body.classList.contains('en');
@@ -486,10 +503,14 @@ async function submitJob() {
     employer_biz_id: _bizId,
     employer_name: _empName || null,
     expires_at: (function() {
-      var days = parseInt(val('f-duration'));
-      if (!days) return null;
+      var dur = val('f-duration');
+      if (!dur) return null;
+      if (dur === 'custom') {
+        var cv = document.getElementById('f-custom-date').value;
+        return cv ? new Date(cv + 'T23:59:59').toISOString() : null;
+      }
       var d = new Date();
-      d.setDate(d.getDate() + days);
+      d.setDate(d.getDate() + parseInt(dur));
       return d.toISOString();
     })(),
   };
