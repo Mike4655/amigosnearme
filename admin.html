@@ -3470,8 +3470,15 @@ async function loadJobs() {
   var sb = getSupabase();
   var { data, error } = await sb
     .from('jobs')
-    .select('*, employer_profiles(id, display_name, owner_id)')
+    .select('*')
     .order('created_at', { ascending: false });
+  // Fetch employer names separately for employer-posted jobs
+  var empIds = (data||[]).filter(j => j.employer_biz_id).map(j => j.employer_biz_id);
+  var epMap = {};
+  if (empIds.length) {
+    var { data: epRows } = await sb.from('employer_profiles').select('id, display_name').in('id', empIds);
+    (epRows||[]).forEach(function(ep) { epMap[ep.id] = ep.display_name; });
+  }
   if (error || !data) { tbody.innerHTML = '<tr><td colspan="9" style="padding:20px;color:var(--c-muted)">Error loading jobs.</td></tr>'; return; }
   _jobsList = data;
   if (!data.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--c-muted);padding:20px">No job postings yet.</td></tr>'; return; }
@@ -3481,11 +3488,11 @@ async function loadJobs() {
     tr.style.borderTop = '0.5px solid var(--c-border)';
     var date = new Date(j.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric' });
     var statusColor = j.status === 'open' ? 'var(--c-green)' : 'var(--c-muted)';
-    var ep = j.employer_profiles;
+    var empName = j.employer_biz_id ? (epMap[j.employer_biz_id] || j.employer_biz_id.slice(0,8)) : null;
     var sourceCell;
-    if (j.posted_by_employer && ep) {
+    if (j.posted_by_employer && empName) {
       sourceCell = '<span style="font-size:11px;font-weight:600;color:var(--c-blue);background:var(--c-blue-light);padding:2px 7px;border-radius:4px">Employer</span>'
-        + '<div style="font-size:11px;color:var(--c-muted);margin-top:3px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + (ep.display_name||'') + '">' + (ep.display_name||ep.id.slice(0,8)) + '</div>';
+        + '<div style="font-size:11px;color:var(--c-muted);margin-top:3px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + empName + '">' + empName + '</div>';
     } else {
       sourceCell = '<span style="font-size:11px;font-weight:600;color:var(--c-accent);background:var(--c-accent-light);padding:2px 7px;border-radius:4px">Admin</span>';
     }
