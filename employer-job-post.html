@@ -282,6 +282,7 @@
 <script src="job-config.js"></script>
 <script>
 var _bizId = null;
+var _empName = null;
 
 function isEn(){ return document.body.classList.contains('en'); }
 
@@ -332,6 +333,7 @@ async function checkAuth() {
       return;
     }
     _bizId = epRow.id;
+    _empName = epRow.display_name || null;
 
     document.getElementById('auth-check').style.display = 'none';
     document.getElementById('main-form').style.display = 'block';
@@ -460,6 +462,7 @@ async function submitJob() {
     contact_email: email || null,
     posted_by_employer: true,
     employer_biz_id: _bizId,
+    employer_name: _empName || null,
   };
 
   var sb = getSupabase();
