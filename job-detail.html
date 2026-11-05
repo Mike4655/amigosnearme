@@ -50,6 +50,13 @@
   .btn-apply:hover{opacity:.88}
   .btn-apply:disabled{opacity:.5;cursor:not-allowed}
   .success-msg{display:none;text-align:center;padding:24px;background:var(--c-green-light);border-radius:var(--radius-md);color:var(--c-green);font-weight:600;margin-top:16px}
+  .contact-locked{background:var(--c-surface);border:1.5px dashed var(--c-border);border-radius:var(--radius-lg);padding:28px 24px;margin-top:32px;text-align:center}
+  .contact-locked-icon{font-size:32px;margin-bottom:10px}
+  .contact-locked-title{font-size:16px;font-weight:700;margin-bottom:6px}
+  .contact-locked-sub{font-size:13px;color:var(--c-muted);margin-bottom:20px;line-height:1.55}
+  .contact-locked-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .btn-login{padding:10px 22px;background:var(--c-accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font-body);text-decoration:none;display:inline-block}
+  .btn-register{padding:10px 22px;background:transparent;color:var(--c-accent);border:1.5px solid var(--c-accent);border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font-body);text-decoration:none;display:inline-block}
   body.en [data-es]{display:none}
   body:not(.en) [data-en]{display:none}
   @media(max-width:560px){.form-row{grid-template-columns:1fr}.page-wrap{padding:28px 16px 60px}}
@@ -84,11 +91,51 @@ var _job = null;
 
 function isEn(){ return document.body.classList.contains('en'); }
 
-function renderJob(j) {
+function renderJob(j, contact) {
   var en = isEn();
   var cat = jobCatLabel(j.category, en ? 'en' : 'es');
   var wt = jobWorkLabel(j.work_type, en ? 'en' : 'es');
   var date = new Date(j.created_at).toLocaleDateString(en?'en-US':'es-US',{year:'numeric',month:'long',day:'numeric'});
+
+  // contact=null → locked, contact=object → show (may still have no entries)
+  var contactHtml;
+  if (j.posted_by_employer) {
+    if (contact === null) {
+      contactHtml = buildLockedContactBlock(en, j.id);
+    } else {
+      contactHtml = buildContactBlock(contact, en);
+    }
+  } else {
+    contactHtml = '<div class="apply-card">' +
+      '<div class="apply-title">' + (en?'Apply for this job':'Solicitar este empleo') + '</div>' +
+      '<div class="apply-sub">' + (en
+        ? 'We\'ll forward your application to <strong>hola@amigosnearme.com</strong>. Include your phone number — it\'s required.'
+        : 'Enviaremos tu solicitud a <strong>hola@amigosnearme.com</strong>. Incluye tu teléfono — es obligatorio.') + '</div>' +
+      '<div class="form-row">' +
+        '<div class="form-field">' +
+          '<label class="form-label">' + (en?'Full Name':'Nombre completo') + ' <span class="req">*</span></label>' +
+          '<input class="form-input" id="app-name" type="text" placeholder="' + (en?'Your name':'Tu nombre') + '">' +
+        '</div>' +
+        '<div class="form-field">' +
+          '<label class="form-label">' + (en?'Phone Number':'Número de teléfono') + ' <span class="req">*</span></label>' +
+          '<input class="form-input" id="app-phone" type="tel" placeholder="(404) 000-0000">' +
+          '<div class="phone-note">' + (en?'Required — we\'ll contact you here':'Obligatorio — te contactaremos aquí') + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="form-field" style="margin-bottom:12px">' +
+        '<label class="form-label">Email ' + (en?'(optional)':'(opcional)') + '</label>' +
+        '<input class="form-input" id="app-email" type="email" placeholder="tu@email.com">' +
+      '</div>' +
+      '<div class="form-field">' +
+        '<label class="form-label">' + (en?'Message (optional)':'Mensaje (opcional)') + '</label>' +
+        '<textarea class="form-input" id="app-message" placeholder="' + (en?'Tell us about your experience…':'Cuéntanos sobre tu experiencia…') + '"></textarea>' +
+      '</div>' +
+      '<button class="btn-apply" id="btn-apply" onclick="submitApplication()">' + (en?'Send Application →':'Enviar solicitud →') + '</button>' +
+      '<div class="success-msg" id="success-msg">' +
+        (en ? '✓ Application sent! We\'ll be in touch.' : '✓ ¡Solicitud enviada! Nos pondremos en contacto.') +
+      '</div>' +
+    '</div>';
+  }
 
   document.getElementById('job-content').innerHTML =
     '<div class="job-header">' +
@@ -109,54 +156,22 @@ function renderJob(j) {
       '<div class="detail-block" style="flex:1;min-width:140px"><div class="section-label">' + (en?'Posted':'Publicado') + '</div>' + date + '</div>' +
       (j.expires_at ? '<div class="detail-block" style="flex:1;min-width:140px"><div class="section-label">' + (en?'Expiration':'Vencimiento') + '</div>' + new Date(j.expires_at).toLocaleDateString(en?'en-US':'es-US',{year:'numeric',month:'long',day:'numeric'}) + '</div>' : '') +
     '</div>' +
-
-    // Apply form or direct contact info
-    (j.posted_by_employer
-      ? buildContactBlock(j, en)
-      : '<div class="apply-card">' +
-          '<div class="apply-title">' + (en?'Apply for this job':'Solicitar este empleo') + '</div>' +
-          '<div class="apply-sub">' + (en
-            ? 'We\'ll forward your application to <strong>hola@amigosnearme.com</strong>. Include your phone number — it\'s required.'
-            : 'Enviaremos tu solicitud a <strong>hola@amigosnearme.com</strong>. Incluye tu teléfono — es obligatorio.') + '</div>' +
-          '<div class="form-row">' +
-            '<div class="form-field">' +
-              '<label class="form-label">' + (en?'Full Name':'Nombre completo') + ' <span class="req">*</span></label>' +
-              '<input class="form-input" id="app-name" type="text" placeholder="' + (en?'Your name':'Tu nombre') + '">' +
-            '</div>' +
-            '<div class="form-field">' +
-              '<label class="form-label">' + (en?'Phone Number':'Número de teléfono') + ' <span class="req">*</span></label>' +
-              '<input class="form-input" id="app-phone" type="tel" placeholder="(404) 000-0000">' +
-              '<div class="phone-note">' + (en?'Required — we\'ll contact you here':'Obligatorio — te contactaremos aquí') + '</div>' +
-            '</div>' +
-          '</div>' +
-          '<div class="form-field" style="margin-bottom:12px">' +
-            '<label class="form-label">Email ' + (en?'(optional)':'(opcional)') + '</label>' +
-            '<input class="form-input" id="app-email" type="email" placeholder="tu@email.com">' +
-          '</div>' +
-          '<div class="form-field">' +
-            '<label class="form-label">' + (en?'Message (optional)':'Mensaje (opcional)') + '</label>' +
-            '<textarea class="form-input" id="app-message" placeholder="' + (en?'Tell us about your experience…':'Cuéntanos sobre tu experiencia…') + '"></textarea>' +
-          '</div>' +
-          '<button class="btn-apply" id="btn-apply" onclick="submitApplication()">' + (en?'Send Application →':'Enviar solicitud →') + '</button>' +
-          '<div class="success-msg" id="success-msg">' +
-            (en ? '✓ Application sent! We\'ll be in touch.' : '✓ ¡Solicitud enviada! Nos pondremos en contacto.') +
-          '</div>' +
-        '</div>');
+    contactHtml;
 }
 
-function buildContactBlock(j, en) {
+function buildContactBlock(contact, en) {
   var items = '';
-  if (j.contact_phone) {
-    items += '<a href="tel:' + j.contact_phone + '" style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--c-bg);border:0.5px solid var(--c-border);border-radius:var(--radius-sm);text-decoration:none;color:var(--c-text);font-size:14px;font-weight:500"><span style="font-size:18px">📞</span><div><div style="font-size:12px;color:var(--c-muted);margin-bottom:1px">' + (en?'Phone':'Teléfono') + '</div>' + j.contact_phone + '</div></a>';
+  if (contact.contact_phone) {
+    items += '<a href="tel:' + contact.contact_phone + '" style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--c-bg);border:0.5px solid var(--c-border);border-radius:var(--radius-sm);text-decoration:none;color:var(--c-text);font-size:14px;font-weight:500"><span style="font-size:18px">📞</span><div><div style="font-size:12px;color:var(--c-muted);margin-bottom:1px">' + (en?'Phone':'Teléfono') + '</div>' + contact.contact_phone + '</div></a>';
   }
-  if (j.contact_whatsapp) {
-    var waNum = j.contact_whatsapp.replace(/\D/g,'');
+  if (contact.contact_whatsapp) {
+    var waNum = contact.contact_whatsapp.replace(/\D/g,'');
     var waMsg = encodeURIComponent(en ? 'Hi, I saw your job posting on AmigosNearMe and I\'m interested.' : 'Hola, vi tu oferta en AmigosNearMe y me interesa.');
-    items += '<a href="https://wa.me/' + waNum + '?text=' + waMsg + '" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:#E8F8F1;border:0.5px solid #B2DFCF;border-radius:var(--radius-sm);text-decoration:none;color:#12774A;font-size:14px;font-weight:500"><span style="font-size:18px">💬</span><div><div style="font-size:12px;color:#12774A;opacity:.7;margin-bottom:1px">WhatsApp</div>' + j.contact_whatsapp + '</div></a>';
+    items += '<a href="https://wa.me/' + waNum + '?text=' + waMsg + '" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:#E8F8F1;border:0.5px solid #B2DFCF;border-radius:var(--radius-sm);text-decoration:none;color:#12774A;font-size:14px;font-weight:500"><span style="font-size:18px">💬</span><div><div style="font-size:12px;color:#12774A;opacity:.7;margin-bottom:1px">WhatsApp</div>' + contact.contact_whatsapp + '</div></a>';
   }
-  if (j.contact_email) {
+  if (contact.contact_email) {
     var subj = encodeURIComponent(en ? 'Job application' : 'Solicitud de empleo');
-    items += '<a href="mailto:' + j.contact_email + '?subject=' + subj + '" style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--c-bg);border:0.5px solid var(--c-border);border-radius:var(--radius-sm);text-decoration:none;color:var(--c-text);font-size:14px;font-weight:500"><span style="font-size:18px">✉️</span><div><div style="font-size:12px;color:var(--c-muted);margin-bottom:1px">Email</div>' + j.contact_email + '</div></a>';
+    items += '<a href="mailto:' + contact.contact_email + '?subject=' + subj + '" style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--c-bg);border:0.5px solid var(--c-border);border-radius:var(--radius-sm);text-decoration:none;color:var(--c-text);font-size:14px;font-weight:500"><span style="font-size:18px">✉️</span><div><div style="font-size:12px;color:var(--c-muted);margin-bottom:1px">Email</div>' + contact.contact_email + '</div></a>';
   }
   if (!items) {
     items = '<div style="font-size:13px;color:var(--c-muted)">' + (en ? 'Contact info not provided.' : 'Sin información de contacto.') + '</div>';
@@ -165,6 +180,21 @@ function buildContactBlock(j, en) {
     '<div class="apply-title">' + (en ? 'How to apply' : 'Cómo aplicar') + '</div>' +
     '<div class="apply-sub">' + (en ? 'Contact the employer directly using the information below.' : 'Contacta directamente al empleador con la información de abajo.') + '</div>' +
     '<div style="display:flex;flex-direction:column;gap:10px">' + items + '</div>' +
+  '</div>';
+}
+
+function buildLockedContactBlock(en, jobId) {
+  var returnTo = encodeURIComponent('job-detail.html?id=' + jobId);
+  return '<div class="contact-locked">' +
+    '<div class="contact-locked-icon">🔒</div>' +
+    '<div class="contact-locked-title">' + (en ? 'Contact info for members only' : 'Información de contacto para miembros') + '</div>' +
+    '<div class="contact-locked-sub">' + (en
+      ? 'Sign in or create a free account to see the employer\'s phone, WhatsApp, and email.'
+      : 'Inicia sesión o regístrate gratis para ver el teléfono, WhatsApp y correo electrónico del empleador.') + '</div>' +
+    '<div class="contact-locked-btns">' +
+      '<a class="btn-login" href="login.html?returnTo=' + returnTo + '">' + (en ? 'Sign in' : 'Iniciar sesión') + '</a>' +
+      '<a class="btn-register" href="register-type.html?returnTo=' + returnTo + '">' + (en ? 'Register free' : 'Registrarse gratis') + '</a>' +
+    '</div>' +
   '</div>';
 }
 
@@ -214,16 +244,39 @@ async function submitApplication() {
   }
 }
 
+var _contact = undefined; // undefined=not fetched yet, null=locked, object=loaded
+
 async function loadJob() {
   var params = new URLSearchParams(window.location.search);
   var id = params.get('id');
   if (!id) { window.location.href = 'jobs.html'; return; }
+
+  // Fetch job WITHOUT contact fields (safe for all users)
   var { data, error } = await getSupabase()
-    .from('jobs').select('*').eq('id', id).single();
+    .from('jobs')
+    .select('id,title,title_es,category,city,pay_range,work_type,description,description_en,description_es,requirements,requirements_en,requirements_es,created_at,expires_at,posted_by_employer,employer_name,status')
+    .eq('id', id).single();
   if (error || !data) { window.location.href = 'jobs.html'; return; }
   _job = data;
   document.title = data.title + ' — AmigosNearMe';
-  renderJob(data);
+
+  // For employer-posted jobs: check session and conditionally fetch contact
+  if (data.posted_by_employer) {
+    var { data: { session } } = await getSupabase().auth.getSession();
+    if (session) {
+      var { data: contactData } = await getSupabase()
+        .from('jobs')
+        .select('contact_phone,contact_whatsapp,contact_email')
+        .eq('id', id).single();
+      _contact = contactData || {};
+    } else {
+      _contact = null; // locked
+    }
+  } else {
+    _contact = {}; // non-employer jobs don't use contact block
+  }
+
+  renderJob(_job, _contact);
 }
 
 function setLang(lang) {
@@ -231,7 +284,7 @@ function setLang(lang) {
   document.getElementById('btn-es').classList.toggle('active', lang !== 'en');
   document.getElementById('btn-en').classList.toggle('active', lang === 'en');
   try { localStorage.setItem('anm-lang', lang); } catch(e) {}
-  if (_job) renderJob(_job);
+  if (_job) renderJob(_job, _contact);
 }
 
 document.addEventListener('DOMContentLoaded', function() {

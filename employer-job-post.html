@@ -231,7 +231,11 @@
               <button type="button" onclick="translateDesc('es')" style="font-size:11px;padding:2px 10px;border:1px solid var(--c-border);border-radius:999px;background:transparent;cursor:pointer;color:var(--c-accent);margin-left:8px">Auto-traducir →</button>
             </span>
           </div>
-          <textarea id="f-desc-en" class="form-input" placeholder="Describe the job responsibilities, schedule, etc."></textarea>
+          <textarea id="f-desc-en" class="form-input" placeholder="Describe the job responsibilities, schedule, etc." oninput="checkDescContact(this,'en')"></textarea>
+          <div id="desc-en-warn" style="display:none;margin-top:8px;padding:10px 14px;background:#FEF0EB;border:1px solid #F5C4B2;border-radius:8px;font-size:13px;color:#9C3A1E">
+            ⚠️ <strong>Contact info detected.</strong> Please remove it from the description and enter it in the <em>Contact Information</em> section below — it will only be shown to registered members.
+            <div style="margin-top:8px"><a href="#f-contact-phone" onclick="document.getElementById('f-contact-phone').focus();return false;" style="font-size:12px;font-weight:600;color:#C94F2B;text-decoration:underline">Go to Contact Information ↓</a></div>
+          </div>
         </div>
         <div class="field-row desc-row-es" style="margin-top:4px">
           <div class="field-label" style="display:flex;justify-content:space-between;align-items:center">
@@ -240,7 +244,11 @@
               <button type="button" onclick="translateDesc('en')" style="font-size:11px;padding:2px 10px;border:1px solid var(--c-border);border-radius:999px;background:transparent;cursor:pointer;color:var(--c-accent);margin-left:8px">Auto-translate →</button>
             </span>
           </div>
-          <textarea id="f-desc-es" class="form-input" placeholder="Describa las responsabilidades, horario, etc."></textarea>
+          <textarea id="f-desc-es" class="form-input" placeholder="Describa las responsabilidades, horario, etc." oninput="checkDescContact(this,'es')"></textarea>
+          <div id="desc-es-warn" style="display:none;margin-top:8px;padding:10px 14px;background:#FEF0EB;border:1px solid #F5C4B2;border-radius:8px;font-size:13px;color:#9C3A1E">
+            ⚠️ <strong>Se detectó información de contacto.</strong> Por favor elimínala de la descripción e ingrésala en la sección <em>Información de contacto</em> — solo será visible para miembros registrados.
+            <div style="margin-top:8px"><a href="#f-contact-phone" onclick="document.getElementById('f-contact-phone').focus();return false;" style="font-size:12px;font-weight:600;color:#C94F2B;text-decoration:underline">Ir a Información de contacto ↓</a></div>
+          </div>
         </div>
       </div>
     </div>
@@ -440,6 +448,33 @@ async function translateDesc(srcLang) {
   btn.disabled = false; btn.textContent = origText;
 }
 
+// Contact info detection patterns
+var CONTACT_PATTERNS = [
+  /\b[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}\b/,                        // email
+  /(\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/,        // phone (US)
+  /\+\d{7,15}/,                                                  // intl phone
+  /\bwa\.me\/\S+/i,                                             // wa.me link
+  /api\.whatsapp\.com/i,                                        // whatsapp api
+  /\b(call|text|whatsapp|email|contact)\s+(me|us)\b/i,          // "call me", etc.
+];
+
+function hasContactInfo(text) {
+  return CONTACT_PATTERNS.some(function(re){ return re.test(text); });
+}
+
+function checkDescContact(textarea, lang) {
+  var warnId = lang === 'en' ? 'desc-en-warn' : 'desc-es-warn';
+  var warn = document.getElementById(warnId);
+  if (!warn) return;
+  if (hasContactInfo(textarea.value)) {
+    warn.style.display = 'block';
+    textarea.style.borderColor = '#F5A07A';
+  } else {
+    warn.style.display = 'none';
+    textarea.style.borderColor = '';
+  }
+}
+
 async function submitJob() {
   var en = isEn();
   // Clear errors
@@ -460,6 +495,22 @@ async function submitJob() {
 
   var descEn = val('f-desc-en').trim() || null;
   var descEs = val('f-desc-es').trim() || null;
+
+  // Block submit if description contains contact info
+  if ((descEn && hasContactInfo(descEn)) || (descEs && hasContactInfo(descEs))) {
+    var msg = en
+      ? 'Cannot publish: the description contains contact information. Please remove it and enter it in the Contact Information section.'
+      : 'No se puede publicar: la descripción contiene información de contacto. Elimínala e ingrésala en la sección Información de contacto.';
+    alert(msg);
+    if (descEn && hasContactInfo(descEn)) {
+      document.getElementById('f-desc-en').focus();
+      document.getElementById('desc-en-warn').style.display = 'block';
+    } else {
+      document.getElementById('f-desc-es').focus();
+      document.getElementById('desc-es-warn').style.display = 'block';
+    }
+    return;
+  }
 
   var category = val('f-category');
   var city = val('f-city').trim();
