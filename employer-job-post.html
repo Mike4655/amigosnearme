@@ -524,6 +524,26 @@ async function submitJob() {
     return;
   }
 
+  // 신규 posting 시 admin 알림 이메일 발송
+  if (!editId) {
+    try {
+      await getSupabase().functions.invoke('send-email', {
+        body: {
+          scenario: 'AD_JOB',
+          data: {
+            job_title:     payload.title || payload.title_es || '—',
+            employer_name: payload.employer_name || '—',
+            category:      payload.category || '—',
+            city:          payload.city || '—',
+            pay_range:     payload.pay_range || '—',
+            work_type:     payload.work_type || '—',
+            expires_at:    payload.expires_at ? new Date(payload.expires_at).toLocaleDateString('en-US') : '—',
+          }
+        }
+      });
+    } catch(e) { console.warn('Admin email failed:', e); }
+  }
+
   document.getElementById('success-banner').style.display = 'block';
   window.scrollTo({ top: 0, behavior: 'smooth' });
   showToast(en ? 'Job posted!' : '¡Oferta publicada!');

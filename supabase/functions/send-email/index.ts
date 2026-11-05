@@ -642,6 +642,22 @@ ${d.reason ? `<p><strong>Reason:</strong> ${d.reason}</p>` : ''}`,
 <p style="background:#f5f5f5;padding:12px;border-radius:6px">${(d.message || '').replace(/\n/g, '<br>')}</p>`,
       };
 
+    case 'AD_JOB':
+      return {
+        subject: `[Admin] New Job Posting — ${d.job_title}`,
+        html: `<p>A new job posting has been submitted by an employer:</p>
+<ul>
+  <li><strong>Title:</strong> ${d.job_title}</li>
+  <li><strong>Employer:</strong> ${d.employer_name}</li>
+  <li><strong>Category:</strong> ${d.category}</li>
+  <li><strong>City:</strong> ${d.city}</li>
+  <li><strong>Pay:</strong> ${d.pay_range || '—'}</li>
+  <li><strong>Type:</strong> ${d.work_type || '—'}</li>
+  <li><strong>Expires:</strong> ${d.expires_at || '—'}</li>
+</ul>
+<p><a href="https://amigosnearme.com/admin.html#jobs">View in admin console →</a></p>`,
+      };
+
     case 'AD4':
       return {
         subject: `[Admin] Cancellation request — ${d.biz_name}`,
@@ -774,7 +790,7 @@ serve(async (req: Request) => {
       lang?: string;       // 'es' | 'en' — 없으면 'es' 기본값
     };
 
-    const isAdminScenario = ['AD1','AD2','AD3','AD4','ADMIN_ZELLE','CONTACT','RESEND_ALERT'].includes(scenario);
+    const isAdminScenario = ['AD1','AD2','AD3','AD4','AD_JOB','ADMIN_ZELLE','CONTACT','RESEND_ALERT'].includes(scenario);
 
     // `to` 없고 ref_id가 UUID이면 auth.users에서 이메일 조회
     let resolvedTo = to;
