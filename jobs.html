@@ -61,21 +61,25 @@
       <button class="lang-btn active" id="btn-es" onclick="setLang('es')">ES</button>
       <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
     </div>
-    <button class="post-job-btn" id="btn-post-job" onclick="handlePostJob()" data-es>+ Publicar empleo</button>
-    <button class="post-job-btn" id="btn-post-job-en" onclick="handlePostJob()" data-en>+ Post a Job</button>
     <a href="register-type.html" style="font-size:13px;font-weight:600;background:var(--c-accent);color:#fff;text-decoration:none;padding:8px 14px;border-radius:var(--radius-sm)" data-es>Registrarse</a>
     <a href="register-type.html" style="font-size:13px;font-weight:600;background:var(--c-accent);color:#fff;text-decoration:none;padding:8px 14px;border-radius:var(--radius-sm)" data-en>Register →</a>
   </div>
 </nav>
 
 <div class="page-wrap">
-  <div class="page-header">
-    <div class="eyebrow" data-es>Empleos disponibles</div>
-    <div class="eyebrow" data-en>Open positions</div>
-    <h1 data-es>Trabajos disponibles ahora</h1>
-    <h1 data-en>Jobs available now</h1>
-    <p class="lede" data-es>Envía tu solicitud con tu número de teléfono y te contactamos.</p>
-    <p class="lede" data-en>Apply with your phone number and we'll get in touch.</p>
+  <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
+    <div>
+      <div class="eyebrow" data-es>Empleos disponibles</div>
+      <div class="eyebrow" data-en>Open positions</div>
+      <h1 data-es>Trabajos disponibles ahora</h1>
+      <h1 data-en>Jobs available now</h1>
+      <p class="lede" data-es>Envía tu solicitud con tu número de teléfono y te contactamos.</p>
+      <p class="lede" data-en>Apply with your phone number and we'll get in touch.</p>
+    </div>
+    <div style="flex-shrink:0;padding-top:4px">
+      <button class="post-job-btn" onclick="handlePostJob()" data-es>+ Publicar empleo</button>
+      <button class="post-job-btn" onclick="handlePostJob()" data-en>+ Post a Job</button>
+    </div>
   </div>
 
   <div class="filter-row" id="filter-row"></div>
