@@ -105,7 +105,10 @@ function renderJob(j) {
       '<div class="detail-block"><div class="section-label">' + (en?'Description':'Descripción') + '</div>' + (en ? (j.description_en || j.description) : (j.description_es || j.description)) + '</div>' : '') +
     ((en ? (j.requirements_en || j.requirements) : (j.requirements_es || j.requirements)) ?
       '<div class="detail-block"><div class="section-label">' + (en?'Requirements':'Requisitos') + '</div>' + (en ? (j.requirements_en || j.requirements) : (j.requirements_es || j.requirements)) + '</div>' : '') +
-    '<div class="detail-block"><div class="section-label">' + (en?'Posted':'Publicado') + '</div>' + date + '</div>' +
+    '<div style="display:flex;gap:16px;flex-wrap:wrap">' +
+      '<div class="detail-block" style="flex:1;min-width:140px"><div class="section-label">' + (en?'Posted':'Publicado') + '</div>' + date + '</div>' +
+      (j.expires_at ? '<div class="detail-block" style="flex:1;min-width:140px"><div class="section-label">' + (en?'Expiration':'Vencimiento') + '</div>' + new Date(j.expires_at).toLocaleDateString(en?'en-US':'es-US',{year:'numeric',month:'long',day:'numeric'}) + '</div>' : '') +
+    '</div>' +
 
     // Apply form or direct contact info
     (j.posted_by_employer
