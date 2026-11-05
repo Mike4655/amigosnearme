@@ -99,32 +99,35 @@
     <div class="card">
       <div class="section-title"><span data-es>Información del puesto</span><span data-en>Job information</span></div>
 
-      <!-- EN mode: English required, translate → Spanish -->
-      <div class="field-row" data-en>
-        <div class="field-label">Job title (English) <span class="req">*</span></div>
-        <input type="text" id="f-title" class="form-input" placeholder="e.g. Kitchen Helper">
-        <div class="err-msg" id="err-title"><span data-en>Required</span><span data-es>Requerido</span></div>
-      </div>
-      <div class="field-row" data-en>
-        <div class="field-label" style="display:flex;justify-content:space-between;align-items:center">
-          <span>Job title (Spanish)</span>
-          <button type="button" onclick="translateTitle('en')" style="font-size:11px;padding:2px 10px;border:1px solid var(--c-border);border-radius:999px;background:transparent;cursor:pointer;color:var(--c-accent)">Auto-translate →</button>
+      <!-- Primary title field: EN required in EN mode, ES required in ES mode -->
+      <div class="field-row">
+        <div class="field-label">
+          <span data-en>Job title (English) <span class="req">*</span></span>
+          <span data-es>Título del puesto (español) <span class="req">*</span></span>
         </div>
-        <input type="text" id="f-title-es-en" class="form-input" placeholder="ej. Ayudante de cocina">
-      </div>
-
-      <!-- ES mode: Spanish required, translate → English -->
-      <div class="field-row" data-es>
-        <div class="field-label">Título del puesto (español) <span class="req">*</span></div>
-        <input type="text" id="f-title-es" class="form-input" placeholder="ej. Ayudante de cocina">
-        <div class="err-msg" id="err-title-es" style="display:none">Requerido</div>
-      </div>
-      <div class="field-row" data-es>
-        <div class="field-label" style="display:flex;justify-content:space-between;align-items:center">
-          <span>Título del puesto (inglés)</span>
-          <button type="button" onclick="translateTitle('es')" style="font-size:11px;padding:2px 10px;border:1px solid var(--c-border);border-radius:999px;background:transparent;cursor:pointer;color:var(--c-accent)">Auto-traducir →</button>
+        <input type="text" id="f-title" class="form-input"
+          data-placeholder-en="e.g. Kitchen Helper"
+          data-placeholder-es="ej. Ayudante de cocina"
+          placeholder="e.g. Kitchen Helper">
+        <div class="err-msg" id="err-title" style="display:none">
+          <span data-en>Required</span><span data-es>Requerido</span>
         </div>
-        <input type="text" id="f-title-en-es" class="form-input" placeholder="e.g. Kitchen Helper">
+      </div>
+      <!-- Secondary title field: translate button flips direction by mode -->
+      <div class="field-row">
+        <div class="field-label" style="display:flex;justify-content:space-between;align-items:center">
+          <span>
+            <span data-en>Job title (Spanish)</span>
+            <span data-es>Título del puesto (inglés)</span>
+          </span>
+          <button type="button" id="btn-translate-title" onclick="translateTitle()" style="font-size:11px;padding:2px 10px;border:1px solid var(--c-border);border-radius:999px;background:transparent;cursor:pointer;color:var(--c-accent)">
+            <span data-en>Auto-translate →</span><span data-es>Auto-traducir →</span>
+          </button>
+        </div>
+        <input type="text" id="f-title-es"
+          data-placeholder-en="ej. Ayudante de cocina"
+          data-placeholder-es="e.g. Kitchen Helper"
+          class="form-input" placeholder="ej. Ayudante de cocina">
       </div>
 
       <div class="two-col">
@@ -192,30 +195,30 @@
       </div>
 
       <div class="field-row">
-        <!-- EN mode: English desc primary -->
-        <div data-en>
-          <div class="field-label">Description (English)</div>
-          <textarea id="f-desc-en" class="form-input" placeholder="Describe the job responsibilities, schedule, etc."></textarea>
+        <div class="field-label">
+          <span data-en>Description (English)</span>
+          <span data-es>Descripción (español)</span>
         </div>
-        <div data-en style="margin-top:12px">
-          <div class="field-label" style="display:flex;justify-content:space-between;align-items:center">
-            <span>Description (Spanish)</span>
-            <button type="button" onclick="translateDesc('en')" style="font-size:11px;padding:2px 10px;border:1px solid var(--c-border);border-radius:999px;background:transparent;cursor:pointer;color:var(--c-accent)">Auto-translate →</button>
-          </div>
-          <textarea id="f-desc-es-en" class="form-input" placeholder="Describa las responsabilidades, horario, etc."></textarea>
+        <textarea id="f-desc-en" class="form-input"
+          data-placeholder-en="Describe the job responsibilities, schedule, etc."
+          data-placeholder-es="Describa las responsabilidades, horario, etc."
+          placeholder="Describe the job responsibilities, schedule, etc."></textarea>
+      </div>
+      <div class="field-row" style="margin-top:4px">
+        <div class="field-label" style="display:flex;justify-content:space-between;align-items:center">
+          <span>
+            <span data-en>Description (Spanish)</span>
+            <span data-es>Descripción (inglés)</span>
+          </span>
+          <button type="button" onclick="translateDesc()" style="font-size:11px;padding:2px 10px;border:1px solid var(--c-border);border-radius:999px;background:transparent;cursor:pointer;color:var(--c-accent)">
+            <span data-en>Auto-translate →</span><span data-es>Auto-traducir →</span>
+          </button>
         </div>
-        <!-- ES mode: Spanish desc primary -->
-        <div data-es>
-          <div class="field-label">Descripción (español)</div>
-          <textarea id="f-desc-es" class="form-input" placeholder="Describa las responsabilidades, horario, etc."></textarea>
-        </div>
-        <div data-es style="margin-top:12px">
-          <div class="field-label" style="display:flex;justify-content:space-between;align-items:center">
-            <span>Descripción (inglés)</span>
-            <button type="button" onclick="translateDesc('es')" style="font-size:11px;padding:2px 10px;border:1px solid var(--c-border);border-radius:999px;background:transparent;cursor:pointer;color:var(--c-accent)">Auto-traducir →</button>
-          </div>
-          <textarea id="f-desc-en-es" class="form-input" placeholder="Describe the job responsibilities, schedule, etc."></textarea>
-        </div>
+        <textarea id="f-desc-es" class="form-input"
+          data-placeholder-en="Describa las responsabilidades, horario, etc."
+          data-placeholder-es="Describe the job responsibilities, schedule, etc."
+          placeholder="Describa las responsabilidades, horario, etc."></textarea>
+      </div>
     </div>
 
     <!-- Contact Info -->
@@ -282,7 +285,12 @@ function setLang(l) {
   document.getElementById('btn-es').classList.toggle('active', l !== 'en');
   document.getElementById('btn-en').classList.toggle('active', l === 'en');
   try { localStorage.setItem('anm-lang', l); } catch(e) {}
+  // Update placeholders based on language
+  document.querySelectorAll('[data-placeholder-en]').forEach(function(el) {
+    el.placeholder = l === 'en' ? el.dataset.placeholderEn : el.dataset.placeholderEs;
+  });
 }
+
 
 function showToast(msg) {
   var t = document.getElementById('anm-toast');
@@ -368,32 +376,33 @@ async function translateText(text, fromLang) {
   } catch(e) { return ''; }
 }
 
-async function translateTitle(srcLang) {
-  var srcId = srcLang === 'en' ? 'f-title' : 'f-title-es';
-  var dstId = srcLang === 'en' ? 'f-title-es-en' : 'f-title-en-es';
+async function translateTitle() {
+  // EN mode: f-title(EN) → f-title-es(ES); ES mode: f-title-es(ES) → f-title(EN)
+  var en = isEn();
+  var srcId = en ? 'f-title' : 'f-title-es';
+  var dstId = en ? 'f-title-es' : 'f-title';
   var text = val(srcId).trim();
   if (!text) return;
-  var btn = event.target;
-  btn.disabled = true;
-  btn.textContent = '...';
-  var result = await translateText(text, srcLang);
+  var btn = event.currentTarget;
+  var origHtml = btn.innerHTML;
+  btn.disabled = true; btn.textContent = '...';
+  var result = await translateText(text, en ? 'en' : 'es');
   if (result) document.getElementById(dstId).value = result;
-  btn.disabled = false;
-  btn.textContent = srcLang === 'en' ? 'Auto-translate →' : 'Auto-traducir →';
+  btn.disabled = false; btn.innerHTML = origHtml;
 }
 
-async function translateDesc(srcLang) {
-  var srcId = srcLang === 'en' ? 'f-desc-en' : 'f-desc-es';
-  var dstId = srcLang === 'en' ? 'f-desc-es-en' : 'f-desc-en-es';
+async function translateDesc() {
+  var en = isEn();
+  var srcId = en ? 'f-desc-en' : 'f-desc-es';
+  var dstId = en ? 'f-desc-es' : 'f-desc-en';
   var text = val(srcId).trim();
   if (!text) return;
-  var btn = event.target;
-  btn.disabled = true;
-  btn.textContent = '...';
-  var result = await translateText(text, srcLang);
+  var btn = event.currentTarget;
+  var origHtml = btn.innerHTML;
+  btn.disabled = true; btn.textContent = '...';
+  var result = await translateText(text, en ? 'en' : 'es');
   if (result) document.getElementById(dstId).value = result;
-  btn.disabled = false;
-  btn.textContent = srcLang === 'en' ? 'Auto-translate →' : 'Auto-traducir →';
+  btn.disabled = false; btn.innerHTML = origHtml;
 }
 
 async function submitJob() {
@@ -406,20 +415,15 @@ async function submitJob() {
     var el = document.getElementById(id); if (el) el.classList.remove('error');
   });
 
-  // EN mode: English title required; ES mode: Spanish title required
-  var titleEn, titleEs;
-  if (en) {
-    titleEn = val('f-title').trim();
-    titleEs = val('f-title-es-en').trim() || null;
-    if (!titleEn) { show('err-title'); document.getElementById('f-title').classList.add('error'); return; }
-  } else {
-    titleEs = val('f-title-es').trim();
-    titleEn = val('f-title-en-es').trim() || null;
-    if (!titleEs) { show('err-title-es'); document.getElementById('f-title-es').classList.add('error'); return; }
-  }
+  // EN mode: f-title=EN required, f-title-es=ES optional
+  // ES mode: f-title-es=ES required, f-title=EN optional
+  var titleEn = val('f-title').trim();
+  var titleEs = val('f-title-es').trim();
+  if (en && !titleEn) { show('err-title'); document.getElementById('f-title').classList.add('error'); return; }
+  if (!en && !titleEs) { show('err-title'); document.getElementById('f-title-es').classList.add('error'); return; }
 
-  var descEn = en ? (val('f-desc-en').trim() || null) : (val('f-desc-en-es').trim() || null);
-  var descEs = en ? (val('f-desc-es-en').trim() || null) : (val('f-desc-es').trim() || null);
+  var descEn = val('f-desc-en').trim() || null;
+  var descEs = val('f-desc-es').trim() || null;
 
   var category = val('f-category');
   var city = val('f-city').trim();
@@ -437,8 +441,8 @@ async function submitJob() {
   btn.disabled = true;
 
   var payload = {
-    title: titleEn,
-    title_es: titleEs,
+    title: titleEn || null,
+    title_es: titleEs || null,
     category: category,
     work_type: val('f-work-type') || null,
     city: city.toLowerCase(),
