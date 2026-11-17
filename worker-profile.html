@@ -325,7 +325,7 @@
         <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="commerce"         style="accent-color:var(--c-green)"> Commerce</label>
         <div style="grid-column:1/-1;font-size:11px;font-weight:600;color:var(--c-hint);text-transform:uppercase;padding:6px 0 2px"><span data-es>Otra área</span><span data-en>Other area</span></div>
         <div style="grid-column:1/-1">
-          <input type="text" id="wp-area-other" placeholder="e.g. Gainesville, FL · Any area in GA" style="width:100%;padding:7px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-bg);box-sizing:border-box">
+          <input type="text" id="wp-area-other" placeholder="e.g. Gainesville, FL · Any area in GA" oninput="if(this.value.trim()){var w=document.getElementById('wp-area-grid');if(w)w.classList.remove('wp-section-error');}" style="width:100%;padding:7px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-bg);box-sizing:border-box">
         </div>
       </div>
     </div>
