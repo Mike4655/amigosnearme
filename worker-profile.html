@@ -548,6 +548,47 @@ function renderWorker(w) {
   if (w.desired_pay) {
     detHtml += '<div class="info-row">💰 <strong>'+(isEn?'Desired pay':'Salario deseado')+':</strong> <span class="info-val">$'+w.desired_pay+' '+(isEn?'/ hr':'/ hora')+'</span></div>';
   }
+
+  // Work authorization
+  var workAuthLabels = { citizen_pr: isEn?'🇺🇸 Citizen / Green Card':'🇺🇸 Ciudadano / Residente permanente', ead: isEn?'📄 Work Permit (EAD)':'📄 Permiso de trabajo (EAD)', visa: isEn?'✈️ Work Visa':'✈️ Visa de trabajo', prefer_not: isEn?'🔒 Auth: not disclosed':'🔒 Autorización: no informada' };
+  if (w.work_auth && w.work_auth !== 'prefer_not') {
+    detHtml += '<div class="info-row">'+(workAuthLabels[w.work_auth] || w.work_auth)+'</div>';
+  }
+
+  // Driver's license
+  if (w.driver_license && w.driver_license.has_license) {
+    var licTxt = '🪪 ' + (isEn ? "Driver's License" : 'Licencia de conducir');
+    if (w.driver_license.state) licTxt += ' · ' + w.driver_license.state;
+    if (w.driver_license.class) licTxt += ' (Class ' + w.driver_license.class + ')';
+    detHtml += '<div class="info-row">'+licTxt+'</div>';
+  }
+
+  // Transportation
+  var transLabels = { own_vehicle: isEn?'🚗 Own vehicle':'🚗 Vehículo propio', motorcycle: isEn?'🛵 Motorcycle':'🛵 Motocicleta', public_transit: isEn?'🚌 Public transit':'🚌 Transporte público', need_ride: isEn?'🤝 Needs transportation':'🤝 Necesita transporte' };
+  var transArr = w.transportation || [];
+  if (transArr.length > 0) {
+    detHtml += '<div class="info-row">' + transArr.map(function(t){ return transLabels[t] || t; }).join(' · ') + '</div>';
+  }
+
+  // Experience
+  var expArr = w.experience || [];
+  if (expArr.length > 0) {
+    detHtml += '<div class="info-row" style="margin-top:4px"><strong>💼 '+(isEn?'Experience':'Experiencia')+':</strong></div>';
+    expArr.forEach(function(e) {
+      var dur = '';
+      if (e.type === 'projects') {
+        dur = e.projects + (isEn ? ' project' + (e.projects !== 1 ? 's' : '') : ' proyecto' + (e.projects !== 1 ? 's' : ''));
+      } else {
+        var parts = [];
+        if (e.years > 0) parts.push(e.years + (isEn ? ' yr' + (e.years !== 1 ? 's' : '') : ' año' + (e.years !== 1 ? 's' : '')));
+        if (e.months > 0) parts.push(e.months + (isEn ? ' mo' : ' mes' + (e.months !== 1 ? 'es' : '')));
+        dur = parts.join(' ') || (isEn ? '< 1 month' : '< 1 mes');
+      }
+      var noteStr = e.note ? ' <span style="color:var(--c-hint);font-size:12px">— '+e.note+'</span>' : '';
+      detHtml += '<div class="info-row" style="padding-left:14px;font-size:13px">· <strong>'+e.role+'</strong> · '+dur+noteStr+'</div>';
+    });
+  }
+
   document.getElementById('worker-details').innerHTML = detHtml || '<div style="font-size:13px;color:var(--c-hint)">'+(isEn?'No additional details.':'Sin detalles adicionales.')+'</div>';
 }
 

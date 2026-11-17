@@ -814,14 +814,43 @@ if (new URLSearchParams(window.location.search).get('type') === 'staffing') docu
 
   <!-- ── STEP 3: VERIFICATION ── -->
   <div id="step-3" style="display:none">
-    <!-- Worker: simplified skip screen (shown instead of full verification) -->
-    <div id="step3-worker-skip" style="display:none;text-align:center;padding:40px 0">
-      <div style="font-size:48px;margin-bottom:16px">✅</div>
-      <h1 style="font-family:var(--font-display);font-size:26px;margin-bottom:10px" data-es>¡Información guardada!</h1>
-      <h1 style="font-family:var(--font-display);font-size:26px;margin-bottom:10px" data-en>Information saved!</h1>
-      <p style="color:var(--c-muted);font-size:15px;margin-bottom:28px;max-width:380px;margin-left:auto;margin-right:auto" data-es>Ahora cuéntanos un poco sobre ti para completar tu perfil público.</p>
-      <p style="color:var(--c-muted);font-size:15px;margin-bottom:28px;max-width:380px;margin-left:auto;margin-right:auto" data-en>Now tell us a bit about yourself to complete your public profile.</p>
-      <div class="form-nav" style="justify-content:center">
+    <!-- Worker: visibility choice screen -->
+    <div id="step3-worker-skip" style="display:none">
+      <h1 style="font-family:var(--font-display);font-size:26px;margin-bottom:8px" data-es>¿Quieres que los empleadores te encuentren?</h1>
+      <h1 style="font-family:var(--font-display);font-size:26px;margin-bottom:8px" data-en>Do you want employers to find you?</h1>
+      <p style="color:var(--c-muted);font-size:15px;margin-bottom:24px" data-es>Decide si tu perfil aparece en las búsquedas de empleadores.</p>
+      <p style="color:var(--c-muted);font-size:15px;margin-bottom:24px" data-en>Choose whether your profile appears in employer searches.</p>
+
+      <!-- Public card -->
+      <div id="vis-card-public" onclick="setProfileVisibility(true)" style="cursor:pointer;border:2px solid var(--c-green);border-radius:var(--radius-lg);padding:20px 22px;margin-bottom:12px;background:var(--c-green-light);position:relative">
+        <div style="display:flex;align-items:flex-start;gap:14px">
+          <div style="font-size:28px;margin-top:2px">🟢</div>
+          <div style="flex:1">
+            <div style="font-size:15px;font-weight:700;color:var(--c-text);margin-bottom:4px" data-es>Publicar mi perfil (recomendado)</div>
+            <div style="font-size:15px;font-weight:700;color:var(--c-text);margin-bottom:4px" data-en>Show my profile (recommended)</div>
+            <div style="font-size:13px;color:var(--c-muted);line-height:1.6" data-es>Los empleadores pueden encontrarte y contactarte directamente. Cada vez que un empleador te contacta, ganas <strong style="color:var(--c-green)">$0.50 en créditos</strong> — se paga cuando llegas a $100.</div>
+            <div style="font-size:13px;color:var(--c-muted);line-height:1.6" data-en>Employers can find and contact you directly. Every time an employer contacts you, you earn <strong style="color:var(--c-green)">$0.50 in credits</strong> — paid out when you reach $100.</div>
+          </div>
+          <div id="vis-check-public" style="width:22px;height:22px;border-radius:50%;background:var(--c-green);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;flex-shrink:0;margin-top:2px">✓</div>
+        </div>
+      </div>
+
+      <!-- Private card -->
+      <div id="vis-card-private" onclick="setProfileVisibility(false)" style="cursor:pointer;border:1px solid var(--c-border);border-radius:var(--radius-lg);padding:20px 22px;margin-bottom:24px;background:var(--c-surface)">
+        <div style="display:flex;align-items:flex-start;gap:14px">
+          <div style="font-size:28px;margin-top:2px">🔒</div>
+          <div style="flex:1">
+            <div style="font-size:15px;font-weight:700;color:var(--c-text);margin-bottom:4px" data-es>No publicar (solo buscar empleos)</div>
+            <div style="font-size:15px;font-weight:700;color:var(--c-text);margin-bottom:4px" data-en>Keep private (browse jobs only)</div>
+            <div style="font-size:13px;color:var(--c-muted);line-height:1.6" data-es>Tu perfil no aparece en búsquedas. Solo puedes ver y aplicar a ofertas de empleo. Puedes cambiar esto en tu perfil después.</div>
+            <div style="font-size:13px;color:var(--c-muted);line-height:1.6" data-en>Your profile won't appear in searches. You can browse and apply to jobs. You can change this in your profile later.</div>
+          </div>
+          <div id="vis-check-private" style="width:22px;height:22px;border-radius:50%;background:var(--c-border);display:flex;align-items:center;justify-content:center;color:transparent;font-size:13px;flex-shrink:0;margin-top:2px">✓</div>
+        </div>
+      </div>
+      <input type="hidden" id="f-profile-visible" value="true">
+
+      <div class="form-nav" style="justify-content:flex-end">
         <button class="btn-next" onclick="goStep(4)" data-es>Continuar →</button>
         <button class="btn-next" onclick="goStep(4)" data-en>Continue →</button>
       </div>
@@ -1025,6 +1054,102 @@ if (new URLSearchParams(window.location.search).get('type') === 'staffing') docu
       <div style="font-size:11px;color:var(--c-muted);margin-top:6px"><span data-es>💡 Arrastra las fotos para cambiar el orden. La primera foto será la imagen principal del negocio.</span><span data-en>💡 Drag photos to reorder. The first photo will be your business thumbnail.</span></div>
       <div class="field-error" id="err-photo" data-es-text="Sube al menos 1 foto de tu negocio." data-en-text="Upload at least 1 photo of your business.">Sube al menos 1 foto de tu negocio.</div>
     </div>
+
+    <!-- Worker 전용: 경력 / Work Auth / 운전면허 / 교통수단 -->
+    <div id="worker-extra-cards" style="display:none">
+
+      <!-- 경력 카드 -->
+      <div class="form-card">
+        <div class="form-card-title"><span>💼</span> <span data-es>Experiencia laboral</span><span data-en>Work experience</span> <span class="req"> *</span></div>
+        <div style="font-size:13px;color:var(--c-muted);margin-bottom:12px" data-es>Agrega al menos 1 experiencia. Ayuda a los empleadores a evaluar tu perfil.</div>
+        <div style="font-size:13px;color:var(--c-muted);margin-bottom:12px" data-en>Add at least 1 experience. This helps employers evaluate your profile.</div>
+        <div id="exp-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px"></div>
+        <button type="button" onclick="addExpEntry()" style="padding:8px 16px;border-radius:var(--radius-sm);border:0.5px dashed var(--c-accent);background:var(--c-accent-light);color:var(--c-accent);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body)">
+          <span data-es>+ Agregar experiencia</span><span data-en>+ Add experience</span>
+        </button>
+        <div class="field-error" id="err-experience" data-es-text="Agrega al menos 1 experiencia." data-en-text="Add at least 1 experience.">Agrega al menos 1 experiencia.</div>
+      </div>
+
+      <!-- Work Authorization 카드 -->
+      <div class="form-card">
+        <div class="form-card-title"><span>📋</span> <span data-es>Autorización de trabajo</span><span data-en>Work authorization</span> <span class="req"> *</span></div>
+        <div style="display:flex;flex-direction:column;gap:10px" id="work-auth-group">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);background:var(--c-bg)">
+            <input type="radio" name="work_auth" value="citizen_pr" onchange="onWorkAuthChange()" style="accent-color:var(--c-accent);width:16px;height:16px;flex-shrink:0">
+            <span style="font-size:13px;color:var(--c-text)">🇺🇸 <span data-es>Ciudadano / Residente permanente (Green Card)</span><span data-en>U.S. Citizen / Permanent Resident (Green Card)</span></span>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);background:var(--c-bg)">
+            <input type="radio" name="work_auth" value="ead" onchange="onWorkAuthChange()" style="accent-color:var(--c-accent);width:16px;height:16px;flex-shrink:0">
+            <span style="font-size:13px;color:var(--c-text)">📄 <span data-es>Permiso de trabajo (EAD)</span><span data-en>Work Permit (EAD)</span></span>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);background:var(--c-bg)">
+            <input type="radio" name="work_auth" value="visa" onchange="onWorkAuthChange()" style="accent-color:var(--c-accent);width:16px;height:16px;flex-shrink:0">
+            <span style="font-size:13px;color:var(--c-text)">✈️ <span data-es>Visa de trabajo (H-2A, H-2B, TN, etc.)</span><span data-en>Work Visa (H-2A, H-2B, TN, etc.)</span></span>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);background:var(--c-bg)">
+            <input type="radio" name="work_auth" value="prefer_not" onchange="onWorkAuthChange()" style="accent-color:var(--c-accent);width:16px;height:16px;flex-shrink:0">
+            <span style="font-size:13px;color:var(--c-text)">🔒 <span data-es>Prefiero no decirlo</span><span data-en>Prefer not to say</span></span>
+          </label>
+        </div>
+        <div class="field-error" id="err-work-auth" data-es-text="Selecciona tu autorización de trabajo." data-en-text="Select your work authorization.">Selecciona tu autorización de trabajo.</div>
+      </div>
+
+      <!-- Driver's License 카드 -->
+      <div class="form-card">
+        <div class="form-card-title"><span>🪪</span> <span data-es>Licencia de conducir</span><span data-en>Driver's license</span> <span style="font-size:12px;font-weight:400;color:var(--c-hint)" data-es>(opcional)</span><span style="font-size:12px;font-weight:400;color:var(--c-hint)" data-en>(optional)</span></div>
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:12px">
+          <input type="checkbox" id="f-has-license" onchange="onLicenseChange()" style="accent-color:var(--c-accent);width:16px;height:16px">
+          <span style="font-size:13px;color:var(--c-text)" data-es>Tengo licencia de conducir válida</span>
+          <span style="font-size:13px;color:var(--c-text)" data-en>I have a valid driver's license</span>
+        </label>
+        <div id="license-detail" style="display:none;display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px">
+          <div class="field-row" style="margin-bottom:0">
+            <div class="field-label" data-es>Estado (State)</div>
+            <div class="field-label" data-en>State</div>
+            <select id="f-license-state" class="form-select" style="font-size:13px">
+              <option value="">-- Select --</option>
+              <option>AL</option><option>AK</option><option>AZ</option><option>AR</option><option>CA</option>
+              <option>CO</option><option>CT</option><option>DE</option><option>FL</option><option>GA</option>
+              <option>HI</option><option>ID</option><option>IL</option><option>IN</option><option>IA</option>
+              <option>KS</option><option>KY</option><option>LA</option><option>ME</option><option>MD</option>
+              <option>MA</option><option>MI</option><option>MN</option><option>MS</option><option>MO</option>
+              <option>MT</option><option>NE</option><option>NV</option><option>NH</option><option>NJ</option>
+              <option>NM</option><option>NY</option><option>NC</option><option>ND</option><option>OH</option>
+              <option>OK</option><option>OR</option><option>PA</option><option>RI</option><option>SC</option>
+              <option>SD</option><option>TN</option><option>TX</option><option>UT</option><option>VT</option>
+              <option>VA</option><option>WA</option><option>WV</option><option>WI</option><option>WY</option>
+            </select>
+          </div>
+          <div class="field-row" style="margin-bottom:0">
+            <div class="field-label" data-es>Clase</div>
+            <div class="field-label" data-en>Class</div>
+            <select id="f-license-class" class="form-select" style="font-size:13px">
+              <option value="">-- Select --</option>
+              <option value="A">Class A (CDL)</option>
+              <option value="B">Class B (CDL)</option>
+              <option value="C">Class C</option>
+              <option value="D">Class D / Standard</option>
+              <option value="M">Motorcycle (M)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 교통수단 카드 -->
+      <div class="form-card">
+        <div class="form-card-title"><span>🚗</span> <span data-es>Transporte</span><span data-en>Transportation</span> <span class="req"> *</span></div>
+        <div style="font-size:13px;color:var(--c-muted);margin-bottom:12px" data-es>Selecciona todo lo que aplique.</div>
+        <div style="font-size:13px;color:var(--c-muted);margin-bottom:12px" data-en>Select all that apply.</div>
+        <div style="display:flex;flex-direction:column;gap:8px" id="transport-group">
+          <label class="lang-toggle"><input type="checkbox" value="own_vehicle" onchange="onTransportChange()"> <span data-es>🚗 Tengo vehículo propio (auto, camioneta, van)</span><span data-en>🚗 I have my own vehicle (car, truck, van)</span></label>
+          <label class="lang-toggle"><input type="checkbox" value="motorcycle" onchange="onTransportChange()"> <span data-es>🛵 Tengo motocicleta / scooter</span><span data-en>🛵 I have a motorcycle / scooter</span></label>
+          <label class="lang-toggle"><input type="checkbox" value="public_transit" onchange="onTransportChange()"> <span data-es>🚌 Uso transporte público</span><span data-en>🚌 I use public transportation</span></label>
+          <label class="lang-toggle"><input type="checkbox" value="need_ride" onchange="onTransportChange()"> <span data-es>🤝 Necesito que me lleven al trabajo</span><span data-en>🤝 I need transportation to be provided</span></label>
+        </div>
+        <div class="field-error" id="err-transport" data-es-text="Selecciona al menos una opción de transporte." data-en-text="Select at least one transportation option.">Selecciona al menos una opción de transporte.</div>
+      </div>
+
+    </div><!-- /worker-extra-cards -->
 
     <!-- Worker 전용 프로필 사진 (1장) -->
     <div class="form-card" id="worker-photo-card" style="display:none">
@@ -1319,6 +1444,197 @@ function updateProfileStepForStaffing() {
   if (photosReqMark) photosReqMark.style.display = staffing ? 'none' : 'inline';
   var workerPhotoCard = document.getElementById('worker-photo-card');
   if (workerPhotoCard) workerPhotoCard.style.display = staffing ? 'block' : 'none';
+  var workerExtra = document.getElementById('worker-extra-cards');
+  if (workerExtra) workerExtra.style.display = staffing ? 'block' : 'none';
+}
+
+// ── Worker profile visibility ──────────────────────────────────────
+function setProfileVisibility(isPublic) {
+  document.getElementById('f-profile-visible').value = isPublic ? 'true' : 'false';
+  var pubCard = document.getElementById('vis-card-public');
+  var privCard = document.getElementById('vis-card-private');
+  var pubCheck = document.getElementById('vis-check-public');
+  var privCheck = document.getElementById('vis-check-private');
+  if (isPublic) {
+    pubCard.style.border = '2px solid var(--c-green)';
+    pubCard.style.background = 'var(--c-green-light)';
+    pubCheck.style.background = 'var(--c-green)';
+    pubCheck.style.color = '#fff';
+    privCard.style.border = '1px solid var(--c-border)';
+    privCard.style.background = 'var(--c-surface)';
+    privCheck.style.background = 'var(--c-border)';
+    privCheck.style.color = 'transparent';
+  } else {
+    privCard.style.border = '2px solid var(--c-accent)';
+    privCard.style.background = 'var(--c-accent-light)';
+    privCheck.style.background = 'var(--c-accent)';
+    privCheck.style.color = '#fff';
+    pubCard.style.border = '1px solid var(--c-border)';
+    pubCard.style.background = 'var(--c-surface)';
+    pubCheck.style.background = 'var(--c-border)';
+    pubCheck.style.color = 'transparent';
+  }
+}
+
+// ── Worker experience entries ──────────────────────────────────────
+var _expEntries = [];
+var _expRoles = {
+  kitchen_restaurant: ['Cook', 'Line Cook', 'Kitchen Helper', 'Dishwasher', 'Server', 'Prep Cook', 'Kitchen Supervisor'],
+  moving_loading: ['Mover', 'Driver', 'Loader/Unloader', 'Packer', 'Forklift Operator'],
+  construction: ['General Laborer', 'Carpenter', 'Painter', 'Drywall', 'Remodeling', 'Concrete Worker', 'Roofer', 'Electrician Helper', 'Plumber Helper'],
+  production_warehouse: ['Warehouse Worker', 'Picker/Packer', 'Machine Operator', 'Assembly Line', 'Forklift Operator'],
+  commercial_cleaning: ['Cleaner', 'Janitor', 'Housekeeper', 'Floor Technician', 'Supervisor'],
+  agricultural: ['Farm Worker', 'Harvester', 'Irrigation', 'Greenhouse Worker'],
+  events_valet: ['Valet', 'Event Staff', 'Parking Attendant', 'Setup Crew'],
+  other: ['General Labor', 'Landscaping', 'Security Guard', 'Driver', 'Painter', 'Other']
+};
+
+function getExpRolesForCurrentCategory() {
+  var roles = new Set();
+  document.querySelectorAll('#staffing-types-grid .cat-chip.sel').forEach(function(chip) {
+    var en = chip.querySelector('[data-en]');
+    var txt = en ? en.textContent.trim().toLowerCase() : '';
+    if (txt.includes('kitchen') || txt.includes('restaurant')) (_expRoles.kitchen_restaurant || []).forEach(function(r){ roles.add(r); });
+    else if (txt.includes('moving') || txt.includes('loading')) (_expRoles.moving_loading || []).forEach(function(r){ roles.add(r); });
+    else if (txt.includes('construction')) (_expRoles.construction || []).forEach(function(r){ roles.add(r); });
+    else if (txt.includes('production') || txt.includes('warehouse')) (_expRoles.production_warehouse || []).forEach(function(r){ roles.add(r); });
+    else if (txt.includes('cleaning')) (_expRoles.commercial_cleaning || []).forEach(function(r){ roles.add(r); });
+    else if (txt.includes('agricultural') || txt.includes('farm')) (_expRoles.agricultural || []).forEach(function(r){ roles.add(r); });
+    else if (txt.includes('event') || txt.includes('valet')) (_expRoles.events_valet || []).forEach(function(r){ roles.add(r); });
+    else (_expRoles.other || []).forEach(function(r){ roles.add(r); });
+  });
+  if (roles.size === 0) (_expRoles.other || []).forEach(function(r){ roles.add(r); });
+  return Array.from(roles);
+}
+
+function addExpEntry(data) {
+  var idx = _expEntries.length;
+  var roles = getExpRolesForCurrentCategory();
+  var roleOptions = roles.map(function(r){ return '<option value="' + r + '"' + (data && data.role === r ? ' selected' : '') + '>' + r + '</option>'; }).join('');
+  var isEn = document.body.classList.contains('en');
+  var typeProj = data && data.type === 'projects';
+  var html = '<div class="exp-entry" id="exp-entry-' + idx + '" style="border:0.5px solid var(--c-border);border-radius:var(--radius-sm);padding:12px 14px;background:var(--c-bg)">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">' +
+      '<div style="font-size:12px;font-weight:600;color:var(--c-muted);text-transform:uppercase;letter-spacing:.04em">' + (isEn ? 'Experience ' : 'Experiencia ') + (idx + 1) + '</div>' +
+      '<button type="button" onclick="removeExpEntry(' + idx + ')" style="background:none;border:none;color:var(--c-hint);font-size:18px;cursor:pointer;padding:0;line-height:1">×</button>' +
+    '</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">' +
+      '<div>' +
+        '<div style="font-size:11px;font-weight:600;color:var(--c-muted);margin-bottom:4px" data-es>Rol / Trabajo</div>' +
+        '<div style="font-size:11px;font-weight:600;color:var(--c-muted);margin-bottom:4px" data-en>Role / Job</div>' +
+        '<select onchange="updateExpEntry(' + idx + ')" id="exp-role-' + idx + '" style="width:100%;padding:7px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-surface);color:var(--c-text)">' +
+          '<option value="">' + (isEn ? '-- Select --' : '-- Seleccionar --') + '</option>' + roleOptions +
+          '<option value="__other__">' + (isEn ? 'Other (type below)' : 'Otro (escribe abajo)') + '</option>' +
+        '</select>' +
+        '<input type="text" id="exp-role-other-' + idx + '" placeholder="' + (isEn ? 'e.g. Landscaper' : 'ej. Jardinero') + '" style="display:none;width:100%;margin-top:4px;padding:7px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-surface)">' +
+      '</div>' +
+      '<div>' +
+        '<div style="font-size:11px;font-weight:600;color:var(--c-muted);margin-bottom:4px" data-es>Tipo de duración</div>' +
+        '<div style="font-size:11px;font-weight:600;color:var(--c-muted);margin-bottom:4px" data-en>Duration type</div>' +
+        '<select onchange="toggleExpDurationType(' + idx + ')" id="exp-dur-type-' + idx + '" style="width:100%;padding:7px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-surface);color:var(--c-text)">' +
+          '<option value="years"' + (!typeProj ? ' selected' : '') + '>' + (isEn ? 'Years / Months' : 'Años / Meses') + '</option>' +
+          '<option value="projects"' + (typeProj ? ' selected' : '') + '>' + (isEn ? 'Projects completed' : 'Proyectos completados') + '</option>' +
+        '</select>' +
+      '</div>' +
+    '</div>' +
+    '<div id="exp-time-' + idx + '" style="' + (typeProj ? 'display:none;' : '') + 'display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">' +
+      '<div>' +
+        '<div style="font-size:11px;font-weight:600;color:var(--c-muted);margin-bottom:4px" data-es>Años</div>' +
+        '<div style="font-size:11px;font-weight:600;color:var(--c-muted);margin-bottom:4px" data-en>Years</div>' +
+        '<select id="exp-years-' + idx + '" style="width:100%;padding:7px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-surface)">' +
+          [0,1,2,3,4,5,6,7,8,9,10].map(function(n){ return '<option value="' + n + '"' + (data && data.years === n ? ' selected' : (n===0?' selected':'')) + '>' + n + '</option>'; }).join('') +
+        '</select>' +
+      '</div>' +
+      '<div>' +
+        '<div style="font-size:11px;font-weight:600;color:var(--c-muted);margin-bottom:4px" data-es>Meses</div>' +
+        '<div style="font-size:11px;font-weight:600;color:var(--c-muted);margin-bottom:4px" data-en>Months</div>' +
+        '<select id="exp-months-' + idx + '" style="width:100%;padding:7px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-surface)">' +
+          [0,1,2,3,4,5,6,7,8,9,10,11].map(function(n){ return '<option value="' + n + '"' + (data && data.months === n ? ' selected' : (n===0?' selected':'')) + '>' + n + '</option>'; }).join('') +
+        '</select>' +
+      '</div>' +
+    '</div>' +
+    '<div id="exp-proj-' + idx + '" style="' + (typeProj ? '' : 'display:none;') + 'margin-bottom:8px">' +
+      '<div style="font-size:11px;font-weight:600;color:var(--c-muted);margin-bottom:4px" data-es>Número de proyectos completados</div>' +
+      '<div style="font-size:11px;font-weight:600;color:var(--c-muted);margin-bottom:4px" data-en>Number of projects completed</div>' +
+      '<input type="number" min="1" id="exp-proj-count-' + idx + '" value="' + (data && data.projects || '') + '" placeholder="e.g. 4" style="width:120px;padding:7px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-surface)">' +
+    '</div>' +
+    '<div>' +
+      '<div style="font-size:11px;font-weight:600;color:var(--c-muted);margin-bottom:4px" data-es>Nota adicional <span style="font-weight:400">(opcional)</span></div>' +
+      '<div style="font-size:11px;font-weight:600;color:var(--c-muted);margin-bottom:4px" data-en>Additional note <span style="font-weight:400">(optional)</span></div>' +
+      '<input type="text" id="exp-note-' + idx + '" value="' + (data && data.note ? data.note.replace(/"/g,'&quot;') : '') + '" placeholder="' + (isEn ? 'e.g. line cook at a Mexican restaurant' : 'ej. cocinero en restaurante mexicano') + '" style="width:100%;padding:7px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-surface)">' +
+    '</div>' +
+  '</div>';
+  _expEntries.push({ idx: idx });
+  var list = document.getElementById('exp-list');
+  var div = document.createElement('div');
+  div.innerHTML = html;
+  list.appendChild(div.firstChild);
+  applyLang(document.body.classList.contains('en') ? 'en' : 'es');
+  // show "Other" input when __other__ selected
+  document.getElementById('exp-role-' + idx).addEventListener('change', function() {
+    var otherInput = document.getElementById('exp-role-other-' + idx);
+    if (otherInput) otherInput.style.display = this.value === '__other__' ? 'block' : 'none';
+  });
+}
+
+function removeExpEntry(idx) {
+  var el = document.getElementById('exp-entry-' + idx);
+  if (el && el.parentNode) el.parentNode.removeChild(el);
+}
+
+function toggleExpDurationType(idx) {
+  var sel = document.getElementById('exp-dur-type-' + idx);
+  var timeDiv = document.getElementById('exp-time-' + idx);
+  var projDiv = document.getElementById('exp-proj-' + idx);
+  if (!sel || !timeDiv || !projDiv) return;
+  var isProj = sel.value === 'projects';
+  timeDiv.style.display = isProj ? 'none' : 'grid';
+  projDiv.style.display = isProj ? 'block' : 'none';
+}
+
+function collectExperiences() {
+  var results = [];
+  document.querySelectorAll('#exp-list .exp-entry').forEach(function(entry) {
+    var id = entry.id.replace('exp-entry-', '');
+    var roleSel = document.getElementById('exp-role-' + id);
+    var roleOther = document.getElementById('exp-role-other-' + id);
+    var durType = document.getElementById('exp-dur-type-' + id);
+    var years = document.getElementById('exp-years-' + id);
+    var months = document.getElementById('exp-months-' + id);
+    var projCount = document.getElementById('exp-proj-count-' + id);
+    var note = document.getElementById('exp-note-' + id);
+    if (!roleSel) return;
+    var role = roleSel.value === '__other__' && roleOther ? roleOther.value.trim() : roleSel.value;
+    if (!role) return;
+    var obj = { role: role };
+    if (durType && durType.value === 'projects') {
+      obj.type = 'projects';
+      obj.projects = projCount ? parseInt(projCount.value) || 0 : 0;
+    } else {
+      obj.type = 'years';
+      obj.years = years ? parseInt(years.value) || 0 : 0;
+      obj.months = months ? parseInt(months.value) || 0 : 0;
+    }
+    if (note && note.value.trim()) obj.note = note.value.trim();
+    results.push(obj);
+  });
+  return results;
+}
+
+function onWorkAuthChange() {
+  var errEl = document.getElementById('err-work-auth');
+  if (errEl) errEl.style.display = 'none';
+}
+
+function onLicenseChange() {
+  var cb = document.getElementById('f-has-license');
+  var detail = document.getElementById('license-detail');
+  if (detail) detail.style.display = cb && cb.checked ? 'grid' : 'none';
+}
+
+function onTransportChange() {
+  var errEl = document.getElementById('err-transport');
+  if (errEl) errEl.style.display = 'none';
 }
 
 async function goSuccess(isZelle, isAch) {
@@ -1483,6 +1799,27 @@ async function goSuccess(isZelle, isAch) {
           p_staffing_type_other: (document.getElementById('staffing-type-other') || {}).value ? document.getElementById('staffing-type-other').value.trim() : '',
           p_category_other: (document.getElementById('f-cat-other') || {}).value ? document.getElementById('f-cat-other').value.trim() : ''
         });
+        // Worker extra fields — update after pre-create
+        if (isWorkerRegPre) {
+          try {
+            var _workAuthRadio = document.querySelector('input[name="work_auth"]:checked');
+            var _hasLicense = document.getElementById('f-has-license') && document.getElementById('f-has-license').checked;
+            var _licenseState = _hasLicense && document.getElementById('f-license-state') ? document.getElementById('f-license-state').value : '';
+            var _licenseClass = _hasLicense && document.getElementById('f-license-class') ? document.getElementById('f-license-class').value : '';
+            var _transport = [];
+            document.querySelectorAll('#transport-group input[type=checkbox]:checked').forEach(function(cb){ _transport.push(cb.value); });
+            var _profileVisible = (document.getElementById('f-profile-visible') || {}).value !== 'false';
+            var _workerExtraPayload = {
+              work_auth: _workAuthRadio ? _workAuthRadio.value : null,
+              driver_license: _hasLicense ? { has_license: true, state: _licenseState, class: _licenseClass } : { has_license: false },
+              transportation: _transport,
+              experience: collectExperiences(),
+              profile_visible: _profileVisible,
+              worker_credits: 0
+            };
+            await getSupabase().from('businesses').update(_workerExtraPayload).eq('user_id', signedUpUserId);
+          } catch(wErr) { console.warn('[register] worker extra fields update failed:', wErr); }
+        }
         console.log('✅ businesses record pre-created via RPC (before email confirmation)');
         // Worker만 이메일 인증 자동 완료 (business/employer는 수동 인증 유지)
         if (isWorkerRegPre) {
@@ -1547,6 +1884,30 @@ async function goSuccess(isZelle, isAch) {
           categoryOther: (document.getElementById('f-cat-other') || {}).value ? document.getElementById('f-cat-other').value.trim() : '',
           preferredLang: detectedLang
         });
+        // Worker extra fields — upsert after createBusiness
+        if (isWorkerReg) {
+          try {
+            var _wAuthR = document.querySelector('input[name="work_auth"]:checked');
+            var _hasLic = document.getElementById('f-has-license') && document.getElementById('f-has-license').checked;
+            var _licSt = _hasLic && document.getElementById('f-license-state') ? document.getElementById('f-license-state').value : '';
+            var _licCl = _hasLic && document.getElementById('f-license-class') ? document.getElementById('f-license-class').value : '';
+            var _trans = [];
+            document.querySelectorAll('#transport-group input[type=checkbox]:checked').forEach(function(cb){ _trans.push(cb.value); });
+            var _profVis = (document.getElementById('f-profile-visible') || {}).value !== 'false';
+            var wBiz = await getMyBusiness();
+            if (wBiz && wBiz.id) {
+              await getSupabase().from('businesses').update({
+                work_auth: _wAuthR ? _wAuthR.value : null,
+                driver_license: _hasLic ? { has_license: true, state: _licSt, class: _licCl } : { has_license: false },
+                transportation: _trans,
+                experience: collectExperiences(),
+                profile_visible: _profVis,
+                worker_credits: 0
+              }).eq('id', wBiz.id);
+              console.log('✅ Worker extra fields saved');
+            }
+          } catch(wEx) { console.warn('[register] worker extra fields upsert failed:', wEx); }
+        }
         console.log('✅ Business record created in DB');
 
         // Free 플랜 가입 시 3 contact_credits 자동 지급
@@ -2546,6 +2907,36 @@ function validateStep4() {
 
   // 10. Photo — 개발 중 임시 비활성화 (Supabase Storage 연동 후 재활성화)
   // if (!isStaffingSelected() && photoCount < 1) { ... }
+
+  // Worker-only extra fields
+  if (isStaffingSelected()) {
+    // Experience: at least 1 entry with a role
+    var experiences = collectExperiences();
+    if (experiences.length === 0) {
+      showError('err-experience');
+      valid = false;
+    } else {
+      hideError('err-experience');
+    }
+
+    // Work authorization: required
+    var workAuthSel = document.querySelector('input[name="work_auth"]:checked');
+    if (!workAuthSel) {
+      showError('err-work-auth');
+      valid = false;
+    } else {
+      hideError('err-work-auth');
+    }
+
+    // Transportation: at least 1 checked
+    var transportChecked = document.querySelectorAll('#transport-group input[type=checkbox]:checked');
+    if (transportChecked.length === 0) {
+      showError('err-transport');
+      valid = false;
+    } else {
+      hideError('err-transport');
+    }
+  }
 
   // Terms agreement
   var terms = document.getElementById('f-terms');
