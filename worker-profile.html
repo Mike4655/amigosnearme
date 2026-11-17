@@ -44,6 +44,7 @@
   .badge-verified{background:var(--c-green-light);color:var(--c-green)}
   .badge-insured{background:#EEF6FF;color:var(--c-blue)}
   .section-title{font-size:13px;font-weight:600;color:var(--c-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:12px}
+  .wp-section-error{border:1.5px solid var(--c-accent)!important;border-radius:var(--radius-sm);box-shadow:0 0 0 3px rgba(201,79,43,.12);}
   .info-row{display:flex;gap:8px;align-items:flex-start;font-size:14px;color:var(--c-muted);margin-bottom:8px}
   .info-row strong{color:var(--c-text);flex-shrink:0}
   .info-row .info-val{word-break:break-word;min-width:0}
@@ -213,7 +214,7 @@
     </div>
 
     <!-- Description ES + EN -->
-    <div style="margin-bottom:16px">
+    <div id="wp-desc-wrap" style="margin-bottom:16px">
       <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:4px"><span data-es>Descripción *</span><span data-en>Description *</span></label>
       <div style="font-size:11px;color:var(--c-hint);margin-bottom:8px"><span data-es>Completa al menos uno (ES o EN)</span><span data-en>Fill in at least one (ES or EN)</span></div>
       <div style="margin-bottom:8px">
@@ -227,7 +228,7 @@
     </div>
 
     <!-- Worker Types -->
-    <div style="margin-bottom:16px">
+    <div id="wp-types-wrap" style="margin-bottom:16px">
       <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:8px"><span data-es>Tipos de trabajo *</span><span data-en>Job types *</span></label>
       <div id="wp-types-grid" style="display:flex;flex-wrap:wrap;gap:8px">
         <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:6px 12px;border:0.5px solid var(--c-border);border-radius:20px;cursor:pointer"><input type="checkbox" id="wp-type-kitchen"      value="kitchen"      style="accent-color:var(--c-green)"> 🍳 <span data-es>Cocina / Restaurante</span><span data-en>Kitchen / Restaurant</span></label>
@@ -247,9 +248,9 @@
     </div>
 
     <!-- Hiring Availability -->
-    <div style="margin-bottom:16px">
+    <div id="wp-avail-wrap" style="margin-bottom:16px">
       <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:8px"><span data-es>Disponibilidad *</span><span data-en>Availability *</span></label>
-      <div style="display:flex;gap:16px;flex-wrap:wrap">
+      <div id="wp-avail-grid" style="display:flex;gap:16px;flex-wrap:wrap;padding:10px 12px;border-radius:var(--radius-sm);border:0.5px solid transparent">
         <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="wp-avail-day"  value="by_the_day"           style="accent-color:var(--c-green)"> <span data-es>Por día</span><span data-en>By the day</span></label>
         <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="wp-avail-week" value="by_the_week"          style="accent-color:var(--c-green)"> <span data-es>Por semana</span><span data-en>By the week</span></label>
         <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="wp-avail-perm" value="permanent_placement"  style="accent-color:var(--c-green)"> <span data-es>Contrato permanente</span><span data-en>Permanent placement</span></label>
@@ -343,9 +344,9 @@
     </div>
 
     <!-- Work Authorization -->
-    <div style="margin-bottom:16px">
+    <div id="wp-work-auth-wrap" style="margin-bottom:16px">
       <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:8px">📋 <span data-es>Autorización de trabajo *</span><span data-en>Work authorization *</span></label>
-      <div style="display:flex;flex-direction:column;gap:8px">
+      <div id="wp-work-auth-group" style="display:flex;flex-direction:column;gap:8px;border-radius:var(--radius-sm);border:0.5px solid transparent;padding:4px 0">
         <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);background:var(--c-bg)"><input type="radio" name="wp_work_auth" value="citizen_pr"   style="accent-color:var(--c-accent);width:15px;height:15px;flex-shrink:0"> <span style="font-size:13px">🇺🇸 <span data-es>Ciudadano / Residente permanente (Green Card)</span><span data-en>U.S. Citizen / Permanent Resident (Green Card)</span></span></label>
         <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);background:var(--c-bg)"><input type="radio" name="wp_work_auth" value="ead"          style="accent-color:var(--c-accent);width:15px;height:15px;flex-shrink:0"> <span style="font-size:13px">📄 <span data-es>Permiso de trabajo (EAD)</span><span data-en>Work Permit (EAD)</span></span></label>
         <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);background:var(--c-bg)"><input type="radio" name="wp_work_auth" value="visa"         style="accent-color:var(--c-accent);width:15px;height:15px;flex-shrink:0"> <span style="font-size:13px">✈️ <span data-es>Visa de trabajo (H-2A, H-2B, TN, etc.)</span><span data-en>Work Visa (H-2A, H-2B, TN, etc.)</span></span></label>
@@ -383,9 +384,9 @@
     </div>
 
     <!-- Transportation -->
-    <div style="margin-bottom:16px">
+    <div id="wp-trans-wrap" style="margin-bottom:16px">
       <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:8px">🚗 <span data-es>Transporte *</span><span data-en>Transportation *</span></label>
-      <div style="display:flex;flex-direction:column;gap:8px">
+      <div id="wp-trans-group" style="display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-radius:var(--radius-sm);border:0.5px solid transparent">
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px"><input type="checkbox" id="wp-trans-own-vehicle"   value="own_vehicle"    style="accent-color:var(--c-green);width:15px;height:15px"> <span data-es>🚗 Tengo vehículo propio</span><span data-en>🚗 I have my own vehicle</span></label>
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px"><input type="checkbox" id="wp-trans-motorcycle"     value="motorcycle"     style="accent-color:var(--c-green);width:15px;height:15px"> <span data-es>🛵 Tengo motocicleta / scooter</span><span data-en>🛵 I have a motorcycle / scooter</span></label>
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px"><input type="checkbox" id="wp-trans-public-transit"  value="public_transit"  style="accent-color:var(--c-green);width:15px;height:15px"> <span data-es>🚌 Uso transporte público</span><span data-en>🚌 I use public transportation</span></label>
@@ -394,7 +395,7 @@
     </div>
 
     <!-- Work Experience -->
-    <div style="margin-bottom:16px">
+    <div id="wp-exp-wrap" style="margin-bottom:16px">
       <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:4px">💼 <span data-es>Experiencia laboral *</span><span data-en>Work experience *</span></label>
       <div style="font-size:11px;color:var(--c-hint);margin-bottom:8px"><span data-es>Agrega al menos 1 experiencia</span><span data-en>Add at least 1 experience</span></div>
       <div id="wp-exp-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:10px"></div>
@@ -1517,6 +1518,19 @@ async function saveWorkerProfile() {
       if (!transChk) missingFields.push(isEn ? 'Transportation (at least one)' : 'Transporte (al menos uno)');
       if (!expChk) missingFields.push(isEn ? 'Work experience (at least 1)' : 'Experiencia laboral (al menos 1)');
 
+      // 먼저 모든 섹션 error 클래스 초기화
+      ['wp-desc-wrap','wp-types-wrap','wp-avail-grid','wp-area-grid','wp-work-auth-group','wp-trans-group','wp-exp-wrap'].forEach(function(id){
+        var el = document.getElementById(id); if (el) el.classList.remove('wp-section-error');
+      });
+
+      if (!descEsChk && !descEnChk) { var el=document.getElementById('wp-desc-wrap'); if(el) el.classList.add('wp-section-error'); }
+      if (!typesChk && !typeOtherChk) { var el=document.getElementById('wp-types-wrap'); if(el) el.classList.add('wp-section-error'); }
+      if (!availChk) { var el=document.getElementById('wp-avail-grid'); if(el) el.classList.add('wp-section-error'); }
+      if (!areaChk)  { var el=document.getElementById('wp-area-grid');  if(el) el.classList.add('wp-section-error'); }
+      if (!waChkEl)  { var el=document.getElementById('wp-work-auth-group'); if(el) el.classList.add('wp-section-error'); }
+      if (!transChk) { var el=document.getElementById('wp-trans-group'); if(el) el.classList.add('wp-section-error'); }
+      if (!expChk)   { var el=document.getElementById('wp-exp-wrap');   if(el) el.classList.add('wp-section-error'); }
+
       if (missingFields.length > 0) {
         err.innerHTML = (isEn
           ? '❌ To set profile to <b>Public</b>, please fill in:<br>'
@@ -1524,6 +1538,9 @@ async function saveWorkerProfile() {
           + missingFields.map(function(f){ return '• ' + f; }).join('<br>');
         err.style.display = 'block';
         btn.disabled = false;
+        // 첫 번째 오류 섹션으로 스크롤
+        var firstErr = document.querySelector('.wp-section-error');
+        if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
         return;
       }
     }
@@ -1574,6 +1591,11 @@ async function saveWorkerProfile() {
       .eq('id', currentWorker.id);
 
     if (error) throw error;
+    // 성공 시 에러 테두리 모두 제거
+    ['wp-desc-wrap','wp-types-wrap','wp-avail-grid','wp-area-grid','wp-work-auth-group','wp-trans-group','wp-exp-wrap'].forEach(function(id){
+      var el = document.getElementById(id); if (el) el.classList.remove('wp-section-error');
+    });
+    err.style.display = 'none';
     msg.style.display = 'block';
     // Update in-memory worker and refresh owner status area
     currentWorker.profile_visible = profileVisible;
