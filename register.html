@@ -992,44 +992,49 @@ if (new URLSearchParams(window.location.search).get('type') === 'staffing') docu
       <!-- title: business vs worker -->
       <div id="desc-card-title-biz" class="form-card-title"><span>✍️</span> <span data-es>Descripción del negocio</span><span data-en>Business description</span></div>
       <div id="desc-card-title-wkr" class="form-card-title" style="display:none"><span>🙋</span> <span data-es>Sobre ti</span><span data-en>About you</span></div>
-      <div class="field-row">
-        <div class="field-label" data-es>Español <span class="req">*</span></div>
-        <div class="field-label" data-en>Spanish <span class="req">*</span></div>
-        <textarea rows="4" id="f-desc-es" oninput="onDescInput()"
-          data-biz-es-placeholder="Ej: Somos una empresa familiar con 10 años de experiencia en paisajismo residencial y comercial en el área de Atlanta..."
-          data-wkr-es-placeholder="Ej: Soy un trabajador con 5 años de experiencia en construcción y mudanzas. Disponible inmediatamente, trabajo con honestidad y responsabilidad."
-          data-es-placeholder="Ej: Somos una empresa familiar con 10 años de experiencia en paisajismo residencial y comercial en el área de Atlanta..."
-          data-en-placeholder="Ej: Somos una empresa familiar con 10 años de experiencia en paisajismo residencial y comercial en el área de Atlanta..."
-          placeholder="Ej: Somos una empresa familiar con 10 años de experiencia en paisajismo residencial y comercial en el área de Atlanta..."></textarea>
-        <div style="font-size:11px;color:var(--c-hint);margin-top:4px;text-align:right">
-          <span id="word-count-text-es">0 palabras (mínimo 10)</span>
-        </div>
-        <div class="field-error" id="err-desc" data-es-text="Escribe una descripción en español de al menos 10 palabras." data-en-text="Write a Spanish description of at least 10 words.">Escribe una descripción en español de al menos 10 palabras.</div>
-      </div>
+      <!-- desc-fields-wrap: EN mode → flex-column-reverse so EN block appears first -->
+      <div id="desc-fields-wrap" style="display:flex;flex-direction:column;gap:0">
 
-      <!-- Translate button — shown dynamically -->
-      <div id="desc-translate-wrap" style="display:none;margin:6px 0 10px">
-        <button type="button" id="desc-translate-btn" onclick="translateDescription()" style="background:var(--c-accent);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
-          <span id="desc-translate-icon">🔄</span>
-          <span id="desc-translate-label">Convert to English</span>
-        </button>
-        <span id="desc-translate-status" style="margin-left:10px;font-size:12px;color:var(--c-hint)"></span>
-      </div>
-
-      <div class="field-row">
-        <div class="field-label" data-es>Inglés <span class="req">*</span></div>
-        <div class="field-label" data-en>English <span class="req">*</span></div>
-        <textarea rows="4" id="f-desc-en" oninput="onDescInput()"
-          data-biz-en-placeholder="e.g. We are a family business with 10 years of experience in residential and commercial landscaping in the Atlanta area..."
-          data-wkr-en-placeholder="e.g. I am a reliable worker with 5 years of experience in construction and moving. Available immediately, honest and hardworking."
-          data-es-placeholder="e.g. We are a family business with 10 years of experience in residential and commercial landscaping in the Atlanta area..."
-          data-en-placeholder="e.g. We are a family business with 10 years of experience in residential and commercial landscaping in the Atlanta area..."
-          placeholder="e.g. We are a family business with 10 years of experience in residential and commercial landscaping in the Atlanta area..."></textarea>
-        <div style="font-size:11px;color:var(--c-hint);margin-top:4px;text-align:right">
-          <span id="word-count-text-en">0 words (minimum 10)</span>
+        <div class="field-row" id="desc-es-row">
+          <div class="field-label" data-es>Español <span class="req">*</span></div>
+          <div class="field-label" data-en>Spanish <span class="req">*</span></div>
+          <textarea rows="4" id="f-desc-es" oninput="onDescInput()"
+            data-biz-es-placeholder="Ej: Somos una empresa familiar con 10 años de experiencia en paisajismo residencial y comercial en el área de Atlanta..."
+            data-wkr-es-placeholder="Ej: Soy un trabajador con 5 años de experiencia en construcción y mudanzas. Disponible inmediatamente, trabajo con honestidad y responsabilidad."
+            data-es-placeholder="Ej: Somos una empresa familiar con 10 años de experiencia en paisajismo residencial y comercial en el área de Atlanta..."
+            data-en-placeholder="Ej: Somos una empresa familiar con 10 años de experiencia en paisajismo residencial y comercial en el área de Atlanta..."
+            placeholder="Ej: Somos una empresa familiar con 10 años de experiencia en paisajismo residencial y comercial en el área de Atlanta..."></textarea>
+          <div style="font-size:11px;color:var(--c-hint);margin-top:4px;text-align:right">
+            <span id="word-count-text-es">0 palabras (mínimo 10)</span>
+          </div>
+          <div class="field-error" id="err-desc" data-es-text="Escribe una descripción en español de al menos 10 palabras." data-en-text="Write a Spanish description of at least 10 words.">Escribe una descripción en español de al menos 10 palabras.</div>
         </div>
-        <div class="field-error" id="err-desc-en" data-es-text="Escribe una descripción en inglés de al menos 10 palabras." data-en-text="Write an English description of at least 10 words.">Escribe una descripción en inglés de al menos 10 palabras.</div>
-      </div>
+
+        <!-- Translate button — shown dynamically, positioned between the two fields -->
+        <div id="desc-translate-wrap" style="display:none;margin:6px 0 10px">
+          <button type="button" id="desc-translate-btn" onclick="translateDescription()" style="background:var(--c-accent);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
+            <span id="desc-translate-icon">🔄</span>
+            <span id="desc-translate-label">Convertir al inglés</span>
+          </button>
+          <span id="desc-translate-status" style="margin-left:10px;font-size:12px;color:var(--c-hint)"></span>
+        </div>
+
+        <div class="field-row" id="desc-en-row">
+          <div class="field-label" data-es>Inglés <span class="req">*</span></div>
+          <div class="field-label" data-en>English <span class="req">*</span></div>
+          <textarea rows="4" id="f-desc-en" oninput="onDescInput()"
+            data-biz-en-placeholder="e.g. We are a family business with 10 years of experience in residential and commercial landscaping in the Atlanta area..."
+            data-wkr-en-placeholder="e.g. I am a reliable worker with 5 years of experience in construction and moving. Available immediately, honest and hardworking."
+            data-es-placeholder="e.g. We are a family business with 10 years of experience in residential and commercial landscaping in the Atlanta area..."
+            data-en-placeholder="e.g. We are a family business with 10 years of experience in residential and commercial landscaping in the Atlanta area..."
+            placeholder="e.g. We are a family business with 10 years of experience in residential and commercial landscaping in the Atlanta area..."></textarea>
+          <div style="font-size:11px;color:var(--c-hint);margin-top:4px;text-align:right">
+            <span id="word-count-text-en">0 words (minimum 10)</span>
+          </div>
+          <div class="field-error" id="err-desc-en" data-es-text="Escribe una descripción en inglés de al menos 10 palabras." data-en-text="Write an English description of at least 10 words.">Escribe una descripción en inglés de al menos 10 palabras.</div>
+        </div>
+
+      </div><!-- /desc-fields-wrap -->
     </div>
 
     <div class="form-card" id="hours-card">
@@ -1426,6 +1431,10 @@ function setLang(lang) {
   if (btnEn) btnEn.classList.toggle('active', lang === 'en');
 
   updateWordCount();
+
+  // EN mode: show English block first (flex-direction reverse); ES mode: normal order
+  var descWrap = document.getElementById('desc-fields-wrap');
+  if (descWrap) descWrap.style.flexDirection = lang === 'en' ? 'column-reverse' : 'column';
 
   try { localStorage.setItem('anm-lang', lang); } catch(e) {}
 }
@@ -2649,15 +2658,16 @@ function onDescInput() {
   if (!wrap) return;
 
   // Detect which field has content and determine direction
+  var isEn = document.body.classList.contains('en');
   if (esVal.trim().length > 5 && !enVal.trim()) {
     // ES filled, EN empty → offer ES→EN
     wrap.style.display = 'block';
-    label.textContent = 'Convert to English';
+    label.textContent = isEn ? 'Convert to English' : 'Convertir al inglés';
     wrap.setAttribute('data-direction', 'es-en');
   } else if (enVal.trim().length > 5 && !esVal.trim()) {
     // EN filled, ES empty → offer EN→ES
     wrap.style.display = 'block';
-    label.textContent = 'Traducir al español';
+    label.textContent = isEn ? 'Translate to Spanish' : 'Traducir al español';
     wrap.setAttribute('data-direction', 'en-es');
   } else {
     wrap.style.display = 'none';
