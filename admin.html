@@ -1844,20 +1844,25 @@ async function initAdminPage() {
     var sb = getSupabase();
 
     // ── businesses table ──────────────────────────────────────
-    var { data: businesses, error: bizErr } = await sb
-      .from('businesses')
-      .select('*')
-      .eq('is_worker', false)
-      .order('created_at', { ascending: false });
+    var monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+
+    // businesses + contact log를 병렬로 가져오고, email map은 owner_id 확보 후 병렬 실행
+    var [bizRes, clResInit] = await Promise.all([
+      sb.from('businesses')
+        .select('id, owner_id, business_name, trade_name, plan, pending_plan, categories, service_area, whatsapp_phone, verified, insured, account_status, priority_score, created_at, contact_credits')
+        .eq('is_worker', false)
+        .order('created_at', { ascending: false }),
+      sb.rpc('get_contact_log_admin')
+    ]);
+    var businesses = bizRes.data || [];
 
     var tbody = document.getElementById('biz-table-body');
     if (businesses && businesses.length) {
       var bizOwnerIds = businesses.map(function(b){ return b.owner_id; });
-      var monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
 
       var [bizEmailMap, clRes] = await Promise.all([
         getAdminEmailMap(bizOwnerIds),
-        sb.rpc('get_contact_log_admin')
+        Promise.resolve(clResInit)
       ]);
 
       // 업체별 이번 달 실제 contact 횟수
@@ -2014,28 +2019,29 @@ function setNavBadge(id, count) {
 
 async function loadNavBadges() {
   var sb = getSupabase();
+  // 모든 badge 쿼리를 병렬로 실행
+  var [vqRes, cancelRes, reviewRes, zelleRes, achRes, empRpc] = await Promise.allSettled([
+    sb.from('verification_queue').select('business_id').eq('status', 'pending'),
+    sb.rpc('get_cancellation_admin_data'),
+    sb.from('reviews').select('id', { count: 'exact', head: true }).eq('flagged', true).eq('removed', false),
+    sb.from('businesses').select('id', { count: 'exact', head: true }).eq('plan', 'pending_zelle').eq('is_worker', false),
+    sb.from('businesses').select('id', { count: 'exact', head: true }).eq('plan', 'pending_ach').eq('is_worker', false),
+    sb.rpc('get_employer_credit_pending'),
+  ]);
   try {
-    var { data: vqBadge } = await sb.from('verification_queue').select('business_id').eq('status', 'pending');
-    var uniqueBizCount = new Set((vqBadge || []).map(function(r){ return r.business_id; })).size;
-    setNavBadge('badge-verification', uniqueBizCount);
+    var vqData = vqRes.value && vqRes.value.data || [];
+    setNavBadge('badge-verification', new Set(vqData.map(function(r){ return r.business_id; })).size);
   } catch(e) {}
   try {
-    var { data } = await sb.rpc('get_cancellation_admin_data');
-    var pending = (data || []).filter(function(r){ return !r.resolved; }).length;
-    setNavBadge('badge-cancellations', pending);
+    var cancelData = cancelRes.value && cancelRes.value.data || [];
+    setNavBadge('badge-cancellations', cancelData.filter(function(r){ return !r.resolved; }).length);
   } catch(e) {}
   try {
-    var { count: rCount } = await sb.from('reviews').select('id', { count: 'exact', head: true }).eq('flagged', true).eq('removed', false);
-    setNavBadge('badge-reviews', rCount || 0);
+    setNavBadge('badge-reviews', (reviewRes.value && reviewRes.value.count) || 0);
   } catch(e) {}
   try {
-    var [zelleRes, achRes, empRpc] = await Promise.all([
-      sb.from('businesses').select('id', { count: 'exact', head: true }).eq('plan', 'pending_zelle').eq('is_worker', false),
-      sb.from('businesses').select('id', { count: 'exact', head: true }).eq('plan', 'pending_ach').eq('is_worker', false),
-      sb.rpc('get_employer_credit_pending'),
-    ]);
-    var empCount = (empRpc.data && empRpc.data.length) || 0;
-    var totalPending = (zelleRes.count || 0) + (achRes.count || 0) + empCount;
+    var empCount = (empRpc.value && empRpc.value.data && empRpc.value.data.length) || 0;
+    var totalPending = ((zelleRes.value && zelleRes.value.count) || 0) + ((achRes.value && achRes.value.count) || 0) + empCount;
     setNavBadge('badge-zelle', totalPending);
   } catch(e) {}
 }
@@ -3297,11 +3303,15 @@ async function loadWorkers() {
     var now2 = new Date();
     var monthStart2 = new Date(now2.getFullYear(), now2.getMonth(), 1).toISOString();
 
-    var [res, clRes2] = await Promise.all([
-      sb.from('businesses').select('*').eq('is_worker', true).order('created_at', { ascending: false }),
+    // workers + contact log 병렬, email map은 owner_id 확보 후 추가 병렬
+    var [wkrRes, clRes2] = await Promise.all([
+      sb.from('businesses')
+        .select('id, owner_id, business_name, trade_name, categories, whatsapp_phone, account_status, profile_visible, priority_score, verified, created_at, work_auth, transportation, experience')
+        .eq('is_worker', true)
+        .order('created_at', { ascending: false }),
       sb.rpc('get_contact_log_admin')
     ]);
-    var workers = res.data || [];
+    var workers = wkrRes.data || [];
     var clAll2 = clRes2.data || [];
 
     // biz_id 기준 contact 집계
