@@ -217,13 +217,23 @@
     <div id="wp-desc-wrap" style="margin-bottom:16px">
       <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:4px"><span data-es>Descripción *</span><span data-en>Description *</span></label>
       <div style="font-size:11px;color:var(--c-hint);margin-bottom:8px"><span data-es>Completa al menos uno (ES o EN)</span><span data-en>Fill in at least one (ES or EN)</span></div>
-      <div style="margin-bottom:8px">
-        <div style="font-size:11px;font-weight:600;color:var(--c-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">Español</div>
-        <textarea id="wp-desc-es" rows="3" placeholder="Ej: Soy un trabajador con 5 años de experiencia en construcción. Disponible inmediatamente, honesto y responsable." style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:13px;font-family:var(--font-body);resize:vertical;box-sizing:border-box"></textarea>
-      </div>
-      <div>
-        <div style="font-size:11px;font-weight:600;color:var(--c-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">English</div>
-        <textarea id="wp-desc-en" rows="3" placeholder="e.g. I am a reliable worker with 5 years of experience in construction and moving. Available immediately, honest and hardworking." style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:13px;font-family:var(--font-body);resize:vertical;box-sizing:border-box"></textarea>
+      <!-- EN mode → column-reverse so English appears first -->
+      <div id="wp-desc-fields" style="display:flex;flex-direction:column;gap:0">
+        <div style="margin-bottom:8px">
+          <div style="font-size:11px;font-weight:600;color:var(--c-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px"><span data-es>Español</span><span data-en>Spanish</span></div>
+          <textarea id="wp-desc-es" rows="3" oninput="onWpDescInput()" placeholder="Ej: Soy un trabajador con 5 años de experiencia en construcción. Disponible inmediatamente, honesto y responsable." style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:13px;font-family:var(--font-body);resize:vertical;box-sizing:border-box"></textarea>
+        </div>
+        <!-- Translate button -->
+        <div id="wp-desc-translate-wrap" style="display:none;margin:4px 0 10px">
+          <button type="button" id="wp-desc-translate-btn" onclick="wpTranslateDescription()" style="background:var(--c-accent);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
+            <span>🔄</span><span id="wp-desc-translate-label">Convertir al inglés</span>
+          </button>
+          <span id="wp-desc-translate-status" style="margin-left:10px;font-size:12px;color:var(--c-hint)"></span>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--c-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">English</div>
+          <textarea id="wp-desc-en" rows="3" oninput="onWpDescInput()" placeholder="e.g. I am a reliable worker with 5 years of experience in construction and moving. Available immediately, honest and hardworking." style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:13px;font-family:var(--font-body);resize:vertical;box-sizing:border-box"></textarea>
+        </div>
       </div>
     </div>
 
@@ -242,7 +252,7 @@
       </div>
       <div style="margin-top:10px">
         <div style="font-size:11px;font-weight:600;color:var(--c-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px"><span data-es>Otro tipo (escribe aquí)</span><span data-en>Other type (type here)</span></div>
-        <input type="text" id="wp-type-other" placeholder="e.g. Landscaping, Security guard, Driver..." style="width:100%;padding:7px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-bg);color:var(--c-text);box-sizing:border-box">
+        <input type="text" id="wp-type-other" oninput="if(this.value.trim()){var w=document.getElementById('wp-types-wrap');if(w)w.classList.remove('wp-section-error');}" placeholder="e.g. Landscaping, Security guard, Driver..." style="width:100%;padding:7px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-bg);color:var(--c-text);box-sizing:border-box">
         <div style="font-size:11px;color:var(--c-muted);margin-top:4px;line-height:1.5"><span data-es>Si tu tipo de trabajo no está en la lista, escríbelo aquí — aparecerá en búsquedas de texto.</span><span data-en>If your work type is not listed, type it here — it will appear in text search results.</span></div>
       </div>
     </div>
@@ -462,6 +472,11 @@ function setLang(lang) {
     renderWorker(currentWorker);
     if (_lastContactArgs) renderContactArea(_lastContactArgs.type, _lastContactArgs.credits, currentWorker);
   }
+  // description 필드 순서: EN 모드에서 English first (render 후 적용)
+  var descFields = document.getElementById('wp-desc-fields');
+  if (descFields) descFields.style.flexDirection = en ? 'column-reverse' : 'column';
+  // translate 버튼 레이블 업데이트
+  if (document.getElementById('wp-desc-fields')) onWpDescInput();
 }
 
 function getWorkerId() {
@@ -814,6 +829,10 @@ function renderContactArea(type, credits, w) {
     // Description ES + EN
     f('wp-desc-es', w.description_es || w.description || '');
     f('wp-desc-en', w.description_en || '');
+    // 현재 언어에 맞게 필드 순서 초기화
+    var _descFieldsEl = document.getElementById('wp-desc-fields');
+    if (_descFieldsEl) _descFieldsEl.style.flexDirection = document.body.classList.contains('en') ? 'column-reverse' : 'column';
+    onWpDescInput();
 
     // Work Authorization
     if (w.work_auth) {
@@ -1292,6 +1311,58 @@ async function confirmDeleteWorkerAccount() {
     errEl.textContent = isEn ? '❌ Could not delete account. Try again.' : '❌ No se pudo eliminar la cuenta. Intenta de nuevo.';
     errEl.style.display = 'block';
   }
+}
+
+function onWpDescInput() {
+  var esVal = (document.getElementById('wp-desc-es') || {}).value || '';
+  var enVal = (document.getElementById('wp-desc-en') || {}).value || '';
+  var isEn  = document.body.classList.contains('en');
+  var wrap  = document.getElementById('wp-desc-translate-wrap');
+  var label = document.getElementById('wp-desc-translate-label');
+  if (!wrap) return;
+  if (esVal.trim().length > 5 && !enVal.trim()) {
+    wrap.style.display = 'block';
+    wrap.setAttribute('data-direction', 'es-en');
+    if (label) label.textContent = isEn ? 'Convert to English' : 'Convertir al inglés';
+  } else if (enVal.trim().length > 5 && !esVal.trim()) {
+    wrap.style.display = 'block';
+    wrap.setAttribute('data-direction', 'en-es');
+    if (label) label.textContent = isEn ? 'Translate to Spanish' : 'Traducir al español';
+  } else {
+    wrap.style.display = 'none';
+  }
+  // 하나라도 입력되면 에러 테두리 제거
+  if (esVal.trim() || enVal.trim()) {
+    var descWrap = document.getElementById('wp-desc-wrap');
+    if (descWrap) descWrap.classList.remove('wp-section-error');
+  }
+}
+
+async function wpTranslateDescription() {
+  var wrap = document.getElementById('wp-desc-translate-wrap');
+  var direction = wrap ? wrap.getAttribute('data-direction') : 'es-en';
+  var srcEl = document.getElementById(direction === 'es-en' ? 'wp-desc-es' : 'wp-desc-en');
+  var dstEl = document.getElementById(direction === 'es-en' ? 'wp-desc-en' : 'wp-desc-es');
+  var statusEl = document.getElementById('wp-desc-translate-status');
+  var btn = document.getElementById('wp-desc-translate-btn');
+  if (!srcEl || !dstEl || !srcEl.value.trim()) return;
+  btn.disabled = true;
+  if (statusEl) statusEl.textContent = direction === 'es-en' ? 'Translating...' : 'Traduciendo...';
+  try {
+    var langpair = direction === 'es-en' ? 'es|en' : 'en|es';
+    var resp = await fetch('https://api.mymemory.translated.net/get?q=' + encodeURIComponent(srcEl.value.trim()) + '&langpair=' + langpair);
+    var data = await resp.json();
+    if (data.responseStatus === 200 && data.responseData && data.responseData.translatedText) {
+      dstEl.value = data.responseData.translatedText;
+      if (statusEl) statusEl.textContent = '✅';
+      if (wrap) wrap.style.display = 'none';
+    } else {
+      if (statusEl) statusEl.textContent = '❌ Error. Please type manually.';
+    }
+  } catch(e) {
+    if (statusEl) statusEl.textContent = '❌ Network error. Please type manually.';
+  }
+  btn.disabled = false;
 }
 
 async function quickToggleVisibility() {
