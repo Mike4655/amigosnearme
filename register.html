@@ -2081,7 +2081,8 @@ async function goSuccess(isZelle, isAch) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
       } else {
-        window.location.href = 'dashboard.html';
+        var _rt = new URLSearchParams(window.location.search).get('returnTo');
+        window.location.href = _rt ? decodeURIComponent(_rt) : 'dashboard.html';
         return;
       }
     }
@@ -2103,6 +2104,11 @@ async function goSuccess(isZelle, isAch) {
 
 var _workerProfileBiz = null;
 function goWorkerProfile() {
+  var returnTo = new URLSearchParams(window.location.search).get('returnTo');
+  if (returnTo) {
+    window.location.href = decodeURIComponent(returnTo);
+    return;
+  }
   if (_workerProfileBiz && _workerProfileBiz.id) {
     window.location.href = 'worker-profile.html?id=' + _workerProfileBiz.id;
   } else {
