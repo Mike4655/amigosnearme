@@ -863,7 +863,10 @@ function renderContactArea(type, credits, w) {
       if (el) el.checked = trans.includes(k);
     });
 
-    // Work Experience
+    // Work Experience — clear existing entries first to prevent duplicates on re-render
+    var expList = document.getElementById('wp-exp-list');
+    if (expList) expList.innerHTML = '';
+    _wpExpEntries = [];
     var expArr = w.experience || [];
     expArr.forEach(function(exp) { addWpExpEntry(exp); });
 
