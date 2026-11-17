@@ -728,7 +728,10 @@ function renderContactArea(type, credits, w) {
       : (isEn ? '🔒 Private' : '🔒 Privado');
     var toggleBtnLabel = isPublic
       ? (isEn ? 'Switch to Private' : 'Cambiar a Privado')
-      : (isEn ? 'Switch to Public' : 'Cambiar a Público');
+      : (isEn ? '🌐 Switch to Public' : '🌐 Cambiar a Público');
+    var toggleBtnStyle = isPublic
+      ? 'font-size:12px;padding:5px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);background:var(--c-surface);color:var(--c-muted);cursor:pointer;font-family:var(--font-body)'
+      : 'font-size:13px;font-weight:700;padding:8px 18px;border-radius:var(--radius-sm);border:none;background:#1a7a3a;color:#fff;cursor:pointer;font-family:var(--font-body);box-shadow:0 1px 4px rgba(26,122,58,.25)';
 
     area.innerHTML = '<div style="padding:14px;border-radius:var(--radius-md);background:var(--c-bg);border:0.5px solid var(--c-border);line-height:1.6">' +
       '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px">' +
@@ -740,7 +743,7 @@ function renderContactArea(type, credits, w) {
               : (isEn ? 'You are hidden from search' : 'No apareces en búsquedas')) +
           '</span>' +
         '</div>' +
-        '<button onclick="quickToggleVisibility()" id="btn-quick-toggle-vis" style="font-size:12px;padding:5px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);background:var(--c-surface);color:var(--c-text);cursor:pointer;font-family:var(--font-body)">' +
+        '<button onclick="quickToggleVisibility()" id="btn-quick-toggle-vis" style="' + toggleBtnStyle + '">' +
           toggleBtnLabel +
         '</button>' +
       '</div>' +
