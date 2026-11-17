@@ -559,7 +559,7 @@ if (new URLSearchParams(window.location.search).get('type') === 'staffing') docu
           <div class="cat-chip" onclick="toggleCat(this)">🏠 <span data-es>Bienes Raíces</span><span data-en>Real Estate</span></div>
         </div>
         <div class="field-error" id="err-cat" data-es-text="Selecciona al menos una categoría." data-en-text="Select at least one category.">Selecciona al menos una categoría.</div>
-        <div style="margin-top:10px">
+        <div style="margin-top:10px" id="cat-other-row">
           <div style="font-size:11px;font-weight:600;color:var(--c-hint);letter-spacing:.04em;text-transform:uppercase;margin-bottom:5px" data-es>Otra categoría (escribe aquí)</div>
           <div style="font-size:11px;font-weight:600;color:var(--c-hint);letter-spacing:.04em;text-transform:uppercase;margin-bottom:5px" data-en>Other category (type here)</div>
           <input type="text" id="f-cat-other" placeholder="e.g. Roofing, Pest control, Photography..." style="width:100%;padding:7px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-bg);color:var(--c-text)">
@@ -1485,6 +1485,7 @@ function applyWorkerMode() {
   wHide('service-area-row');
   wHide('service-lang-row');
   wHide('payment-row');
+  wHide('cat-other-row');
 
   wHide('cat-label-biz-es');
   wHide('cat-label-biz-en');
