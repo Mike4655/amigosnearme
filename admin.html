@@ -1846,14 +1846,11 @@ async function initAdminPage() {
     // ── businesses table ──────────────────────────────────────
     var monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
 
-    // businesses + contact log를 병렬로 가져오고, email map은 owner_id 확보 후 병렬 실행
-    var [bizRes, clResInit] = await Promise.all([
-      sb.from('businesses')
-        .select('id, owner_id, business_name, trade_name, plan, pending_plan, categories, service_area, whatsapp_phone, verified, insured, account_status, priority_score, created_at, contact_credits')
-        .eq('is_worker', false)
-        .order('created_at', { ascending: false }),
-      sb.rpc('get_contact_log_admin')
-    ]);
+    // businesses + email map 병렬 (contact log는 별도 — 느린 RPC가 초기 렌더 블로킹 방지)
+    var bizRes = await sb.from('businesses')
+      .select('id, owner_id, business_name, trade_name, plan, pending_plan, categories, service_area, whatsapp_phone, verified, insured, account_status, priority_score, created_at, contact_credits')
+      .eq('is_worker', false)
+      .order('created_at', { ascending: false });
     if (bizRes.error) throw bizRes.error;
     var businesses = bizRes.data || [];
 
@@ -1861,14 +1858,15 @@ async function initAdminPage() {
     if (businesses && businesses.length) {
       var bizOwnerIds = businesses.map(function(b){ return b.owner_id; });
 
-      var [bizEmailMap, clRes] = await Promise.all([
+      // email map + contact log 병렬
+      var [bizEmailMap, clResInit] = await Promise.all([
         getAdminEmailMap(bizOwnerIds),
-        Promise.resolve(clResInit)
+        sb.rpc('get_contact_log_admin')
       ]);
 
       // 업체별 이번 달 실제 contact 횟수
       var contactCountMap = {};
-      (clRes.data || []).filter(function(r){ return r.created_at >= monthStart && !r.limit_hit; }).forEach(function(r) {
+      ((clResInit && clResInit.data) || []).filter(function(r){ return r.created_at >= monthStart && !r.limit_hit; }).forEach(function(r) {
         contactCountMap[r.biz_id] = (contactCountMap[r.biz_id] || 0) + 1;
       });
 
@@ -3141,7 +3139,9 @@ document.addEventListener('DOMContentLoaded', async function() {
   var queue = document.getElementById('verification-queue');
   if (queue) queue.innerHTML = '<div style="padding:20px;color:var(--c-muted);text-align:center">Loading…</div>';
 
+  // businesses pane + workers pane 병렬 로드
   initAdminPage();
+  loadWorkers();
 });
 
 /* ===== EMPLOYERS TAB ===== */
