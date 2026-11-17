@@ -1076,8 +1076,67 @@ if (new URLSearchParams(window.location.search).get('type') === 'staffing') docu
       <div class="field-error" id="err-photo" data-es-text="Sube al menos 1 foto de tu negocio." data-en-text="Upload at least 1 photo of your business.">Sube al menos 1 foto de tu negocio.</div>
     </div>
 
-    <!-- Worker 전용: 경력 / Work Auth / 운전면허 / 교통수단 -->
+    <!-- Worker 전용: 서비스 지역 / Staffing 세부 / 경력 / Work Auth / 운전면허 / 교통수단 -->
     <div id="worker-extra-cards" style="display:none">
+
+      <!-- 서비스 지역 (Step 2에서 이동) -->
+      <div class="form-card" id="worker-service-area-card">
+        <div class="form-card-title"><span>📍</span> <span data-es>Áreas de servicio</span><span data-en>Service areas</span> <span class="req"> *</span></div>
+        <div class="field-row" style="margin-bottom:0">
+          <div id="worker-service-area-grid" style="border:0.5px solid var(--c-border);border-radius:var(--radius-md);padding:14px;background:var(--c-bg);display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;max-height:260px;overflow-y:auto"></div>
+          <div class="field-error" id="err-worker-area" data-es-text="Selecciona al menos un área de servicio o escribe tu área." data-en-text="Select at least one service area or type your area.">Selecciona al menos un área de servicio o escribe tu área.</div>
+          <div style="margin-top:8px">
+            <div style="font-size:11px;font-weight:600;color:var(--c-hint);letter-spacing:.04em;text-transform:uppercase;margin-bottom:5px" data-es>Otra área</div>
+            <div style="font-size:11px;font-weight:600;color:var(--c-hint);letter-spacing:.04em;text-transform:uppercase;margin-bottom:5px" data-en>Other area</div>
+            <input type="text" id="f-worker-area-other" placeholder="e.g. Gainesville, FL · Any area in GA" style="width:100%;padding:7px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-bg);color:var(--c-text)">
+          </div>
+        </div>
+      </div>
+
+      <!-- Staffing & Labor 세부 (Step 2에서 이동) -->
+      <div class="form-card">
+        <div class="form-card-title"><span>👷</span> <span data-es>Detalles de trabajo</span><span data-en>Work details</span></div>
+        <div class="field-row">
+          <div class="field-label" data-es>Tipos de trabajo <span class="req">*</span></div>
+          <div class="field-label" data-en>Types of work <span class="req">*</span></div>
+          <div class="cat-grid" id="wkr-staffing-types-grid">
+            <div class="cat-chip" onclick="toggleWkrStaffingType(this)">🍳 <span data-es>Cocina / Restaurante</span><span data-en>Kitchen / Restaurant</span></div>
+            <div class="cat-chip" onclick="toggleWkrStaffingType(this)">📦 <span data-es>Mudanzas / Carga</span><span data-en>Moving / Loading</span></div>
+            <div class="cat-chip" onclick="toggleWkrStaffingType(this)">🏗️ <span data-es>Construcción</span><span data-en>Construction</span></div>
+            <div class="cat-chip" onclick="toggleWkrStaffingType(this)">🏭 <span data-es>Producción / Almacén</span><span data-en>Production / Warehouse</span></div>
+            <div class="cat-chip" onclick="toggleWkrStaffingType(this)">🧹 <span data-es>Limpieza comercial</span><span data-en>Commercial cleaning</span></div>
+            <div class="cat-chip" onclick="toggleWkrStaffingType(this)">🌾 <span data-es>Trabajo agrícola</span><span data-en>Agricultural work</span></div>
+            <div class="cat-chip" onclick="toggleWkrStaffingType(this)">🅿️ <span data-es>Eventos / Estacionamiento</span><span data-en>Events / Valet parking</span></div>
+            <div class="cat-chip" onclick="toggleWkrStaffingType(this)">🔧 <span data-es>Otro trabajo general</span><span data-en>Other general labor</span></div>
+          </div>
+          <div style="margin-top:8px">
+            <input type="text" id="wkr-staffing-type-other" placeholder="e.g. Landscaping, Security guard, Driver..." style="width:100%;padding:7px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-bg);color:var(--c-text)">
+          </div>
+          <div class="field-error" id="err-wkr-staffing-types" data-es-text="Selecciona al menos un tipo de trabajo." data-en-text="Select at least one work type.">Selecciona al menos un tipo de trabajo.</div>
+        </div>
+        <div class="field-row">
+          <div class="field-label" data-es>Disponibilidad <span class="req">*</span></div>
+          <div class="field-label" data-en>Availability <span class="req">*</span></div>
+          <div class="lang-toggles" id="wkr-availability-grid">
+            <label class="lang-toggle"><input type="checkbox" onchange="syncChipState(this)"> <span data-es>Por día</span><span data-en>By the day</span></label>
+            <label class="lang-toggle"><input type="checkbox" onchange="syncChipState(this)"> <span data-es>Por semana</span><span data-en>By the week</span></label>
+            <label class="lang-toggle"><input type="checkbox" onchange="syncChipState(this)"> <span data-es>Contrato permanente</span><span data-en>Permanent placement</span></label>
+          </div>
+          <div class="field-error" id="err-wkr-availability" data-es-text="Selecciona al menos una disponibilidad." data-en-text="Select at least one availability option.">Selecciona al menos una disponibilidad.</div>
+        </div>
+        <div class="field-row" style="margin-bottom:0">
+          <div class="field-label" data-es>Tarifa aproximada <span class="opt">(opcional)</span></div>
+          <div class="field-label" data-en>Approximate rate <span class="opt">(optional)</span></div>
+          <select class="form-select" id="f-wkr-rate">
+            <option value="" data-es-text="Selecciona un rango..." data-en-text="Select a range...">Selecciona un rango...</option>
+            <option value="15-18">$15 – $18 / hora · hour</option>
+            <option value="18-22">$18 – $22 / hora · hour</option>
+            <option value="22-28">$22 – $28 / hora · hour</option>
+            <option value="28+">$28+ / hora · hour</option>
+            <option value="negotiable">A negociar · Negotiable</option>
+          </select>
+        </div>
+      </div>
 
       <!-- 경력 카드 -->
       <div class="form-card">
@@ -1692,25 +1751,29 @@ async function goSuccess(isZelle, isAch) {
       if (catKey) categories.push(catKey);
     }
   });
+  var isWorkerReg = document.getElementById('wkr-name-row') && document.getElementById('wkr-name-row').style.display !== 'none';
   var staffingTypes = [];
-  document.querySelectorAll('#staffing-types-grid .cat-chip.sel').forEach(function(chip) {
+  var staffingTypesGridId = isWorkerReg ? 'wkr-staffing-types-grid' : 'staffing-types-grid';
+  document.querySelectorAll('#' + staffingTypesGridId + ' .cat-chip.sel').forEach(function(chip) {
     var enSpan = chip.querySelector('[data-en]');
     var key = (enSpan ? enSpan.textContent.trim() : chip.textContent.trim())
       .replace(/[^\w\s]/g, '').trim().toLowerCase().replace(/\s+/g, '_');
     if (key) staffingTypes.push(key);
   });
   var staffingAvailability = [];
-  document.querySelectorAll('#staffing-availability-grid input[type=checkbox]:checked').forEach(function(cb) {
+  var staffingAvailGridId = isWorkerReg ? 'wkr-availability-grid' : 'staffing-availability-grid';
+  document.querySelectorAll('#' + staffingAvailGridId + ' input[type=checkbox]:checked').forEach(function(cb) {
     var lbl = cb.closest('label');
     var enSpan = lbl ? lbl.querySelector('[data-en]') : null;
     var key = (enSpan ? enSpan.textContent.trim() : '').toLowerCase().replace(/\s+/g, '_');
     if (key) staffingAvailability.push(key);
   });
   var serviceAreas = [];
-  document.querySelectorAll('#service-area-grid input[type="checkbox"]').forEach(function(cb) {
+  var areaGridId = isWorkerReg ? 'worker-service-area-grid' : 'service-area-grid';
+  document.querySelectorAll('#' + areaGridId + ' input[type="checkbox"]').forEach(function(cb) {
     if (cb.checked && cb.value) serviceAreas.push(cb.value);
   });
-  var areaOtherVal = ((document.getElementById('f-area-other') || {}).value || '').trim();
+  var areaOtherVal = ((document.getElementById(isWorkerReg ? 'f-worker-area-other' : 'f-area-other') || {}).value || '').trim();
   if (areaOtherVal) serviceAreas.push(areaOtherVal);
   var serviceArea = serviceAreas.join(', ');
   var languages = [];
@@ -1823,7 +1886,7 @@ async function goSuccess(isZelle, isAch) {
           p_hours: JSON.stringify(hoursData || []),
           p_staffing_types: JSON.stringify(staffingTypes || []),
           p_staffing_availability: JSON.stringify(staffingAvailability || []),
-          p_staffing_type_other: (document.getElementById('staffing-type-other') || {}).value ? document.getElementById('staffing-type-other').value.trim() : '',
+          p_staffing_type_other: (document.getElementById(isWorkerReg ? 'wkr-staffing-type-other' : 'staffing-type-other') || {}).value || '',
           p_category_other: (document.getElementById('f-cat-other') || {}).value ? document.getElementById('f-cat-other').value.trim() : ''
         });
         // Worker extra fields — update after pre-create
@@ -2135,6 +2198,7 @@ function goStep3Continue() {
     // Private: skip Step 4 — call goSuccess directly (no payment/plan needed for workers)
     goSuccess(false, false);
   } else {
+    buildWorkerServiceAreaGrid();
     goStep(4);
   }
 }
@@ -2250,6 +2314,24 @@ function toggleStaffingType(el) {
   if (grid.querySelectorAll('.cat-chip.sel').length > 0) {
     hideError('err-staffing-types'); grid.classList.remove('section-error');
   }
+}
+
+function toggleWkrStaffingType(el) {
+  el.classList.toggle('sel');
+  var grid = document.getElementById('wkr-staffing-types-grid');
+  if (grid && grid.querySelectorAll('.cat-chip.sel').length > 0) {
+    hideError('err-wkr-staffing-types'); grid.classList.remove('section-error');
+  }
+}
+
+function buildWorkerServiceAreaGrid() {
+  var target = document.getElementById('worker-service-area-grid');
+  if (!target || target.children.length > 0) return; // already built
+  var source = document.getElementById('service-area-grid');
+  if (!source) return;
+  target.innerHTML = source.innerHTML.replace(/value="([^"]+)"/g, function(m, v) {
+    return 'value="' + v + '" style="accent-color:var(--c-green)"';
+  });
 }
 
 function clearStaffingAvailabilityError() {
@@ -2993,6 +3075,36 @@ function validateStep4() {
       valid = false;
     } else {
       hideError('err-transport');
+    }
+
+    // Service area: at least 1 checked or typed
+    var workerAreaChecked = document.querySelectorAll('#worker-service-area-grid input[type=checkbox]:checked').length;
+    var workerAreaOther = (document.getElementById('f-worker-area-other') || {}).value || '';
+    if (workerAreaChecked === 0 && workerAreaOther.trim() === '') {
+      showError('err-worker-area');
+      valid = false;
+    } else {
+      hideError('err-worker-area');
+    }
+
+    // Work types: at least 1 selected
+    var wkrTypesSelected = document.querySelectorAll('#wkr-staffing-types-grid .cat-chip.sel').length;
+    if (wkrTypesSelected === 0) {
+      showError('err-wkr-staffing-types');
+      markInvalidSection('wkr-staffing-types-grid');
+      valid = false;
+    } else {
+      hideError('err-wkr-staffing-types');
+      clearInvalidSection('wkr-staffing-types-grid');
+    }
+
+    // Availability: at least 1 checked
+    var wkrAvailChecked = document.querySelectorAll('#wkr-availability-grid input[type=checkbox]:checked').length;
+    if (wkrAvailChecked === 0) {
+      showError('err-wkr-availability');
+      valid = false;
+    } else {
+      hideError('err-wkr-availability');
     }
   }
 
