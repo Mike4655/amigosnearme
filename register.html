@@ -2338,8 +2338,16 @@ function buildWorkerServiceAreaGrid() {
   if (!target || target.children.length > 0) return; // already built
   var source = document.getElementById('service-area-grid');
   if (!source) return;
-  target.innerHTML = source.innerHTML.replace(/value="([^"]+)"/g, function(m, v) {
-    return 'value="' + v + '" style="accent-color:var(--c-green)"';
+  target.innerHTML = source.innerHTML;
+  // Remove the "Otra área" section — it's rendered separately below the grid
+  target.querySelectorAll('div[style*="grid-column:1/-1"]').forEach(function(el) {
+    var text = el.textContent.trim().toLowerCase();
+    if (text === 'otra área' || text === 'other area') {
+      // Remove the header div and the following sibling (the input wrapper)
+      var next = el.nextElementSibling;
+      if (next) next.remove();
+      el.remove();
+    }
   });
 }
 
