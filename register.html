@@ -2142,6 +2142,9 @@ async function goSuccess(isZelle, isAch) {
     }
     console.error('Signup error:', err);
   }
+  // Hide all steps before showing success screen
+  [1,2,3,4].forEach(function(n){ var s = document.getElementById('step-'+n); if(s) s.style.display='none'; });
+
   // Zelle 모드: 대시보드로 이동하지 않고 대기 화면 표시
   if (isZelle || isAch) {
     document.getElementById('step-4').style.display = 'none';
@@ -2167,7 +2170,6 @@ async function goSuccess(isZelle, isAch) {
           var wBiz = await getMyBusiness();
           if (wBiz && wBiz.id) { _workerProfileBiz = wBiz; }
         } catch(e) {}
-        document.getElementById('step-4').style.display = 'none';
         document.getElementById('step-success').style.display = 'block';
         document.querySelector('.progress-bar').style.display = 'none';
         // Worker: show worker header, hide email header and bottom buttons
@@ -2188,7 +2190,6 @@ async function goSuccess(isZelle, isAch) {
       }
     }
   } catch(e) {}
-  document.getElementById('step-4').style.display = 'none';
   document.getElementById('step-success').style.display = 'block';
   document.querySelector('.progress-bar').style.display = 'none';
   var dispEs = document.getElementById('confirm-email-display');
