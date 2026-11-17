@@ -467,7 +467,9 @@ function renderPage(filtered) {
     var staffTypes = w.staffing_types || [];
     var catLabel = staffTypes.length
       ? staffTypes.map(function(c){ return staffingLabels[c] || c; }).join(' · ')
-      : (w.categories || []).map(function(c){ return catLabels[c] || c; }).join(' · ');
+      : (w.staffing_type_other || '').trim()
+        ? (w.staffing_type_other.split(',').map(function(s){ return s.trim(); }).filter(Boolean).slice(0,2).join(' · '))
+        : '';
     var areaRaw = (w.service_area || '').split(',')[0].trim();
     var area = areaRaw ? areaRaw.charAt(0).toUpperCase() + areaRaw.slice(1) : '';
     var rating = w.rating ? parseFloat(w.rating).toFixed(1) : '';

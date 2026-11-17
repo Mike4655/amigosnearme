@@ -868,7 +868,7 @@ async function loadFeaturedWorkers() {
     var sb = getSupabase();
     var { data, error } = await sb
       .from('businesses')
-      .select('id, trade_name, business_name, staffing_types, verified, account_status, is_worker, photos')
+      .select('id, trade_name, business_name, staffing_types, staffing_type_other, verified, account_status, is_worker, photos')
       .eq('is_worker', true)
       .neq('account_status', 'suspended')
       .eq('profile_visible', true)
@@ -885,7 +885,7 @@ async function loadFeaturedWorkers() {
         ? nameParts[0] + ' ' + nameParts[nameParts.length-1].charAt(0).toUpperCase() + '.'
         : rawName;
       var initials = nameParts.slice(0,2).map(function(p){ return p[0]||''; }).join('').toUpperCase() || '?';
-      var typeRaw = Array.isArray(w.staffing_types) ? w.staffing_types[0] : '';
+      var typeRaw = (Array.isArray(w.staffing_types) && w.staffing_types.length) ? w.staffing_types[0] : '';
       var typeMap = {
         kitchen: { en: '🍳 Kitchen / Restaurant', es: '🍳 Cocina / Restaurante' },
         kitchen_restaurant: { en: '🍳 Kitchen / Restaurant', es: '🍳 Cocina / Restaurante' },
@@ -903,7 +903,9 @@ async function loadFeaturedWorkers() {
         other_general_labor: { en: '🔨 Other General Labor', es: '🔨 Otro trabajo general' },
         other: { en: '🔨 Other General Labor', es: '🔨 Otro trabajo general' },
       };
-      var type = typeRaw ? ((typeMap[typeRaw] || {})[isEn ? 'en' : 'es'] || typeRaw) : '';
+      var type = typeRaw
+        ? ((typeMap[typeRaw] || {})[isEn ? 'en' : 'es'] || typeRaw)
+        : (w.staffing_type_other ? w.staffing_type_other.split(',')[0].trim() : '');
       var thumbUrl = Array.isArray(w.photos) && w.photos[0] ? w.photos[0] : null;
       var avatarHtml = thumbUrl
         ? '<img src="' + thumbUrl + '" class="biz-mini-thumb" alt="">'
