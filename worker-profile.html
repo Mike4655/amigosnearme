@@ -173,6 +173,19 @@
       </button>
     </div>
 
+    <!-- Profile Visibility -->
+    <div style="margin-bottom:16px;padding:14px;border:1px solid var(--c-border);border-radius:var(--radius-sm);background:var(--c-bg)">
+      <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:8px"><span data-es>Visibilidad del perfil</span><span data-en>Profile visibility</span></label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px">
+        <input type="radio" id="wp-visible-public"  name="wp_visibility" value="true"  style="accent-color:var(--c-green);width:15px;height:15px">
+        <span style="font-size:13px">🌐 <span data-es>Público — aparezco en búsquedas de empleadores</span><span data-en>Public — employers can find me in search</span></span>
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+        <input type="radio" id="wp-visible-private" name="wp_visibility" value="false" style="accent-color:var(--c-accent);width:15px;height:15px">
+        <span style="font-size:13px">🔒 <span data-es>Privado — solo busco ofertas de empleo</span><span data-en>Private — browse job postings only</span></span>
+      </label>
+    </div>
+
     <!-- Full Name (readonly) -->
     <div style="margin-bottom:12px">
       <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:4px"><span data-es>Nombre completo *</span><span data-en>Full name *</span></label>
@@ -199,10 +212,17 @@
       <input type="text" id="wp-trade-name" style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:14px;font-family:var(--font-body);background:var(--c-bg);box-sizing:border-box">
     </div>
 
-    <!-- Description -->
+    <!-- Description ES + EN -->
     <div style="margin-bottom:16px">
-      <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:4px"><span data-es>Descripción</span><span data-en>Description</span></label>
-      <textarea id="wp-desc" rows="3" style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:14px;font-family:var(--font-body);resize:vertical;box-sizing:border-box"></textarea>
+      <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:8px"><span data-es>Descripción</span><span data-en>Description</span></label>
+      <div style="margin-bottom:8px">
+        <div style="font-size:11px;font-weight:600;color:var(--c-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">Español</div>
+        <textarea id="wp-desc-es" rows="3" placeholder="Ej: Soy un trabajador con 5 años de experiencia en construcción. Disponible inmediatamente, honesto y responsable." style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:13px;font-family:var(--font-body);resize:vertical;box-sizing:border-box"></textarea>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:600;color:var(--c-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">English</div>
+        <textarea id="wp-desc-en" rows="3" placeholder="e.g. I am a reliable worker with 5 years of experience in construction and moving. Available immediately, honest and hardworking." style="width:100%;padding:9px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);font-size:13px;font-family:var(--font-body);resize:vertical;box-sizing:border-box"></textarea>
+      </div>
     </div>
 
     <!-- Worker Types -->
@@ -319,6 +339,66 @@
         <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="wp-pay-credit-card" value="credit_card" style="accent-color:var(--c-green)"> Credit Card</label>
         <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="wp-pay-paypal"      value="paypal"      style="accent-color:var(--c-green)"> PayPal</label>
       </div>
+    </div>
+
+    <!-- Work Authorization -->
+    <div style="margin-bottom:16px">
+      <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:8px">📋 <span data-es>Autorización de trabajo *</span><span data-en>Work authorization *</span></label>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);background:var(--c-bg)"><input type="radio" name="wp_work_auth" value="citizen_pr"   style="accent-color:var(--c-accent);width:15px;height:15px;flex-shrink:0"> <span style="font-size:13px">🇺🇸 <span data-es>Ciudadano / Residente permanente (Green Card)</span><span data-en>U.S. Citizen / Permanent Resident (Green Card)</span></span></label>
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);background:var(--c-bg)"><input type="radio" name="wp_work_auth" value="ead"          style="accent-color:var(--c-accent);width:15px;height:15px;flex-shrink:0"> <span style="font-size:13px">📄 <span data-es>Permiso de trabajo (EAD)</span><span data-en>Work Permit (EAD)</span></span></label>
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);background:var(--c-bg)"><input type="radio" name="wp_work_auth" value="visa"         style="accent-color:var(--c-accent);width:15px;height:15px;flex-shrink:0"> <span style="font-size:13px">✈️ <span data-es>Visa de trabajo (H-2A, H-2B, TN, etc.)</span><span data-en>Work Visa (H-2A, H-2B, TN, etc.)</span></span></label>
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);background:var(--c-bg)"><input type="radio" name="wp_work_auth" value="prefer_not"  style="accent-color:var(--c-accent);width:15px;height:15px;flex-shrink:0"> <span style="font-size:13px">🔒 <span data-es>Prefiero no decirlo</span><span data-en>Prefer not to say</span></span></label>
+      </div>
+    </div>
+
+    <!-- Driver's License -->
+    <div style="margin-bottom:16px">
+      <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:8px">🪪 <span data-es>Licencia de conducir</span><span data-en>Driver's license</span> <span style="font-weight:400;color:var(--c-hint)" data-es>(opcional)</span><span style="font-weight:400;color:var(--c-hint)" data-en>(optional)</span></label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:10px">
+        <input type="checkbox" id="wp-has-license" onchange="onWpLicenseChange()" style="accent-color:var(--c-accent);width:15px;height:15px">
+        <span style="font-size:13px"><span data-es>Tengo licencia de conducir válida</span><span data-en>I have a valid driver's license</span></span>
+      </label>
+      <div id="wp-license-detail" style="display:none;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--c-muted);margin-bottom:4px"><span data-es>Estado (State)</span><span data-en>State</span></div>
+          <select id="wp-license-state" style="width:100%;padding:8px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-bg)">
+            <option value="">-- Select --</option>
+            <option>AL</option><option>AK</option><option>AZ</option><option>AR</option><option>CA</option><option>CO</option><option>CT</option><option>DE</option><option>FL</option><option>GA</option><option>HI</option><option>ID</option><option>IL</option><option>IN</option><option>IA</option><option>KS</option><option>KY</option><option>LA</option><option>ME</option><option>MD</option><option>MA</option><option>MI</option><option>MN</option><option>MS</option><option>MO</option><option>MT</option><option>NE</option><option>NV</option><option>NH</option><option>NJ</option><option>NM</option><option>NY</option><option>NC</option><option>ND</option><option>OH</option><option>OK</option><option>OR</option><option>PA</option><option>RI</option><option>SC</option><option>SD</option><option>TN</option><option>TX</option><option>UT</option><option>VT</option><option>VA</option><option>WA</option><option>WV</option><option>WI</option><option>WY</option>
+          </select>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--c-muted);margin-bottom:4px"><span data-es>Clase</span><span data-en>Class</span></div>
+          <select id="wp-license-class" style="width:100%;padding:8px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-bg)">
+            <option value="">-- Select --</option>
+            <option value="A">Class A (CDL)</option>
+            <option value="B">Class B (CDL)</option>
+            <option value="C">Class C</option>
+            <option value="D">Class D / Standard</option>
+            <option value="M">Motorcycle (M)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transportation -->
+    <div style="margin-bottom:16px">
+      <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:8px">🚗 <span data-es>Transporte *</span><span data-en>Transportation *</span></label>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px"><input type="checkbox" id="wp-trans-own-vehicle"   value="own_vehicle"    style="accent-color:var(--c-green);width:15px;height:15px"> <span data-es>🚗 Tengo vehículo propio</span><span data-en>🚗 I have my own vehicle</span></label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px"><input type="checkbox" id="wp-trans-motorcycle"     value="motorcycle"     style="accent-color:var(--c-green);width:15px;height:15px"> <span data-es>🛵 Tengo motocicleta / scooter</span><span data-en>🛵 I have a motorcycle / scooter</span></label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px"><input type="checkbox" id="wp-trans-public-transit"  value="public_transit"  style="accent-color:var(--c-green);width:15px;height:15px"> <span data-es>🚌 Uso transporte público</span><span data-en>🚌 I use public transportation</span></label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px"><input type="checkbox" id="wp-trans-need-ride"       value="need_ride"      style="accent-color:var(--c-green);width:15px;height:15px"> <span data-es>🤝 Necesito que me lleven al trabajo</span><span data-en>🤝 I need transportation to be provided</span></label>
+      </div>
+    </div>
+
+    <!-- Work Experience -->
+    <div style="margin-bottom:16px">
+      <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:8px">💼 <span data-es>Experiencia laboral</span><span data-en>Work experience</span></label>
+      <div id="wp-exp-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:10px"></div>
+      <button type="button" onclick="addWpExpEntry()" style="padding:8px 16px;border-radius:var(--radius-sm);border:0.5px dashed var(--c-accent);background:var(--c-accent-light);color:var(--c-accent);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body)">
+        <span data-es>+ Agregar experiencia</span><span data-en>+ Add experience</span>
+      </button>
     </div>
 
     <button onclick="saveWorkerProfile()" id="wp-save-btn" style="padding:10px 24px;border-radius:var(--radius-sm);background:var(--c-green);color:#fff;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:var(--font-body)">
@@ -699,6 +779,46 @@ function renderContactArea(type, credits, w) {
       var el = document.getElementById('wp-pay-' + p.replace('_', '-'));
       if (el) el.checked = pays.includes(p);
     });
+
+    // Profile visibility
+    var visEl = document.getElementById(w.profile_visible === false ? 'wp-visible-private' : 'wp-visible-public');
+    if (visEl) visEl.checked = true;
+
+    // Description ES + EN
+    f('wp-desc-es', w.description_es || w.description || '');
+    f('wp-desc-en', w.description_en || '');
+
+    // Work Authorization
+    if (w.work_auth) {
+      var waEl = document.querySelector('input[name="wp_work_auth"][value="' + w.work_auth + '"]');
+      if (waEl) waEl.checked = true;
+    }
+
+    // Driver's License
+    var lic = w.driver_license || {};
+    var hasLic = document.getElementById('wp-has-license');
+    if (hasLic) {
+      hasLic.checked = !!lic.has_license;
+      var licDetail = document.getElementById('wp-license-detail');
+      if (licDetail) licDetail.style.display = lic.has_license ? 'grid' : 'none';
+      if (lic.has_license) {
+        f('wp-license-state', lic.state || '');
+        f('wp-license-class', lic.class || '');
+      }
+    }
+
+    // Transportation
+    var trans = w.transportation || [];
+    var transMap = { own_vehicle: 'wp-trans-own-vehicle', motorcycle: 'wp-trans-motorcycle', public_transit: 'wp-trans-public-transit', need_ride: 'wp-trans-need-ride' };
+    Object.keys(transMap).forEach(function(k) {
+      var el = document.getElementById(transMap[k]);
+      if (el) el.checked = trans.includes(k);
+    });
+
+    // Work Experience
+    var expArr = w.experience || [];
+    expArr.forEach(function(exp) { addWpExpEntry(exp); });
+
     return;
   }
 
@@ -1147,6 +1267,117 @@ async function confirmDeleteWorkerAccount() {
   }
 }
 
+function onWpLicenseChange() {
+  var cb = document.getElementById('wp-has-license');
+  var detail = document.getElementById('wp-license-detail');
+  if (detail) detail.style.display = cb && cb.checked ? 'grid' : 'none';
+}
+
+var _wpExpEntries = [];
+var _wpExpRoles = ['Cook','Line Cook','Kitchen Helper','Dishwasher','Server','Mover','Driver','Loader/Unloader','General Laborer','Carpenter','Painter','Drywall','Roofer','Warehouse Worker','Picker/Packer','Forklift Operator','Cleaner','Janitor','Farm Worker','Valet','Event Staff','Landscaping','Security Guard','Other'];
+
+function addWpExpEntry(data) {
+  var idx = _wpExpEntries.length;
+  var isEn = document.body.classList.contains('en');
+  var typeProj = data && data.type === 'projects';
+  var roleOptions = _wpExpRoles.map(function(r){ return '<option value="' + r + '"' + (data && data.role === r ? ' selected' : '') + '>' + r + '</option>'; }).join('');
+  var html = '<div class="wp-exp-entry" id="wp-exp-entry-' + idx + '" style="border:0.5px solid var(--c-border);border-radius:var(--radius-sm);padding:12px 14px;background:var(--c-bg)">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">' +
+      '<div style="font-size:12px;font-weight:600;color:var(--c-muted);text-transform:uppercase;letter-spacing:.04em">' + (isEn ? 'Experience ' : 'Experiencia ') + (idx+1) + '</div>' +
+      '<button type="button" onclick="removeWpExpEntry(' + idx + ')" style="background:none;border:none;color:var(--c-hint);font-size:18px;cursor:pointer;padding:0;line-height:1">×</button>' +
+    '</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">' +
+      '<div>' +
+        '<div style="font-size:11px;font-weight:600;color:var(--c-muted);margin-bottom:4px"><span data-es>Rol / Trabajo</span><span data-en>Role / Job</span></div>' +
+        '<select id="wp-exp-role-' + idx + '" style="width:100%;padding:7px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-surface)">' +
+          '<option value="">' + (isEn ? '-- Select --' : '-- Seleccionar --') + '</option>' + roleOptions +
+          '<option value="__other__">' + (isEn ? 'Other (type below)' : 'Otro (escribe abajo)') + '</option>' +
+        '</select>' +
+        '<input type="text" id="wp-exp-role-other-' + idx + '" value="' + (data && data.role && !_wpExpRoles.includes(data.role) ? data.role.replace(/"/g,'&quot;') : '') + '" placeholder="' + (isEn ? 'e.g. Landscaper' : 'ej. Jardinero') + '" style="' + (data && data.role && !_wpExpRoles.includes(data.role) ? '' : 'display:none;') + 'width:100%;margin-top:4px;padding:7px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-surface)">' +
+      '</div>' +
+      '<div>' +
+        '<div style="font-size:11px;font-weight:600;color:var(--c-muted);margin-bottom:4px"><span data-es>Tipo</span><span data-en>Type</span></div>' +
+        '<select onchange="toggleWpExpDuration(' + idx + ')" id="wp-exp-dur-type-' + idx + '" style="width:100%;padding:7px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-surface)">' +
+          '<option value="years"' + (!typeProj ? ' selected' : '') + '>' + (isEn ? 'Years / Months' : 'Años / Meses') + '</option>' +
+          '<option value="projects"' + (typeProj ? ' selected' : '') + '>' + (isEn ? 'Projects' : 'Proyectos') + '</option>' +
+        '</select>' +
+      '</div>' +
+    '</div>' +
+    '<div id="wp-exp-time-' + idx + '" style="' + (typeProj ? 'display:none;' : '') + 'display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">' +
+      '<div><div style="font-size:11px;font-weight:600;color:var(--c-muted);margin-bottom:4px"><span data-es>Años</span><span data-en>Years</span></div>' +
+        '<select id="wp-exp-years-' + idx + '" style="width:100%;padding:7px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-surface)">' +
+          [0,1,2,3,4,5,6,7,8,9,10].map(function(n){ return '<option value="'+n+'"'+(data&&data.years===n?' selected':(n===0?' selected':''))+'>'+n+'</option>'; }).join('') +
+        '</select></div>' +
+      '<div><div style="font-size:11px;font-weight:600;color:var(--c-muted);margin-bottom:4px"><span data-es>Meses</span><span data-en>Months</span></div>' +
+        '<select id="wp-exp-months-' + idx + '" style="width:100%;padding:7px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-surface)">' +
+          [0,1,2,3,4,5,6,7,8,9,10,11].map(function(n){ return '<option value="'+n+'"'+(data&&data.months===n?' selected':(n===0?' selected':''))+'>'+n+'</option>'; }).join('') +
+        '</select></div>' +
+    '</div>' +
+    '<div id="wp-exp-proj-' + idx + '" style="' + (typeProj ? '' : 'display:none;') + 'margin-bottom:8px">' +
+      '<div style="font-size:11px;font-weight:600;color:var(--c-muted);margin-bottom:4px"><span data-es>Proyectos completados</span><span data-en>Projects completed</span></div>' +
+      '<input type="number" min="1" id="wp-exp-proj-count-' + idx + '" value="' + (data&&data.projects||'') + '" placeholder="e.g. 4" style="width:120px;padding:7px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-surface)">' +
+    '</div>' +
+    '<div><div style="font-size:11px;font-weight:600;color:var(--c-muted);margin-bottom:4px"><span data-es>Nota adicional (opcional)</span><span data-en>Additional note (optional)</span></div>' +
+      '<input type="text" id="wp-exp-note-' + idx + '" value="' + (data&&data.note?data.note.replace(/"/g,'&quot;'):'') + '" placeholder="' + (isEn ? 'e.g. line cook at a Mexican restaurant' : 'ej. cocinero en restaurante mexicano') + '" style="width:100%;padding:7px 8px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-surface)">' +
+    '</div>' +
+  '</div>';
+  _wpExpEntries.push({ idx: idx });
+  var list = document.getElementById('wp-exp-list');
+  var div = document.createElement('div');
+  div.innerHTML = html;
+  list.appendChild(div.firstChild);
+  // other role toggle
+  document.getElementById('wp-exp-role-' + idx).addEventListener('change', function() {
+    var o = document.getElementById('wp-exp-role-other-' + idx);
+    if (o) o.style.display = this.value === '__other__' ? 'block' : 'none';
+  });
+  // pre-select __other__ if role not in list
+  if (data && data.role && !_wpExpRoles.includes(data.role)) {
+    var sel = document.getElementById('wp-exp-role-' + idx);
+    if (sel) sel.value = '__other__';
+  }
+}
+
+function removeWpExpEntry(idx) {
+  var el = document.getElementById('wp-exp-entry-' + idx);
+  if (el && el.parentNode) el.parentNode.removeChild(el);
+}
+
+function toggleWpExpDuration(idx) {
+  var sel = document.getElementById('wp-exp-dur-type-' + idx);
+  var timeDiv = document.getElementById('wp-exp-time-' + idx);
+  var projDiv = document.getElementById('wp-exp-proj-' + idx);
+  if (!sel || !timeDiv || !projDiv) return;
+  timeDiv.style.display = sel.value === 'projects' ? 'none' : 'grid';
+  projDiv.style.display = sel.value === 'projects' ? 'block' : 'none';
+}
+
+function collectWpExperiences() {
+  var results = [];
+  document.querySelectorAll('#wp-exp-list .wp-exp-entry').forEach(function(entry) {
+    var id = entry.id.replace('wp-exp-entry-', '');
+    var roleSel = document.getElementById('wp-exp-role-' + id);
+    var roleVal = roleSel ? roleSel.value : '';
+    if (roleVal === '__other__') {
+      var otherEl = document.getElementById('wp-exp-role-other-' + id);
+      roleVal = otherEl ? (otherEl.value || '').trim() : '';
+    }
+    if (!roleVal) return;
+    var durType = (document.getElementById('wp-exp-dur-type-' + id) || {}).value || 'years';
+    var obj = { role: roleVal, type: durType };
+    if (durType === 'projects') {
+      obj.projects = parseInt((document.getElementById('wp-exp-proj-count-' + id) || {}).value || '0', 10) || 0;
+    } else {
+      obj.years  = parseInt((document.getElementById('wp-exp-years-' + id)  || {}).value || '0', 10) || 0;
+      obj.months = parseInt((document.getElementById('wp-exp-months-' + id) || {}).value || '0', 10) || 0;
+    }
+    var noteEl = document.getElementById('wp-exp-note-' + id);
+    if (noteEl && noteEl.value.trim()) obj.note = noteEl.value.trim();
+    results.push(obj);
+  });
+  return results;
+}
+
 async function saveWorkerProfile() {
   var isEn = document.body.classList.contains('en');
   var btn  = document.getElementById('wp-save-btn');
@@ -1185,18 +1416,52 @@ async function saveWorkerProfile() {
       return el && el.checked;
     });
 
+    // Profile visibility
+    var visPublic = document.getElementById('wp-visible-public');
+    var profileVisible = visPublic ? visPublic.checked : true;
+
+    // Description ES + EN
+    var descEs = (document.getElementById('wp-desc-es') ? (document.getElementById('wp-desc-es').value || '').trim() : '');
+    var descEn = (document.getElementById('wp-desc-en') ? (document.getElementById('wp-desc-en').value || '').trim() : '');
+
+    // Work authorization
+    var waEl = document.querySelector('input[name="wp_work_auth"]:checked');
+    var workAuth = waEl ? waEl.value : null;
+
+    // Driver's license
+    var hasLic = document.getElementById('wp-has-license') && document.getElementById('wp-has-license').checked;
+    var driverLicense = hasLic
+      ? { has_license: true, state: (document.getElementById('wp-license-state') || {}).value || '', class: (document.getElementById('wp-license-class') || {}).value || '' }
+      : { has_license: false };
+
+    // Transportation
+    var transMap2 = { own_vehicle: 'wp-trans-own-vehicle', motorcycle: 'wp-trans-motorcycle', public_transit: 'wp-trans-public-transit', need_ride: 'wp-trans-need-ride' };
+    var transportation = Object.keys(transMap2).filter(function(k) {
+      var el = document.getElementById(transMap2[k]); return el && el.checked;
+    });
+
+    // Experience
+    var experience = collectWpExperiences();
+
     var { error } = await getSupabase()
       .from('businesses')
       .update({
         trade_name:            (document.getElementById('wp-trade-name').value || '').trim(),
-        description:           (document.getElementById('wp-desc').value || '').trim(),
+        description_es:        descEs,
+        description_en:        descEn,
+        description:           descEs || descEn,
         staffing_types:        staffingTypes,
         staffing_type_other:   (document.getElementById('wp-type-other') ? (document.getElementById('wp-type-other').value || '').trim() : ''),
         staffing_availability: hiringAvail,
         service_area:          serviceArea,
         desired_pay:           desiredPay,
         languages:             langs,
-        payment_methods:       payMethods
+        payment_methods:       payMethods,
+        profile_visible:       profileVisible,
+        work_auth:             workAuth,
+        driver_license:        driverLicense,
+        transportation:        transportation,
+        experience:            experience
       })
       .eq('id', currentWorker.id);
 
