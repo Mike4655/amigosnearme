@@ -3107,9 +3107,10 @@ function validateStep4() {
       hideError('err-worker-area');
     }
 
-    // Work types: at least 1 selected
+    // Work types: at least 1 selected OR other text filled
     var wkrTypesSelected = document.querySelectorAll('#wkr-staffing-types-grid .cat-chip.sel').length;
-    if (wkrTypesSelected === 0) {
+    var wkrTypeOther = ((document.getElementById('wkr-staffing-type-other') || {}).value || '').trim();
+    if (wkrTypesSelected === 0 && wkrTypeOther === '') {
       showError('err-wkr-staffing-types');
       markInvalidSection('wkr-staffing-types-grid');
       valid = false;
