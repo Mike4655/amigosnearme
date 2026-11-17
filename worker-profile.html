@@ -472,11 +472,13 @@ function setLang(lang) {
     renderWorker(currentWorker);
     if (_lastContactArgs) renderContactArea(_lastContactArgs.type, _lastContactArgs.credits, currentWorker);
   }
-  // description 필드 순서: EN 모드에서 English first (render 후 적용)
-  var descFields = document.getElementById('wp-desc-fields');
-  if (descFields) descFields.style.flexDirection = en ? 'column-reverse' : 'column';
-  // translate 버튼 레이블 업데이트
-  if (document.getElementById('wp-desc-fields')) onWpDescInput();
+  // description 필드 순서: EN 모드에서 English first (Edit Profile이 열려있을 때만)
+  var _editCard = document.getElementById('card-edit-profile');
+  if (_editCard && _editCard.style.display !== 'none') {
+    var descFields = document.getElementById('wp-desc-fields');
+    if (descFields) descFields.style.flexDirection = en ? 'column-reverse' : 'column';
+    onWpDescInput();
+  }
 }
 
 function getWorkerId() {
@@ -1286,7 +1288,13 @@ function toggleEditProfile() {
   var card = document.getElementById('card-edit-profile');
   if (!card) return;
   card.style.display = card.style.display === 'none' ? 'block' : 'none';
-  if (card.style.display === 'block') card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (card.style.display === 'block') {
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // description 필드 순서 및 translate 버튼 초기화
+    var df = document.getElementById('wp-desc-fields');
+    if (df) df.style.flexDirection = document.body.classList.contains('en') ? 'column-reverse' : 'column';
+    onWpDescInput();
+  }
 }
 
 async function confirmDeleteWorkerAccount() {
