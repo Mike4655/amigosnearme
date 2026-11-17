@@ -271,9 +271,10 @@ if (new URLSearchParams(window.location.search).get('type') === 'staffing') docu
   .wkr-hidden { display: none !important; }
   html.worker-mode body .wkr-hidden { display: none !important; }
   /* ?type=staffing 진입 시 <html class="worker-mode"> 로 제어 — head script로 첫 렌더 전에 클래스 추가됨 */
-  html.worker-mode #step-1        { display: none !important; }
-  html.worker-mode #biz-name-row   { display: none !important; }
-  html.worker-mode #owner-name-row { display: none !important; }
+  html.worker-mode #step-1          { display: none !important; }
+  html.worker-mode #biz-name-row    { display: none !important; }
+  html.worker-mode #owner-name-row  { display: none !important; }
+  html.worker-mode #cat-other-row   { display: none !important; }
   /* 비즈니스 모드: 워커 전용 요소 숨김 (ID/속성 선택자로 lang !important 무력화) */
   html:not(.worker-mode) #step2-title-wkr-es,
   html:not(.worker-mode) #step2-title-wkr-en { display: none !important; }
