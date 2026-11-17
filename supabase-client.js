@@ -213,6 +213,7 @@ async function searchBusinesses({ category, query, isWorker = false, limit = 20 
     .select('*')
     .eq('account_status', 'active')   // 정지·삭제 업체 제외
     .eq('is_worker', isWorker)         // Business와 Worker 분리
+    .eq('profile_visible', true)       // 비공개 프로필 제외
     .limit(limit);
 
   if (category) q = q.contains('categories', [category]);

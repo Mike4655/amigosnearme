@@ -871,6 +871,7 @@ async function loadFeaturedWorkers() {
       .select('id, trade_name, business_name, staffing_types, verified, account_status, is_worker, photos')
       .eq('is_worker', true)
       .neq('account_status', 'suspended')
+      .eq('profile_visible', true)
       .order('created_at', { ascending: false })
       .limit(6);
     if (error) { console.error('[featured-workers] query error:', error); return; }
