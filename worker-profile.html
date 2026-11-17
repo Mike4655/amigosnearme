@@ -719,9 +719,30 @@ function renderContactArea(type, credits, w) {
   }
 
   if (type === 'owner') {
-    area.innerHTML = '<div style="padding:14px;border-radius:var(--radius-md);background:var(--c-bg);border:0.5px solid var(--c-border);text-align:center;line-height:1.6">' +
-      '<div style="font-size:13px;color:var(--c-muted);margin-bottom:10px">' +
-      (isEn ? '👤 This is your public worker profile.' : '👤 Este es tu perfil público de trabajador.') +
+    var isPublic = w.profile_visible !== false;
+    var badgeStyle = isPublic
+      ? 'background:#e6f4ea;color:#1a7a3a;border:0.5px solid #9fd4b0'
+      : 'background:#f5f5f5;color:var(--c-muted);border:0.5px solid var(--c-border)';
+    var badgeLabel = isPublic
+      ? (isEn ? '🌐 Public' : '🌐 Público')
+      : (isEn ? '🔒 Private' : '🔒 Privado');
+    var toggleBtnLabel = isPublic
+      ? (isEn ? 'Switch to Private' : 'Cambiar a Privado')
+      : (isEn ? 'Switch to Public' : 'Cambiar a Público');
+
+    area.innerHTML = '<div style="padding:14px;border-radius:var(--radius-md);background:var(--c-bg);border:0.5px solid var(--c-border);line-height:1.6">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px">' +
+        '<div style="display:flex;align-items:center;gap:10px">' +
+          '<span style="font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;' + badgeStyle + '">' + badgeLabel + '</span>' +
+          '<span style="font-size:12px;color:var(--c-muted)">' +
+            (isPublic
+              ? (isEn ? 'Employers can find you in search' : 'Los empleadores pueden encontrarte')
+              : (isEn ? 'You are hidden from search' : 'No apareces en búsquedas')) +
+          '</span>' +
+        '</div>' +
+        '<button onclick="quickToggleVisibility()" id="btn-quick-toggle-vis" style="font-size:12px;padding:5px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);background:var(--c-surface);color:var(--c-text);cursor:pointer;font-family:var(--font-body)">' +
+          toggleBtnLabel +
+        '</button>' +
       '</div>' +
       '<button onclick="toggleEditProfile()" style="padding:9px 20px;background:var(--c-accent);color:#fff;border-radius:var(--radius-sm);font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:var(--font-body)">' +
       (isEn ? '✏️ Edit my profile' : '✏️ Editar mi perfil') +
@@ -1267,6 +1288,53 @@ async function confirmDeleteWorkerAccount() {
   }
 }
 
+async function quickToggleVisibility() {
+  if (!currentWorker) return;
+  var isEn = document.body.classList.contains('en');
+  var nowPublic = currentWorker.profile_visible !== false;
+
+  if (nowPublic) {
+    // 공개 → 비공개: 즉시 저장
+    var btn = document.getElementById('btn-quick-toggle-vis');
+    if (btn) { btn.disabled = true; btn.textContent = isEn ? 'Saving…' : 'Guardando…'; }
+    try {
+      var { error } = await getSupabase()
+        .from('businesses')
+        .update({ profile_visible: false })
+        .eq('id', currentWorker.id);
+      if (error) throw error;
+      currentWorker.profile_visible = false;
+      // reload owner area
+      renderContactArea('owner', 0, currentWorker);
+      // sync radio in edit form
+      var priv = document.getElementById('wp-visible-private');
+      if (priv) priv.checked = true;
+    } catch(e) {
+      if (btn) { btn.disabled = false; btn.textContent = isEn ? 'Switch to Private' : 'Cambiar a Privado'; }
+      alert(isEn ? 'Could not save. Try again.' : 'No se pudo guardar. Intenta de nuevo.');
+    }
+  } else {
+    // 비공개 → 공개: Edit Profile 열고 안내
+    var editCard = document.getElementById('card-edit-profile');
+    if (editCard) {
+      editCard.style.display = 'block';
+      editCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    // 공개 라디오 선택
+    var pub = document.getElementById('wp-visible-public');
+    if (pub) pub.checked = true;
+    // 안내 메시지 표시
+    var saveMsg = document.getElementById('wp-save-msg');
+    var saveErr = document.getElementById('wp-save-err');
+    if (saveErr) {
+      saveErr.innerHTML = isEn
+        ? 'ℹ️ To switch to <b>Public</b>, please fill in all required fields below and click <b>Save changes</b>.'
+        : 'ℹ️ Para cambiar a <b>Público</b>, completa los campos obligatorios y haz clic en <b>Guardar cambios</b>.';
+      saveErr.style.display = 'block';
+    }
+  }
+}
+
 function onWpLicenseChange() {
   var cb = document.getElementById('wp-has-license');
   var detail = document.getElementById('wp-license-detail');
@@ -1420,6 +1488,36 @@ async function saveWorkerProfile() {
     var visPublic = document.getElementById('wp-visible-public');
     var profileVisible = visPublic ? visPublic.checked : true;
 
+    // ── PUBLIC 필수항목 검증 ──────────────────────────────────────
+    if (profileVisible) {
+      var missingFields = [];
+      var descEsChk = (document.getElementById('wp-desc-es') ? (document.getElementById('wp-desc-es').value || '').trim() : '');
+      var descEnChk = (document.getElementById('wp-desc-en') ? (document.getElementById('wp-desc-en').value || '').trim() : '');
+      var typesChk = ['kitchen','moving','construction','warehouse','cleaning','agriculture','events','general']
+        .some(function(t){ var el=document.getElementById('wp-type-'+t); return el && el.checked; });
+      var typeOtherChk = document.getElementById('wp-type-other') ? (document.getElementById('wp-type-other').value || '').trim() : '';
+      var availChk = ['wp-avail-day','wp-avail-week','wp-avail-perm'].some(function(id){ var el=document.getElementById(id); return el && el.checked; });
+      var areaChk = document.querySelectorAll('#wp-area-grid input[type="checkbox"]:checked').length > 0
+                    || (document.getElementById('wp-area-other') && (document.getElementById('wp-area-other').value || '').trim());
+      var waChkEl = document.querySelector('input[name="wp_work_auth"]:checked');
+
+      if (!descEsChk && !descEnChk) missingFields.push(isEn ? 'Profile description (at least ES or EN)' : 'Descripción del perfil (al menos ES o EN)');
+      if (!typesChk && !typeOtherChk) missingFields.push(isEn ? 'Work type (at least one)' : 'Tipo de trabajo (al menos uno)');
+      if (!availChk) missingFields.push(isEn ? 'Hiring availability' : 'Disponibilidad de contratación');
+      if (!areaChk) missingFields.push(isEn ? 'Service area (at least one)' : 'Área de servicio (al menos una)');
+      if (!waChkEl) missingFields.push(isEn ? 'Work authorization' : 'Autorización de trabajo');
+
+      if (missingFields.length > 0) {
+        err.innerHTML = (isEn
+          ? '❌ To set profile to <b>Public</b>, please fill in:<br>'
+          : '❌ Para poner el perfil en <b>Público</b>, completa:<br>')
+          + missingFields.map(function(f){ return '• ' + f; }).join('<br>');
+        err.style.display = 'block';
+        btn.disabled = false;
+        return;
+      }
+    }
+
     // Description ES + EN
     var descEs = (document.getElementById('wp-desc-es') ? (document.getElementById('wp-desc-es').value || '').trim() : '');
     var descEn = (document.getElementById('wp-desc-en') ? (document.getElementById('wp-desc-en').value || '').trim() : '');
@@ -1467,6 +1565,9 @@ async function saveWorkerProfile() {
 
     if (error) throw error;
     msg.style.display = 'block';
+    // Update in-memory worker and refresh owner status area
+    currentWorker.profile_visible = profileVisible;
+    renderContactArea('owner', 0, currentWorker);
     // refresh displayed name if trade_name changed
     var newTrade = (document.getElementById('wp-trade-name').value || '').trim();
     if (newTrade) document.getElementById('worker-name').textContent = currentWorker.business_name || newTrade;
