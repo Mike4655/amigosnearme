@@ -1854,6 +1854,7 @@ async function initAdminPage() {
         .order('created_at', { ascending: false }),
       sb.rpc('get_contact_log_admin')
     ]);
+    if (bizRes.error) throw bizRes.error;
     var businesses = bizRes.data || [];
 
     var tbody = document.getElementById('biz-table-body');
@@ -3303,16 +3304,18 @@ async function loadWorkers() {
     var now2 = new Date();
     var monthStart2 = new Date(now2.getFullYear(), now2.getMonth(), 1).toISOString();
 
-    // workers + contact log 병렬, email map은 owner_id 확보 후 추가 병렬
-    var [wkrRes, clRes2] = await Promise.all([
+    // workers + contact log 병렬 (contact log 실패해도 workers 표시)
+    var [wkrRes, clRes2] = await Promise.allSettled([
       sb.from('businesses')
-        .select('id, owner_id, business_name, trade_name, categories, whatsapp_phone, account_status, profile_visible, priority_score, verified, created_at, work_auth, transportation, experience')
+        .select('id, owner_id, business_name, trade_name, categories, whatsapp_phone, account_status, profile_visible, priority_score, verified, created_at')
         .eq('is_worker', true)
         .order('created_at', { ascending: false }),
       sb.rpc('get_contact_log_admin')
     ]);
-    var workers = wkrRes.data || [];
-    var clAll2 = clRes2.data || [];
+    var wkrResult = wkrRes.status === 'fulfilled' ? wkrRes.value : null;
+    if (!wkrResult || wkrResult.error) throw (wkrResult && wkrResult.error) || new Error('workers fetch failed');
+    var workers = wkrResult.data || [];
+    var clAll2 = (clRes2.status === 'fulfilled' && clRes2.value.data) ? clRes2.value.data : [];
 
     // biz_id 기준 contact 집계
     var clMonthBiz = {}, clTotalBiz = {};
