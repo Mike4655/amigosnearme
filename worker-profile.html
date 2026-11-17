@@ -395,7 +395,8 @@
 
     <!-- Work Experience -->
     <div style="margin-bottom:16px">
-      <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:8px">💼 <span data-es>Experiencia laboral</span><span data-en>Work experience</span></label>
+      <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:4px">💼 <span data-es>Experiencia laboral *</span><span data-en>Work experience *</span></label>
+      <div style="font-size:11px;color:var(--c-hint);margin-bottom:8px"><span data-es>Agrega al menos 1 experiencia</span><span data-en>Add at least 1 experience</span></div>
       <div id="wp-exp-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:10px"></div>
       <button type="button" onclick="addWpExpEntry()" style="padding:8px 16px;border-radius:var(--radius-sm);border:0.5px dashed var(--c-accent);background:var(--c-accent-light);color:var(--c-accent);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body)">
         <span data-es>+ Agregar experiencia</span><span data-en>+ Add experience</span>
@@ -1505,11 +1506,16 @@ async function saveWorkerProfile() {
                     || (document.getElementById('wp-area-other') && (document.getElementById('wp-area-other').value || '').trim());
       var waChkEl = document.querySelector('input[name="wp_work_auth"]:checked');
 
+      var transChk = ['wp-trans-own-vehicle','wp-trans-motorcycle','wp-trans-public-transit','wp-trans-need-ride'].some(function(id){ var el=document.getElementById(id); return el && el.checked; });
+      var expChk = document.querySelectorAll('#wp-exp-list .wp-exp-entry').length > 0;
+
       if (!descEsChk && !descEnChk) missingFields.push(isEn ? 'Profile description (at least ES or EN)' : 'Descripción del perfil (al menos ES o EN)');
       if (!typesChk && !typeOtherChk) missingFields.push(isEn ? 'Work type (at least one)' : 'Tipo de trabajo (al menos uno)');
       if (!availChk) missingFields.push(isEn ? 'Hiring availability' : 'Disponibilidad de contratación');
       if (!areaChk) missingFields.push(isEn ? 'Service area (at least one)' : 'Área de servicio (al menos una)');
       if (!waChkEl) missingFields.push(isEn ? 'Work authorization' : 'Autorización de trabajo');
+      if (!transChk) missingFields.push(isEn ? 'Transportation (at least one)' : 'Transporte (al menos uno)');
+      if (!expChk) missingFields.push(isEn ? 'Work experience (at least 1)' : 'Experiencia laboral (al menos 1)');
 
       if (missingFields.length > 0) {
         err.innerHTML = (isEn
