@@ -683,7 +683,7 @@ if (new URLSearchParams(window.location.search).get('type') === 'staffing') docu
         </div>
       </div>
 
-      <div class="field-row">
+      <div class="field-row" id="service-area-row">
         <div class="field-label" data-es>Áreas de servicio <span class="req">*</span> <span class="opt">(selecciona todas las que apliquen)</span></div>
         <div class="field-label" data-en>Service areas <span class="req">*</span> <span class="opt">(select all that apply)</span></div>
         <div id="service-area-grid" style="border:0.5px solid var(--c-border);border-radius:var(--radius-md);padding:14px;background:var(--c-bg);display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;">
@@ -758,7 +758,7 @@ if (new URLSearchParams(window.location.search).get('type') === 'staffing') docu
         <div class="field-error" id="err-area" data-es-text="Selecciona al menos un área de servicio o escribe tu área." data-en-text="Select at least one service area or type your area.">Selecciona al menos un área de servicio o escribe tu área.</div>
       </div>
 
-      <div class="field-row">
+      <div class="field-row" id="service-lang-row">
         <div class="field-label" data-es>Idiomas de servicio <span class="opt">(opcional)</span></div>
         <div class="field-label" data-en>Service languages <span class="opt">(optional)</span></div>
         <div class="lang-toggles">
@@ -774,7 +774,7 @@ if (new URLSearchParams(window.location.search).get('type') === 'staffing') docu
         </div>
       </div>
 
-      <div class="field-row">
+      <div class="field-row" id="payment-row">
         <div class="field-label" data-es>Métodos de pago aceptados <span class="req">*</span></div>
         <div class="field-label" data-en>Accepted payment methods <span class="req">*</span></div>
         <div class="payment-grid" id="payment-grid">
@@ -1411,6 +1411,12 @@ function applyWorkerMode() {
 
   wHide('trade-name-row');
   wHide('biz-only-fields');
+
+  // Worker Step 2: hide business-specific sections (service area, languages, payment, staffing details)
+  wHide('staffing-card');
+  wHide('service-area-row');
+  wHide('service-lang-row');
+  wHide('payment-row');
 
   wHide('cat-label-biz-es');
   wHide('cat-label-biz-en');
