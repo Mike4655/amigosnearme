@@ -741,7 +741,7 @@ async function doLogin() {
         if (!epLogin) {
           // 이메일 인증 후 첫 로그인 — signup 시 session=null이어서 생성 못 한 프로필 생성 + Welcome 이메일 발송
           var epName = data.user.user_metadata?.display_name || emailEl.value.split('@')[0];
-          await sb0.from('employer_profiles').insert({ owner_id: data.user.id, display_name: epName });
+          await sb0.from('employer_profiles').insert({ owner_id: data.user.id, display_name: epName, credit_balance: 3 });
           var epLang = data.user.user_metadata?.preferred_lang || (document.body.classList.contains('en') ? 'en' : 'es');
           sendEmail('EM1', emailEl.value.trim(), { name: epName }, null, epLang);
         }
@@ -815,7 +815,7 @@ async function doSignup() {
     if (newSess && newSess.user) {
       var newUid = newSess.user.id;
       if (resolvedType === 'employer') {
-        await getSupabase().from('employer_profiles').insert({ owner_id: newUid, display_name: nameEl.value.trim() });
+        await getSupabase().from('employer_profiles').insert({ owner_id: newUid, display_name: nameEl.value.trim(), credit_balance: 3 });
         // 세션 즉시 생성 = 이메일 인증 불필요 → Welcome 이메일 바로 발송
         sendEmail('EM1', emailEl.value.trim(), { name: nameEl.value.trim() }, null, uiLang);
         var _returnToSU = (new URLSearchParams(window.location.search)).get('returnTo');
@@ -1337,7 +1337,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       // ?type=employer로 접근했으나 employer_profiles 없는 경우 → 자동 생성 후 대시보드로
       if (typeParam === 'employer') {
         var _epNameFallback = user.user_metadata?.display_name || user.email?.split('@')[0] || '';
-        await getSupabase().from('employer_profiles').insert({ owner_id: user.id, display_name: _epNameFallback });
+        await getSupabase().from('employer_profiles').insert({ owner_id: user.id, display_name: _epNameFallback, credit_balance: 3 });
         window.location.href = _empDest;
         return;
       }

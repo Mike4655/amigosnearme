@@ -853,7 +853,7 @@ async function loadDashboard() {
     var metaLang = (sess.user.user_metadata?.preferred_lang) ||
                    ((navigator.language || 'es').startsWith('en') ? 'en' : 'es');
     var metaName = sess.user.user_metadata?.display_name || sess.user.user_metadata?.full_name || '';
-    await sb.from('employer_profiles').insert({ owner_id: uid, preferred_lang: metaLang, display_name: metaName || null });
+    await sb.from('employer_profiles').insert({ owner_id: uid, preferred_lang: metaLang, display_name: metaName || null, credit_balance: 3 });
     epRes = await sb.from('employer_profiles').select('id, credit_balance, account_status, display_name, phone, preferred_lang').eq('owner_id', uid).single();
   }
 
