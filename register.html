@@ -751,7 +751,7 @@ if (new URLSearchParams(window.location.search).get('type') === 'staffing') docu
           <div style="grid-column:1/-1;font-size:11px;font-weight:600;color:var(--c-hint);letter-spacing:.04em;text-transform:uppercase;padding:8px 0 2px" data-es>Otra área</div>
           <div style="grid-column:1/-1;font-size:11px;font-weight:600;color:var(--c-hint);letter-spacing:.04em;text-transform:uppercase;padding:8px 0 2px" data-en>Other area</div>
           <div style="grid-column:1/-1">
-            <input type="text" id="f-area-other" placeholder="e.g. Gainesville, FL · Any area in GA" style="width:100%;padding:7px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-bg);color:var(--c-text)">
+            <input type="text" id="f-area-other" placeholder="e.g. Gainesville, FL · Any area in GA" oninput="if(this.value.trim()){hideError('err-area');clearInvalidSection('service-area-grid');}" style="width:100%;padding:7px 10px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);font-size:13px;background:var(--c-bg);color:var(--c-text)">
             <div style="font-size:11px;color:var(--c-hint);margin-top:4px;line-height:1.5" data-es>Si tu área no está en la lista, escríbela aquí — aparecerá en los resultados de búsqueda de texto. ⓘ El equipo la revisará para agregarla al filtro oficial.</div>
             <div style="font-size:11px;color:var(--c-hint);margin-top:4px;line-height:1.5" data-en>If your area is not listed, type it here — it will appear in text search results. ⓘ Our team will review it to add it to the official filter.</div>
           </div>
