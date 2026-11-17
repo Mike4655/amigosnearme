@@ -240,7 +240,7 @@
     <!-- Worker Types -->
     <div id="wp-types-wrap" style="margin-bottom:16px">
       <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:8px"><span data-es>Tipos de trabajo *</span><span data-en>Job types *</span></label>
-      <div id="wp-types-grid" style="display:flex;flex-wrap:wrap;gap:8px">
+      <div id="wp-types-grid" style="display:flex;flex-wrap:wrap;gap:8px" onclick="(function(e){if(e.target.type==='checkbox'&&e.target.checked){var w=document.getElementById('wp-types-wrap');if(w)w.classList.remove('wp-section-error');}})(event)">
         <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:6px 12px;border:0.5px solid var(--c-border);border-radius:20px;cursor:pointer"><input type="checkbox" id="wp-type-kitchen"      value="kitchen"      style="accent-color:var(--c-green)"> 🍳 <span data-es>Cocina / Restaurante</span><span data-en>Kitchen / Restaurant</span></label>
         <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:6px 12px;border:0.5px solid var(--c-border);border-radius:20px;cursor:pointer"><input type="checkbox" id="wp-type-moving"       value="moving"       style="accent-color:var(--c-green)"> 📦 <span data-es>Mudanzas / Carga</span><span data-en>Moving / Loading</span></label>
         <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:6px 12px;border:0.5px solid var(--c-border);border-radius:20px;cursor:pointer"><input type="checkbox" id="wp-type-construction" value="construction" style="accent-color:var(--c-green)"> 🏗️ <span data-es>Construcción</span><span data-en>Construction</span></label>
@@ -260,7 +260,7 @@
     <!-- Hiring Availability -->
     <div id="wp-avail-wrap" style="margin-bottom:16px">
       <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:8px"><span data-es>Disponibilidad *</span><span data-en>Availability *</span></label>
-      <div id="wp-avail-grid" style="display:flex;gap:16px;flex-wrap:wrap;padding:10px 12px;border-radius:var(--radius-sm);border:0.5px solid transparent">
+      <div id="wp-avail-grid" style="display:flex;gap:16px;flex-wrap:wrap;padding:10px 12px;border-radius:var(--radius-sm);border:0.5px solid transparent" onclick="(function(e){if(e.target.type==='checkbox'&&e.target.checked){var w=document.getElementById('wp-avail-grid');if(w)w.classList.remove('wp-section-error');}})(event)">
         <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="wp-avail-day"  value="by_the_day"           style="accent-color:var(--c-green)"> <span data-es>Por día</span><span data-en>By the day</span></label>
         <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="wp-avail-week" value="by_the_week"          style="accent-color:var(--c-green)"> <span data-es>Por semana</span><span data-en>By the week</span></label>
         <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="wp-avail-perm" value="permanent_placement"  style="accent-color:var(--c-green)"> <span data-es>Contrato permanente</span><span data-en>Permanent placement</span></label>
@@ -283,7 +283,7 @@
     <!-- Service Areas -->
     <div style="margin-bottom:16px">
       <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:8px"><span data-es>Áreas de servicio *</span><span data-en>Service areas *</span></label>
-      <div id="wp-area-grid" style="border:0.5px solid var(--c-border);border-radius:var(--radius-sm);padding:12px;background:var(--c-bg);display:grid;grid-template-columns:1fr 1fr;gap:3px 20px;max-height:260px;overflow-y:auto">
+      <div id="wp-area-grid" style="border:0.5px solid var(--c-border);border-radius:var(--radius-sm);padding:12px;background:var(--c-bg);display:grid;grid-template-columns:1fr 1fr;gap:3px 20px;max-height:260px;overflow-y:auto" onclick="(function(e){if(e.target.type==='checkbox'&&e.target.checked){var w=document.getElementById('wp-area-grid');if(w)w.classList.remove('wp-section-error');}})(event)">
         <div style="grid-column:1/-1;font-size:11px;font-weight:600;color:var(--c-hint);text-transform:uppercase;padding:4px 0 2px">Atlanta (Fulton)</div>
         <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="atlanta"          style="accent-color:var(--c-green)"> Atlanta</label>
         <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0"><input type="checkbox" value="alpharetta"       style="accent-color:var(--c-green)"> Alpharetta</label>
@@ -356,7 +356,7 @@
     <!-- Work Authorization -->
     <div id="wp-work-auth-wrap" style="margin-bottom:16px">
       <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:8px">📋 <span data-es>Autorización de trabajo *</span><span data-en>Work authorization *</span></label>
-      <div id="wp-work-auth-group" style="display:flex;flex-direction:column;gap:8px;border-radius:var(--radius-sm);border:0.5px solid transparent;padding:4px 0">
+      <div id="wp-work-auth-group" style="display:flex;flex-direction:column;gap:8px;border-radius:var(--radius-sm);border:0.5px solid transparent;padding:4px 0" onclick="(function(e){if(e.target.type==='radio'){var w=document.getElementById('wp-work-auth-group');if(w)w.classList.remove('wp-section-error');}})(event)">
         <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);background:var(--c-bg)"><input type="radio" name="wp_work_auth" value="citizen_pr"   style="accent-color:var(--c-accent);width:15px;height:15px;flex-shrink:0"> <span style="font-size:13px">🇺🇸 <span data-es>Ciudadano / Residente permanente (Green Card)</span><span data-en>U.S. Citizen / Permanent Resident (Green Card)</span></span></label>
         <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);background:var(--c-bg)"><input type="radio" name="wp_work_auth" value="ead"          style="accent-color:var(--c-accent);width:15px;height:15px;flex-shrink:0"> <span style="font-size:13px">📄 <span data-es>Permiso de trabajo (EAD)</span><span data-en>Work Permit (EAD)</span></span></label>
         <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:9px 12px;border:0.5px solid var(--c-border);border-radius:var(--radius-sm);background:var(--c-bg)"><input type="radio" name="wp_work_auth" value="visa"         style="accent-color:var(--c-accent);width:15px;height:15px;flex-shrink:0"> <span style="font-size:13px">✈️ <span data-es>Visa de trabajo (H-2A, H-2B, TN, etc.)</span><span data-en>Work Visa (H-2A, H-2B, TN, etc.)</span></span></label>
@@ -396,7 +396,7 @@
     <!-- Transportation -->
     <div id="wp-trans-wrap" style="margin-bottom:16px">
       <label style="font-size:12px;color:var(--c-muted);display:block;margin-bottom:8px">🚗 <span data-es>Transporte *</span><span data-en>Transportation *</span></label>
-      <div id="wp-trans-group" style="display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-radius:var(--radius-sm);border:0.5px solid transparent">
+      <div id="wp-trans-group" style="display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-radius:var(--radius-sm);border:0.5px solid transparent" onclick="(function(e){if(e.target.type==='checkbox'&&e.target.checked){var w=document.getElementById('wp-trans-group');if(w)w.classList.remove('wp-section-error');}})(event)">
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px"><input type="checkbox" id="wp-trans-own-vehicle"   value="own_vehicle"    style="accent-color:var(--c-green);width:15px;height:15px"> <span data-es>🚗 Tengo vehículo propio</span><span data-en>🚗 I have my own vehicle</span></label>
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px"><input type="checkbox" id="wp-trans-motorcycle"     value="motorcycle"     style="accent-color:var(--c-green);width:15px;height:15px"> <span data-es>🛵 Tengo motocicleta / scooter</span><span data-en>🛵 I have a motorcycle / scooter</span></label>
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px"><input type="checkbox" id="wp-trans-public-transit"  value="public_transit"  style="accent-color:var(--c-green);width:15px;height:15px"> <span data-es>🚌 Uso transporte público</span><span data-en>🚌 I use public transportation</span></label>
@@ -1430,6 +1430,9 @@ var _wpExpEntries = [];
 var _wpExpRoles = ['Cook','Line Cook','Kitchen Helper','Dishwasher','Server','Mover','Driver','Loader/Unloader','General Laborer','Carpenter','Painter','Drywall','Roofer','Warehouse Worker','Picker/Packer','Forklift Operator','Cleaner','Janitor','Farm Worker','Valet','Event Staff','Landscaping','Security Guard','Other'];
 
 function addWpExpEntry(data) {
+  // 항목 추가 시 wp-exp-wrap 에러 테두리 제거
+  var expWrap = document.getElementById('wp-exp-wrap');
+  if (expWrap) expWrap.classList.remove('wp-section-error');
   var idx = _wpExpEntries.length;
   var isEn = document.body.classList.contains('en');
   var typeProj = data && data.type === 'projects';
