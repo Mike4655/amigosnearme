@@ -3475,6 +3475,25 @@ function filterWorkerTable() {
 
 async function adminToggleWorkerVisibility(bizId, makeVisible, btn) {
   btn.disabled = true;
+  // 공개 전환 시 Step 4 데이터 존재 여부 확인
+  if (makeVisible) {
+    try {
+      var { data: wCheck } = await getSupabase()
+        .from('businesses').select('work_auth, transportation, experience').eq('id', bizId).single();
+      var hasStep4 = wCheck &&
+        wCheck.work_auth &&
+        wCheck.transportation && wCheck.transportation.length > 0 &&
+        wCheck.experience && wCheck.experience.length > 0;
+      if (!hasStep4) {
+        var proceed = confirm(
+          '⚠️ This worker has incomplete profile data (missing work authorization, transportation, or experience).\n\n' +
+          'Making them visible without this data will show an incomplete public profile.\n\n' +
+          'Force publish anyway?'
+        );
+        if (!proceed) { btn.disabled = false; return; }
+      }
+    } catch(e) {}
+  }
   try {
     var { error } = await getSupabase().from('businesses').update({ profile_visible: makeVisible }).eq('id', bizId);
     if (error) throw error;

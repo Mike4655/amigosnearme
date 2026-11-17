@@ -818,18 +818,39 @@ if (new URLSearchParams(window.location.search).get('type') === 'staffing') docu
     <div id="step3-worker-skip" style="display:none">
       <h1 style="font-family:var(--font-display);font-size:26px;margin-bottom:8px" data-es>¿Quieres que los empleadores te encuentren?</h1>
       <h1 style="font-family:var(--font-display);font-size:26px;margin-bottom:8px" data-en>Do you want employers to find you?</h1>
-      <p style="color:var(--c-muted);font-size:15px;margin-bottom:24px" data-es>Decide si tu perfil aparece en las búsquedas de empleadores.</p>
-      <p style="color:var(--c-muted);font-size:15px;margin-bottom:24px" data-en>Choose whether your profile appears in employer searches.</p>
+      <p style="color:var(--c-muted);font-size:15px;margin-bottom:16px" data-es>Decide si tu perfil aparece en las búsquedas de empleadores.</p>
+      <p style="color:var(--c-muted);font-size:15px;margin-bottom:16px" data-en>Choose whether your profile appears in employer searches.</p>
+
+      <!-- Privacy note -->
+      <div style="display:flex;align-items:flex-start;gap:10px;background:#F0F4FF;border:1px solid #C7D6F5;border-radius:10px;padding:12px 14px;margin-bottom:20px">
+        <div style="font-size:18px;flex-shrink:0;margin-top:1px">🔐</div>
+        <div style="font-size:12.5px;color:#374599;line-height:1.6" data-es>
+          <strong>Tu privacidad está protegida.</strong> Tu nombre se muestra como <strong>Nombre + Inicial del apellido</strong> (ej. <em>Jose G.</em>) — nunca el apellido completo.
+        </div>
+        <div style="font-size:12.5px;color:#374599;line-height:1.6" data-en>
+          <strong>Your privacy is protected.</strong> Your name appears as <strong>First name + Last initial</strong> (e.g. <em>Jose G.</em>) — never your full last name.
+        </div>
+      </div>
 
       <!-- Public card -->
       <div id="vis-card-public" onclick="setProfileVisibility(true)" style="cursor:pointer;border:2px solid var(--c-green);border-radius:var(--radius-lg);padding:20px 22px;margin-bottom:12px;background:var(--c-green-light);position:relative">
         <div style="display:flex;align-items:flex-start;gap:14px">
           <div style="font-size:28px;margin-top:2px">🟢</div>
           <div style="flex:1">
-            <div style="font-size:15px;font-weight:700;color:var(--c-text);margin-bottom:4px" data-es>Publicar mi perfil (recomendado)</div>
-            <div style="font-size:15px;font-weight:700;color:var(--c-text);margin-bottom:4px" data-en>Show my profile (recommended)</div>
-            <div style="font-size:13px;color:var(--c-muted);line-height:1.6" data-es>Los empleadores pueden encontrarte y contactarte directamente — más oportunidades de trabajo sin tener que buscar.</div>
-            <div style="font-size:13px;color:var(--c-muted);line-height:1.6" data-en>Employers can find and contact you directly — more job opportunities without having to search.</div>
+            <div style="font-size:15px;font-weight:700;color:var(--c-text);margin-bottom:6px" data-es>Publicar mi perfil <span style="font-size:11px;background:var(--c-green);color:#fff;padding:2px 8px;border-radius:999px;font-weight:600;vertical-align:middle">Recomendado</span></div>
+            <div style="font-size:15px;font-weight:700;color:var(--c-text);margin-bottom:6px" data-en>Show my profile <span style="font-size:11px;background:var(--c-green);color:#fff;padding:2px 8px;border-radius:999px;font-weight:600;vertical-align:middle">Recommended</span></div>
+            <ul style="margin:0 0 0 2px;padding-left:16px;font-size:12.5px;color:var(--c-muted);line-height:1.85" data-es>
+              <li>Los empleadores te encuentran <strong>sin que tengas que buscar</strong></li>
+              <li>Recibes mensajes de trabajo directo en tu WhatsApp</li>
+              <li>Apareces en resultados cuando buscan tu categoría y ciudad</li>
+              <li>Cuantos más datos agregues, mejor tu posición en la búsqueda</li>
+            </ul>
+            <ul style="margin:0 0 0 2px;padding-left:16px;font-size:12.5px;color:var(--c-muted);line-height:1.85" data-en>
+              <li>Employers find <strong>you</strong> — no need to apply to every job</li>
+              <li>Get job offers sent directly to your WhatsApp</li>
+              <li>Appear in results when employers search your category &amp; city</li>
+              <li>The more you fill in, the higher you rank in search</li>
+            </ul>
           </div>
           <div id="vis-check-public" style="width:22px;height:22px;border-radius:50%;background:var(--c-green);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;flex-shrink:0;margin-top:2px">✓</div>
         </div>
@@ -842,8 +863,8 @@ if (new URLSearchParams(window.location.search).get('type') === 'staffing') docu
           <div style="flex:1">
             <div style="font-size:15px;font-weight:700;color:var(--c-text);margin-bottom:4px" data-es>No publicar (solo buscar empleos)</div>
             <div style="font-size:15px;font-weight:700;color:var(--c-text);margin-bottom:4px" data-en>Keep private (browse jobs only)</div>
-            <div style="font-size:13px;color:var(--c-muted);line-height:1.6" data-es>Tu perfil no aparece en búsquedas. Solo puedes ver y aplicar a ofertas de empleo. Puedes cambiar esto en tu perfil después.</div>
-            <div style="font-size:13px;color:var(--c-muted);line-height:1.6" data-en>Your profile won't appear in searches. You can browse and apply to jobs. You can change this in your profile later.</div>
+            <div style="font-size:13px;color:var(--c-muted);line-height:1.6" data-es>Tu perfil no aparece en búsquedas. Solo puedes ver las ofertas de empleo y ver los datos de contacto del empleador. Puedes cambiar esto desde tu panel en cualquier momento.</div>
+            <div style="font-size:13px;color:var(--c-muted);line-height:1.6" data-en>Your profile won't appear in searches. You can browse job postings and view employer contact info. You can change this from your dashboard anytime.</div>
           </div>
           <div id="vis-check-private" style="width:22px;height:22px;border-radius:50%;background:var(--c-border);display:flex;align-items:center;justify-content:center;color:transparent;font-size:13px;flex-shrink:0;margin-top:2px">✓</div>
         </div>
@@ -851,8 +872,8 @@ if (new URLSearchParams(window.location.search).get('type') === 'staffing') docu
       <input type="hidden" id="f-profile-visible" value="true">
 
       <div class="form-nav" style="justify-content:flex-end">
-        <button class="btn-next" onclick="goStep(4)" data-es>Continuar →</button>
-        <button class="btn-next" onclick="goStep(4)" data-en>Continue →</button>
+        <button class="btn-next" onclick="goStep3Continue()" data-es>Continuar →</button>
+        <button class="btn-next" onclick="goStep3Continue()" data-en>Continue →</button>
       </div>
     </div>
 
@@ -2102,6 +2123,16 @@ async function goSuccess(isZelle, isAch) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function goStep3Continue() {
+  var isPublic = (document.getElementById('f-profile-visible') || {}).value !== 'false';
+  if (!isPublic) {
+    // Private: skip Step 4 — call goSuccess directly (no payment/plan needed for workers)
+    goSuccess(false, false);
+  } else {
+    goStep(4);
+  }
+}
+
 var _workerProfileBiz = null;
 function goWorkerProfile() {
   var returnTo = new URLSearchParams(window.location.search).get('returnTo');
@@ -2704,40 +2735,46 @@ async function validateStep2() {
     if (!isWorker && tradeName) clearInvalid(tradeName);
   }
 
-  // 2. Main category - at least 1
-  var catSelected = document.querySelectorAll('#cat-grid .cat-chip.sel').length;
-  if (catSelected === 0) {
-    showError('err-cat');
-    markInvalidSection('cat-grid');
-    valid = false;
+  // 2. Main category — worker mode: optional (skip validation); business mode: required
+  if (!isWorker) {
+    var catSelected = document.querySelectorAll('#cat-grid .cat-chip.sel').length;
+    if (catSelected === 0) {
+      showError('err-cat');
+      markInvalidSection('cat-grid');
+      valid = false;
+    } else {
+      hideError('err-cat');
+      clearInvalidSection('cat-grid');
+    }
+
+    // 2b. Staffing & Labor worker type (business mode only)
+    var staffingChip = document.querySelector('.cat-chip[data-cat-id="staffing"]');
+    if (staffingChip && staffingChip.classList.contains('sel')) {
+      var staffingTypesSelected = document.querySelectorAll('#staffing-types-grid .cat-chip.sel').length;
+      if (staffingTypesSelected === 0) {
+        showError('err-staffing-types');
+        markInvalidSection('staffing-types-grid');
+        valid = false;
+      } else {
+        hideError('err-staffing-types');
+        clearInvalidSection('staffing-types-grid');
+      }
+      var availabilityChecked = document.querySelectorAll('#staffing-availability-grid input[type=checkbox]:checked').length;
+      if (availabilityChecked === 0) {
+        showError('err-staffing-availability');
+        markInvalidSection('staffing-availability-grid');
+        valid = false;
+      } else {
+        hideError('err-staffing-availability');
+        clearInvalidSection('staffing-availability-grid');
+      }
+    }
   } else {
+    // Worker: clear any stale category errors
     hideError('err-cat');
     clearInvalidSection('cat-grid');
-  }
-
-  // 2b. If "Staffing & Labor" is selected, at least one worker type is required
-  var staffingChip = document.querySelector('.cat-chip[data-cat-id="staffing"]');
-  if (staffingChip && staffingChip.classList.contains('sel')) {
-    var staffingTypesSelected = document.querySelectorAll('#staffing-types-grid .cat-chip.sel').length;
-    if (staffingTypesSelected === 0) {
-      showError('err-staffing-types');
-      markInvalidSection('staffing-types-grid');
-      valid = false;
-    } else {
-      hideError('err-staffing-types');
-      clearInvalidSection('staffing-types-grid');
-    }
-
-    // 2c. Hiring availability - at least one required
-    var availabilityChecked = document.querySelectorAll('#staffing-availability-grid input[type=checkbox]:checked').length;
-    if (availabilityChecked === 0) {
-      showError('err-staffing-availability');
-      markInvalidSection('staffing-availability-grid');
-      valid = false;
-    } else {
-      hideError('err-staffing-availability');
-      clearInvalidSection('staffing-availability-grid');
-    }
+    hideError('err-staffing-types');
+    hideError('err-staffing-availability');
   }
 
   // 3. Phone/WhatsApp required
@@ -2751,25 +2788,34 @@ async function validateStep2() {
     clearInvalid(phone);
   }
 
-
-  // 4. Service area - at least 1 checkbox OR "other" text filled
-  var areaChecked = document.querySelectorAll('#service-area-grid input[type=checkbox]:checked').length;
-  var areaOther = (document.getElementById('f-area-other') || {}).value || '';
-  if (areaChecked === 0 && areaOther.trim() === '') {
-    showError('err-area');
-    markInvalidSection('service-area-grid');
-    valid = false;
+  // 4. Service area — worker mode: optional; business mode: required
+  if (!isWorker) {
+    var areaChecked = document.querySelectorAll('#service-area-grid input[type=checkbox]:checked').length;
+    var areaOther = (document.getElementById('f-area-other') || {}).value || '';
+    if (areaChecked === 0 && areaOther.trim() === '') {
+      showError('err-area');
+      markInvalidSection('service-area-grid');
+      valid = false;
+    } else {
+      hideError('err-area');
+      clearInvalidSection('service-area-grid');
+    }
   } else {
     hideError('err-area');
     clearInvalidSection('service-area-grid');
   }
 
-  // 5. Payment method - at least 1
-  var paymentChecked = document.querySelectorAll('#payment-grid input[type=checkbox]:checked').length;
-  if (paymentChecked === 0) {
-    showError('err-payment');
-    markInvalidSection('payment-grid');
-    valid = false;
+  // 5. Payment method — worker mode: optional; business mode: required
+  if (!isWorker) {
+    var paymentChecked = document.querySelectorAll('#payment-grid input[type=checkbox]:checked').length;
+    if (paymentChecked === 0) {
+      showError('err-payment');
+      markInvalidSection('payment-grid');
+      valid = false;
+    } else {
+      hideError('err-payment');
+      clearInvalidSection('payment-grid');
+    }
   } else {
     hideError('err-payment');
     clearInvalidSection('payment-grid');

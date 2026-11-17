@@ -477,8 +477,13 @@ function renderWorker(w) {
     avatarEl.textContent = initials;
   }
 
-  // Name
-  document.getElementById('worker-name').textContent = w.business_name || w.trade_name || '';
+  // Name — show "First L." (last initial only) for privacy
+  var _rawName = w.business_name || w.trade_name || '';
+  var _nameParts = _rawName.trim().split(/\s+/);
+  var _displayName = _nameParts.length >= 2
+    ? _nameParts[0] + ' ' + _nameParts[_nameParts.length - 1][0].toUpperCase() + '.'
+    : _rawName;
+  document.getElementById('worker-name').textContent = _displayName;
   document.title = (w.business_name || 'Worker') + ' — AmigosNearMe';
 
   // Badges

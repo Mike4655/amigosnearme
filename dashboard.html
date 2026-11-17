@@ -1752,13 +1752,32 @@ async function renderWorkerVisibilityBanner() {
 async function toggleWorkerVisibility(makeVisible) {
   if (!window._bizId) return;
   var isEn = document.body.classList.contains('en');
+  if (makeVisible) {
+    // 공개 전환: Step 4 데이터 체크 먼저
+    try {
+      var { data: wData } = await getSupabase()
+        .from('businesses')
+        .select('work_auth, transportation, experience')
+        .eq('id', window._bizId).single();
+      var hasStep4 = wData &&
+        wData.work_auth &&
+        wData.transportation && wData.transportation.length > 0 &&
+        wData.experience && wData.experience.length > 0;
+      if (!hasStep4) {
+        openGoPublicModal();
+        return;
+      }
+    } catch(e) {
+      openGoPublicModal();
+      return;
+    }
+  }
   try {
     await getSupabase().from('businesses').update({ profile_visible: makeVisible }).eq('id', window._bizId);
     window._workerProfileVisible = makeVisible;
     showToast(isEn
       ? (makeVisible ? '✅ Profile is now visible to employers' : '🔒 Profile hidden from employers')
       : (makeVisible ? '✅ Perfil ahora visible para empleadores' : '🔒 Perfil oculto para empleadores'));
-    // 사이드바 아이콘·라벨 동기화
     var visIcon = document.getElementById('worker-vis-icon');
     var visLabelEs = document.getElementById('worker-vis-label-es');
     var visLabelEn = document.getElementById('worker-vis-label-en');
@@ -1768,6 +1787,93 @@ async function toggleWorkerVisibility(makeVisible) {
     renderWorkerVisibilityBanner();
   } catch(e) {
     showToast(isEn ? '❌ Error updating profile visibility' : '❌ Error al actualizar visibilidad');
+  }
+}
+
+// ── Go-Public 모달 함수들 ──────────────────────────────────────────
+function openGoPublicModal() {
+  var modal = document.getElementById('worker-go-public-modal');
+  if (!modal) return;
+  // 폼 초기화
+  document.querySelectorAll('input[name="gp-work-auth"]').forEach(function(r){ r.checked = false; });
+  document.querySelectorAll('#gp-transport-group input[type=checkbox]').forEach(function(c){ c.checked = false; });
+  document.getElementById('gp-exp-list').innerHTML = '';
+  document.querySelectorAll('#worker-go-public-modal [id$="-err"]').forEach(function(e){ e.style.display = 'none'; });
+  gpAddExp(); // 경력 입력 행 1개 기본 추가
+  modal.style.display = 'flex';
+}
+function closeGoPublicModal() {
+  var modal = document.getElementById('worker-go-public-modal');
+  if (modal) modal.style.display = 'none';
+}
+var _gpExpCount = 0;
+function gpAddExp() {
+  var isEn = document.body.classList.contains('en');
+  var list = document.getElementById('gp-exp-list');
+  if (!list) return;
+  var idx = _gpExpCount++;
+  var row = document.createElement('div');
+  row.id = 'gp-exp-row-' + idx;
+  row.style.cssText = 'display:flex;gap:8px;align-items:flex-start';
+  row.innerHTML =
+    '<div style="flex:1;display:flex;flex-direction:column;gap:6px">' +
+      '<input type="text" placeholder="' + (isEn ? 'Job title (e.g. Painter)' : 'Puesto (ej. Pintor)') + '"' +
+        ' style="width:100%;padding:8px 10px;border:1px solid var(--c-border);border-radius:8px;font-size:13px;font-family:var(--font-body)" class="gp-exp-title">' +
+      '<input type="text" placeholder="' + (isEn ? 'Employer / Company' : 'Empleador / Empresa') + '"' +
+        ' style="width:100%;padding:8px 10px;border:1px solid var(--c-border);border-radius:8px;font-size:13px;font-family:var(--font-body)" class="gp-exp-employer">' +
+      '<input type="text" placeholder="' + (isEn ? 'Duration (e.g. 2 years)' : 'Duración (ej. 2 años)') + '"' +
+        ' style="width:100%;padding:8px 10px;border:1px solid var(--c-border);border-radius:8px;font-size:13px;font-family:var(--font-body)" class="gp-exp-duration">' +
+    '</div>' +
+    '<button type="button" onclick="document.getElementById(\'gp-exp-row-' + idx + '\').remove()" ' +
+      'style="margin-top:8px;background:none;border:none;font-size:16px;cursor:pointer;color:var(--c-muted);flex-shrink:0;padding:4px">✕</button>';
+  list.appendChild(row);
+}
+async function submitGoPublic() {
+  var isEn = document.body.classList.contains('en');
+  var valid = true;
+  // work_auth
+  var authVal = document.querySelector('input[name="gp-work-auth"]:checked');
+  document.querySelectorAll('#gp-work-auth-err').forEach(function(e){ e.style.display = authVal ? 'none' : 'block'; });
+  if (!authVal) valid = false;
+  // transportation
+  var transChecked = Array.from(document.querySelectorAll('#gp-transport-group input[type=checkbox]:checked')).map(function(c){ return c.value; });
+  document.querySelectorAll('#gp-transport-err').forEach(function(e){ e.style.display = transChecked.length > 0 ? 'none' : 'block'; });
+  if (transChecked.length === 0) valid = false;
+  // experience
+  var expRows = document.querySelectorAll('#gp-exp-list > div');
+  var expList = [];
+  expRows.forEach(function(row){
+    var title = (row.querySelector('.gp-exp-title') || {}).value || '';
+    var employer = (row.querySelector('.gp-exp-employer') || {}).value || '';
+    var duration = (row.querySelector('.gp-exp-duration') || {}).value || '';
+    if (title.trim()) expList.push({ title: title.trim(), employer: employer.trim(), duration: duration.trim() });
+  });
+  document.querySelectorAll('#gp-exp-err').forEach(function(e){ e.style.display = expList.length > 0 ? 'none' : 'block'; });
+  if (expList.length === 0) valid = false;
+  if (!valid) return;
+  var btn = document.getElementById('gp-submit-btn');
+  if (btn) { btn.disabled = true; btn.textContent = isEn ? 'Saving…' : 'Guardando…'; }
+  try {
+    await getSupabase().from('businesses').update({
+      work_auth: authVal.value,
+      transportation: transChecked,
+      experience: expList,
+      profile_visible: true
+    }).eq('id', window._bizId);
+    window._workerProfileVisible = true;
+    closeGoPublicModal();
+    showToast(isEn ? '✅ Profile is now visible to employers' : '✅ Perfil ahora visible para empleadores');
+    var visIcon = document.getElementById('worker-vis-icon');
+    var visLabelEs = document.getElementById('worker-vis-label-es');
+    var visLabelEn = document.getElementById('worker-vis-label-en');
+    if (visIcon) visIcon.textContent = '🟢';
+    if (visLabelEs) visLabelEs.textContent = 'Perfil visible';
+    if (visLabelEn) visLabelEn.textContent = 'Profile visible';
+    renderWorkerVisibilityBanner();
+  } catch(e) {
+    showToast(isEn ? '❌ Error saving profile' : '❌ Error al guardar perfil');
+  } finally {
+    if (btn) { btn.disabled = false; }
   }
 }
 
@@ -3004,6 +3110,104 @@ document.addEventListener('DOMContentLoaded', async function(){
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button id="dwn-cancel-btn" onclick="closeDowngradeModal()" style="padding:9px 18px;border-radius:8px;border:1px solid var(--c-border);background:var(--c-surface);color:var(--c-text);font-size:14px;cursor:pointer">Cancelar</button>
       <button id="dwn-confirm-btn" onclick="confirmScheduledDowngrade()" style="padding:9px 18px;border-radius:8px;border:none;background:var(--c-accent);color:#fff;font-size:14px;cursor:pointer;font-weight:600">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Worker 프로필 공개 전환 모달 (Step 4 완성) ──────────────── -->
+<div class="modal-overlay" id="worker-go-public-modal" onclick="if(event.target===this)closeGoPublicModal()" style="display:none">
+  <div class="modal-card" style="max-width:520px;max-height:90vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+      <div class="modal-title" style="margin-bottom:0">
+        <span data-es>Completar perfil para publicar</span>
+        <span data-en>Complete profile to go public</span>
+      </div>
+      <button onclick="closeGoPublicModal()" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--c-muted);padding:0 0 0 12px">✕</button>
+    </div>
+    <p style="font-size:13px;color:var(--c-muted);margin-bottom:20px;line-height:1.5">
+      <span data-es>Los empleadores ven estos datos antes de contactarte. Completa los campos para aparecer en búsquedas.</span>
+      <span data-en>Employers see this info before contacting you. Fill it in to appear in search results.</span>
+    </p>
+
+    <!-- Work Authorization -->
+    <div style="margin-bottom:18px">
+      <div style="font-size:13px;font-weight:600;color:var(--c-text);margin-bottom:8px">
+        <span data-es>Autorización de trabajo <span style="color:var(--c-accent)">*</span></span>
+        <span data-en>Work Authorization <span style="color:var(--c-accent)">*</span></span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px" id="gp-work-auth-group">
+        <label style="display:flex;align-items:center;gap:10px;font-size:13.5px;cursor:pointer;padding:9px 12px;border:1px solid var(--c-border);border-radius:8px">
+          <input type="radio" name="gp-work-auth" value="citizen" style="accent-color:var(--c-green)">
+          <span data-es>Ciudadano / Residente permanente</span><span data-en>US Citizen / Permanent Resident</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13.5px;cursor:pointer;padding:9px 12px;border:1px solid var(--c-border);border-radius:8px">
+          <input type="radio" name="gp-work-auth" value="visa_work" style="accent-color:var(--c-green)">
+          <span data-es>Visa de trabajo vigente</span><span data-en>Valid Work Visa (H-2B, TN, etc.)</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13.5px;cursor:pointer;padding:9px 12px;border:1px solid var(--c-border);border-radius:8px">
+          <input type="radio" name="gp-work-auth" value="daca" style="accent-color:var(--c-green)">
+          <span data-es>DACA / TPS</span><span data-en>DACA / TPS</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13.5px;cursor:pointer;padding:9px 12px;border:1px solid var(--c-border);border-radius:8px">
+          <input type="radio" name="gp-work-auth" value="other" style="accent-color:var(--c-green)">
+          <span data-es>Otro / Prefiero no decir</span><span data-en>Other / Prefer not to say</span>
+        </label>
+      </div>
+      <div id="gp-work-auth-err" style="font-size:12px;color:var(--c-accent);margin-top:4px;display:none" data-es>Requerido</div>
+      <div id="gp-work-auth-err" style="font-size:12px;color:var(--c-accent);margin-top:4px;display:none" data-en>Required</div>
+    </div>
+
+    <!-- Transportation -->
+    <div style="margin-bottom:18px">
+      <div style="font-size:13px;font-weight:600;color:var(--c-text);margin-bottom:8px">
+        <span data-es>Transporte disponible <span style="color:var(--c-accent)">*</span></span>
+        <span data-en>Transportation available <span style="color:var(--c-accent)">*</span></span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px" id="gp-transport-group">
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:9px 12px;border:1px solid var(--c-border);border-radius:8px">
+          <input type="checkbox" value="own_car" style="accent-color:var(--c-green)">
+          <span data-es>🚗 Auto propio</span><span data-en>🚗 Own car</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:9px 12px;border:1px solid var(--c-border);border-radius:8px">
+          <input type="checkbox" value="public_transit" style="accent-color:var(--c-green)">
+          <span data-es>🚌 Transporte público</span><span data-en>🚌 Public transit</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:9px 12px;border:1px solid var(--c-border);border-radius:8px">
+          <input type="checkbox" value="bicycle" style="accent-color:var(--c-green)">
+          <span data-es>🚲 Bicicleta</span><span data-en>🚲 Bicycle</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:9px 12px;border:1px solid var(--c-border);border-radius:8px">
+          <input type="checkbox" value="rideshare" style="accent-color:var(--c-green)">
+          <span data-es>🚕 Rideshare</span><span data-en>🚕 Rideshare (Uber/Lyft)</span>
+        </label>
+      </div>
+      <div id="gp-transport-err" style="font-size:12px;color:var(--c-accent);margin-top:4px;display:none" data-es>Selecciona al menos uno</div>
+      <div id="gp-transport-err" style="font-size:12px;color:var(--c-accent);margin-top:4px;display:none" data-en>Select at least one</div>
+    </div>
+
+    <!-- Experience -->
+    <div style="margin-bottom:20px">
+      <div style="font-size:13px;font-weight:600;color:var(--c-text);margin-bottom:8px">
+        <span data-es>Experiencia laboral <span style="color:var(--c-accent)">*</span></span>
+        <span data-en>Work Experience <span style="color:var(--c-accent)">*</span></span>
+      </div>
+      <div id="gp-exp-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px"></div>
+      <button type="button" onclick="gpAddExp()" style="font-size:12.5px;color:var(--c-accent);background:none;border:1px dashed var(--c-accent);border-radius:8px;padding:7px 14px;cursor:pointer;font-family:var(--font-body)">
+        <span data-es>+ Agregar experiencia</span>
+        <span data-en>+ Add experience</span>
+      </button>
+      <div id="gp-exp-err" style="font-size:12px;color:var(--c-accent);margin-top:4px;display:none" data-es>Agrega al menos una experiencia</div>
+      <div id="gp-exp-err" style="font-size:12px;color:var(--c-accent);margin-top:4px;display:none" data-en>Add at least one experience entry</div>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button onclick="closeGoPublicModal()" style="padding:10px 20px;border-radius:8px;border:1px solid var(--c-border);background:var(--c-surface);color:var(--c-text);font-size:14px;cursor:pointer">
+        <span data-es>Cancelar</span><span data-en>Cancel</span>
+      </button>
+      <button onclick="submitGoPublic()" id="gp-submit-btn" style="padding:10px 22px;border-radius:8px;border:none;background:var(--c-green);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font-body)">
+        <span data-es>🟢 Publicar mi perfil</span>
+        <span data-en>🟢 Make profile public</span>
+      </button>
     </div>
   </div>
 </div>
