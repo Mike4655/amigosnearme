@@ -742,6 +742,10 @@
         <div class="stat-label">Contacts This Month</div>
         <div class="stat-val" id="stat-wkr-contacts">—</div>
       </div>
+      <div class="stat-card">
+        <div class="stat-label">🟢 Visible Profiles</div>
+        <div class="stat-val" style="color:var(--c-green)" id="stat-wkr-visible">—</div>
+      </div>
     </div>
 
     <div class="toolbar">
@@ -750,6 +754,11 @@
         <option value="">All Statuses</option>
         <option value="active">Active</option>
         <option value="suspended">Suspended</option>
+      </select>
+      <select class="filter-select" id="wkr-vis-filter" onchange="filterWorkerTable()">
+        <option value="">All Profiles</option>
+        <option value="visible">🟢 Visible</option>
+        <option value="hidden">🔒 Hidden</option>
       </select>
       <button onclick="exportWorkersCSV()" style="padding:7px 14px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);background:var(--c-surface);font-size:13px;font-weight:600;color:var(--c-text);cursor:pointer;font-family:var(--font-body)">⬇️ Export CSV</button>
     </div>
@@ -765,6 +774,7 @@
             <th style="min-width:110px">Contacts (month)</th>
             <th style="min-width:110px">Contacts (total)</th>
             <th style="min-width:90px">Status</th>
+            <th style="min-width:100px">Profile</th>
             <th style="min-width:80px"></th>
           </tr>
         </thead>
@@ -3305,15 +3315,17 @@ async function loadWorkers() {
     var total     = workers.length;
     var active    = workers.filter(function(w){ return (w.account_status||'active') === 'active'; }).length;
     var suspended = workers.filter(function(w){ return w.account_status === 'suspended'; }).length;
+    var visible   = workers.filter(function(w){ return w.profile_visible !== false; }).length;
     var totalContactsMonth = workers.reduce(function(s,w){ return s + (clMonthBiz[w.id]||0); }, 0);
 
     document.getElementById('stat-wkr-total').textContent     = total;
     document.getElementById('stat-wkr-active').textContent    = active;
     document.getElementById('stat-wkr-suspended').textContent = suspended;
     document.getElementById('stat-wkr-contacts').textContent  = totalContactsMonth;
+    document.getElementById('stat-wkr-visible').textContent   = visible;
 
     if (!workers.length) {
-      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--c-muted);padding:20px">No workers registered yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--c-muted);padding:20px">No workers registered yet.</td></tr>';
       _workersLoaded = true;
       return;
     }
@@ -3348,7 +3360,15 @@ async function loadWorkers() {
         : '<div class="biz-avatar '+bizAvatarClass(idx)+'">'+getAvatarInitialsAdmin(name)+'</div>';
       var cMonth = clMonthBiz[w.id] || 0;
       var cTotal = clTotalBiz[w.id] || 0;
-      return '<tr data-wkrstatus="'+escHtml(status)+'" data-wkrverify="'+(w.verified?'verified':'unverified')+'" data-wkrname="'+escHtml(name.toLowerCase())+'" data-bizid="'+escHtml(w.id)+'" data-bizname="'+escHtml(name)+'" data-loginemail="'+escHtml(loginEmail)+'" data-preflang="'+escHtml(w.preferred_lang||'es')+'">'
+      var profVisible = w.profile_visible !== false;
+      var profBadge = profVisible
+        ? '<span class="verified-badge" style="background:var(--c-green-light);color:var(--c-green)">🟢 Visible</span>'
+        : '<span class="basic-badge">🔒 Hidden</span>';
+      var profToggleLabel = profVisible ? 'Hide' : 'Show';
+      var profToggleStyle = profVisible
+        ? 'background:#fef3c7;color:#92400e'
+        : 'background:var(--c-green-light);color:var(--c-green)';
+      return '<tr data-wkrstatus="'+escHtml(status)+'" data-wkrverify="'+(w.verified?'verified':'unverified')+'" data-wkrname="'+escHtml(name.toLowerCase())+'" data-bizid="'+escHtml(w.id)+'" data-bizname="'+escHtml(name)+'" data-loginemail="'+escHtml(loginEmail)+'" data-preflang="'+escHtml(w.preferred_lang||'es')+'" data-profvisible="'+(profVisible?'visible':'hidden')+'">'
         + '<td><div class="biz-cell">'+thumbHtml
         + '<div><div class="biz-name">'+escHtml(name)+'</div></div></div></td>'
         + '<td style="font-size:12px;color:var(--c-muted)">'+escHtml(cats)+'</td>'
@@ -3357,8 +3377,10 @@ async function loadWorkers() {
         + '<td style="text-align:center">'+cMonth+'</td>'
         + '<td style="text-align:center">'+cTotal+'</td>'
         + '<td>'+statusBadge+'</td>'
+        + '<td>'+profBadge+'</td>'
         + '<td><div class="action-cell">'
         + (status !== 'deleted' ? '<button class="btn-suspend" style="'+suspendStyle+'" onclick="toggleWorkerStatus(this)">'+suspendLabel+'</button>' : '')
+        + (status !== 'deleted' ? '<button class="btn-save" style="'+profToggleStyle+'" onclick="adminToggleWorkerVisibility(\''+escHtml(w.id)+'\', '+(profVisible?'false':'true')+', this)">'+profToggleLabel+'</button>' : '')
         + '<button class="btn-save" style="background:var(--c-blue-light);color:var(--c-blue)" onclick="adminResetPassword(this.closest(\'tr\').dataset.loginemail)">Reset PW</button>'
         + '</div></td>'
         + '</tr>';
@@ -3367,7 +3389,7 @@ async function loadWorkers() {
     _workersLoaded = true;
   } catch(e) {
     console.error('[Admin] loadWorkers error:', e);
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--c-accent);padding:20px">Error loading workers.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--c-accent);padding:20px">Error loading workers.</td></tr>';
   }
 }
 
@@ -3438,14 +3460,43 @@ async function toggleWorkerStatus(btn) {
 function filterWorkerTable() {
   var q      = (document.getElementById('wkr-search-box').value || '').toLowerCase();
   var status = document.getElementById('wkr-status-filter').value;
+  var vis    = document.getElementById('wkr-vis-filter').value;
   document.querySelectorAll('#wkr-table-body tr').forEach(function(row) {
     var name = row.dataset.wkrname || '';
     var st   = row.dataset.wkrstatus || '';
+    var pv   = row.dataset.profvisible || '';
     var show = true;
     if (q && name.indexOf(q) === -1) show = false;
     if (status && st !== status) show = false;
+    if (vis && pv !== vis) show = false;
     row.style.display = show ? '' : 'none';
   });
+}
+
+async function adminToggleWorkerVisibility(bizId, makeVisible, btn) {
+  btn.disabled = true;
+  try {
+    var { error } = await getSupabase().from('businesses').update({ profile_visible: makeVisible }).eq('id', bizId);
+    if (error) throw error;
+    var row = btn.closest('tr');
+    row.dataset.profvisible = makeVisible ? 'visible' : 'hidden';
+    var profCell = row.querySelectorAll('td')[7];
+    profCell.innerHTML = makeVisible
+      ? '<span class="verified-badge" style="background:var(--c-green-light);color:var(--c-green)">🟢 Visible</span>'
+      : '<span class="basic-badge">🔒 Hidden</span>';
+    btn.textContent = makeVisible ? 'Hide' : 'Show';
+    btn.style.background = makeVisible ? '#fef3c7' : 'var(--c-green-light)';
+    btn.style.color = makeVisible ? '#92400e' : 'var(--c-green)';
+    btn.onclick = function() { adminToggleWorkerVisibility(bizId, !makeVisible, btn); };
+    // update stat card
+    var visCount = document.querySelectorAll('#wkr-table-body tr[data-profvisible="visible"]').length;
+    var el = document.getElementById('stat-wkr-visible');
+    if (el) el.textContent = visCount;
+  } catch(e) {
+    alert('Failed to update profile visibility: ' + (e.message || e));
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 async function adminSignOut() {
