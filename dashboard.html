@@ -263,6 +263,17 @@
     <a class="sb-link" onclick="showPane('billing')"><span class="icon">🧾</span> <span data-es>Facturación</span><span data-en>Billing</span></a>
     <a class="sb-link" onclick="showPane('settings')"><span class="icon">⚙️</span> <span data-es>Configuración</span><span data-en>Settings</span></a>
 
+    <!-- Worker 전용 사이드바 메뉴 -->
+    <div id="worker-nav-section" style="display:none">
+      <div class="sb-section" style="margin-top:8px" data-es>Perfil público</div>
+      <div class="sb-section" style="margin-top:8px" data-en>Public profile</div>
+      <a class="sb-link" onclick="showPane('overview')" id="worker-visibility-nav">
+        <span class="icon" id="worker-vis-icon">🟢</span>
+        <span data-es id="worker-vis-label-es">Perfil visible</span>
+        <span data-en id="worker-vis-label-en">Profile visible</span>
+      </a>
+    </div>
+
     <!-- B안: Business 계정일 때만 JS로 표시 -->
     <div id="hire-workers-section" style="display:none">
       <div class="sb-section" style="margin-top:8px" data-es>Empleador</div>
@@ -1694,11 +1705,80 @@ function showPlanToast(msg) {
   t.classList.add('show');
   setTimeout(function(){ t.classList.remove('show'); }, 2600);
 }
+async function renderWorkerVisibilityBanner() {
+  var banner = document.getElementById('overview-banner');
+  if (!banner) return;
+  var isEn = document.body.classList.contains('en');
+  // DB에서 최신 profile_visible 값 읽기
+  var visible = true;
+  try {
+    if (window._bizId) {
+      var { data: wBiz } = await getSupabase().from('businesses').select('profile_visible').eq('id', window._bizId).single();
+      if (wBiz) visible = wBiz.profile_visible !== false;
+    }
+  } catch(e) {}
+  window._workerProfileVisible = visible;
+
+  var isPublic = visible;
+  banner.innerHTML =
+    '<div style="border:1px solid var(--c-border);border-radius:var(--radius-md);padding:16px 20px;background:var(--c-surface);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">' +
+      '<div style="display:flex;align-items:center;gap:12px">' +
+        '<div style="font-size:28px">' + (isPublic ? '🟢' : '🔒') + '</div>' +
+        '<div>' +
+          '<div style="font-size:14px;font-weight:700;color:var(--c-text);margin-bottom:2px">' +
+            (isPublic
+              ? (isEn ? 'Your profile is <span style="color:var(--c-green)">visible</span> to employers' : 'Tu perfil está <span style="color:var(--c-green)">visible</span> para empleadores')
+              : (isEn ? 'Your profile is <span style="color:var(--c-muted)">hidden</span> from employers' : 'Tu perfil está <span style="color:var(--c-muted)">oculto</span> para empleadores')) +
+          '</div>' +
+          '<div style="font-size:12px;color:var(--c-muted)">' +
+            (isPublic
+              ? (isEn ? 'Employers can find and contact you directly.' : 'Los empleadores pueden encontrarte y contactarte.')
+              : (isEn ? 'You can browse jobs, but employers cannot find you.' : 'Puedes buscar empleos, pero los empleadores no te encontrarán.')) +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="display:flex;align-items:center;gap:10px">' +
+        (isPublic
+          ? '<button onclick="toggleWorkerVisibility(false)" style="padding:8px 18px;border-radius:var(--radius-sm);border:1px solid var(--c-border);background:var(--c-bg);color:var(--c-muted);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body)">' +
+              (isEn ? '🔒 Hide profile' : '🔒 Ocultar perfil') + '</button>'
+          : '<button onclick="toggleWorkerVisibility(true)" style="padding:8px 18px;border-radius:var(--radius-sm);border:none;background:var(--c-green);color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body)">' +
+              (isEn ? '🟢 Make visible' : '🟢 Hacer visible') + '</button>') +
+        '<a href="worker-profile.html?id=' + (window._bizId || '') + '" target="_blank" style="padding:8px 14px;border-radius:var(--radius-sm);border:0.5px solid var(--c-border);background:var(--c-bg);color:var(--c-text);font-size:13px;font-weight:500;text-decoration:none">' +
+          (isEn ? '👁 Preview' : '👁 Ver') + '</a>' +
+      '</div>' +
+    '</div>';
+}
+
+async function toggleWorkerVisibility(makeVisible) {
+  if (!window._bizId) return;
+  var isEn = document.body.classList.contains('en');
+  try {
+    await getSupabase().from('businesses').update({ profile_visible: makeVisible }).eq('id', window._bizId);
+    window._workerProfileVisible = makeVisible;
+    showToast(isEn
+      ? (makeVisible ? '✅ Profile is now visible to employers' : '🔒 Profile hidden from employers')
+      : (makeVisible ? '✅ Perfil ahora visible para empleadores' : '🔒 Perfil oculto para empleadores'));
+    // 사이드바 아이콘·라벨 동기화
+    var visIcon = document.getElementById('worker-vis-icon');
+    var visLabelEs = document.getElementById('worker-vis-label-es');
+    var visLabelEn = document.getElementById('worker-vis-label-en');
+    if (visIcon) visIcon.textContent = makeVisible ? '🟢' : '🔒';
+    if (visLabelEs) visLabelEs.textContent = makeVisible ? 'Perfil visible' : 'Perfil oculto';
+    if (visLabelEn) visLabelEn.textContent = makeVisible ? 'Profile visible' : 'Profile hidden';
+    renderWorkerVisibilityBanner();
+  } catch(e) {
+    showToast(isEn ? '❌ Error updating profile visibility' : '❌ Error al actualizar visibilidad');
+  }
+}
+
 function renderOverviewBanner() {
   var banner = document.getElementById('overview-banner');
   if (!banner) return;
-  // Worker는 플랜·연락한도 시스템 미적용 — 배너 숨김 (§8.5)
-  if (window._isWorker) { banner.innerHTML = ''; return; }
+  // Worker: 프로필 가시성 토글 배너 표시
+  if (window._isWorker) {
+    renderWorkerVisibilityBanner();
+    return;
+  }
 
   var plan = getCurrentPlan();
   var isEn = document.body.classList.contains('en');
@@ -2551,7 +2631,24 @@ document.addEventListener('DOMContentLoaded', async function(){
       window._bizPendingPlan = biz.pending_plan || null;
       window._bizContactCredits = biz.contact_credits != null ? biz.contact_credits : 0;
       window._isWorker = !!biz.is_worker;
+      window._workerProfileVisible = biz.profile_visible !== false;
       window._bizId = biz.id;
+      // Worker 전용 UI 활성화
+      if (window._isWorker) {
+        var workerNav = document.getElementById('worker-nav-section');
+        if (workerNav) workerNav.style.display = 'block';
+        // 사이드바 아이콘·라벨 동기화
+        var visIcon = document.getElementById('worker-vis-icon');
+        var visLabelEs = document.getElementById('worker-vis-label-es');
+        var visLabelEn = document.getElementById('worker-vis-label-en');
+        var isVis = window._workerProfileVisible;
+        if (visIcon) visIcon.textContent = isVis ? '🟢' : '🔒';
+        if (visLabelEs) visLabelEs.textContent = isVis ? 'Perfil visible' : 'Perfil oculto';
+        if (visLabelEn) visLabelEn.textContent = isVis ? 'Profile visible' : 'Profile hidden';
+        // "Ver mi perfil público" 링크를 worker-profile로 교체
+        document.querySelectorAll('.sb-footer a[href="profile.html"]').forEach(function(a){ a.href = 'worker-profile.html?id=' + biz.id; });
+        document.querySelectorAll('.top-bar-actions a[href="profile.html"]').forEach(function(a){ a.href = 'worker-profile.html?id=' + biz.id; });
+      }
       const meta = user.user_metadata || {};
       var needsUpdate = {};
       if (!biz.whatsapp_phone && meta.phone) needsUpdate.whatsapp_phone = meta.phone;
